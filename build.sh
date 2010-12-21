@@ -24,14 +24,17 @@ cd ${DIR}/git/x-loader
 make ARCH=arm distclean
 git pull
 GIT_VERSION=$(git rev-parse HEAD)
-make ARCH=arm distclean
+GIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
+GIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
+make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- ${XLOAD_CONFIG}
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- ift
+echo "Building x-loader"
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- ift > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
-cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${GIT_VERSION}
+cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${GIT_MON}-${GIT_DAY}-${GIT_VERSION}
 
-make ARCH=arm distclean
+make ARCH=arm distclean &> /dev/null
 cd ${DIR}/
 
 echo ""
@@ -52,21 +55,23 @@ git clone git://git.denx.de/u-boot.git
 fi
 
 cd ${DIR}/git/u-boot
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- distclean
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- distclean &> /dev/null
 git reset --hard
 git fetch
 git checkout master
 git pull
 git branch -D u-boot-scratch || true
-git checkout -b ${UBOOT_TAG} -b u-boot-scratch
+git checkout ${UBOOT_TAG} -b u-boot-scratch
+git describe
 GIT_VERSION=$(git rev-parse HEAD)
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- ${UBOOT_CONFIG}
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-
+echo "Building u-boot"
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${GIT_VERSION}
 
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- distclean
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- distclean &> /dev/null
 cd ${DIR}/
 
 echo ""
