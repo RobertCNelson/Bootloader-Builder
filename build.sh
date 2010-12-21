@@ -81,7 +81,6 @@ echo ""
 }
 
 #Omap3 Boards
-
 function beagleboard {
 BOARD="beagleboard"
 XLOAD_CONFIG="omap3530beagle_config"
@@ -90,6 +89,16 @@ build_omap_xloader
 UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG="v2010.12-rc3"
 build_u-boot
+}
+
+function igep0020 {
+BOARD="igep0020"
+#posted but not merged
+#XLOAD_CONFIG="igep0020_config"
+#build_omap_xloader
+
+UBOOT_CONFIG="igep0020_config"
+UBOOT_TAG="v2010.12-rc3"
 }
 
 #Omap4 Boards
@@ -105,6 +114,7 @@ build_u-boot
 }
 
 beagleboard
+igep0020
 pandaboard
 
 
