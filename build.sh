@@ -99,6 +99,7 @@ BOARD="igep0020"
 
 UBOOT_CONFIG="igep0020_config"
 UBOOT_TAG="v2010.12-rc3"
+build_u-boot
 }
 
 #Omap4 Boards
@@ -110,7 +111,6 @@ build_omap_xloader
 UBOOT_CONFIG="omap4_panda_config"
 UBOOT_TAG="v2010.12-rc3"
 build_u-boot
-
 }
 
 beagleboard
