@@ -26,6 +26,17 @@ mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/
 
+ARCH=$(uname -m)
+
+if test "-$ARCH-" = "-armv7l-" || test "-$ARCH-" = "-armv5tel-"
+then
+ #using native gcc
+ CC=
+else
+ #using Cross Compiler
+ CC=arm-linux-gnueabi-
+fi
+
 function at91_loader {
 echo ""
 echo "Starting AT91Bootstrap build"
@@ -40,7 +51,7 @@ unzip -q ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip
 
 cd ${DIR}/Bootstrap-v${AT91BOOTSTRAP}
 sed -i -e 's:/usr/local/bin/make-3.80:/usr/bin/make:g' go_build_bootstrap.sh
-sed -i -e 's:/opt/codesourcery/arm-2007q1/bin/arm-none-linux-gnueabi-:'arm-linux-gnueabi-':g' go_build_bootstrap.sh
+sed -i -e 's:/opt/codesourcery/arm-2007q1/bin/arm-none-linux-gnueabi-:'${CC}':g' go_build_bootstrap.sh
 ./go_build_bootstrap.sh
 
 cd ${DIR}/
@@ -65,9 +76,9 @@ GIT_VERSION=$(git rev-parse HEAD)
 GIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
 GIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
 make ARCH=arm distclean &> /dev/null
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- ${XLOAD_CONFIG}
+make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
 echo "Building x-loader"
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- ift > /dev/null
+make ARCH=arm CROSS_COMPILE=${CC} ift > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${GIT_MON}-${GIT_DAY}-${GIT_VERSION}
@@ -94,7 +105,7 @@ git clone git://git.denx.de/u-boot.git
 fi
 
 cd ${DIR}/git/u-boot
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- distclean &> /dev/null
+make ARCH=arm CROSS_COMPILE=${CC} distclean &> /dev/null
 git reset --hard
 git fetch
 git checkout master
@@ -109,14 +120,14 @@ fi
 
 git describe
 GIT_VERSION=$(git rev-parse HEAD)
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- ${UBOOT_CONFIG}
+make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- > /dev/null
+make ARCH=arm CROSS_COMPILE=${CC} > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${GIT_VERSION}
 
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- distclean &> /dev/null
+make ARCH=arm CROSS_COMPILE=${CC} distclean &> /dev/null
 git checkout master
 cd ${DIR}/
 
