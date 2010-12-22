@@ -78,7 +78,7 @@ GIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
 make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
 echo "Building x-loader"
-make ARCH=arm CROSS_COMPILE=${CC} ift > /dev/null
+make ARCH=arm CROSS_COMPILE=${CC} ift
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${GIT_MON}-${GIT_DAY}-${GIT_VERSION}
@@ -118,11 +118,16 @@ else
 git checkout ${UBOOT_TAG} -b u-boot-scratch
 fi
 
+patch -p1 < "${DIR}/patches/0001-arm-omap-beagle-older-bx-boards-need-more-time.patch"
+git add .
+git commit -a -m 'patchset'
+
 git describe
 GIT_VERSION=$(git rev-parse HEAD)
+
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
-make ARCH=arm CROSS_COMPILE=${CC} > /dev/null
+make ARCH=arm CROSS_COMPILE=${CC}
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${GIT_VERSION}
