@@ -150,8 +150,8 @@ XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2010.12-rc3"
-UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
+UBOOT_TAG="v2010.12"
+#UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
 }
 
@@ -164,8 +164,8 @@ BOARD="igep0020"
 #build_omap_xloader
 
 UBOOT_CONFIG="igep0020_config"
-UBOOT_TAG="v2010.12-rc3"
-UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
+UBOOT_TAG="v2010.12"
+#UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
 }
 
@@ -178,8 +178,8 @@ XLOAD_CONFIG="omap4430panda_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap4_panda_config"
-UBOOT_TAG="v2010.12-rc3"
-UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
+UBOOT_TAG="v2010.12"
+#UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
 }
 
