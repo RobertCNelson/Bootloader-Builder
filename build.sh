@@ -108,8 +108,15 @@ echo ""
 
 }
 
+function cleanup {
+unset UBOOT_TAG
+unset UBOOT_GIT
+}
+
 #Omap3 Boards
 function beagleboard {
+cleanup
+
 BOARD="beagleboard"
 XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
@@ -121,6 +128,8 @@ build_u-boot
 }
 
 function igep0020 {
+cleanup
+
 BOARD="igep0020"
 #posted but not merged
 #XLOAD_CONFIG="igep0020_config"
@@ -134,6 +143,8 @@ build_u-boot
 
 #Omap4 Boards
 function pandaboard {
+cleanup
+
 BOARD="pandaboard"
 XLOAD_CONFIG="omap4430panda_config"
 build_omap_xloader
