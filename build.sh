@@ -22,11 +22,29 @@
 
 DIR=$PWD
 
-mkdir -p ${PWD}/git/
-mkdir -p ${PWD}/deploy/
+mkdir -p ${DIR}/git/
+mkdir -p ${DIR}/dl/
+mkdir -p ${DIR}/deploy/
 
 function at91_loader {
-echo "not implemented yet"
+echo ""
+echo "Starting AT91Bootstrap build"
+echo ""
+
+if ! ls ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip >/dev/null 2>&1;then
+wget --directory-prefix=${DIR}/dl/ ftp://www.at91.com/pub/at91bootstrap/AT91Bootstrap${AT91BOOTSTRAP}.zip
+fi
+
+rm -rfd ${DIR}/Bootstrap-v${AT91BOOTSTRAP} || true
+unzip -q ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip
+
+cd ${DIR}/Bootstrap-v${AT91BOOTSTRAP}
+sed -i -e 's:/usr/local/bin/make-3.80:/usr/bin/make:g' go_build_bootstrap.sh
+sed -i -e 's:/opt/codesourcery/arm-2007q1/bin/arm-none-linux-gnueabi-:'arm-linux-gnueabi-':g' go_build_bootstrap.sh
+./go_build_bootstrap.sh
+
+cd ${DIR}/
+
 }
 
 function build_omap_xloader {
@@ -111,6 +129,16 @@ echo ""
 function cleanup {
 unset UBOOT_TAG
 unset UBOOT_GIT
+unset AT91BOOTSTRAP
+}
+
+#AT91Sam Boards
+function at91sam9xeek {
+cleanup
+
+BOARD="at91sam9xeek"
+AT91BOOTSTRAP="1.16"
+at91_loader
 }
 
 #Omap3 Boards
@@ -155,6 +183,7 @@ UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
 }
 
+#at91sam9xeek
 beagleboard
 igep0020
 pandaboard
