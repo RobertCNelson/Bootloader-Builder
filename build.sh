@@ -118,9 +118,9 @@ else
 git checkout ${UBOOT_TAG} -b u-boot-scratch
 fi
 
-patch -p1 < "${DIR}/patches/0001-arm-omap-beagle-older-bx-boards-need-more-time.patch"
-git add .
-git commit -a -m 'patchset'
+#patch -p1 < "${DIR}/patches/<>"
+#git add .
+#git commit -a -m 'patchset'
 
 git describe
 GIT_VERSION=$(git rev-parse HEAD)
