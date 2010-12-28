@@ -166,7 +166,8 @@ XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2010.12"
+UBOOT_TAG="v2010.09"
+#UBOOT_TAG="v2010.12"
 #UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
 }
@@ -201,7 +202,7 @@ build_u-boot
 
 #at91sam9xeek
 beagleboard
-igep0020
-pandaboard
+#igep0020
+#pandaboard
 
 
