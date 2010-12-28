@@ -22,6 +22,8 @@
 
 DIR=$PWD
 
+unset BISECT
+
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/
@@ -36,6 +38,14 @@ else
  #using Cross Compiler
  CC=arm-linux-gnueabi-
 fi
+
+function git_bisect {
+
+git bisect start
+git bisect bad v2010.12
+git bisect good v2010.9
+
+}
 
 function at91_loader {
 echo ""
@@ -122,6 +132,10 @@ fi
 #git add .
 #git commit -a -m 'patchset'
 
+if [ "${BISECT}" ] ; then
+git_bisect
+fi
+
 git describe
 GIT_VERSION=$(git rev-parse HEAD)
 
@@ -166,8 +180,7 @@ XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2010.09"
-#UBOOT_TAG="v2010.12"
+UBOOT_TAG="v2010.12"
 #UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
 }
