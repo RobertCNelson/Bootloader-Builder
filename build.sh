@@ -42,8 +42,10 @@ fi
 function git_bisect {
 
 git bisect start
-git bisect bad v2010.12
-git bisect good v2010.09
+git bisect bad 11c8dd36edcc82564a19dbd0103302df66d66db0
+git bisect good 3831530dcb7b71329c272ccd6181f8038b6a6dd0
+
+git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
 
 }
 

@@ -1,0 +1,35 @@
+From 11c8dd36edcc82564a19dbd0103302df66d66db0 Mon Sep 17 00:00:00 2001
+From: Stefano Babic <sbabic@denx.de>
+Date: Wed, 20 Oct 2010 08:51:45 +0200
+Subject: [PATCH] FAT: buffer overflow with FAT12/16
+
+Last commit 3831530dcb7b71329c272ccd6181f8038b6a6dd0a was intended
+"explicitly specify FAT12/16 root directory parsing buffer size, instead
+of relying on cluster size". Howver, the underlying function requires
+the size of the buffer in blocks, not in bytes, and instead of passing
+a double sector size a request for 1024 blocks is sent. This generates
+a buffer overflow with overwriting of other structure (in the case seen,
+USB structures were overwritten).
+
+Signed-off-by: Stefano Babic <sbabic@denx.de>
+CC: Mikhail Zolotaryov <lebon@lebon.org.ua>
+---
+ fs/fat/fat.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/fs/fat/fat.c b/fs/fat/fat.c
+index 744e961..a75e4f2 100644
+--- a/fs/fat/fat.c
++++ b/fs/fat/fat.c
+@@ -858,7 +858,7 @@ do_fat_read (const char *filename, void *buffer, unsigned long maxsize,
+ 		if (disk_read(cursect,
+ 				(mydata->fatsize == 32) ?
+ 				(mydata->clust_size) :
+-				LINEAR_PREFETCH_SIZE,
++				LINEAR_PREFETCH_SIZE / SECTOR_SIZE,
+ 				do_fat_read_block) < 0) {
+ 			debug("Error: reading rootdir block\n");
+ 			return -1;
+-- 
+1.7.1
+
