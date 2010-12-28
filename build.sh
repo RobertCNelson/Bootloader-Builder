@@ -42,8 +42,8 @@ fi
 function git_bisect {
 
 git bisect start
-git bisect bad 11c8dd36edcc82564a19dbd0103302df66d66db0
-git bisect good 3831530dcb7b71329c272ccd6181f8038b6a6dd0
+git bisect bad v2010.12
+git bisect good v2010.09
 
 }
 
@@ -139,7 +139,7 @@ fi
 git describe
 GIT_VERSION=$(git rev-parse HEAD)
 
-git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
+cat ${DIR}/git/u-boot/fs/fat/fat.c | grep "LINEAR_PREFETCH_SIZE," && git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
@@ -177,9 +177,9 @@ at91_loader
 function beagleboard {
 cleanup
 
-BOARD="beagleboard"
-XLOAD_CONFIG="omap3530beagle_config"
-build_omap_xloader
+#BOARD="beagleboard"
+#XLOAD_CONFIG="omap3530beagle_config"
+#build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG="v2010.12"
