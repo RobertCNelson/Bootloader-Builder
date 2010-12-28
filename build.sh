@@ -45,8 +45,6 @@ git bisect start
 git bisect bad 11c8dd36edcc82564a19dbd0103302df66d66db0
 git bisect good 3831530dcb7b71329c272ccd6181f8038b6a6dd0
 
-git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
-
 }
 
 function at91_loader {
@@ -140,6 +138,8 @@ fi
 
 git describe
 GIT_VERSION=$(git rev-parse HEAD)
+
+git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
