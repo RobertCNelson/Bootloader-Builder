@@ -42,8 +42,38 @@ fi
 function git_bisect {
 
 git bisect start
+echo "git bisect bad v2010.12"
 git bisect bad v2010.12
+echo "git bisect good v2010.09"
 git bisect good v2010.09
+
+echo "unbuildable"
+echo "git bisect skip 4a8fd13af82b7b37099fea3d12ea52e5bcc151a5"
+echo "git bisect skip 9710504d200599a6e7e7ac0046adca43cfccaf0f"
+echo "git bisect skip 0693923cd240f5d401be0a53cddcf0fb1d9ad9d3"
+echo "git bisect skip 92d5ecba47feb9961c3b7525e947866c5f0d2de5"
+
+git bisect skip 4a8fd13af82b7b37099fea3d12ea52e5bcc151a5
+git bisect skip 9710504d200599a6e7e7ac0046adca43cfccaf0f
+git bisect skip 0693923cd240f5d401be0a53cddcf0fb1d9ad9d3
+git bisect skip 92d5ecba47feb9961c3b7525e947866c5f0d2de5
+
+echo "git bisect bad b18815752f3d6db27877606e4e069e3f6cfe3a19"
+git bisect bad b18815752f3d6db27877606e4e069e3f6cfe3a19
+echo "git bisect good 59a50d2de1f9c037166a6f86e6e6cdc1670aa155"
+git bisect good 59a50d2de1f9c037166a6f86e6e6cdc1670aa155
+echo "git bisect good 084c4c1bc10ef7abd64eebaf4c0a559409c82ddb"
+git bisect good 084c4c1bc10ef7abd64eebaf4c0a559409c82ddb
+echo "git bisect good c56ded6a6e8962272c8dd893cac49fd7f60fb9d1"
+git bisect good c56ded6a6e8962272c8dd893cac49fd7f60fb9d1
+echo "git bisect bad 3ba8bf7c6d6c09b9823b08b03d2d155907313238"
+git bisect bad 3ba8bf7c6d6c09b9823b08b03d2d155907313238
+echo "git bisect good 083d506937002f2795c80fe0c3ae194ad2c3d085"
+git bisect good 083d506937002f2795c80fe0c3ae194ad2c3d085
+echo "git bisect bad 6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf"
+git bisect bad 6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf
+echo "git bisect bad c3d3a5418de3ce01248bb556b4bd3d293c4f9f1e"
+git bisect bad c3d3a5418de3ce01248bb556b4bd3d293c4f9f1e
 
 }
 
@@ -177,7 +207,7 @@ at91_loader
 function beagleboard {
 cleanup
 
-#BOARD="beagleboard"
+BOARD="beagleboard"
 #XLOAD_CONFIG="omap3530beagle_config"
 #build_omap_xloader
 
