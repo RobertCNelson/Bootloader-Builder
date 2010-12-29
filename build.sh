@@ -187,8 +187,9 @@ git describe
 GIT_VERSION=$(git rev-parse HEAD)
 
 cat ${DIR}/git/u-boot/fs/fat/fat.c | grep "LINEAR_PREFETCH_SIZE," && git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
-cat ${DIR}/git/u-boot/arch/arm/config.mk | grep "CONFIG_SYS_ARM_WITHOUT_RELOC" && git am ${DIR}/patches/0001-Drop-support-for-CONFIG_SYS_ARM_WITHOUT_RELOC.patch
+#cat ${DIR}/git/u-boot/arch/arm/config.mk | grep "CONFIG_SYS_ARM_WITHOUT_RELOC" && git am ${DIR}/patches/0001-Drop-support-for-CONFIG_SYS_ARM_WITHOUT_RELOC.patch
 cat ${DIR}/git/u-boot/arch/arm/cpu/armv7/omap-common/timer.c | grep "DECLARE_GLOBAL_DATA_PTR;" || git am ${DIR}/patches/0001-OMAP-Timer-Replace-bss-variable-by-gd.patch
+cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "#ifdef CONFIG_ARM" || git am ${DIR}/patches/0001-ARM-make-timer-variables-in-gt_t-available-for-all-A.patch
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
