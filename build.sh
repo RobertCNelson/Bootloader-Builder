@@ -22,6 +22,8 @@
 
 DIR=$PWD
 
+CCACHE=ccache
+
 unset BISECT
 
 mkdir -p ${DIR}/git/
@@ -189,7 +191,7 @@ cat ${DIR}/git/u-boot/arch/arm/cpu/armv7/omap-common/timer.c | grep "DECLARE_GLO
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
-make ARCH=arm CROSS_COMPILE=${CC}
+time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${GIT_VERSION}
