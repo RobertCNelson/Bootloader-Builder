@@ -216,6 +216,16 @@ UBOOT_TAG="v2010.12"
 BISECT=1
 #UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
+
+unset BISECT
+UBOOT_TAG="lastgood_u-boot-imx_merge"
+UBOOT_GIT="083d506937002f2795c80fe0c3ae194ad2c3d085"
+build_u-boot
+
+UBOOT_TAG="firstbad_elf_reloc_merge"
+UBOOT_GIT="6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf"
+build_u-boot
+
 }
 
 function igep0020 {
