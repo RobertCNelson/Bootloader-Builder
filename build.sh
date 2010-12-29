@@ -135,7 +135,7 @@ GIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
 make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
 echo "Building x-loader"
-make ARCH=arm CROSS_COMPILE=${CC} ift
+make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${GIT_MON}-${GIT_DAY}-${GIT_VERSION}
@@ -169,7 +169,11 @@ git checkout master
 git pull
 git branch -D u-boot-scratch || true
 
-if [ "${UBOOT_GIT}" ] ; then
+if [ "${UBOOT_GIT}" ] ; thenUBOOT_CONFIG="omap3_beagle_config"
+UBOOT_TAG="v2010.12"
+#BISECT=1
+#UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
+build_u-boot
 git checkout ${UBOOT_GIT} -b u-boot-scratch
 else
 git checkout ${UBOOT_TAG} -b u-boot-scratch
@@ -186,11 +190,11 @@ fi
 git describe
 GIT_VERSION=$(git rev-parse HEAD)
 
-cat ${DIR}/git/u-boot/fs/fat/fat.c | grep "LINEAR_PREFETCH_SIZE," && git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
-#cat ${DIR}/git/u-boot/arch/arm/config.mk | grep "CONFIG_SYS_ARM_WITHOUT_RELOC" && git am ${DIR}/patches/0001-Drop-support-for-CONFIG_SYS_ARM_WITHOUT_RELOC.patch
-cat ${DIR}/git/u-boot/arch/arm/cpu/armv7/omap-common/timer.c | grep "DECLARE_GLOBAL_DATA_PTR;" || git am ${DIR}/patches/0001-OMAP-Timer-Replace-bss-variable-by-gd.patch
-cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "lastinc" || git am ${DIR}/patches/0001-arm920t-at91-timer-replace-bss-variables-by-gd.patch
-cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "#ifdef CONFIG_ARM" || git am ${DIR}/patches/0001-ARM-make-timer-variables-in-gt_t-available-for-all-A.patch
+#cat ${DIR}/git/u-boot/fs/fat/fat.c | grep "LINEAR_PREFETCH_SIZE," && git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
+##cat ${DIR}/git/u-boot/arch/arm/config.mk | grep "CONFIG_SYS_ARM_WITHOUT_RELOC" && git am ${DIR}/patches/0001-Drop-support-for-CONFIG_SYS_ARM_WITHOUT_RELOC.patch
+#cat ${DIR}/git/u-boot/arch/arm/cpu/armv7/omap-common/timer.c | grep "DECLARE_GLOBAL_DATA_PTR;" || git am ${DIR}/patches/0001-OMAP-Timer-Replace-bss-variable-by-gd.patch
+#cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "lastinc" || git am ${DIR}/patches/0001-arm920t-at91-timer-replace-bss-variables-by-gd.patch
+#cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "#ifdef CONFIG_ARM" || git am ${DIR}/patches/0001-ARM-make-timer-variables-in-gt_t-available-for-all-A.patch
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
@@ -229,12 +233,18 @@ function beagleboard {
 cleanup
 
 BOARD="beagleboard"
-#XLOAD_CONFIG="omap3530beagle_config"
-#build_omap_xloader
+XLOAD_CONFIG="omap3530beagle_config"
+build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG="v2010.12"
-BISECT=1
+#BISECT=1
+#UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
+build_u-boot
+
+UBOOT_CONFIG="omap3_beagle_config"
+UBOOT_TAG="v2010.09"
+#BISECT=1
 #UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
 
@@ -270,7 +280,7 @@ build_u-boot
 
 #at91sam9xeek
 beagleboard
-#igep0020
-#pandaboard
+igep0020
+pandaboard
 
 
