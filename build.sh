@@ -41,6 +41,21 @@ fi
 
 function git_bisect {
 
+echo ""
+echo "This is inverted, trying to find 256MB fix"
+echo ""
+
+git bisect start
+echo "git bisect bad v2010.12"
+git bisect bad v2010.12
+echo "git bisect good 6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf"
+git bisect good 6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf
+
+
+}
+
+function git_bisect_invalid {
+
 git bisect start
 echo "git bisect bad v2010.12"
 git bisect bad v2010.12
@@ -212,15 +227,6 @@ BOARD="beagleboard"
 #build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-
-UBOOT_TAG="lastgood_u-boot-imx_merge"
-UBOOT_GIT="083d506937002f2795c80fe0c3ae194ad2c3d085"
-build_u-boot
-
-UBOOT_TAG="firstbad_elf_reloc_merge"
-UBOOT_GIT="6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf"
-build_u-boot
-
 UBOOT_TAG="v2010.12"
 BISECT=1
 #UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
