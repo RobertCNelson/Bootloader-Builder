@@ -185,6 +185,7 @@ git describe
 GIT_VERSION=$(git rev-parse HEAD)
 
 cat ${DIR}/git/u-boot/fs/fat/fat.c | grep "LINEAR_PREFETCH_SIZE," && git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
+cat ${DIR}/git/u-boot/arch/arm/cpu/armv7/omap-common/timer.c | grep "DECLARE_GLOBAL_DATA_PTR;" || git am ${DIR}/patches/0001-OMAP-Timer-Replace-bss-variable-by-gd.patch
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
