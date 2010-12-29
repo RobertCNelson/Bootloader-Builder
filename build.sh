@@ -169,11 +169,7 @@ git checkout master
 git pull
 git branch -D u-boot-scratch || true
 
-if [ "${UBOOT_GIT}" ] ; thenUBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2010.12"
-#BISECT=1
-#UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
-build_u-boot
+if [ "${UBOOT_GIT}" ] ; then
 git checkout ${UBOOT_GIT} -b u-boot-scratch
 else
 git checkout ${UBOOT_TAG} -b u-boot-scratch
