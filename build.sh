@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 DIR=$PWD
+TEMPDIR=$(mktemp -d)
 
 CCACHE=ccache
 
@@ -31,67 +32,39 @@ mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/
 
 ARCH=$(uname -m)
+SYST=$(uname -n)
 
 if test "-$ARCH-" = "-armv7l-" || test "-$ARCH-" = "-armv5tel-"
 then
  #using native gcc
  CC=
 else
- #using Cross Compiler
- CC=arm-linux-gnueabi-
+ if test "-$SYST-" = "-voodoo-e6400-"
+ then
+   CC=/media/build/angstrom/angstrom-setup-scripts/build/tmp-.6/sysroots/x86_64-linux/usr/armv7a/bin/arm-angstrom-linux-gnueabi-
+ else
+   #using Cross Compiler
+   CC=arm-linux-gnueabi-
+ fi
 fi
 
 function git_bisect {
-
-echo ""
-echo "This is inverted, trying to find 256MB fix"
-echo ""
-
-git bisect start
-echo "git bisect bad v2010.12"
-git bisect bad v2010.12
-echo "git bisect good 6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf"
-git bisect good 6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf
-
-
-}
-
-function git_bisect_invalid {
 
 git bisect start
 echo "git bisect bad v2010.12"
 git bisect bad v2010.12
 echo "git bisect good v2010.09"
 git bisect good v2010.09
-
-echo "unbuildable"
-echo "git bisect skip 4a8fd13af82b7b37099fea3d12ea52e5bcc151a5"
-echo "git bisect skip 9710504d200599a6e7e7ac0046adca43cfccaf0f"
-echo "git bisect skip 0693923cd240f5d401be0a53cddcf0fb1d9ad9d3"
-echo "git bisect skip 92d5ecba47feb9961c3b7525e947866c5f0d2de5"
-
-git bisect skip 4a8fd13af82b7b37099fea3d12ea52e5bcc151a5
-git bisect skip 9710504d200599a6e7e7ac0046adca43cfccaf0f
-git bisect skip 0693923cd240f5d401be0a53cddcf0fb1d9ad9d3
-git bisect skip 92d5ecba47feb9961c3b7525e947866c5f0d2de5
-
-echo "git bisect bad b18815752f3d6db27877606e4e069e3f6cfe3a19"
-git bisect bad b18815752f3d6db27877606e4e069e3f6cfe3a19
-echo "git bisect good 59a50d2de1f9c037166a6f86e6e6cdc1670aa155"
-git bisect good 59a50d2de1f9c037166a6f86e6e6cdc1670aa155
-echo "git bisect good 084c4c1bc10ef7abd64eebaf4c0a559409c82ddb"
-git bisect good 084c4c1bc10ef7abd64eebaf4c0a559409c82ddb
-echo "git bisect good c56ded6a6e8962272c8dd893cac49fd7f60fb9d1"
-git bisect good c56ded6a6e8962272c8dd893cac49fd7f60fb9d1
-echo "git bisect bad 3ba8bf7c6d6c09b9823b08b03d2d155907313238"
-git bisect bad 3ba8bf7c6d6c09b9823b08b03d2d155907313238
-echo "git bisect good 083d506937002f2795c80fe0c3ae194ad2c3d085"
-git bisect good 083d506937002f2795c80fe0c3ae194ad2c3d085
-echo "git bisect bad 6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf"
-git bisect bad 6d8d4ef994a7c46e34b5fe53b1af7aa4f78192bf
-echo "git bisect bad c3d3a5418de3ce01248bb556b4bd3d293c4f9f1e"
-git bisect bad c3d3a5418de3ce01248bb556b4bd3d293c4f9f1e
-
+echo "git bisect good b18815752f3d6db27877606e4e069e3f6cfe3a19"
+git bisect good b18815752f3d6db27877606e4e069e3f6cfe3a19
+echo "git bisect good 9b107e6138e719ea5a0b924862a9b109c020c7ac"
+git bisect good 9b107e6138e719ea5a0b924862a9b109c020c7ac
+echo "git bisect good f899198a7f7bff6e6b1ec9c3478c35fcede9a588"
+git bisect good f899198a7f7bff6e6b1ec9c3478c35fcede9a588
+echo "git bisect good 296cae732b0dbe374abc9b26fed6f73588b9d1e2"
+git bisect good 296cae732b0dbe374abc9b26fed6f73588b9d1e2
+echo "git bisect good 8a16f9c6747447aecda6619568d6747f0adf6561"
+git bisect good 8a16f9c6747447aecda6619568d6747f0adf6561
 }
 
 function at91_loader {
@@ -129,16 +102,16 @@ fi
 cd ${DIR}/git/x-loader
 make ARCH=arm distclean
 git pull
-GIT_VERSION=$(git rev-parse HEAD)
-GIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
-GIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
+XGIT_VERSION=$(git rev-parse HEAD)
+XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
+XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
 make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
 echo "Building x-loader"
 make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift
 
 mkdir -p ${DIR}/deploy/${BOARD}
-cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${GIT_MON}-${GIT_DAY}-${GIT_VERSION}
+cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
 
 make ARCH=arm distclean &> /dev/null
 git checkout master
@@ -184,20 +157,20 @@ git_bisect
 fi
 
 git describe
-GIT_VERSION=$(git rev-parse HEAD)
+UGIT_VERSION=$(git rev-parse HEAD)
 
-#cat ${DIR}/git/u-boot/fs/fat/fat.c | grep "LINEAR_PREFETCH_SIZE," && git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
+cat ${DIR}/git/u-boot/fs/fat/fat.c | grep "LINEAR_PREFETCH_SIZE," && git am ${DIR}/patches/0001-FAT-buffer-overflow-with-FAT12-16.patch
 ##cat ${DIR}/git/u-boot/arch/arm/config.mk | grep "CONFIG_SYS_ARM_WITHOUT_RELOC" && git am ${DIR}/patches/0001-Drop-support-for-CONFIG_SYS_ARM_WITHOUT_RELOC.patch
-#cat ${DIR}/git/u-boot/arch/arm/cpu/armv7/omap-common/timer.c | grep "DECLARE_GLOBAL_DATA_PTR;" || git am ${DIR}/patches/0001-OMAP-Timer-Replace-bss-variable-by-gd.patch
-#cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "lastinc" || git am ${DIR}/patches/0001-arm920t-at91-timer-replace-bss-variables-by-gd.patch
-#cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "#ifdef CONFIG_ARM" || git am ${DIR}/patches/0001-ARM-make-timer-variables-in-gt_t-available-for-all-A.patch
+cat ${DIR}/git/u-boot/arch/arm/cpu/armv7/omap-common/timer.c | grep "DECLARE_GLOBAL_DATA_PTR;" || git am ${DIR}/patches/0001-OMAP-Timer-Replace-bss-variable-by-gd.patch
+cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "lastinc" || git am ${DIR}/patches/0001-arm920t-at91-timer-replace-bss-variables-by-gd.patch
+cat ${DIR}/git/u-boot/arch/arm/include/asm/global_data.h | grep "#ifdef CONFIG_ARM" || git am ${DIR}/patches/0001-ARM-make-timer-variables-in-gt_t-available-for-all-A.patch
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
 time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
 
 mkdir -p ${DIR}/deploy/${BOARD}
-cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${GIT_VERSION}
+cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${UGIT_VERSION}
 
 make ARCH=arm CROSS_COMPILE=${CC} distclean &> /dev/null
 git checkout master
@@ -213,6 +186,79 @@ function cleanup {
 unset UBOOT_TAG
 unset UBOOT_GIT
 unset AT91BOOTSTRAP
+}
+
+function test_omap {
+
+if ! ls ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${UGIT_VERSION} >/dev/null 2>&1;then
+exit 1
+fi
+
+#Software Qwerks
+#fdisk 2.18, dos no longer default
+unset FDISK_DOS
+
+if fdisk -v | grep 2.18 >/dev/null ; then
+ FDISK_DOS="-c=dos -u=cylinders"
+fi
+
+if [[ "${MMC}" =~ "mmcblk" ]]
+then
+ PARTITION_PREFIX="p"
+fi
+
+NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
+
+for (( c=1; c<=$NUM_MOUNTS; c++ ))
+do
+ DRIVE=$(mount | grep -v none | grep "$MMC" | tail -1 | awk '{print $1}')
+ sudo umount ${DRIVE} &> /dev/null || true
+done
+
+sudo parted -s ${MMC} mklabel msdos
+
+sudo fdisk ${FDISK_DOS} ${MMC} << END
+n
+p
+1
+1
++64M
+a
+1
+t
+e
+p
+w
+END
+
+sync
+
+echo ""
+echo "Formating Boot Partition"
+echo ""
+
+sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n boot
+
+mkdir ${TEMPDIR}/disk
+sudo mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
+
+sudo cp -v ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION} ${TEMPDIR}/disk/MLO
+sudo cp -v ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${UGIT_VERSION} ${TEMPDIR}/disk/u-boot.bin
+
+cat > /tmp/boot.cmd <<beagle_cmd
+
+echo "Testing"
+
+beagle_cmd
+
+sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot Script" -d /tmp/boot.cmd ${TEMPDIR}/disk/boot.scr
+
+cd ${TEMPDIR}/disk
+sync
+cd ${DIR}/
+sudo umount ${TEMPDIR}/disk || true
+echo "done"
+
 }
 
 #AT91Sam Boards
@@ -234,15 +280,19 @@ build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG="v2010.12"
-#BISECT=1
+#UBOOT_TAG="v2010.09"
+BISECT=1
 #UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
 build_u-boot
 
-UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2010.09"
+MMC=/dev/mmcblk0
+test_omap
+
+#UBOOT_CONFIG="omap3_beagle_config"
+#UBOOT_TAG="v2010.09"
 #BISECT=1
 #UBOOT_GIT="2956532625cf8414ad3efb37598ba34db08d67ec"
-build_u-boot
+#build_u-boot
 
 }
 
@@ -276,7 +326,7 @@ build_u-boot
 
 #at91sam9xeek
 beagleboard
-igep0020
-pandaboard
+#igep0020
+#pandaboard
 
 
