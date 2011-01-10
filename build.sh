@@ -89,7 +89,7 @@ fi
 cd ${DIR}/git/x-loader
 make ARCH=arm distclean
 git pull
-XGIT_VERSION=$(git rev-parse HEAD)
+XGIT_VERSION=$(git rev-parse --short HEAD)
 XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
 XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
 make ARCH=arm distclean &> /dev/null
@@ -144,7 +144,7 @@ git_bisect
 fi
 
 git describe
-UGIT_VERSION=$(git rev-parse HEAD)
+UGIT_VERSION=$(git rev-parse --short HEAD)
 
 
 git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
