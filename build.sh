@@ -86,6 +86,7 @@ cd ${DIR}/git/
 git clone git://gitorious.org/x-loader/x-loader.git
 fi
 
+rm -rfd ${DIR}/build/x-loader || true
 mkdir -p ${DIR}/build/x-loader
 git clone --shared ${DIR}/git/x-loader ${DIR}/build/x-loader
 
@@ -131,6 +132,7 @@ cd ${DIR}/git/
 git clone git://git.denx.de/u-boot.git
 fi
 
+rm -rfd ${DIR}/build/u-boot || true
 mkdir -p ${DIR}/build/u-boot
 git clone --shared ${DIR}/git/u-boot ${DIR}/build/u-boot
 
