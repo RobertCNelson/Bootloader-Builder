@@ -95,6 +95,13 @@ make ARCH=arm distclean
 XGIT_VERSION=$(git rev-parse --short HEAD)
 XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
 XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
+
+if [ "${AM3517_PATCH}" ] ; then
+patch -p1 < "${DIR}/patches/0001-port-of-x-load-for-am3517crane.patch"
+git add -f .
+git commit -a -m 'port of x-load for am3517crane'
+fi
+
 make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
 echo "Building x-loader"
@@ -147,6 +154,12 @@ if [ "${REVERT}" ] ; then
 git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
 fi
 
+if [ "${AM3517_PATCH}" ] ; then
+patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
+git add -f .
+git commit -a -m 'port of u-boot for am3517crane'
+fi
+
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
 time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
@@ -170,6 +183,7 @@ unset UBOOT_GIT
 unset AT91BOOTSTRAP
 unset REVERT
 unset BISECT
+unset AM3517_PATCH
 }
 
 #AT91Sam Boards
@@ -208,6 +222,19 @@ UBOOT_TAG="v2010.12"
 build_u-boot
 }
 
+function am3517crane {
+cleanup
+AM3517_PATCH=1
+
+BOARD="am3517crane"
+XLOAD_CONFIG="am3517crane_config"
+build_omap_xloader
+
+UBOOT_CONFIG="am3517_crane_config"
+UBOOT_TAG="v2009.11"
+build_u-boot
+}
+
 #Omap4 Boards
 function pandaboard {
 cleanup
@@ -224,6 +251,7 @@ build_u-boot
 #at91sam9xeek
 beagleboard
 igep0020
+#am3517crane
 pandaboard
 
 
