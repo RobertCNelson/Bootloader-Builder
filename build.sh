@@ -143,8 +143,9 @@ fi
 git describe
 UGIT_VERSION=$(git rev-parse --short HEAD)
 
-
+if [ "${REVERT}" ] ; then
 git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
+fi
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
@@ -167,6 +168,7 @@ function cleanup {
 unset UBOOT_TAG
 unset UBOOT_GIT
 unset AT91BOOTSTRAP
+unset REVERT
 unset BISECT
 }
 
@@ -189,7 +191,7 @@ build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG="v2010.12"
-#BISECT=1
+REVERT=1
 build_u-boot
 }
 
@@ -221,7 +223,7 @@ build_u-boot
 
 #at91sam9xeek
 beagleboard
-#igep0020
-#pandaboard
+igep0020
+pandaboard
 
 
