@@ -86,23 +86,26 @@ cd ${DIR}/git/
 git clone git://gitorious.org/x-loader/x-loader.git
 fi
 
-cd ${DIR}/git/x-loader
+mkdir -p ${DIR}/build/x-loader
+git clone --shared ${DIR}/git/x-loader ${DIR}/build/x-loader
+
+cd ${DIR}/build/x-loader
 make ARCH=arm distclean
-git pull
+
 XGIT_VERSION=$(git rev-parse --short HEAD)
 XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
 XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
 make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
 echo "Building x-loader"
-make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift > /dev/null
+make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
 
-make ARCH=arm distclean &> /dev/null
-git checkout master
 cd ${DIR}/
+
+rm -rfd ${DIR}/build/x-loader
 
 echo ""
 echo "x-loader build completed"
@@ -121,23 +124,17 @@ cd ${DIR}/git/
 git clone git://git.denx.de/u-boot.git
 fi
 
-cd ${DIR}/git/u-boot
+mkdir -p ${DIR}/build/u-boot
+git clone --shared ${DIR}/git/u-boot ${DIR}/build/u-boot
+
+cd ${DIR}/build/u-boot
 make ARCH=arm CROSS_COMPILE=${CC} distclean &> /dev/null
-git reset --hard
-git fetch
-git checkout master
-git pull
-git branch -D u-boot-scratch || true
 
 if [ "${UBOOT_GIT}" ] ; then
 git checkout ${UBOOT_GIT} -b u-boot-scratch
 else
 git checkout ${UBOOT_TAG} -b u-boot-scratch
 fi
-
-#patch -p1 < "${DIR}/patches/<>"
-#git add .
-#git commit -a -m 'patchset'
 
 if [ "${BISECT}" ] ; then
 git_bisect
@@ -151,14 +148,14 @@ git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
-time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" > /dev/null
+time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${UGIT_VERSION}
 
-make ARCH=arm CROSS_COMPILE=${CC} distclean &> /dev/null
-git checkout master
 cd ${DIR}/
+
+rm -rfd ${DIR}/build/u-boot
 
 echo ""
 echo "u-boot build completed"
