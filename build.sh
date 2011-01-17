@@ -190,6 +190,8 @@ else
 git checkout ${UBOOT_TAG} -b u-boot-scratch
 fi
 
+UGIT_VERSION=$(git describe)
+
 if [ "${BISECT}" ] ; then
 git_bisect
 fi
@@ -203,8 +205,6 @@ patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
 git add -f .
 git commit -a -m 'port of u-boot for am3517crane'
 fi
-
-UGIT_VERSION=$(git describe)
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
@@ -276,9 +276,9 @@ BOARD="am3517crane"
 XLOAD_CONFIG="am3517crane_config"
 build_crane_omap_xloader
 
-#UBOOT_CONFIG="am3517_crane_config"
-#UBOOT_TAG="v2009.11"
-#build_u-boot
+UBOOT_CONFIG="am3517_crane_config"
+UBOOT_TAG="v2009.11"
+build_u-boot
 }
 
 #Omap4 Boards

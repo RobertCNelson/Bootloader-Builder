@@ -1,11 +1,11 @@
-From f123a275a38ce72e0d97b22386a7ac82cb6b81f3 Mon Sep 17 00:00:00 2001
+From 7fdcaefb55938428457624d311070f04784583bf Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 10 Jan 2011 12:36:14 -0600
+Date: Mon, 17 Jan 2011 16:08:05 -0600
 Subject: [PATCH] port of u-boot for am3517crane
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- Makefile                                  |    9 +-
+ Makefile                                  |    8 +-
  board/ti/am3517crane/Makefile             |   47 +
  board/ti/am3517crane/am3517crane.c        |  146 +++
  board/ti/am3517crane/am3517crane.h        |  339 ++++++
@@ -79,7 +79,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  include/usbdevice.h                       |  103 ++
  lib_arm/board.c                           |    1 +
  net/tftp.c                                |    7 +-
- 74 files changed, 8079 insertions(+), 854 deletions(-)
+ 74 files changed, 8078 insertions(+), 854 deletions(-)
  create mode 100644 board/ti/am3517crane/Makefile
  create mode 100644 board/ti/am3517crane/am3517crane.c
  create mode 100644 board/ti/am3517crane/am3517crane.h
@@ -108,10 +108,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 include/usb/musb_udc.h
 
 diff --git a/Makefile b/Makefile
-index f06a97c..85413ff 100644
+index f06a97c..1e34872 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -243,12 +243,14 @@ LIBS += drivers/twserial/libtws.a
+@@ -243,6 +243,7 @@ LIBS += drivers/twserial/libtws.a
  LIBS += drivers/usb/gadget/libusb_gadget.a
  LIBS += drivers/usb/host/libusb_host.a
  LIBS += drivers/usb/musb/libusb_musb.a
@@ -119,14 +119,7 @@ index f06a97c..85413ff 100644
  LIBS += drivers/video/libvideo.a
  LIBS += drivers/watchdog/libwatchdog.a
  LIBS += common/libcommon.a
- LIBS += libfdt/libfdt.a
- LIBS += api/libapi.a
- LIBS += post/libpost.a
-+#LIBS += ../itbok/libitbok.a
- 
- LIBS := $(addprefix $(obj),$(LIBS))
- .PHONY : $(LIBS) $(TIMESTAMP_FILE) $(VERSION_FILE)
-@@ -3143,7 +3145,6 @@ SMN42_config	:	unconfig
+@@ -3143,7 +3144,6 @@ SMN42_config	:	unconfig
  #########################################################################
  ## ARM CORTEX Systems
  #########################################################################
@@ -134,7 +127,7 @@ index f06a97c..85413ff 100644
  devkit8000_config :	unconfig
  	@$(MKCONFIG) $(@:_config=) arm arm_cortexa8 devkit8000 timll omap3
  
-@@ -3156,6 +3157,12 @@ omap3_overo_config :	unconfig
+@@ -3156,6 +3156,12 @@ omap3_overo_config :	unconfig
  omap3_evm_config :	unconfig
  	@$(MKCONFIG) $(@:_config=) arm arm_cortexa8 evm ti omap3
  
