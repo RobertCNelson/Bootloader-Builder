@@ -149,9 +149,6 @@ if [ "${BISECT}" ] ; then
 git_bisect
 fi
 
-git describe
-UGIT_VERSION=$(git rev-parse --short HEAD)
-
 if [ "${REVERT}" ] ; then
 git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
 fi
@@ -162,12 +159,14 @@ git add -f .
 git commit -a -m 'port of u-boot for am3517crane'
 fi
 
+UGIT_VERSION=$(git describe)
+
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
 time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
 
 mkdir -p ${DIR}/deploy/${BOARD}
-cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${UBOOT_TAG}-${BOARD}-${UGIT_VERSION}
+cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.bin
 
 cd ${DIR}/
 
