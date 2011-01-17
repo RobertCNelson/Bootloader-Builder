@@ -121,6 +121,51 @@ echo ""
 
 }
 
+function build_crane_omap_xloader {
+
+echo ""
+echo "Starting x-loader build"
+echo ""
+
+if ! ls ${DIR}/git/craneboard-xload >/dev/null 2>&1;then
+cd ${DIR}/git/
+git clone git://github.com/craneboard/craneboard-xload.git
+fi
+
+rm -rfd ${DIR}/build/x-loader || true
+mkdir -p ${DIR}/build/x-loader
+git clone --shared ${DIR}/git/craneboard-xload ${DIR}/build/x-loader
+
+cd ${DIR}/build/x-loader
+make ARCH=arm distclean
+
+XGIT_VERSION=$(git rev-parse --short HEAD)
+XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
+XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
+
+make ARCH=arm distclean &> /dev/null
+make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
+echo "Building x-loader"
+#make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift
+make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
+
+gcc ${DIR}/tools/signGP.c -o signGP
+./signGP x-load.bin
+
+mkdir -p ${DIR}/deploy/${BOARD}
+#cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
+cp -v x-load.bin.ift ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
+
+cd ${DIR}/
+
+rm -rfd ${DIR}/build/x-loader
+
+echo ""
+echo "x-loader build completed"
+echo ""
+
+}
+
 function build_u-boot {
 
 echo ""
@@ -229,11 +274,11 @@ AM3517_PATCH=1
 
 BOARD="am3517crane"
 XLOAD_CONFIG="am3517crane_config"
-build_omap_xloader
+build_crane_omap_xloader
 
-UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG="v2009.11"
-build_u-boot
+#UBOOT_CONFIG="am3517_crane_config"
+#UBOOT_TAG="v2009.11"
+#build_u-boot
 }
 
 #Omap4 Boards
@@ -252,7 +297,7 @@ build_u-boot
 #at91sam9xeek
 beagleboard
 igep0020
-#am3517crane
+am3517crane
 pandaboard
 
 
