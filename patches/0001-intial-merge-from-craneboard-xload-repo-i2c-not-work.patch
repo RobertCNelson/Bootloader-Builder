@@ -1,24 +1,27 @@
-From f114c251fca1aebbab2fb174158e03432de3dfba Mon Sep 17 00:00:00 2001
+From 58eaf57d1c20a969ed959ad8e1692b51fd935e46 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 10 Jan 2011 14:30:07 -0600
-Subject: [PATCH] port of x-load for am3517crane
+Date: Sun, 23 Jan 2011 12:06:18 -0600
+Subject: [PATCH] intial merge from craneboard-xload repo, i2c not working, but boots without it
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- Makefile                          |    3 +
- board/am3517crane/Makefile        |   53 +++
- board/am3517crane/am3517crane.c   |  846 +++++++++++++++++++++++++++++++++++++
- board/am3517crane/am3517crane.h   |  103 +++++
- board/am3517crane/config.mk       |   20 +
- board/am3517crane/platform.S      |  361 ++++++++++++++++
- board/am3517crane/x-load.lds      |   53 +++
- drivers/Makefile                  |    4 +
- include/asm/arch-omap3/cpu.h      |   24 +
- include/asm/arch-omap3/mem.h      |  102 +++++
- include/asm/arch-omap3/omap3430.h |   46 ++
- include/asm/arch-omap3/sys_info.h |   16 +
- include/configs/am3517crane.h     |  198 +++++++++
- 13 files changed, 1829 insertions(+), 0 deletions(-)
+ Makefile                            |    3 +
+ board/am3517crane/Makefile          |   53 +++
+ board/am3517crane/am3517crane.c     |  832 +++++++++++++++++++++++++++++++++++
+ board/am3517crane/am3517crane.h     |   95 ++++
+ board/am3517crane/config.mk         |   20 +
+ board/am3517crane/platform.S        |  436 ++++++++++++++++++
+ board/am3517crane/x-load.lds        |   53 +++
+ cpu/omap3/mmc.c                     |    5 +-
+ drivers/Makefile                    |    4 +
+ drivers/k9f1g08r0a.c                |    3 +-
+ include/asm/arch-omap3/clocks343x.h |    7 +
+ include/asm/arch-omap3/cpu.h        |   21 +
+ include/asm/arch-omap3/mem.h        |   98 ++++
+ include/asm/arch-omap3/omap3430.h   |   37 ++
+ include/configs/am3517crane.h       |  194 ++++++++
+ lib/board.c                         |    6 +
+ 16 files changed, 1865 insertions(+), 2 deletions(-)
  create mode 100644 board/am3517crane/Makefile
  create mode 100644 board/am3517crane/am3517crane.c
  create mode 100644 board/am3517crane/am3517crane.h
@@ -28,19 +31,19 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 include/configs/am3517crane.h
 
 diff --git a/Makefile b/Makefile
-index f37bd19..b3f3b00 100644
+index f37bd19..86944f8 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -222,6 +222,9 @@ omap3430labrador_config :    unconfig
- omap3evm_config :	unconfig
- 	@$(MKCONFIG) $(@:_config=) arm omap3 omap3evm
+@@ -228,6 +228,9 @@ overo_config :	unconfig
+ omap3530beagle_config :    unconfig
+ 	@$(MKCONFIG) $(@:_config=) arm omap3 omap3530beagle
  
 +am3517crane_config :       unconfig
 +	@$(MKCONFIG) $(@:_config=) arm omap3 am3517crane
 +
- overo_config :	unconfig
- 	@$(MKCONFIG) $(@:_config=) arm omap3 overo
- 
+ #########################################################################
+ ## OMAP4 (ARM-CortexA9) Systems
+ #########################################################################
 diff --git a/board/am3517crane/Makefile b/board/am3517crane/Makefile
 new file mode 100644
 index 0000000..456ca53
@@ -102,10 +105,10 @@ index 0000000..456ca53
 +#########################################################################
 diff --git a/board/am3517crane/am3517crane.c b/board/am3517crane/am3517crane.c
 new file mode 100644
-index 0000000..f62cffd
+index 0000000..8b9daef
 --- /dev/null
 +++ b/board/am3517crane/am3517crane.c
-@@ -0,0 +1,846 @@
+@@ -0,0 +1,832 @@
 +/*
 + * (C) Copyright 2010 Mistral Solutions Pvt Ltd. <www.mistralsolutions.com>
 + * Umesh Krishnan <umeshk@mistralsolutions.com>
@@ -138,6 +141,7 @@ index 0000000..f62cffd
 +#include <asm/arch/cpu.h>
 +#include <asm/arch/bits.h>
 +#include <asm/arch/mux.h>
++#include <asm/arch/gpio.h>
 +#include <asm/arch/sys_proto.h>
 +#include <asm/arch/sys_info.h>
 +#include <asm/arch/clocks.h>
@@ -151,6 +155,18 @@ index 0000000..f62cffd
 +	unsigned int fsel;
 +	unsigned int m2;
 +};
++
++typedef struct dpll_param dpll_param;
++
++/* Following functions are exported from lowlevel_init.S */
++extern dpll_param *get_mpu_dpll_param();
++extern dpll_param *get_core_dpll_param();
++extern dpll_param *get_per_dpll_param();
++
++#define __raw_readl(a)		(*(volatile unsigned int *)(a))
++#define __raw_writel(v, a)	(*(volatile unsigned int *)(a) = (v))
++#define __raw_readw(a)		(*(volatile unsigned short *)(a))
++#define __raw_writew(v, a)	(*(volatile unsigned short *)(a) = (v))
 +
 +/*******************************************************
 + * Routine: delay
@@ -175,25 +191,6 @@ index 0000000..f62cffd
 +	return 0;
 +}
 +
-+/* TODO: Move it to common place so that should be used
-+ * for all OMAP series of devices
-+ */
-+u32 is_cpu_family(void)
-+{
-+	u32 cpuid = 0, cpu_family = 0;
-+	u16 hawkeye;
-+
-+	cpuid = __raw_readl(OMAP34XX_CONTROL_ID);
-+	hawkeye  = (cpuid >> HAWKEYE_SHIFT) & 0xffff;
-+
-+	switch (hawkeye) {
-+	case HAWKEYE_AM35XX:
-+	default:
-+		cpu_family = CPU_AM35XX;
-+		break;
-+	}
-+	return cpu_family;
-+}
 +/*************************************************************
 + *  get_device_type(): tell if GP/HS/EMU/TST
 + *************************************************************/
@@ -363,17 +360,18 @@ index 0000000..f62cffd
 + *************************************************************/
 +u32 get_osc_clk_speed(void)
 +{
-+	u32 start, cstart, cend, cdiff, val;
++	u32 start, cstart, cend, cdiff, cdiv, val;
 +
 +	val = __raw_readl(PRM_CLKSRC_CTRL);
-+	/* If SYS_CLK is being divided by 2, remove for now */
-+	val = (val & (~BIT7)) | BIT6;
-+	__raw_writel(val, PRM_CLKSRC_CTRL);
++
++	if (val & SYSCLKDIV_2)
++		cdiv = 2;
++	else
++		cdiv = 1;
 +
 +	/* enable timer2 */
 +	val = __raw_readl(CM_CLKSEL_WKUP) | BIT0;
-+	/* select sys_clk for GPT1 */
-+	__raw_writel(val, CM_CLKSEL_WKUP);
++	__raw_writel(val, CM_CLKSEL_WKUP);	/* select sys_clk for GPT1 */
 +
 +	/* Enable I and F Clocks for GPT1 */
 +	val = __raw_readl(CM_ICLKEN_WKUP) | BIT0 | BIT2;
@@ -381,27 +379,19 @@ index 0000000..f62cffd
 +	val = __raw_readl(CM_FCLKEN_WKUP) | BIT0;
 +	__raw_writel(val, CM_FCLKEN_WKUP);
 +
-+	/* start counting at 0 */
-+	__raw_writel(0, OMAP34XX_GPT1 + TLDR);
-+	/* enable clock */
-+	__raw_writel(GPT_EN, OMAP34XX_GPT1 + TCLR);
-+	/* enable 32kHz source *//* enabled out of reset */
++	__raw_writel(0, OMAP34XX_GPT1 + TLDR);		/* start counting at 0 */
++	__raw_writel(GPT_EN, OMAP34XX_GPT1 + TCLR);	/* enable clock */
++	/* enable 32kHz source */
++	/* enabled out of reset */
 +	/* determine sys_clk via gauging */
 +
-+	/* start time in 20 cycles */
-+	start = 20 + __raw_readl(S32K_CR);
-+	/* dead loop till start time */
-+	while (__raw_readl(S32K_CR) < start)
-+		;
-+	/* get start sys_clk count */
-+	cstart = __raw_readl(OMAP34XX_GPT1 + TCRR);
-+	/* wait for 40 cycles */
-+	while (__raw_readl(S32K_CR) < (start + 20))
-+		;
-+	/* get end sys_clk count */
-+	cend = __raw_readl(OMAP34XX_GPT1 + TCRR);
-+	/* get elapsed ticks */
-+	cdiff = cend - cstart;
++	start = 20 + __raw_readl(S32K_CR);	/* start time in 20 cycles */
++	while (__raw_readl(S32K_CR) < start) ;	/* dead loop till start time */
++	cstart = __raw_readl(OMAP34XX_GPT1 + TCRR);	/* get start sys_clk count */
++	while (__raw_readl(S32K_CR) < (start + 20)) ;	/* wait for 40 cycles */
++	cend = __raw_readl(OMAP34XX_GPT1 + TCRR);	/* get end sys_clk count */
++	cdiff = cend - cstart;	/* get elapsed ticks */
++	cdiff *= cdiv;
 +
 +	/* based on number of ticks assign speed */
 +	if (cdiff > 19000)
@@ -444,7 +434,7 @@ index 0000000..f62cffd
 +void prcm_init(void)
 +{
 +	u32 osc_clk = 0, sys_clkin_sel;
-+	struct dpll_param *dpll_param_p;
++	dpll_param *dpll_param_p;
 +	u32 clk_index, sil_index;
 +
 +	/* Gauge the input clock speed and find out the sys_clkin_sel
@@ -476,10 +466,10 @@ index 0000000..f62cffd
 +	sr32(CM_CLKEN_PLL_MPU, 0, 3, PLL_LOW_POWER_BYPASS);
 +	wait_on_value(BIT0, 0, CM_IDLEST_PLL_MPU, LDELAY);
 +
-+	/* Getting the base address of Core DPLL param table*/
-+	dpll_param_p = (struct dpll_param *)get_core_dpll_param();
++	/* Getting the base address of Core DPLL param table */
++	dpll_param_p = (dpll_param *) get_core_dpll_param();
 +	/* Moving it to the right sysclk and ES rev base */
-+	dpll_param_p = dpll_param_p + 2*clk_index + sil_index;
++	dpll_param_p = dpll_param_p + 2 * clk_index + sil_index;
 +	/* CORE DPLL */
 +	/* sr32(CM_CLKSEL2_EMU) set override to work when asleep */
 +	sr32(CM_CLKEN_PLL, 0, 3, PLL_FAST_RELOCK_BYPASS);
@@ -488,16 +478,16 @@ index 0000000..f62cffd
 +	sr32(CM_CLKSEL1_PLL, 27, 2, dpll_param_p->m2);	/* Set M2 */
 +	sr32(CM_CLKSEL1_PLL, 16, 11, dpll_param_p->m);	/* Set M */
 +	sr32(CM_CLKSEL1_PLL, 8, 7, dpll_param_p->n);	/* Set N */
-+	sr32(CM_CLKSEL1_PLL, 6, 1, 0);			/* 96M Src */
++	sr32(CM_CLKSEL1_PLL, 6, 1, 0);	/* 96M Src */
 +	sr32(CM_CLKSEL_CORE, 2, 2, CORE_L4_DIV);	/* l4 */
 +	sr32(CM_CLKSEL_CORE, 0, 2, CORE_L3_DIV);	/* l3 */
-+	sr32(CM_CLKSEL_WKUP, 1, 2, WKUP_RSM);		/* reset mgr */
++	sr32(CM_CLKSEL_WKUP, 1, 2, WKUP_RSM);	/* reset mgr */
 +	sr32(CM_CLKEN_PLL, 4, 4, dpll_param_p->fsel);	/* FREQSEL */
-+	sr32(CM_CLKEN_PLL, 0, 3, PLL_LOCK);		/* lock mode */
++	sr32(CM_CLKEN_PLL, 0, 3, PLL_LOCK);	/* lock mode */
 +	wait_on_value(BIT0, 1, CM_IDLEST_CKGEN, LDELAY);
 +
-+	/* Getting the base address to PER  DPLL param table*/
-+	dpll_param_p = (struct dpll_param *)get_per_dpll_param();
++	/* Getting the base address to PER  DPLL param table */
++	dpll_param_p = (dpll_param *) get_per_dpll_param();
 +	/* Moving it to the right sysclk base */
 +	dpll_param_p = dpll_param_p + clk_index;
 +	/* PER DPLL */
@@ -507,23 +497,24 @@ index 0000000..f62cffd
 +	sr32(CM_CLKSEL_CAM, 0, 5, PER_M5X2);	/* set M5 */
 +	sr32(CM_CLKSEL_DSS, 0, 5, PER_M4X2);	/* set M4 */
 +	sr32(CM_CLKSEL_DSS, 8, 5, PER_M3X2);	/* set M3 */
-+	sr32(CM_CLKSEL3_PLL, 0, 5, dpll_param_p->m2);	/* set M2 */
-+	sr32(CM_CLKSEL2_PLL, 8, 11, dpll_param_p->m);	/* set m */
-+	sr32(CM_CLKSEL2_PLL, 0, 7, dpll_param_p->n);	/* set n */
-+	sr32(CM_CLKEN_PLL, 20, 4, dpll_param_p->fsel);/* FREQSEL */
++		sr32(CM_CLKSEL3_PLL, 0, 5, dpll_param_p->m2);	/* set M2 */
++		sr32(CM_CLKSEL2_PLL, 8, 11, dpll_param_p->m);	/* set m */
++		sr32(CM_CLKSEL2_PLL, 0, 7, dpll_param_p->n);	/* set n */
++	sr32(CM_CLKEN_PLL, 20, 4, dpll_param_p->fsel);	/* FREQSEL */
 +	sr32(CM_CLKEN_PLL, 16, 3, PLL_LOCK);	/* lock mode */
 +	wait_on_value(BIT1, 2, CM_IDLEST_CKGEN, LDELAY);
 +
-+	/* Getting the base address to MPU DPLL param table*/
-+	dpll_param_p = (struct dpll_param *)get_mpu_dpll_param();
++	/* Getting the base address to MPU DPLL param table */
++	dpll_param_p = (dpll_param *) get_mpu_dpll_param();
++
 +	/* Moving it to the right sysclk and ES rev base */
-+	dpll_param_p = dpll_param_p + 2*clk_index + sil_index;
++	dpll_param_p = dpll_param_p + 2 * clk_index + sil_index;
 +	/* MPU DPLL (unlocked already) */
 +	sr32(CM_CLKSEL2_PLL_MPU, 0, 5, dpll_param_p->m2);	/* Set M2 */
 +	sr32(CM_CLKSEL1_PLL_MPU, 8, 11, dpll_param_p->m);	/* Set M */
 +	sr32(CM_CLKSEL1_PLL_MPU, 0, 7, dpll_param_p->n);	/* Set N */
 +	sr32(CM_CLKEN_PLL_MPU, 4, 4, dpll_param_p->fsel);	/* FREQSEL */
-+	sr32(CM_CLKEN_PLL_MPU, 0, 3, PLL_LOCK); /* lock mode */
++	sr32(CM_CLKEN_PLL_MPU, 0, 3, PLL_LOCK);	/* lock mode */
 +	wait_on_value(BIT0, 1, CM_IDLEST_PLL_MPU, LDELAY);
 +
 +	/* Set up GPTimers to sys_clk source only */
@@ -559,7 +550,7 @@ index 0000000..f62cffd
 +	__raw_writel(UNLOCK_3, OCM_WRITE_PERMISSION_0);
 +	__raw_writel(UNLOCK_2, OCM_ADDR_MATCH_2);
 +
-+	__raw_writel(UNLOCK_1, SMS_RG_ATT0);	/* SDRC region 0 public */
++	__raw_writel(UNLOCK_1, SMS_RG_ATT0); /* SDRC region 0 public */
 +}
 +
 +/**********************************************************
@@ -597,8 +588,8 @@ index 0000000..f62cffd
 +	try_unlock_memory();
 +	set_muxconf_regs();
 +	delay(100);
-+	prcm_init();
 +	per_clocks_enable();
++	prcm_init();
 +
 +	/* enable the DDRPHY clk */
 +	sr32((OMAP34XX_CTRL_BASE + 0x588), 15, 15, 0x1);
@@ -677,7 +668,7 @@ index 0000000..f62cffd
 +	sr32(CM_FCLKEN_PER, 3, 1, 0x1);	/* FCKen GPT2 */
 +
 +#ifdef CFG_NS16550
-+	/* UART1 clocks */
++	/* Enable UART1 clocks */
 +	sr32(CM_FCLKEN1_CORE, 13, 1, 0x1);
 +	sr32(CM_ICLKEN1_CORE, 13, 1, 0x1);
 +
@@ -697,6 +688,7 @@ index 0000000..f62cffd
 +	/* Enable MMC2 clocks */
 +	sr32(CM_FCLKEN1_CORE, 25, 1, 0x1);
 +	sr32(CM_ICLKEN1_CORE, 25, 1, 0x1);
++
 +
 +	delay(1000);
 +}
@@ -873,11 +865,9 @@ index 0000000..f62cffd
 +	__raw_writel(0x0, GPMC_IRQENABLE);	/* isr's sources masked */
 +	__raw_writel(0, GPMC_TIMEOUT_CONTROL);/* timeout disable */
 +
-+	/* Set the GPMC Vals . For NAND boot on 3430SDP, NAND is mapped at CS0
-+	 * , NOR at CS1 and MPDB at CS3. And oneNAND boot, we map oneNAND at
-+	 * CS0. We configure only GPMC CS0 with required values. Configiring
-+	 * other devices at other CS in done in u-boot anyway. So we don't
-+	 * have to bother doing it here.
++	/* Set the GPMC Vals, NAND is mapped at CS0, oneNAND at CS0.
++	 *  We configure only GPMC CS0 with required values. Configiring other devices
++	 *  at other CS is done in u-boot. So we don't have to bother doing it here.
 +	 */
 +	__raw_writel(0 , GPMC_CONFIG7 + GPMC_CONFIG_CS0);
 +	delay(1000);
@@ -935,8 +925,7 @@ index 0000000..f62cffd
 +/* optionally do something like blinking LED */
 +void board_hang(void)
 +{
-+	while (0)
-+		;
++	while (0);
 +}
 +
 +/******************************************************************************
@@ -952,13 +941,12 @@ index 0000000..f62cffd
 +void abort(void)
 +{
 +}
-\ No newline at end of file
 diff --git a/board/am3517crane/am3517crane.h b/board/am3517crane/am3517crane.h
 new file mode 100644
-index 0000000..400b774
+index 0000000..a314fa3
 --- /dev/null
 +++ b/board/am3517crane/am3517crane.h
-@@ -0,0 +1,103 @@
+@@ -0,0 +1,95 @@
 +/*
 + * (C) Copyright 2010 Mistral Solutions Pvt Ltd. <www.mistralsolutions.com>
 + * Umesh Krishnan <umeshk@mistralsolutions.com>
@@ -1049,22 +1037,14 @@ index 0000000..400b774
 +#define EMIF4_DDR2_TX_DATA_ALIGN	0x0
 +#define EMIF4_DDR2_RX_DLL_BYPASS	0x0
 +
-+/* Following functions are exported from lowlevel_init.S */
-+extern struct dpll_param *get_mpu_dpll_param(void);
-+extern struct dpll_param *get_core_dpll_param(void);
-+extern struct dpll_param *get_per_dpll_param(void);
-+
 +extern int mmc_init(int verbose);
 +extern block_dev_desc_t *mmc_get_dev(int dev);
 +
-+#define __raw_readl(a)    (*(volatile unsigned int *)(a))
-+#define __raw_writel(v, a) (*(volatile unsigned int *)(a) = (v))
-+#define __raw_readw(a)    (*(volatile unsigned short *)(a))
-+#define __raw_writew(v, a) (*(volatile unsigned short *)(a) = (v))
++
 +
 diff --git a/board/am3517crane/config.mk b/board/am3517crane/config.mk
 new file mode 100644
-index 0000000..f8b9436
+index 0000000..bc696de
 --- /dev/null
 +++ b/board/am3517crane/config.mk
 @@ -0,0 +1,20 @@
@@ -1078,10 +1058,10 @@ index 0000000..f8b9436
 +# Am3517 has 1 bank of 128MB Discrete SDRAM on CS0
 +# Physical Address:
 +# 8000'0000 (bank0)
-+
++#
 +# For use if you want X-Loader to relocate from SRAM to DDR
 +#TEXT_BASE = 0x80e80000
-+
++#
 +# For XIP in 64K of SRAM or debug (GP device has it all availabe)
 +# SRAM 40200000-4020FFFF base
 +# initial stack at 0x4020fffc used in s_init (below xloader).
@@ -1090,10 +1070,10 @@ index 0000000..f8b9436
 +TEXT_BASE = 0x40208800
 diff --git a/board/am3517crane/platform.S b/board/am3517crane/platform.S
 new file mode 100644
-index 0000000..fd36482
+index 0000000..f725bc5
 --- /dev/null
 +++ b/board/am3517crane/platform.S
-@@ -0,0 +1,361 @@
+@@ -0,0 +1,436 @@
 +/*
 + * Board specific setup info
 + *
@@ -1136,7 +1116,7 @@ index 0000000..fd36482
 + *************************************************************************/
 +.global cpy_clk_code
 + cpy_clk_code:
-+        /* Copy DPLL code into SRAM */ 
++        /* Copy DPLL code into SRAM */
 +        adr     r0, go_to_speed         /* get addr of clock setting code */
 +        mov     r2, #384                /* r2 size to copy (div by 32 bytes) */
 +        mov     r1, r1                  /* r1 <- dest address (passed in) */
@@ -1148,8 +1128,8 @@ index 0000000..fd36482
 +        bne     next2
 +	mov	pc, lr                  /* back to caller */
 +
-+/* **************************************************************************** 
-+ * NOTE: 3430 X-loader currently does not use this code.  
++/* ****************************************************************************
++ * NOTE: 3430 X-loader currently does not use this code.
 +*   It could be removed its is kept for compatabily with u-boot.
 + *
 + *  go_to_speed: -Moves to bypass, -Commits clock dividers, -puts dpll at speed
@@ -1163,7 +1143,7 @@ index 0000000..fd36482
 + *        confused.  A reset of the controller gets it back.  Taking away its
 + *        L3 when its not in self refresh seems bad for it.  Normally, this code
 + *        runs from flash before SDR is init so that should be ok.
-+ ******************************************************************************/    
++ ******************************************************************************/
 +.global go_to_speed
 + go_to_speed:
 +        stmfd sp!, {r4-r6}
@@ -1184,13 +1164,13 @@ index 0000000..fd36482
 +        str     r2, [r5]          /* set l3/l4/.. dividers*/
 +        ldr     r5, pll_div_add3  /* wkup */
 +        ldr     r2, pll_div_val3  /* rsm val */
-+        str     r2, [r5]          
++        str     r2, [r5]
 +        ldr     r5, pll_div_add4  /* gfx */
-+        ldr     r2, pll_div_val4 
-+        str     r2, [r5]         
++        ldr     r2, pll_div_val4
++        str     r2, [r5]
 +        ldr     r5, pll_div_add5  /* emu */
-+        ldr     r2, pll_div_val5 
-+        str     r2, [r5]     
++        ldr     r2, pll_div_val5
++        str     r2, [r5]
 +
 +        /* now prepare GPMC (flash) for new dpll speed */
 +	/* flash needs to be stable when we jump back to it */
@@ -1209,7 +1189,7 @@ index 0000000..fd36482
 +        str     r2, [r5]
 +
 +        /* lock DPLL3 and wait a bit */
-+        orr     r0, r0, #0x7   /* set up for lock mode */     
++        orr     r0, r0, #0x7   /* set up for lock mode */
 +        str     r0, [r4]       /* lock */
 +        nop                    /* ARM slow at this point working at sys_clk */
 +        nop
@@ -1225,7 +1205,7 @@ index 0000000..fd36482
 +        nop
 +        nop
 +        ldmfd sp!, {r4-r6}
-+        mov     pc, lr           /* back to caller, locked */        
++        mov     pc, lr           /* back to caller, locked */
 +
 +_go_to_speed: .word go_to_speed
 +
@@ -1235,7 +1215,7 @@ index 0000000..fd36482
 +    .word (GPMC_CONFIG_CS0 + GPMC_CONFIG1)
 +flash_cfg3_addr:
 +    .word  (GPMC_CONFIG_CS0 + GPMC_CONFIG3)
-+flash_cfg3_val: 
++flash_cfg3_val:
 +    .word  STNOR_GPMC_CONFIG3
 +flash_cfg4_addr:
 +    .word (GPMC_CONFIG_CS0 + GPMC_CONFIG4)
@@ -1248,17 +1228,17 @@ index 0000000..fd36482
 +pll_ctl_add:
 +    .word CM_CLKEN_PLL
 +pll_div_add1:
-+    .word CM_CLKSEL1_PLL 
++    .word CM_CLKSEL1_PLL
 +pll_div_add2:
 +    .word CM_CLKSEL_CORE
 +pll_div_add3:
 +    .word CM_CLKSEL_WKUP
 +pll_div_val3:
-+    .word (WKUP_RSM << 1) 
++    .word (WKUP_RSM << 1)
 +pll_div_add4:
 +    .word CM_CLKSEL_GFX
 +pll_div_val4:
-+    .word (GFX_DIV << 0) 
++    .word (GFX_DIV << 0)
 +pll_div_add5:
 +    .word CM_CLKSEL1_EMU
 +pll_div_val5:
@@ -1271,7 +1251,7 @@ index 0000000..fd36482
 +	ldr	sp,	SRAM_STACK
 +        str     ip,	[sp]    /* stash old link register */
 +	mov	ip,	lr	/* save link reg across call */
-+	bl      s_init          /* go setup pll,mux,memory */
++        bl      s_init          /* go setup pll,mux,memory */
 +        ldr     ip,	[sp]    /* restore save ip */
 +	mov	lr,	ip	/* restore link reg */
 +
@@ -1286,42 +1266,73 @@ index 0000000..fd36482
 +SRAM_STACK:
 +	.word LOW_LEVEL_SRAM_STACK
 +
++
 +/* DPLL(1-4) PARAM TABLES */
 +/* Each of the tables has M, N, FREQSEL, M2 values defined for nominal
-+ * OPP (1.2V). The fields are defined according to dpll_param struct(clock.c). 
++ * OPP (1.2V). The fields are defined according to dpll_param struct(clock.c).
 + * The values are defined for all possible sysclk and for ES1 and ES2.
 + */
 +
 +mpu_dpll_param:
 +/* 12MHz */
 +/* ES1 */
-+.word 0x0FE,0x07,0x05,0x01
++.word 0x0FE
++.word 0x07
++.word 0x05
++.word 0x01
 +/* ES2 */
-+.word 0x0FA,0x05,0x07,0x01
++.word 0x0FA
++.word 0x05
++.word 0x07
++.word 0x01
 +
 +/* 13MHz */
 +/* ES1 */
-+.word 0x17D,0x0C,0x03,0x01
++.word 0x17D
++.word 0x0C
++.word 0x03
++.word 0x01
 +/* ES2 */
-+.word 0x1F4,0x0C,0x03,0x01
++.word 0x1F4
++.word 0x0C
++.word 0x03
++.word 0x01
 +
 +/* 19.2MHz */
 +/* ES1 */
-+.word 0x179,0x12,0x04,0x01
++.word 0x179
++.word 0x12
++.word 0x04
++.word 0x01
 +/* ES2 */
-+.word 0x271,0x17,0x03,0x01
++.word 0x271
++.word 0x17
++.word 0x03
++.word 0x01
 +
 +/* 26MHz */
 +/* ES1 */
-+.word 0x17D,0x19,0x03,0x01
++.word 0x17D
++.word 0x19
++.word 0x03
++.word 0x01
 +/* ES2 */
-+.word 0x0FA,0x0C,0x07,0x01
++.word 0x0FA
++.word 0x0C
++.word 0x07
++.word 0x01
 +
 +/* 38.4MHz */
 +/* ES1 */
-+.word 0x1FA,0x32,0x03,0x01
++.word 0x1FA
++.word 0x32
++.word 0x03
++.word 0x01
 +/* ES2 */
-+.word 0x271,0x2F,0x03,0x01
++.word 0x271
++.word 0x2F
++.word 0x03
++.word 0x01
 +
 +
 +.globl get_mpu_dpll_param
@@ -1332,33 +1343,63 @@ index 0000000..fd36482
 +iva_dpll_param:
 +/* 12MHz */
 +/* ES1 */
-+.word 0x07D,0x05,0x07,0x01
++.word 0x07D
++.word 0x05
++.word 0x07
++.word 0x01
 +/* ES2 */
-+.word 0x0B4,0x05,0x07,0x01
++.word 0x0B4
++.word 0x05
++.word 0x07
++.word 0x01
 +
 +/* 13MHz */
 +/* ES1 */
-+.word 0x0FA,0x0C,0x03,0x01
++.word 0x0FA
++.word 0x0C
++.word 0x03
++.word 0x01
 +/* ES2 */
-+.word 0x168,0x0C,0x03,0x01
++.word 0x168
++.word 0x0C
++.word 0x03
++.word 0x01
 +
 +/* 19.2MHz */
 +/* ES1 */
-+.word 0x082,0x09,0x07,0x01
++.word 0x082
++.word 0x09
++.word 0x07
++.word 0x01
 +/* ES2 */
-+.word 0x0E1,0x0B,0x06,0x01
++.word 0x0E1
++.word 0x0B
++.word 0x06
++.word 0x01
 +
 +/* 26MHz */
 +/* ES1 */
-+.word 0x07D,0x0C,0x07,0x01
++.word 0x07D
++.word 0x0C
++.word 0x07
++.word 0x01
 +/* ES2 */
-+.word 0x0B4,0x0C,0x07,0x01
++.word 0x0B4
++.word 0x0C
++.word 0x07
++.word 0x01
 +
 +/* 38.4MHz */
 +/* ES1 */
-+.word 0x13F,0x30,0x03,0x01
++.word 0x13F
++.word 0x30
++.word 0x03
++.word 0x01
 +/* ES2 */
-+.word 0x0E1,0x17,0x06,0x01
++.word 0x0E1
++.word 0x17
++.word 0x06
++.word 0x01
 +
 +
 +.globl get_iva_dpll_param
@@ -1366,7 +1407,6 @@ index 0000000..fd36482
 +	adr r0, iva_dpll_param
 +	mov pc, lr
 +
-+/* Core DPLL targets for L3 at 166 & L133 */
 +core_dpll_param:
 +/* 12MHz */
 +/* ES1 */
@@ -1436,19 +1476,34 @@ index 0000000..fd36482
 +/* PER DPLL values are same for both ES1 and ES2 */
 +per_dpll_param:
 +/* 12MHz */
-+.word 0xD8,0x05,0x07,0x09
++.word 0xD8
++.word 0x05
++.word 0x07
++.word 0x09
 +
 +/* 13MHz */
-+.word 0x1B0,0x0C,0x03,0x09
++.word 0x1B0
++.word 0x0C
++.word 0x03
++.word 0x09
 +
 +/* 19.2MHz */
-+.word 0xE1,0x09,0x07,0x09
++.word 0xE1
++.word 0x09
++.word 0x07
++.word 0x09
 +
 +/* 26MHz */
-+.word 0xD8,0x0C,0x07,0x09
++.word 0xD8
++.word 0x0C
++.word 0x07
++.word 0x09
 +
 +/* 38.4MHz */
-+.word 0xE1,0x13,0x07,0x09
++.word 0xE1
++.word 0x13
++.word 0x07
++.word 0x09
 +
 +.globl get_per_dpll_param
 +get_per_dpll_param:
@@ -1514,36 +1569,99 @@ index 0000000..eb2a02a
 +	.bss : { *(.bss) }
 +	_end = .;
 +}
+diff --git a/cpu/omap3/mmc.c b/cpu/omap3/mmc.c
+index e0c63b0..af8d9ff 100644
+--- a/cpu/omap3/mmc.c
++++ b/cpu/omap3/mmc.c
+@@ -55,6 +55,7 @@ block_dev_desc_t *mmc_get_dev(int dev)
+ 	return ((block_dev_desc_t *) &mmc_blk_dev);
+ }
+ 
++#if defined(CONFIG_OMAP34XX) && !defined(CONFIG_AM3517CRANE)
+ void twl4030_mmc_config(void)
+ {
+ 	unsigned char data;
+@@ -64,9 +65,11 @@ void twl4030_mmc_config(void)
+ 	data = 0x2;
+ 	i2c_write(0x4B, 0x85, 1, &data, 1);
+ }
++#endif
+ 
+ unsigned char mmc_board_init(void)
+ {
++#if defined(CONFIG_OMAP34XX) && !defined(CONFIG_AM3517CRANE)
+ 	unsigned int value = 0;
+ 
+ 	twl4030_mmc_config();
+@@ -76,7 +79,7 @@ unsigned char mmc_board_init(void)
+ 
+ 	value = CONTROL_DEV_CONF0;
+ 	CONTROL_DEV_CONF0 = value | (1 << 24);
+-
++#endif
+ 	return 1;
+ }
+ 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index a9ba774..ab6009d 100644
+index a9ba774..656b637 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -48,6 +48,10 @@ ifeq ($(BOARD), overo)
- COBJS 	+= k9f1g08r0a.o
+@@ -44,6 +44,10 @@ ifeq ($(BOARD), omap3evm)
+ COBJS 	+= k9f1g08r0a.o onenand.o
  endif
  
 +ifeq ($(BOARD), am3517crane)
 +COBJS    += k9f1g08r0a.o
 +endif
 +
- ifeq ($(BOARD), omap2420h4) 
- COBJS 	+= k9k1216.o
+ ifeq ($(BOARD), overo)
+ COBJS 	+= k9f1g08r0a.o
  endif
+diff --git a/drivers/k9f1g08r0a.c b/drivers/k9f1g08r0a.c
+index 988533c..44c50be 100644
+--- a/drivers/k9f1g08r0a.c
++++ b/drivers/k9f1g08r0a.c
+@@ -45,6 +45,7 @@
+ #define MT29F1G_MFR3		0xad  /* Hynix */
+ #define MT29F1G_ID		0xa1  /* x8, 1GiB */
+ #define MT29F2G_ID      	0xba  /* x16, 2GiB */
++#define MT29F2G16AA_ID		0xca /* x16, 2GiB */
+ #define MT29F4G_ID		0xbc  /* x16, 4GiB */
+ 
+ #define ADDR_COLUMN		1          
+@@ -208,7 +209,7 @@ int nand_chip()
+ 	NAND_DISABLE_CE();
+ 
+ 	if (((mfr == MT29F1G_MFR || mfr == MT29F1G_MFR2 || mfr == MT29F1G_MFR3) &&
+-		(id == MT29F1G_ID || id == MT29F2G_ID || id == MT29F4G_ID)) ||
++		(id == MT29F1G_ID || id == MT29F2G_ID || id == MT29F4G_ID || id == MT29F2G16AA_ID)) ||
+ 	     (mfr == K9F1G08R0A_MFR && (id == K9F1G08R0A_ID))) {
+ 		return 0;
+ 	} else {
+diff --git a/include/asm/arch-omap3/clocks343x.h b/include/asm/arch-omap3/clocks343x.h
+index 7aedaa1..d141ed6 100644
+--- a/include/asm/arch-omap3/clocks343x.h
++++ b/include/asm/arch-omap3/clocks343x.h
+@@ -37,7 +37,14 @@
+ #  define CORE_FUSB_DIV  2        /* 41.5MHz: */
+ #  define CORE_L4_DIV    2        /*  83MHz : L4 */
+ #  define CORE_L3_DIV    2        /* 166MHz : L3 {DDR} */
++#  define GFX_DIV_34X    3        /*  96MHz : CM_CLKSEL_GFX */
++#  define GFX_DIV_36X    5        /*  200MHz : CM_CLKSEL_GFX */
++#if defined(CONFIG_OMAP34XX) && !defined(CONFIG_AM3517CRANE)
+ #  define GFX_DIV        2        /*  83MHz : CM_CLKSEL_GFX */
++#endif
++#if defined(CONFIG_AM3517CRANE)
++#  define GFX_DIV        3        /*  96MHz : CM_CLKSEL_GFX */
++#endif
+ #  define WKUP_RSM       2        /* 41.5MHz: CM_CLKSEL_WKUP */
+ 
+ /* PER DPLL */
 diff --git a/include/asm/arch-omap3/cpu.h b/include/asm/arch-omap3/cpu.h
-index 0828e73..8f72fe2 100644
+index 0828e73..805f29d 100644
 --- a/include/asm/arch-omap3/cpu.h
 +++ b/include/asm/arch-omap3/cpu.h
-@@ -38,6 +38,9 @@
- #define TAP_IDCODE_REG		(OMAP34XX_TAP_BASE+0x204)
- #define PRODUCTION_ID		(OMAP34XX_TAP_BASE+0x208)
- 
-+/* OMAP 34XX/35XX/36xx/37xx Control ID */
-+#define OMAP34XX_CONTROL_ID		(OMAP34XX_WAKEUP_L4_IO_BASE + 0xa204)
-+
- /* device type */
- #define DEVICE_MASK		(BIT8|BIT9|BIT10)
- #define TST_DEVICE		0x0
-@@ -145,6 +148,27 @@
+@@ -145,6 +145,27 @@
  #define SMART_IDLE		(0x2 << 3)
  #define REF_ON_IDLE		(0x1 << 6)
  
@@ -1572,15 +1690,13 @@ index 0828e73..8f72fe2 100644
  #define TIDR			0x0      /* r */
  #define TIOCP_CFG		0x10     /* rw */
 diff --git a/include/asm/arch-omap3/mem.h b/include/asm/arch-omap3/mem.h
-index 284c665..5dc5bd3 100644
+index 284c665..76a3d06 100644
 --- a/include/asm/arch-omap3/mem.h
 +++ b/include/asm/arch-omap3/mem.h
-@@ -336,6 +336,44 @@ typedef enum {
+@@ -336,6 +336,47 @@ typedef enum {
  		(HYNIX_XSR_165 << 0) | (HYNIX_TXP_165 << 8) | \
  		(HYNIX_TWTR_165 << 16))
  
-+
-+
 +/* Hynix part of AM/DM37xEVM (200MHz optimized)
 + *   ACTIMA
 + *	TDAL		= 6
@@ -1617,31 +1733,15 @@ index 284c665..5dc5bd3 100644
 +#define HYNIX_V_ACTIMB_200	(((HYNIX_TCKE_200 << 12) | (HYNIX_XSR_200 << 0)) |	\
 +			(HYNIX_TXP_200 << 8) | (HYNIX_TWTR_200 << 16))
 +
++#define HYNIX_SDRC_ACTIM_CTRLA_0	HYNIX_V_ACTIMA_200
++#define HYNIX_SDRC_ACTIM_CTRLB_0	HYNIX_V_ACTIMB_200
++
++
++
  /* New and compatability speed defines */
  #if defined(PRCM_CLK_CFG2_200MHZ) || defined(PRCM_CONFIG_II) || defined(PRCM_CONFIG_5B)
  # define L3_100MHZ   /* Use with <= 100MHz SDRAM */
-@@ -345,6 +383,10 @@ typedef enum {
- # define L3_165MHZ    /* Use with <= 165MHz SDRAM (L3=166 on 3430) */
- #endif
- 
-+#if defined(CONFIG_AM3517CRANE)
-+# define L3_200MHZ
-+#endif
-+
- #if defined(L3_100MHZ)
- # define MICRON_SDRC_ACTIM_CTRLA_0     MICRON_V_ACTIMA_100
- # define MICRON_SDRC_ACTIM_CTRLB_0     MICRON_V_ACTIMB_100
-@@ -356,6 +398,9 @@ typedef enum {
- # define MICRON_SDRC_ACTIM_CTRLB_0     MICRON_V_ACTIMB_165
- # define NUMONYX_SDRC_ACTIM_CTRLA_0    NUMONYX_V_ACTIMA_165
- # define NUMONYX_SDRC_ACTIM_CTRLB_0    NUMONYX_V_ACTIMB_165
-+#elif  defined(L3_200MHZ)
-+#define HYNIX_SDRC_ACTIM_CTRLA_0	HYNIX_V_ACTIMA_200
-+#define HYNIX_SDRC_ACTIM_CTRLB_0	HYNIX_V_ACTIMB_200
- #endif
- 
- 
-@@ -428,12 +473,31 @@ typedef enum {
+@@ -428,12 +469,31 @@ typedef enum {
  # define SMNAND_GPMC_CONFIG5 0x010C1414
  # define SMNAND_GPMC_CONFIG6 0x00000A80
  
@@ -1673,7 +1773,7 @@ index 284c665..5dc5bd3 100644
  # define STNOR_GPMC_CONFIG1  0x3
  # define STNOR_GPMC_CONFIG2  0x000f0f01
  # define STNOR_GPMC_CONFIG3  0x00050502
-@@ -457,6 +521,8 @@ typedef enum {
+@@ -457,6 +517,8 @@ typedef enum {
  # define SMNAND_GPMC_CONFIG6 0x00000A80
  # define SMNAND_GPMC_CONFIG7 0x00000C44
  
@@ -1682,7 +1782,7 @@ index 284c665..5dc5bd3 100644
  # define M_NAND_GPMC_CONFIG1 0x00001800
  # define M_NAND_GPMC_CONFIG2 SMNAND_GPMC_CONFIG2
  # define M_NAND_GPMC_CONFIG3 SMNAND_GPMC_CONFIG3
-@@ -465,6 +531,23 @@ typedef enum {
+@@ -465,6 +527,23 @@ typedef enum {
  # define M_NAND_GPMC_CONFIG6 SMNAND_GPMC_CONFIG6
  # define M_NAND_GPMC_CONFIG7 SMNAND_GPMC_CONFIG7
  
@@ -1706,7 +1806,7 @@ index 284c665..5dc5bd3 100644
  # define STNOR_GPMC_CONFIG1  0x1203
  # define STNOR_GPMC_CONFIG2  0x00151501
  # define STNOR_GPMC_CONFIG3  0x00060602
-@@ -511,6 +594,8 @@ typedef enum {
+@@ -511,6 +590,8 @@ typedef enum {
  # define SMNAND_GPMC_CONFIG6 0x1F0F0A80
  # define SMNAND_GPMC_CONFIG7 0x00000C44
  
@@ -1715,7 +1815,7 @@ index 284c665..5dc5bd3 100644
  # define M_NAND_GPMC_CONFIG1 0x00001800
  # define M_NAND_GPMC_CONFIG2 SMNAND_GPMC_CONFIG2
  # define M_NAND_GPMC_CONFIG3 SMNAND_GPMC_CONFIG3
-@@ -519,6 +604,23 @@ typedef enum {
+@@ -519,6 +600,23 @@ typedef enum {
  # define M_NAND_GPMC_CONFIG6 SMNAND_GPMC_CONFIG6
  # define M_NAND_GPMC_CONFIG7 SMNAND_GPMC_CONFIG7
  
@@ -1740,24 +1840,15 @@ index 284c665..5dc5bd3 100644
  # define STNOR_GPMC_CONFIG2  0x00151501
  # define STNOR_GPMC_CONFIG3  0x00060602
 diff --git a/include/asm/arch-omap3/omap3430.h b/include/asm/arch-omap3/omap3430.h
-index 117d752..122c613 100644
+index 117d752..7f730dc 100644
 --- a/include/asm/arch-omap3/omap3430.h
 +++ b/include/asm/arch-omap3/omap3430.h
-@@ -194,4 +194,50 @@
- 
- #define OMAP3730		0x0c00
+@@ -138,6 +138,43 @@
+ #define ENHANCED_UI_EE_NAME		"750-2075"
+ #endif
  
 +#if defined(CONFIG_AM3517CRANE)
-+
-+#define SRAM_OFFSET0			0x40000000
-+#define SRAM_OFFSET1			0x00200000
-+#define SRAM_OFFSET2			0x0000F800
-+#define SRAM_VECT_CODE			(SRAM_OFFSET0|SRAM_OFFSET1|SRAM_OFFSET2)
-+
-+#define LOW_LEVEL_SRAM_STACK		0x4020FFFC
-+
 +/* EMIF 4 replaces SDRC in AM3517 for DDR */
-+#define EMIF4_MOD_ID			0x00
 +#define EMIF4_STATUS			0x04
 +#define EMIF4_SDR_CONFIG		0x08
 +#define EMIF4_LPDDR2_CONFIF		0x0C
@@ -1793,40 +1884,15 @@ index 117d752..122c613 100644
 +#define EMIF4_DDR_PHY_CTRL2		0xEC
 +#endif
 +
- #endif  /* _OMAP3430_SYS_H_ */
-diff --git a/include/asm/arch-omap3/sys_info.h b/include/asm/arch-omap3/sys_info.h
-index 18e2b49..19a5dd0 100644
---- a/include/asm/arch-omap3/sys_info.h
-+++ b/include/asm/arch-omap3/sys_info.h
-@@ -49,6 +49,22 @@
- #define CPU_3430_ES1		1
- #define CPU_3430_ES2		2
- 
-+/*
-+ * Hawkeye values
-+ */
-+#define HAWKEYE_OMAP34XX        0xb7ae
-+#define HAWKEYE_AM35XX          0xb868
-+#define HAWKEYE_OMAP36XX        0xb891
-+
-+#define HAWKEYE_SHIFT           12
-+
-+/*
-+ * Define CPU families
-+ */
-+#define CPU_OMAP34XX            0x3400  /* OMAP34xx/OMAP35 devices */
-+#define CPU_AM35XX              0x3500  /* AM35xx devices          */
-+#define CPU_OMAP36XX            0x3600  /* OMAP36xx devices        */
-+
- /* Currently Virtio models this one */
- #define CPU_3430_CHIPID		0x0B68A000
- 
+ /*
+  * 343x real hardware:
+  *  ES1     = rev 0
 diff --git a/include/configs/am3517crane.h b/include/configs/am3517crane.h
 new file mode 100644
-index 0000000..7fc1c0a
+index 0000000..75a2aae
 --- /dev/null
 +++ b/include/configs/am3517crane.h
-@@ -0,0 +1,198 @@
+@@ -0,0 +1,194 @@
 +/*
 + * (C) Copyright 2010 Mistral Solutions Pvt Ltd. <www.mistralsolutions.com>
 + * Umesh Krishnan <umeshk@mistralsolutions.com>
@@ -1866,6 +1932,7 @@ index 0000000..7fc1c0a
 + */
 +#define CONFIG_ARMCORTEXA8	1	/* This is an ARM V7 CPU core */
 +#define CONFIG_OMAP		1	/* in a TI OMAP core */
++#define CONFIG_OMAP34XX		1	/* which is a 34XX */
 +
 +#define CONFIG_AM3517CRANE	1    /* working with CraneBoard */
 +
@@ -1917,7 +1984,7 @@ index 0000000..7fc1c0a
 + * select serial console configuration
 + */
 +#define CONFIG_SERIAL3           3    /* UART1 on OMAP3EVM */
-+#define CONFIG_CONS_INDEX	3
++#define CONFIG_CONS_INDEX        3
 +
 +#define CONFIG_BAUDRATE		115200
 +#define CFG_PBSIZE		256
@@ -1952,19 +2019,14 @@ index 0000000..7fc1c0a
 + * 0x00280000 - 0x0077FFFF  Kernel Image
 + * 0x00780000 - 0x08000000  depends on application
 + */
-+/* Leaving first 4 blocks for x-load */
-+#define NAND_UBOOT_START         0x0080000
-+/* Giving a space of 2 blocks = 256KB */
-+#define NAND_UBOOT_END           0x0240000
-+#define NAND_BLOCK_SIZE          0x20000
-+
-+#define GPMC_CONFIG              (OMAP34XX_GPMC_BASE+0x50)
-+
-+#if defined(CONFIG_AM3517CRANE)
-+#define GPMC_NAND_COMMAND_0      (OMAP34XX_GPMC_BASE+0x7C)
-+#define GPMC_NAND_ADDRESS_0      (OMAP34XX_GPMC_BASE+0x80)
-+#define GPMC_NAND_DATA_0         (OMAP34XX_GPMC_BASE+0x84)
-+#endif
++#define NAND_UBOOT_START	0x0080000 /* Leaving first 4 blocks for x-load */
++#define NAND_UBOOT_END		0x0240000 /* Giving a space of 2 blocks = 256KB */
++#define NAND_BLOCK_SIZE		0x20000
++  
++#define GPMC_CONFIG 		(OMAP34XX_GPMC_BASE+0x50)
++#define GPMC_NAND_COMMAND_0	(OMAP34XX_GPMC_BASE+0x7C)
++#define GPMC_NAND_ADDRESS_0	(OMAP34XX_GPMC_BASE+0x80)
++#define GPMC_NAND_DATA_0	(OMAP34XX_GPMC_BASE+0x84)
 +
 +#ifdef NAND_16BIT
 +#define WRITE_NAND_COMMAND(d, adr) \
@@ -2011,20 +2073,63 @@ index 0000000..7fc1c0a
 +#define CFG_SYNC_BURST_READ	1
 +
 +/* OneNAND is partitioned:
-+ *   0x0000000 - 0x0080000  X-Loader
++ *   0x0000000 - 0x0080000  X-Loader 
 + *   0x0080000 - 0x0240000   U-boot Image
 + *   0x0240000 - 0x0280000   U-Boot Env Data (X-loader doesn't care)
 + *   0x0280000 - 0x0780000   Kernel Image
 + *   0x0780000 - 0x8000000   depends on application
 + */
 +
-+#define ONENAND_START_BLOCK      4
-+#define ONENAND_END_BLOCK        18
-+#define ONENAND_PAGE_SIZE        2048     /* 2KB */
-+#define ONENAND_BLOCK_SIZE       0x20000  /* 128KB */
++#define ONENAND_START_BLOCK 	4
++#define ONENAND_END_BLOCK	18
++#define ONENAND_PAGE_SIZE	2048     /* 2KB */
++#define ONENAND_BLOCK_SIZE	0x20000  /* 128KB */
 +
 +#endif /* __CONFIG_H */
 +
+diff --git a/lib/board.c b/lib/board.c
+index 70cd17a..c27dd91 100644
+--- a/lib/board.c
++++ b/lib/board.c
+@@ -50,9 +50,11 @@ static int init_func_i2c (void)
+ {
+ #ifdef CONFIG_MMC
+ #ifdef CONFIG_DRIVER_OMAP34XX_I2C
++#if defined(CONFIG_OMAP34XX) && !defined(CONFIG_AM3517CRANE)
+ 	i2c_init (CFG_I2C_SPEED, CFG_I2C_SLAVE);
+ #endif
+ #endif
++#endif
+ 	return 0;
+ }
+ 
+@@ -79,8 +81,10 @@ void start_armboot (void)
+   	init_fnc_t **init_fnc_ptr;
+  	int i, size;
+ 	uchar *buf;
++#if defined(CONFIG_OMAP34XX) && !defined(CONFIG_AM3517CRANE)
+ 	int *first_instruction;
+ 	block_dev_desc_t *dev_desc = NULL;
++#endif
+ 
+    	for (init_fnc_ptr = init_sequence; *init_fnc_ptr; ++init_fnc_ptr) {
+ 		if ((*init_fnc_ptr)() != 0) {
+@@ -131,6 +135,7 @@ void start_armboot (void)
+ 		}
+ 	}
+ 
++#if defined(CONFIG_OMAP34XX) && !defined(CONFIG_AM3517CRANE)
+ 	/* if u-boot not found on mmc or
+          * nand read result is erased data
+          * then serial boot 
+@@ -140,6 +145,7 @@ void start_armboot (void)
+ 		printf("u-boot.bin not found or blank nand contents - attempting serial boot . . .\n");
+ 		do_load_serial_bin(CFG_LOADADDR, 115200);
+ 	}
++#endif
+ 
+ 	/* go run U-Boot and never return */
+  	((init_fnc_t *)CFG_LOADADDR)();
 -- 
 1.7.1
 
