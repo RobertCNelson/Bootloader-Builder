@@ -29,7 +29,12 @@ unset BISECT
 
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
-mkdir -p ${DIR}/deploy/
+mkdir -p ${DIR}/deploy/latest/
+
+cd ${DIR}/deploy/latest/
+rm -f bootloader || true
+wget http://rcn-ee.net/deb/tools/latest/bootloader
+cd ${DIR}/
 
 ARCH=$(uname -m)
 SYST=$(uname -n)
@@ -84,7 +89,12 @@ echo ""
 if ! ls ${DIR}/git/x-loader >/dev/null 2>&1;then
 cd ${DIR}/git/
 git clone git://gitorious.org/x-loader/x-loader.git
+cd ${DIR}/
 fi
+
+cd ${DIR}/git/x-loader/
+git pull
+cd ${DIR}/
 
 rm -rfd ${DIR}/build/x-loader || true
 mkdir -p ${DIR}/build/x-loader
@@ -131,6 +141,10 @@ if ! ls ${DIR}/git/u-boot >/dev/null 2>&1;then
 cd ${DIR}/git/
 git clone git://git.denx.de/u-boot.git
 fi
+
+cd ${DIR}/git/u-boot/
+git pull
+cd ${DIR}/
 
 rm -rfd ${DIR}/build/u-boot || true
 mkdir -p ${DIR}/build/u-boot
@@ -214,9 +228,8 @@ function igep0020 {
 cleanup
 
 BOARD="igep0020"
-#posted but not merged
-#XLOAD_CONFIG="igep0020_config"
-#build_omap_xloader
+XLOAD_CONFIG="igep0020_config"
+build_omap_xloader
 
 UBOOT_CONFIG="igep0020_config"
 UBOOT_TAG="v2010.12"
@@ -252,7 +265,7 @@ build_u-boot
 #at91sam9xeek
 beagleboard
 igep0020
-am3517crane
+#am3517crane
 pandaboard
 
 
