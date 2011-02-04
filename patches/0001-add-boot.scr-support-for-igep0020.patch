@@ -1,0 +1,67 @@
+From 952d34a7852cf102b92dc622f749164e4fd4ee88 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 4 Feb 2011 11:17:47 -0600
+Subject: [PATCH] add boot.scr support for igep0020
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/igep0020.h |   41 ++++++++++++++++++++++++++++++++++++-----
+ 1 files changed, 36 insertions(+), 5 deletions(-)
+
+diff --git a/include/configs/igep0020.h b/include/configs/igep0020.h
+index c19ecc0..7366855 100644
+--- a/include/configs/igep0020.h
++++ b/include/configs/igep0020.h
+@@ -130,13 +130,44 @@
+ #define CONFIG_TWL4030_POWER		1
+ 
+ /* Environment information */
+-#define CONFIG_BOOTCOMMAND \
+-	"mmc init 0 ; fatload mmc 0 0x80000000 setup.ini ; source \0"
+-
+-#define CONFIG_BOOTDELAY		3
++#define CONFIG_BOOTDELAY		10
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"usbtty=cdc_acm\0"
++	"loadaddr=0x82000000\0" \
++	"usbtty=cdc_acm\0" \
++	"console=ttyS2,115200n8\0" \
++	"mpurate=500\0" \
++	"vram=12M\0" \
++	"dvimode=1024x768MR-16@60\0" \
++	"defaultdisplay=dvi\0" \
++	"mmcdev=0\0" \
++	"mmcroot=/dev/mmcblk0p2 rw\0" \
++	"mmcrootfstype=ext3 rootwait\0" \
++	"mmcargs=setenv bootargs console=${console} " \
++		"vram=${vram} " \
++		"omapfb.mode=dvi:${dvimode} " \
++		"omapfb.debug=y " \
++		"omapdss.def_disp=${defaultdisplay} " \
++		"root=${mmcroot} " \
++		"rootfstype=${mmcrootfstype}\0" \
++	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
++	"bootscript=echo Running bootscript from mmc ...; " \
++		"source ${loadaddr}\0" \
++	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
++	"mmcboot=echo Booting from mmc ...; " \
++		"run mmcargs; " \
++		"bootm ${loadaddr}\0" \
++
++#define CONFIG_BOOTCOMMAND \
++	"if mmc rescan ${mmcdev}; then " \
++		"if run loadbootscript; then " \
++			"run bootscript; " \
++		"else " \
++			"if run loaduimage; then " \
++				"run mmcboot; " \
++			"fi; " \
++		"fi; " \
++	"else run nandboot; fi"
+ 
+ #define CONFIG_AUTO_COMPLETE		1
+ 
+-- 
+1.7.1
+

@@ -175,6 +175,12 @@ git add -f .
 git commit -a -m 'port of u-boot for am3517crane'
 fi
 
+if [ "${IGEP0020_PATCH}" ] ; then
+patch -p1 < "${DIR}/patches/0001-add-boot.scr-support-for-igep0020.patch"
+git add -f .
+git commit -a -m 'boot.scr fixes for igepv2'
+fi
+
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
 time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
@@ -199,6 +205,7 @@ unset AT91BOOTSTRAP
 unset REVERT
 unset BISECT
 unset AM3517_PATCH
+unset IGEP0020_PATCH
 }
 
 #AT91Sam Boards
@@ -226,6 +233,7 @@ build_u-boot
 
 function igep0020 {
 cleanup
+IGEP0020_PATCH=1
 
 BOARD="igep0020"
 XLOAD_CONFIG="igep0020_config"
