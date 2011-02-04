@@ -1,0 +1,76 @@
+From 3c0659b535b075be124c3d2a0714e55e65c46737 Mon Sep 17 00:00:00 2001
+From: Alexander Holler <holler@ahsoftware.de>
+Date: Sun, 9 Jan 2011 12:19:44 +0000
+Subject: [PATCH] ARM: Avoid compiler optimization for readb, writeb and friends.
+
+gcc 4.5.1 seems to ignore (at least some) volatile definitions,
+avoid that as done in the kernel.
+
+Reading C99 6.7.3 8 and the comment 114) there, I think it is a bug of that
+gcc version to ignore the volatile type qualifier used e.g. in __arch_getl().
+Anyway, using a definition as in the kernel headers avoids such optimizations when
+gcc 4.5.1 is used.
+
+Maybe the headers as used in the current linux-kernel should be used,
+but to avoid large changes, I've just added a small change to the current headers.
+
+Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+Signed-off-by: Dirk Behme <dirk.behme@googlemail.com>
+Signed-off-by: Wolfgang Denk <wd@denx.de>
+Cc: Alessandro Rubini <rubini-list@gnudd.com>
+Tested-by: Thomas Weber <weber@corscience.de>
+Acked-by: Alexander Holler <holler@ahsoftware.de>
+Tested-by: Alexander Holler <holler@ahsoftware.de>
+---
+ arch/arm/include/asm/io.h |   32 ++++++++++++++++++++------------
+ 1 files changed, 20 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm/include/asm/io.h b/arch/arm/include/asm/io.h
+index ff1518e..3886f15 100644
+--- a/arch/arm/include/asm/io.h
++++ b/arch/arm/include/asm/io.h
+@@ -117,21 +117,29 @@ extern inline void __raw_readsl(unsigned int addr, void *data, int longlen)
+ 		*buf++ = __arch_getl(addr);
+ }
+ 
+-#define __raw_writeb(v,a)		__arch_putb(v,a)
+-#define __raw_writew(v,a)		__arch_putw(v,a)
+-#define __raw_writel(v,a)		__arch_putl(v,a)
++#define __raw_writeb(v,a)	__arch_putb(v,a)
++#define __raw_writew(v,a)	__arch_putw(v,a)
++#define __raw_writel(v,a)	__arch_putl(v,a)
+ 
+-#define __raw_readb(a)			__arch_getb(a)
+-#define __raw_readw(a)			__arch_getw(a)
+-#define __raw_readl(a)			__arch_getl(a)
++#define __raw_readb(a)		__arch_getb(a)
++#define __raw_readw(a)		__arch_getw(a)
++#define __raw_readl(a)		__arch_getl(a)
+ 
+-#define writeb(v,a)			__arch_putb(v,a)
+-#define writew(v,a)			__arch_putw(v,a)
+-#define writel(v,a)			__arch_putl(v,a)
++/*
++ * TODO: The kernel offers some more advanced versions of barriers, it might
++ * have some advantages to use them instead of the simple one here.
++ */
++#define dmb()		__asm__ __volatile__ ("" : : : "memory")
++#define __iormb()	dmb()
++#define __iowmb()	dmb()
++
++#define writeb(v,c)	({ __iowmb(); __arch_putb(v,c); v; })
++#define writew(v,c)	({ __iowmb(); __arch_putw(v,c); v; })
++#define writel(v,c)	({ __iowmb(); __arch_putl(v,c); v; })
+ 
+-#define readb(a)			__arch_getb(a)
+-#define readw(a)			__arch_getw(a)
+-#define readl(a)			__arch_getl(a)
++#define readb(c)	({ u8  __v = __arch_getb(c); __iormb(); __v; })
++#define readw(c)	({ u16 __v = __arch_getw(c); __iormb(); __v; })
++#define readl(c)	({ u32 __v = __arch_getl(c); __iormb(); __v; })
+ 
+ /*
+  * The compiler seems to be incapable of optimising constants
+-- 
+1.7.1
+

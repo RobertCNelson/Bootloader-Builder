@@ -46,7 +46,7 @@ then
 else
  if test "-$SYST-" = "-voodoo-e6400-"
  then
-   CC=/media/build/angstrom/angstrom-setup-scripts/build/tmp-.6/sysroots/x86_64-linux/usr/armv7a/bin/arm-angstrom-linux-gnueabi-
+   CC=arm-linux-gnueabi-
  else
    #using Cross Compiler
    CC=arm-linux-gnueabi-
@@ -168,6 +168,9 @@ fi
 if [ "${REVERT}" ] ; then
 git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
 fi
+
+#fix for gcc-4.5.x
+git am "${DIR}/patches/0001-ARM-Avoid-compiler-optimization-for-readb-writeb-and.patch"
 
 if [ "${AM3517_PATCH}" ] ; then
 patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
