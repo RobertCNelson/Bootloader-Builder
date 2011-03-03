@@ -179,7 +179,7 @@ git commit -a -m 'port of u-boot for am3517crane'
 fi
 
 if [ "${IGEP0020_PATCH}" ] ; then
-patch -p1 < "${DIR}/patches/0001-add-boot.scr-support-for-igep0020.patch"
+patch -p1 < "${DIR}/patches/0001-ARM-OMAP3-Revamp-IGEP-v2-default-configuration.patch"
 git add -f .
 git commit -a -m 'boot.scr fixes for igepv2'
 fi
