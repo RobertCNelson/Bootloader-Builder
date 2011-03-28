@@ -170,7 +170,7 @@ git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
 fi
 
 #fix for gcc-4.5.x
-git am "${DIR}/patches/0001-ARM-Avoid-compiler-optimization-for-readb-writeb-and.patch"
+#git am "${DIR}/patches/0001-ARM-Avoid-compiler-optimization-for-readb-writeb-and.patch"
 
 if [ "${AM3517_PATCH}" ] ; then
 patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
@@ -229,21 +229,21 @@ XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2010.12"
+UBOOT_TAG="v2011.03-rc2"
 REVERT=1
 build_u-boot
 }
 
 function igep0020 {
 cleanup
-IGEP0020_PATCH=1
+#IGEP0020_PATCH=1
 
 BOARD="igep0020"
 XLOAD_CONFIG="igep0020_config"
 build_omap_xloader
 
 UBOOT_CONFIG="igep0020_config"
-UBOOT_TAG="v2010.12"
+UBOOT_TAG="v2011.03-rc2"
 build_u-boot
 }
 
@@ -269,7 +269,7 @@ XLOAD_CONFIG="omap4430panda_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap4_panda_config"
-UBOOT_TAG="v2010.12"
+UBOOT_TAG="v2011.03-rc2"
 build_u-boot
 }
 
