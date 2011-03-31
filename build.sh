@@ -201,6 +201,58 @@ echo ""
 
 }
 
+function build_imx_u-boot {
+
+echo ""
+echo "Starting u-boot build"
+echo ""
+
+if ! ls ${DIR}/git/uboot-imx >/dev/null 2>&1;then
+cd ${DIR}/git/
+git clone --reference ${DIR}/git/u-boot http://opensource.freescale.com/pub/scm/imx/uboot-imx.git
+fi
+
+cd ${DIR}/git/uboot-imx/
+git pull
+cd ${DIR}/
+
+rm -rfd ${DIR}/build/u-boot || true
+mkdir -p ${DIR}/build/u-boot
+git clone --shared ${DIR}/git/uboot-imx ${DIR}/build/u-boot
+
+cd ${DIR}/build/u-boot
+make ARCH=arm CROSS_COMPILE=${CC} distclean &> /dev/null
+
+if [ "${UBOOT_GIT}" ] ; then
+git checkout ${UBOOT_GIT} -b u-boot-scratch
+else
+git checkout ${UBOOT_TAG} -b u-boot-scratch
+fi
+
+UGIT_VERSION=$(git describe)
+
+if [ "${BISECT}" ] ; then
+git_bisect
+fi
+
+make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
+echo "Building u-boot"
+time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
+
+mkdir -p ${DIR}/deploy/${BOARD}
+cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.bin
+
+cd ${DIR}/
+
+rm -rfd ${DIR}/build/u-boot
+
+echo ""
+echo "u-boot build completed"
+echo ""
+
+}
+
+
 function cleanup {
 unset UBOOT_TAG
 unset UBOOT_GIT
@@ -273,10 +325,19 @@ UBOOT_TAG="v2011.03-rc2"
 build_u-boot
 }
 
+function mx53_loco {
+cleanup
+
+BOARD="mx53_loco"
+UBOOT_CONFIG="mx53_loco_config"
+UBOOT_TAG="rel_imx_2.6.35_11.01.00"
+build_imx_u-boot
+}
+
 #at91sam9xeek
 beagleboard
 igep0020
 #am3517crane
-pandaboard
+mx53_loco
 
 
