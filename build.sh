@@ -44,9 +44,9 @@ then
  #using native gcc
  CC=
 else
- if test "-$SYST-" = "-voodoo-e6400-"
+ if test "-$SYST-" = "-atom330-"
  then
-   CC=arm-linux-gnueabi-
+   CC=~/git_repo/setup-scripts/build/tmp-angstrom_2008_1/sysroots/x86_64-linux/usr/armv7a/bin/arm-angstrom-linux-gnueabi-
  else
    #using Cross Compiler
    CC=arm-linux-gnueabi-
