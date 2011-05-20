@@ -165,9 +165,9 @@ if [ "${BISECT}" ] ; then
 git_bisect
 fi
 
-if [ "${REVERT}" ] ; then
-git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
-fi
+#if [ "${REVERT}" ] ; then
+#git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
+#fi
 
 #fix for gcc-4.5.x
 #git am "${DIR}/patches/0001-ARM-Avoid-compiler-optimization-for-readb-writeb-and.patch"
@@ -281,7 +281,7 @@ XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2011.03"
+UBOOT_TAG="v2011.06-rc1"
 REVERT=1
 build_u-boot
 }
@@ -295,7 +295,7 @@ XLOAD_CONFIG="igep0020_config"
 build_omap_xloader
 
 UBOOT_CONFIG="igep0020_config"
-UBOOT_TAG="v2011.03"
+UBOOT_TAG="v2011.06-rc1"
 build_u-boot
 }
 
@@ -308,7 +308,7 @@ XLOAD_CONFIG="am3517crane_config"
 build_omap_xloader
 
 UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG="v2009.11"
+UBOOT_TAG="v2011.06-rc1"
 build_u-boot
 }
 
@@ -321,7 +321,7 @@ XLOAD_CONFIG="omap4430panda_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap4_panda_config"
-UBOOT_TAG="v2011.03"
+UBOOT_TAG="v2011.06-rc1"
 build_u-boot
 }
 
@@ -330,6 +330,8 @@ cleanup
 
 BOARD="mx53_loco"
 UBOOT_CONFIG="mx53_loco_config"
+#UBOOT_TAG="v2011.06-rc1"
+#build_u-boot
 UBOOT_TAG="rel_imx_2.6.35_11.01.00"
 build_imx_u-boot
 }
@@ -338,6 +340,7 @@ build_imx_u-boot
 beagleboard
 igep0020
 #am3517crane
+pandaboard
 mx53_loco
 
 
