@@ -281,6 +281,8 @@ XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
+UBOOT_TAG="v2011.03"
+build_u-boot
 UBOOT_TAG="v2011.06-rc1"
 REVERT=1
 build_u-boot
@@ -295,6 +297,8 @@ XLOAD_CONFIG="igep0020_config"
 build_omap_xloader
 
 UBOOT_CONFIG="igep0020_config"
+UBOOT_TAG="v2011.03"
+build_u-boot
 UBOOT_TAG="v2011.06-rc1"
 build_u-boot
 }
@@ -308,6 +312,8 @@ XLOAD_CONFIG="am3517crane_config"
 build_omap_xloader
 
 UBOOT_CONFIG="am3517_crane_config"
+UBOOT_TAG="v2011.03"
+build_u-boot
 UBOOT_TAG="v2011.06-rc1"
 build_u-boot
 }
@@ -321,6 +327,8 @@ XLOAD_CONFIG="omap4430panda_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap4_panda_config"
+UBOOT_TAG="v2011.03"
+build_u-boot
 UBOOT_TAG="v2011.06-rc1"
 build_u-boot
 }
@@ -341,6 +349,6 @@ beagleboard
 igep0020
 #am3517crane
 pandaboard
-mx53_loco
+#mx53_loco
 
 
