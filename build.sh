@@ -288,12 +288,12 @@ REVERT=1
 build_u-boot
 }
 
-function igep0020 {
+function igep00x0 {
 cleanup
 #IGEP0020_PATCH=1
 
-BOARD="igep0020"
-XLOAD_CONFIG="igep0020_config"
+BOARD="igep00x0"
+XLOAD_CONFIG="igep00x0_config"
 build_omap_xloader
 
 UBOOT_CONFIG="igep0020_config"
@@ -346,7 +346,7 @@ build_imx_u-boot
 
 #at91sam9xeek
 beagleboard
-igep0020
+igep00x0
 #am3517crane
 pandaboard
 #mx53_loco
