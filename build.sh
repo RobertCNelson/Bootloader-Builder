@@ -305,15 +305,13 @@ build_u-boot
 
 function am3517crane {
 cleanup
-AM3517_PATCH=1
+#AM3517_PATCH=1
 
 BOARD="am3517crane"
-XLOAD_CONFIG="am3517crane_config"
-build_omap_xloader
+#XLOAD_CONFIG="am3517crane_config"
+#build_omap_xloader
 
 UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG="v2011.03"
-build_u-boot
 UBOOT_TAG="v2011.06-rc1"
 build_u-boot
 }
@@ -347,7 +345,7 @@ build_imx_u-boot
 #at91sam9xeek
 beagleboard
 igep00x0
-#am3517crane
+am3517crane
 pandaboard
 #mx53_loco
 
