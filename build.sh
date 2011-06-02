@@ -186,10 +186,17 @@ fi
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
-time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
+time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET}
 
 mkdir -p ${DIR}/deploy/${BOARD}
-cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.bin
+
+if ls u-boot.bin 2>&1;then
+ cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.bin
+fi
+
+if ls u-boot.imx 2>&1;then
+ cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.imx
+fi
 
 cd ${DIR}/
 
@@ -200,58 +207,6 @@ echo "u-boot build completed"
 echo ""
 
 }
-
-function build_imx_u-boot {
-
-echo ""
-echo "Starting u-boot build"
-echo ""
-
-if ! ls ${DIR}/git/uboot-imx >/dev/null 2>&1;then
-cd ${DIR}/git/
-git clone --reference ${DIR}/git/u-boot http://opensource.freescale.com/pub/scm/imx/uboot-imx.git
-fi
-
-cd ${DIR}/git/uboot-imx/
-git pull
-cd ${DIR}/
-
-rm -rfd ${DIR}/build/u-boot || true
-mkdir -p ${DIR}/build/u-boot
-git clone --shared ${DIR}/git/uboot-imx ${DIR}/build/u-boot
-
-cd ${DIR}/build/u-boot
-make ARCH=arm CROSS_COMPILE=${CC} distclean &> /dev/null
-
-if [ "${UBOOT_GIT}" ] ; then
-git checkout ${UBOOT_GIT} -b u-boot-scratch
-else
-git checkout ${UBOOT_TAG} -b u-boot-scratch
-fi
-
-UGIT_VERSION=$(git describe)
-
-if [ "${BISECT}" ] ; then
-git_bisect
-fi
-
-make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
-echo "Building u-boot"
-time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
-
-mkdir -p ${DIR}/deploy/${BOARD}
-cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.bin
-
-cd ${DIR}/
-
-rm -rfd ${DIR}/build/u-boot
-
-echo ""
-echo "u-boot build completed"
-echo ""
-
-}
-
 
 function cleanup {
 unset UBOOT_TAG
@@ -261,6 +216,7 @@ unset REVERT
 unset BISECT
 unset AM3517_PATCH
 unset IGEP0020_PATCH
+unset UBOOT_TARGET
 }
 
 #AT91Sam Boards
@@ -283,7 +239,7 @@ build_omap_xloader
 UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG="v2011.03"
 build_u-boot
-UBOOT_TAG="v2011.06-rc1"
+UBOOT_TAG="v2011.06-rc2"
 REVERT=1
 build_u-boot
 }
@@ -299,7 +255,7 @@ build_omap_xloader
 UBOOT_CONFIG="igep0020_config"
 UBOOT_TAG="v2011.03"
 build_u-boot
-UBOOT_TAG="v2011.06-rc1"
+UBOOT_TAG="v2011.06-rc2"
 build_u-boot
 }
 
@@ -312,7 +268,7 @@ BOARD="am3517crane"
 #build_omap_xloader
 
 UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG="v2011.06-rc1"
+UBOOT_TAG="v2011.06-rc2"
 build_u-boot
 }
 
@@ -327,19 +283,19 @@ build_omap_xloader
 UBOOT_CONFIG="omap4_panda_config"
 UBOOT_TAG="v2011.03"
 build_u-boot
-UBOOT_TAG="v2011.06-rc1"
+UBOOT_TAG="v2011.06-rc2"
 build_u-boot
 }
 
-function mx53_loco {
+function mx53loco {
 cleanup
 
-BOARD="mx53_loco"
-UBOOT_CONFIG="mx53_loco_config"
-#UBOOT_TAG="v2011.06-rc1"
-#build_u-boot
-UBOOT_TAG="rel_imx_2.6.35_11.01.00"
-build_imx_u-boot
+BOARD="mx53loco"
+
+UBOOT_CONFIG="mx53loco_config"
+UBOOT_TAG="v2011.06-rc2"
+UBOOT_TARGET="u-boot.imx"
+build_u-boot
 }
 
 #at91sam9xeek
@@ -347,6 +303,6 @@ beagleboard
 igep00x0
 am3517crane
 pandaboard
-#mx53_loco
+mx53loco
 
 
