@@ -1,0 +1,25 @@
+From d41e807ca4f69ed95ee5088a17549e3c2724cb4a Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 21 Jun 2011 14:04:38 -0500
+Subject: [PATCH 1/2] mx53loco enable ext support
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/mx53loco.h |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index 544e3fb..24649b9 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -56,6 +56,7 @@
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
+ #define CONFIG_GENERIC_MMC
++#define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+ #define CONFIG_CMD_FAT
+ #define CONFIG_DOS_PARTITION
+ 
+-- 
+1.7.4.1
+

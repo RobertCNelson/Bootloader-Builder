@@ -184,6 +184,11 @@ git add -f .
 git commit -a -m 'boot.scr fixes for igepv2'
 fi
 
+if [ "${MX53LOCO_PATCH}" ] ; then
+git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
+git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
+fi
+
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
 time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET}
@@ -216,6 +221,7 @@ unset REVERT
 unset BISECT
 unset AM3517_PATCH
 unset IGEP0020_PATCH
+unset MX53LOCO_PATCH
 unset UBOOT_TARGET
 }
 
@@ -289,6 +295,7 @@ build_u-boot
 
 function mx53loco {
 cleanup
+MX53LOCO_PATCH=1
 
 BOARD="mx53loco"
 
