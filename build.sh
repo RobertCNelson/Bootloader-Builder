@@ -293,6 +293,17 @@ UBOOT_TAG="v2011.06-rc3"
 build_u-boot
 }
 
+function mx51evk {
+cleanup
+
+BOARD="mx51evk"
+
+UBOOT_CONFIG="mx51evk_config"
+UBOOT_TAG="v2011.06-rc3"
+UBOOT_TARGET="u-boot.imx"
+build_u-boot
+}
+
 function mx53loco {
 cleanup
 MX53LOCO_PATCH=1
@@ -310,6 +321,7 @@ beagleboard
 igep00x0
 am3517crane
 pandaboard
+mx51evk
 mx53loco
 
 
