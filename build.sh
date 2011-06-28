@@ -245,7 +245,7 @@ build_omap_xloader
 UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG="v2011.03"
 build_u-boot
-UBOOT_TAG="v2011.06-rc3"
+UBOOT_TAG="v2011.06"
 REVERT=1
 build_u-boot
 }
@@ -261,7 +261,7 @@ build_omap_xloader
 UBOOT_CONFIG="igep0020_config"
 UBOOT_TAG="v2011.03"
 build_u-boot
-UBOOT_TAG="v2011.06-rc3"
+UBOOT_TAG="v2011.06"
 build_u-boot
 }
 
@@ -274,7 +274,7 @@ BOARD="am3517crane"
 #build_omap_xloader
 
 UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG="v2011.06-rc3"
+UBOOT_TAG="v2011.06"
 build_u-boot
 }
 
@@ -289,7 +289,7 @@ build_omap_xloader
 UBOOT_CONFIG="omap4_panda_config"
 UBOOT_TAG="v2011.03"
 build_u-boot
-UBOOT_TAG="v2011.06-rc3"
+UBOOT_TAG="v2011.06"
 build_u-boot
 }
 
@@ -299,7 +299,7 @@ cleanup
 BOARD="mx51evk"
 
 UBOOT_CONFIG="mx51evk_config"
-UBOOT_TAG="v2011.06-rc3"
+UBOOT_TAG="v2011.06"
 UBOOT_TARGET="u-boot.imx"
 build_u-boot
 }
@@ -311,7 +311,7 @@ MX53LOCO_PATCH=1
 BOARD="mx53loco"
 
 UBOOT_CONFIG="mx53loco_config"
-UBOOT_TAG="v2011.06-rc3"
+UBOOT_TAG="v2011.06"
 UBOOT_TARGET="u-boot.imx"
 build_u-boot
 }
@@ -323,5 +323,4 @@ am3517crane
 pandaboard
 mx51evk
 mx53loco
-
 
