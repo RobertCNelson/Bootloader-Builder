@@ -184,6 +184,11 @@ git add -f .
 git commit -a -m 'boot.scr fixes for igepv2'
 fi
 
+if [ "${MX51EVK_PATCH}" ] ; then
+git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
+git am "${DIR}/patches/0002-mx51evk-use-partition-1.patch"
+fi
+
 if [ "${MX53LOCO_PATCH}" ] ; then
 git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
 git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
@@ -221,6 +226,7 @@ unset REVERT
 unset BISECT
 unset AM3517_PATCH
 unset IGEP0020_PATCH
+unset MX51EVK_PATCH
 unset MX53LOCO_PATCH
 unset UBOOT_TARGET
 }
@@ -295,6 +301,7 @@ build_u-boot
 
 function mx51evk {
 cleanup
+MX51EVK_PATCH=1
 
 BOARD="mx51evk"
 
