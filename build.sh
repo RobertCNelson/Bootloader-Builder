@@ -68,7 +68,7 @@ if ! ls ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip >/dev/null 2>&1;then
 wget --directory-prefix=${DIR}/dl/ ftp://www.at91.com/pub/at91bootstrap/AT91Bootstrap${AT91BOOTSTRAP}.zip
 fi
 
-rm -rfd ${DIR}/Bootstrap-v${AT91BOOTSTRAP} || true
+rm -rf ${DIR}/Bootstrap-v${AT91BOOTSTRAP} || true
 unzip -q ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip
 
 cd ${DIR}/Bootstrap-v${AT91BOOTSTRAP}
@@ -96,7 +96,7 @@ cd ${DIR}/git/x-loader/
 git pull
 cd ${DIR}/
 
-rm -rfd ${DIR}/build/x-loader || true
+rm -rf ${DIR}/build/x-loader || true
 mkdir -p ${DIR}/build/x-loader
 git clone --shared ${DIR}/git/x-loader ${DIR}/build/x-loader
 
@@ -123,7 +123,7 @@ cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VER
 
 cd ${DIR}/
 
-rm -rfd ${DIR}/build/x-loader
+rm -rf ${DIR}/build/x-loader
 
 echo ""
 echo "x-loader build completed"
@@ -146,7 +146,7 @@ cd ${DIR}/git/u-boot/
 git pull
 cd ${DIR}/
 
-rm -rfd ${DIR}/build/u-boot || true
+rm -rf ${DIR}/build/u-boot || true
 mkdir -p ${DIR}/build/u-boot
 git clone --shared ${DIR}/git/u-boot ${DIR}/build/u-boot
 
@@ -210,7 +210,7 @@ fi
 
 cd ${DIR}/
 
-rm -rfd ${DIR}/build/u-boot
+rm -rf ${DIR}/build/u-boot
 
 echo ""
 echo "u-boot build completed"
