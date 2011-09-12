@@ -165,23 +165,14 @@ if [ "${BISECT}" ] ; then
 git_bisect
 fi
 
-#if [ "${REVERT}" ] ; then
-#git revert --no-edit 4a1a06bc8b21c6787a22458142e3ca3c06935517
-#fi
-
-#fix for gcc-4.5.x
-#git am "${DIR}/patches/0001-ARM-Avoid-compiler-optimization-for-readb-writeb-and.patch"
+if [ "${BEAGLE_PATCH}" ] ; then
+git am "${DIR}/patches/0001-OMAP-Add-function-to-get-state-of-a-GPIO-output.patch"
+fi
 
 if [ "${AM3517_PATCH}" ] ; then
 patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
 git add -f .
 git commit -a -m 'port of u-boot for am3517crane'
-fi
-
-if [ "${IGEP0020_PATCH}" ] ; then
-patch -p1 < "${DIR}/patches/0001-ARM-OMAP3-Revamp-IGEP-v2-default-configuration.patch"
-git add -f .
-git commit -a -m 'boot.scr fixes for igepv2'
 fi
 
 if [ "${MX51EVK_PATCH}" ] ; then
@@ -200,11 +191,19 @@ time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET}
 
 mkdir -p ${DIR}/deploy/${BOARD}
 
-if ls u-boot.bin 2>&1;then
- cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.bin
+#MLO loads u-boot.img by default over u-boot.bin
+if ls MLO >/dev/null 2>&1;then
+ cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}
+ if ls u-boot.img >/dev/null 2>&1;then
+  cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.img
+ fi
+else
+ if ls u-boot.bin >/dev/null 2>&1;then
+  cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.bin
+ fi
 fi
 
-if ls u-boot.imx 2>&1;then
+if ls u-boot.imx >/dev/null 2>&1;then
  cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.imx
 fi
 
@@ -224,6 +223,7 @@ unset UBOOT_GIT
 unset AT91BOOTSTRAP
 unset REVERT
 unset BISECT
+unset BEAGLE_PATCH
 unset AM3517_PATCH
 unset IGEP0020_PATCH
 unset MX51EVK_PATCH
@@ -249,10 +249,11 @@ XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2011.03"
-build_u-boot
 UBOOT_TAG="v2011.06"
-REVERT=1
+build_u-boot
+
+BEAGLE_PATCH=1
+UBOOT_TAG="v2011.09-rc1"
 build_u-boot
 }
 
@@ -265,9 +266,10 @@ XLOAD_CONFIG="igep00x0_config"
 build_omap_xloader
 
 UBOOT_CONFIG="igep0020_config"
-UBOOT_TAG="v2011.03"
-build_u-boot
 UBOOT_TAG="v2011.06"
+build_u-boot
+
+UBOOT_TAG="v2011.09-rc1"
 build_u-boot
 }
 
@@ -282,6 +284,9 @@ BOARD="am3517crane"
 UBOOT_CONFIG="am3517_crane_config"
 UBOOT_TAG="v2011.06"
 build_u-boot
+
+UBOOT_TAG="v2011.09-rc1"
+build_u-boot
 }
 
 #Omap4 Boards
@@ -293,9 +298,10 @@ XLOAD_CONFIG="omap4430panda_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap4_panda_config"
-UBOOT_TAG="v2011.03"
-build_u-boot
 UBOOT_TAG="v2011.06"
+build_u-boot
+
+UBOOT_TAG="v2011.09-rc1"
 build_u-boot
 }
 
@@ -306,8 +312,12 @@ MX51EVK_PATCH=1
 BOARD="mx51evk"
 
 UBOOT_CONFIG="mx51evk_config"
-UBOOT_TAG="v2011.06"
 UBOOT_TARGET="u-boot.imx"
+
+UBOOT_TAG="v2011.06"
+build_u-boot
+
+UBOOT_TAG="v2011.09-rc1"
 build_u-boot
 }
 
@@ -318,12 +328,17 @@ MX53LOCO_PATCH=1
 BOARD="mx53loco"
 
 UBOOT_CONFIG="mx53loco_config"
-UBOOT_TAG="v2011.06"
 UBOOT_TARGET="u-boot.imx"
+
+UBOOT_TAG="v2011.06"
+build_u-boot
+
+UBOOT_TAG="v2011.09-rc1"
 build_u-boot
 }
 
 #at91sam9xeek
+
 beagleboard
 igep00x0
 am3517crane
