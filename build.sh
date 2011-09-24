@@ -165,9 +165,9 @@ if [ "${BISECT}" ] ; then
 git_bisect
 fi
 
-if [ "${BEAGLE_PATCH}" ] ; then
-git am "${DIR}/patches/0001-OMAP-Add-function-to-get-state-of-a-GPIO-output.patch"
-fi
+#if [ "${BEAGLE_PATCH}" ] ; then
+#git am "${DIR}/patches/0001-OMAP-Add-function-to-get-state-of-a-GPIO-output.patch"
+#fi
 
 if [ "${AM3517_PATCH}" ] ; then
 patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
@@ -252,8 +252,8 @@ UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG="v2011.06"
 build_u-boot
 
-BEAGLE_PATCH=1
-UBOOT_TAG="v2011.09-rc1"
+#BEAGLE_PATCH=1
+UBOOT_TAG="v2011.09-rc2"
 build_u-boot
 }
 
@@ -269,7 +269,7 @@ UBOOT_CONFIG="igep0020_config"
 UBOOT_TAG="v2011.06"
 build_u-boot
 
-UBOOT_TAG="v2011.09-rc1"
+UBOOT_TAG="v2011.09-rc2"
 build_u-boot
 }
 
@@ -285,7 +285,7 @@ UBOOT_CONFIG="am3517_crane_config"
 UBOOT_TAG="v2011.06"
 build_u-boot
 
-UBOOT_TAG="v2011.09-rc1"
+UBOOT_TAG="v2011.09-rc2"
 build_u-boot
 }
 
@@ -301,7 +301,7 @@ UBOOT_CONFIG="omap4_panda_config"
 UBOOT_TAG="v2011.06"
 build_u-boot
 
-UBOOT_TAG="v2011.09-rc1"
+UBOOT_TAG="v2011.09-rc2"
 build_u-boot
 }
 
@@ -317,7 +317,7 @@ UBOOT_TARGET="u-boot.imx"
 UBOOT_TAG="v2011.06"
 build_u-boot
 
-UBOOT_TAG="v2011.09-rc1"
+UBOOT_TAG="v2011.09-rc2"
 build_u-boot
 }
 
@@ -333,7 +333,7 @@ UBOOT_TARGET="u-boot.imx"
 UBOOT_TAG="v2011.06"
 build_u-boot
 
-UBOOT_TAG="v2011.09-rc1"
+UBOOT_TAG="v2011.09-rc2"
 build_u-boot
 }
 
