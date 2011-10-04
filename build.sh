@@ -298,11 +298,11 @@ XLOAD_CONFIG="omap4430panda_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap4_panda_config"
-UBOOT_TAG="v2011.09"
+UBOOT_TAG="v2011.06"
 build_u-boot
 
-#UBOOT_TAG="v2011.09-rc2"
-#build_u-boot
+UBOOT_TAG="v2011.09"
+build_u-boot
 }
 
 function mx51evk {
