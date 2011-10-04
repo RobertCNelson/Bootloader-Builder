@@ -139,7 +139,8 @@ echo ""
 
 if ! ls ${DIR}/git/u-boot >/dev/null 2>&1;then
 cd ${DIR}/git/
-git clone git://git.denx.de/u-boot.git
+#git clone git://git.denx.de/u-boot.git
+git clone git://github.com/RobertCNelson/u-boot.git
 fi
 
 cd ${DIR}/git/u-boot/
@@ -165,9 +166,9 @@ if [ "${BISECT}" ] ; then
 git_bisect
 fi
 
-#if [ "${BEAGLE_PATCH}" ] ; then
-#git am "${DIR}/patches/0001-OMAP-Add-function-to-get-state-of-a-GPIO-output.patch"
-#fi
+if [ "${OMAP_PATCH}" ] ; then
+git pull git://github.com/RobertCNelson/u-boot.git omap-v2011.09
+fi
 
 if [ "${AM3517_PATCH}" ] ; then
 patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
@@ -223,7 +224,7 @@ unset UBOOT_GIT
 unset AT91BOOTSTRAP
 unset REVERT
 unset BISECT
-unset BEAGLE_PATCH
+unset OMAP_PATCH
 unset AM3517_PATCH
 unset IGEP0020_PATCH
 unset MX51EVK_PATCH
@@ -301,6 +302,7 @@ UBOOT_CONFIG="omap4_panda_config"
 UBOOT_TAG="v2011.06"
 build_u-boot
 
+OMAP_PATCH=1
 UBOOT_TAG="v2011.09"
 build_u-boot
 }
