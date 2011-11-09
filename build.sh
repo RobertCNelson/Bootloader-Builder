@@ -46,7 +46,7 @@ then
 else
  if test "-$SYST-" = "-atom330-"
  then
-   CC=~/git_repo/setup-scripts/build/tmp-angstrom_2008_1/sysroots/x86_64-linux/usr/armv7a/bin/arm-angstrom-linux-gnueabi-
+   CC=~/git_repo/setup-scripts/build/tmp-angstrom_2010_x-eglibc/sysroots/x86_64-linux/usr/bin/armv7a-angstrom-linux-gnueabi/arm-angstrom-linux-gnueabi-
  else
    #using Cross Compiler
    CC=arm-linux-gnueabi-
