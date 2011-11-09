@@ -170,6 +170,10 @@ if [ "${OMAP_PATCH}" ] ; then
 git pull git://github.com/RobertCNelson/u-boot.git omap-v2011.09
 fi
 
+if [ "${BEAGLEBONE_PATCH}" ] ; then
+git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
+fi
+
 if [ "${AM3517_PATCH}" ] ; then
 patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
 git add -f .
@@ -227,6 +231,7 @@ unset BISECT
 unset OMAP_PATCH
 unset AM3517_PATCH
 unset IGEP0020_PATCH
+unset BEAGLEBONE_PATCH
 unset MX51EVK_PATCH
 unset MX53LOCO_PATCH
 unset UBOOT_TARGET
@@ -254,6 +259,21 @@ UBOOT_TAG="v2011.09"
 build_u-boot
 
 #BEAGLE_PATCH=1
+#UBOOT_TAG="v2011.09-rc2"
+#build_u-boot
+}
+
+function beaglebone {
+cleanup
+
+BOARD="beaglebone"
+
+BEAGLEBONE_PATCH=1
+UBOOT_CONFIG="am335x_evm_config"
+UBOOT_TAG="v2011.09"
+build_u-boot
+
+
 #UBOOT_TAG="v2011.09-rc2"
 #build_u-boot
 }
@@ -342,6 +362,7 @@ build_u-boot
 #at91sam9xeek
 
 beagleboard
+beaglebone
 igep00x0
 am3517crane
 pandaboard
