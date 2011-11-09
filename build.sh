@@ -116,7 +116,7 @@ fi
 make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
 echo "Building x-loader"
-make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift
+make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
 cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
@@ -152,7 +152,7 @@ mkdir -p ${DIR}/build/u-boot
 git clone --shared ${DIR}/git/u-boot ${DIR}/build/u-boot
 
 cd ${DIR}/build/u-boot
-make ARCH=arm CROSS_COMPILE=${CC} distclean &> /dev/null
+make ARCH=arm CROSS_COMPILE=${CC} distclean
 
 if [ "${UBOOT_GIT}" ] ; then
 git checkout ${UBOOT_GIT} -b u-boot-scratch
@@ -192,7 +192,7 @@ fi
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot"
-time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET}
+time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET} > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
 
