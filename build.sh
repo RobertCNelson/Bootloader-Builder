@@ -44,9 +44,9 @@ then
  #using native gcc
  CC=
 else
- if test "-$SYST-" = "-atom330-"
+ if test "-$SYST-" = "-hera-"
  then
-   CC=~/git_repo/setup-scripts/build/tmp-angstrom_2010_x-eglibc/sysroots/x86_64-linux/usr/bin/armv7a-angstrom-linux-gnueabi/arm-angstrom-linux-gnueabi-
+   CC=/opt/git_repo/linaro-toolchain/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
  else
    #using Cross Compiler
    CC=arm-linux-gnueabi-
