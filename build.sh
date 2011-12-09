@@ -116,7 +116,7 @@ fi
 
 make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
-echo "Building x-loader"
+echo "Building x-loader: ${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}"
 make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
@@ -189,7 +189,7 @@ git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
 fi
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
-echo "Building u-boot"
+echo "Building u-boot: ${BOARD}-${UGIT_VERSION}"
 time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET} > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
@@ -322,6 +322,7 @@ OMAP_PATCH=1
 UBOOT_TAG="v2011.09"
 build_u-boot
 
+unset OMAP_PATCH
 UBOOT_GIT="c4eba6ec5c58083b38340724c006294c7a4fe2eb"
 build_u-boot
 }
