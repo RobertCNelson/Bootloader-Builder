@@ -60,9 +60,8 @@ git bisect start
 }
 
 function at91_loader {
-echo ""
-echo "Starting AT91Bootstrap build"
-echo ""
+echo "Starting AT91Bootstrap build for: ${BOARD}"
+echo "-----------------------------"
 
 if ! ls ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip >/dev/null 2>&1;then
 wget --directory-prefix=${DIR}/dl/ ftp://www.at91.com/pub/at91bootstrap/AT91Bootstrap${AT91BOOTSTRAP}.zip
@@ -78,13 +77,15 @@ sed -i -e 's:/opt/codesourcery/arm-2007q1/bin/arm-none-linux-gnueabi-:'${CC}':g'
 
 cd ${DIR}/
 
+echo "AT91Bootstrap build completed for: ${BOARD}"
+echo "-----------------------------"
+
 }
 
 function build_omap_xloader {
 
-echo ""
-echo "Starting x-loader build"
-echo ""
+echo "Starting x-loader build for: ${BOARD}"
+echo "-----------------------------"
 
 if ! ls ${DIR}/git/x-loader >/dev/null 2>&1;then
 cd ${DIR}/git/
@@ -125,17 +126,14 @@ cd ${DIR}/
 
 rm -rf ${DIR}/build/x-loader
 
-echo ""
-echo "x-loader build completed"
-echo ""
-
+echo "x-loader build completed for: ${BOARD}"
+echo "-----------------------------"
 }
 
 function build_u-boot {
 
-echo ""
-echo "Starting u-boot build"
-echo ""
+echo "Starting u-boot build for: ${BOARD}"
+echo "-----------------------------"
 
 if ! ls ${DIR}/git/u-boot >/dev/null 2>&1;then
 cd ${DIR}/git/
@@ -216,10 +214,8 @@ cd ${DIR}/
 
 rm -rf ${DIR}/build/u-boot
 
-echo ""
-echo "u-boot build completed"
-echo ""
-
+echo "u-boot build completed for: ${BOARD}"
+echo "-----------------------------"
 }
 
 function cleanup {
