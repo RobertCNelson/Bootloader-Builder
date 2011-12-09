@@ -135,10 +135,10 @@ function build_u-boot {
 echo "Starting u-boot build for: ${BOARD}"
 echo "-----------------------------"
 
-if ! ls ${DIR}/git/u-boot >/dev/null 2>&1;then
-cd ${DIR}/git/
-#git clone git://git.denx.de/u-boot.git
-git clone git://github.com/RobertCNelson/u-boot.git
+if [ ! -f ${DIR}/git/u-boot/.git/config ] ; then
+ cd ${DIR}/git/
+ #git clone git://git.denx.de/u-boot.git
+ git clone git://github.com/RobertCNelson/u-boot.git
 fi
 
 cd ${DIR}/git/u-boot/
