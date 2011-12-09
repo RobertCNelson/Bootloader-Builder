@@ -325,6 +325,9 @@ build_u-boot
 OMAP_PATCH=1
 UBOOT_TAG="v2011.09"
 build_u-boot
+
+UBOOT_GIT="c4eba6ec5c58083b38340724c006294c7a4fe2eb"
+build_u-boot
 }
 
 function mx51evk {
