@@ -46,7 +46,7 @@ then
 else
  if test "-$SYST-" = "-hera-"
  then
-   CC=/opt/git_repo/linaro-toolchain/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+   CC=/opt/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
  else
    #using Cross Compiler
    CC=arm-linux-gnueabi-
