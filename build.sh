@@ -50,7 +50,8 @@ then
 else
  if test "-$SYST-" = "-hera-"
  then
-   CC=/opt/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+#   CC=/opt/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+   CC=/home/voodoo/git_repo/setup-scripts/build/tmp-angstrom_2010_x-eglibc/sysroots/x86_64-linux/usr/bin/armv7a-angstrom-linux-gnueabi/arm-angstrom-linux-gnueabi-
  else
    #using Cross Compiler
    CC=arm-linux-gnueabi-
