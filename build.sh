@@ -164,7 +164,7 @@ fi
 
 if [ "${OMAP_PATCH}" ] ; then
  #http://lists.denx.de/pipermail/u-boot/2011-December/113096.html
- git revet --no-edit 9792987721c7980453fe6447c3fa6593b44f8458
+ git revert --no-edit 9792987721c7980453fe6447c3fa6593b44f8458
 fi
 
 if [ "${BEAGLEBONE_PATCH}" ] ; then
