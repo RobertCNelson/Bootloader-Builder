@@ -303,8 +303,6 @@ function pandaboard {
 cleanup
 
 BOARD="pandaboard"
-XLOAD_CONFIG="omap4430panda_config"
-build_omap_xloader
 
 UBOOT_CONFIG="omap4_panda_config"
 UBOOT_GIT="c4eba6ec5c58083b38340724c006294c7a4fe2eb"
