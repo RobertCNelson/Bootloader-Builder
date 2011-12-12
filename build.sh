@@ -300,14 +300,10 @@ cleanup
 BOARD="pandaboard"
 
 UBOOT_CONFIG="omap4_panda_config"
-UBOOT_GIT="c4eba6ec5c58083b38340724c006294c7a4fe2eb"
+OMAP_PATCH=1
+UBOOT_TAG="v2011.12-rc1"
 build_u-boot
 
-if [ "${TESTING}" ] ; then
- OMAP_PATCH=1
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
 }
 
 function mx51evk {
