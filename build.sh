@@ -25,6 +25,10 @@ TEMPDIR=$(mktemp -d)
 
 CCACHE=ccache
 
+
+STABLE="v2011.09"
+TESTING="v2011.12-rc1"
+
 unset BISECT
 
 mkdir -p ${DIR}/git/
@@ -251,12 +255,13 @@ XLOAD_CONFIG="omap3530beagle_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2011.09"
+UBOOT_TAG=${STABLE}
 build_u-boot
 
-#BEAGLE_PATCH=1
-#UBOOT_TAG="v2011.09-rc2"
-#build_u-boot
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 function beaglebone {
@@ -268,7 +273,6 @@ BEAGLEBONE_PATCH=1
 UBOOT_CONFIG="am335x_evm_config"
 UBOOT_TAG="v2011.09"
 build_u-boot
-
 
 #UBOOT_TAG="v2011.09-rc2"
 #build_u-boot
@@ -283,11 +287,13 @@ XLOAD_CONFIG="igep00x0_config"
 build_omap_xloader
 
 UBOOT_CONFIG="igep0020_config"
-UBOOT_TAG="v2011.09"
+UBOOT_TAG=${STABLE}
 build_u-boot
 
-#UBOOT_TAG="v2011.09-rc2"
-#build_u-boot
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 function am3517crane {
@@ -299,11 +305,13 @@ BOARD="am3517crane"
 #build_omap_xloader
 
 UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG="v2011.09"
+UBOOT_TAG=${STABLE}
 build_u-boot
 
-#UBOOT_TAG="v2011.09-rc2"
-#build_u-boot
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 #Omap4 Boards
@@ -319,12 +327,14 @@ UBOOT_TAG="v2011.06"
 build_u-boot
 
 OMAP_PATCH=1
-UBOOT_TAG="v2011.09"
+UBOOT_TAG=${STABLE}
 build_u-boot
 
 unset OMAP_PATCH
-UBOOT_GIT="c4eba6ec5c58083b38340724c006294c7a4fe2eb"
-build_u-boot
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 function mx51evk {
@@ -336,11 +346,13 @@ BOARD="mx51evk"
 UBOOT_CONFIG="mx51evk_config"
 UBOOT_TARGET="u-boot.imx"
 
-UBOOT_TAG="v2011.09"
+UBOOT_TAG=${STABLE}
 build_u-boot
 
-#UBOOT_TAG="v2011.09-rc2"
-#build_u-boot
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 function mx53loco {
@@ -352,11 +364,13 @@ BOARD="mx53loco"
 UBOOT_CONFIG="mx53loco_config"
 UBOOT_TARGET="u-boot.imx"
 
-UBOOT_TAG="v2011.09"
+UBOOT_TAG=${STABLE}
 build_u-boot
 
-#UBOOT_TAG="v2011.09-rc2"
-#build_u-boot
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 #at91sam9xeek
