@@ -244,18 +244,11 @@ function beagleboard {
 cleanup
 
 BOARD="beagleboard"
-XLOAD_CONFIG="omap3530beagle_config"
-build_omap_xloader
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG=${STABLE}
+OMAP_PATCH=1
+UBOOT_TAG="v2011.12-rc1"
 build_u-boot
-
-if [ "${TESTING}" ] ; then
- OMAP_PATCH=1
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
 }
 
 function beaglebone {
