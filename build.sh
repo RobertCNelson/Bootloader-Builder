@@ -50,8 +50,7 @@ then
 else
  if test "-$SYST-" = "-hera-"
  then
-#   CC=/opt/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
-   CC=/home/voodoo/git_repo/setup-scripts/build/tmp-angstrom_2010_x-eglibc/sysroots/x86_64-linux/usr/bin/armv7a-angstrom-linux-gnueabi/arm-angstrom-linux-gnueabi-
+   CC=/opt/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
  else
    #using Cross Compiler
    CC=arm-linux-gnueabi-
@@ -164,7 +163,8 @@ git_bisect
 fi
 
 if [ "${OMAP_PATCH}" ] ; then
-git pull git://github.com/RobertCNelson/u-boot.git omap-v2011.09
+ #http://lists.denx.de/pipermail/u-boot/2011-December/113096.html
+ git revet --no-edit 9792987721c7980453fe6447c3fa6593b44f8458
 fi
 
 if [ "${BEAGLEBONE_PATCH}" ] ; then
@@ -252,6 +252,7 @@ UBOOT_TAG=${STABLE}
 build_u-boot
 
 if [ "${TESTING}" ] ; then
+ OMAP_PATCH=1
  UBOOT_TAG=${TESTING}
  build_u-boot
 fi
@@ -310,6 +311,7 @@ UBOOT_GIT="c4eba6ec5c58083b38340724c006294c7a4fe2eb"
 build_u-boot
 
 if [ "${TESTING}" ] ; then
+ OMAP_PATCH=1
  UBOOT_TAG=${TESTING}
  build_u-boot
 fi
