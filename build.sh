@@ -323,14 +323,9 @@ XLOAD_CONFIG="omap4430panda_config"
 build_omap_xloader
 
 UBOOT_CONFIG="omap4_panda_config"
-UBOOT_TAG="v2011.06"
+UBOOT_GIT="c4eba6ec5c58083b38340724c006294c7a4fe2eb"
 build_u-boot
 
-OMAP_PATCH=1
-UBOOT_TAG=${STABLE}
-build_u-boot
-
-unset OMAP_PATCH
 if [ "${TESTING}" ] ; then
  UBOOT_TAG=${TESTING}
  build_u-boot
