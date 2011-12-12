@@ -349,10 +349,11 @@ UBOOT_TARGET="u-boot.imx"
 UBOOT_TAG=${STABLE}
 build_u-boot
 
-if [ "${TESTING}" ] ; then
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
+#broken
+#if [ "${TESTING}" ] ; then
+# UBOOT_TAG=${TESTING}
+# build_u-boot
+#fi
 }
 
 function mx53loco {
