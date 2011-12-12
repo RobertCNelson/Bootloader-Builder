@@ -112,12 +112,6 @@ XGIT_VERSION=$(git rev-parse --short HEAD)
 XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
 XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
 
-if [ "${AM3517_PATCH}" ] ; then
-patch -p1 < "${DIR}/patches/0001-intial-merge-from-craneboard-xload-repo-i2c-not-work.patch"
-git add -f .
-git commit -a -m 'port of x-load for am3517crane'
-fi
-
 make ARCH=arm distclean &> /dev/null
 make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
 echo "Building x-loader: ${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}"
@@ -177,9 +171,7 @@ git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
 fi
 
 if [ "${AM3517_PATCH}" ] ; then
-patch -p1 < "${DIR}/patches/0001-port-of-u-boot-for-am3517crane.patch"
-git add -f .
-git commit -a -m 'port of u-boot for am3517crane'
+git am "${DIR}/patches/0001-am3517_crane-switch-to-uenv.txt.patch"
 fi
 
 if [ "${MX51EVK_PATCH}" ] ; then
@@ -298,20 +290,12 @@ fi
 
 function am3517crane {
 cleanup
-#AM3517_PATCH=1
 
 BOARD="am3517crane"
-#XLOAD_CONFIG="am3517crane_config"
-#build_omap_xloader
-
+AM3517_PATCH=1
 UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG=${STABLE}
+UBOOT_TAG="v2011.12-rc1"
 build_u-boot
-
-if [ "${TESTING}" ] ; then
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
 }
 
 #Omap4 Boards
