@@ -27,7 +27,7 @@ CCACHE=ccache
 
 
 STABLE="v2011.09"
-TESTING="v2011.12-rc1"
+TESTING="v2011.12-rc2"
 
 unset BISECT
 
@@ -246,8 +246,7 @@ cleanup
 BOARD="beagleboard"
 
 UBOOT_CONFIG="omap3_beagle_config"
-OMAP_PATCH=1
-UBOOT_TAG="v2011.12-rc1"
+UBOOT_TAG=${TESTING}
 build_u-boot
 }
 
@@ -289,7 +288,7 @@ cleanup
 BOARD="am3517crane"
 AM3517_PATCH=1
 UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG="v2011.12-rc1"
+UBOOT_TAG=${TESTING}
 build_u-boot
 }
 
@@ -300,8 +299,7 @@ cleanup
 BOARD="pandaboard"
 
 UBOOT_CONFIG="omap4_panda_config"
-OMAP_PATCH=1
-UBOOT_TAG="v2011.12-rc1"
+UBOOT_TAG=${TESTING}
 build_u-boot
 
 }
