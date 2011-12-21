@@ -27,7 +27,7 @@ CCACHE=ccache
 
 
 STABLE="v2011.09"
-TESTING="v2011.12-rc2"
+TESTING="v2011.12-rc3"
 
 unset BISECT
 
@@ -316,11 +316,10 @@ UBOOT_TARGET="u-boot.imx"
 UBOOT_TAG=${STABLE}
 build_u-boot
 
-#broken
-#if [ "${TESTING}" ] ; then
-# UBOOT_TAG=${TESTING}
-# build_u-boot
-#fi
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 function mx53loco {
