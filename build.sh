@@ -20,14 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+unset STABLE
+unset TESTING
+
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
 
 CCACHE=ccache
 
 
-STABLE="v2011.09"
-TESTING="v2011.12-rc3"
+STABLE="v2011.12"
+#TESTING="v2011.12-rc3"
 
 unset BISECT
 
@@ -246,8 +249,13 @@ cleanup
 BOARD="beagleboard"
 
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG=${TESTING}
+UBOOT_TAG=${STABLE}
 build_u-boot
+
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 function beaglebone {
@@ -288,8 +296,13 @@ cleanup
 BOARD="am3517crane"
 AM3517_PATCH=1
 UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG=${TESTING}
+UBOOT_TAG=${STABLE}
 build_u-boot
+
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 #Omap4 Boards
@@ -299,9 +312,13 @@ cleanup
 BOARD="pandaboard"
 
 UBOOT_CONFIG="omap4_panda_config"
-UBOOT_TAG=${TESTING}
+UBOOT_TAG=${STABLE}
 build_u-boot
 
+if [ "${TESTING}" ] ; then
+ UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
 }
 
 function mx51evk {
