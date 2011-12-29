@@ -166,8 +166,7 @@ git_bisect
 fi
 
 if [ "${OMAP_PATCH}" ] ; then
- #http://lists.denx.de/pipermail/u-boot/2011-December/113096.html
- git revert --no-edit 9792987721c7980453fe6447c3fa6593b44f8458
+ git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
 fi
 
 if [ "${BEAGLEBONE_PATCH}" ] ; then
@@ -311,6 +310,7 @@ cleanup
 
 BOARD="pandaboard"
 
+OMAP_PATCH=1
 UBOOT_CONFIG="omap4_panda_config"
 UBOOT_TAG=${STABLE}
 build_u-boot
