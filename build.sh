@@ -180,11 +180,13 @@ fi
 if [ "${MX51EVK_PATCH}" ] ; then
 git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
 git am "${DIR}/patches/0002-mx51evk-use-partition-1.patch"
+git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
 fi
 
 if [ "${MX53LOCO_PATCH}" ] ; then
 git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
 git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
+git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
 fi
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}

@@ -1,0 +1,35 @@
+From cc13f8d8c50a4a956ab89da5fa186d8fb97706b3 Mon Sep 17 00:00:00 2001
+From: Eric Miao <eric.miao@linaro.org>
+Date: Tue, 16 Aug 2011 19:33:44 +0000
+Subject: [PATCH] net/eth.c: fix eth_write_hwaddr() to use dev->enetaddr as fall back
+
+Ignore the return value of eth_getenv_enetaddr_by_index(), and if it
+fails, fall back to use dev->enetaddr, which could be filled up by
+the ethernet device driver.
+
+Actually, this is the original behavior, and was later changed by
+commit 48506a2cde2458fa1f8c5993afc98e5a4617e1d3.
+
+Signed-off-by: Eric Miao <eric.miao@linaro.org>
+Acked-by: Simon Glass <sjg@chromium.org>
+---
+ net/eth.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/net/eth.c b/net/eth.c
+index 4280d6d..7f0a94f 100644
+--- a/net/eth.c
++++ b/net/eth.c
+@@ -190,8 +190,7 @@ int eth_write_hwaddr(struct eth_device *dev, const char *base_name,
+ 	unsigned char env_enetaddr[6];
+ 	int ret = 0;
+ 
+-	if (!eth_getenv_enetaddr_by_index(base_name, eth_number, env_enetaddr))
+-		return -1;
++	eth_getenv_enetaddr_by_index(base_name, eth_number, env_enetaddr);
+ 
+ 	if (memcmp(env_enetaddr, "\0\0\0\0\0\0", 6)) {
+ 		if (memcmp(dev->enetaddr, "\0\0\0\0\0\0", 6) &&
+-- 
+1.7.4.1
+
