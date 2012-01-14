@@ -51,13 +51,17 @@ then
  #using native gcc
  CC=
 else
- if test "-$SYST-" = "-hera-"
- then
-   CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
- else
-   #using Cross Compiler
-   CC=arm-linux-gnueabi-
- fi
+ #using Cross Compiler
+ CC=arm-linux-gnueabi-
+fi
+
+if [ "-$SYST-" == "-hera-" ]; then
+ #dl:http://rcn-ee.homeip.net:81/dl/bootloader/
+ CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+fi
+
+if [ "-$SYST-" == "-lvrm-" ]; then
+ CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 fi
 
 function git_bisect {
