@@ -169,7 +169,13 @@ if [ "${BISECT}" ] ; then
 git_bisect
 fi
 
-if [ "${OMAP_PATCH}" ] ; then
+if [ "${OMAP3_PATCH}" ] ; then
+ git revert --no-edit dc7100f4080952798413fb63bb4134b22c57623a
+ git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
+ git am "${DIR}/patches/0002-OMAP-MMC-Add-delay-before-waiting-for-status.patch"
+fi
+
+if [ "${OMAP4_PATCH}" ] ; then
  git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
 fi
 
@@ -229,7 +235,8 @@ unset UBOOT_GIT
 unset AT91BOOTSTRAP
 unset REVERT
 unset BISECT
-unset OMAP_PATCH
+unset OMAP3_PATCH
+unset OMAP4_PATCH
 unset AM3517_PATCH
 unset IGEP0020_PATCH
 unset BEAGLEBONE_PATCH
@@ -253,6 +260,7 @@ cleanup
 
 BOARD="beagleboard"
 
+OMAP3_PATCH=1
 UBOOT_CONFIG="omap3_beagle_config"
 UBOOT_TAG=${STABLE}
 build_u-boot
@@ -316,7 +324,7 @@ cleanup
 
 BOARD="pandaboard"
 
-OMAP_PATCH=1
+OMAP4_PATCH=1
 UBOOT_CONFIG="omap4_panda_config"
 UBOOT_TAG=${STABLE}
 build_u-boot
