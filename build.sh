@@ -260,8 +260,14 @@ cleanup
 
 BOARD="beagleboard"
 
-OMAP3_PATCH=1
+XLOAD_CONFIG="omap3530beagle_config"
+build_omap_xloader
+
 UBOOT_CONFIG="omap3_beagle_config"
+UBOOT_TAG="v2011.09"
+build_u-boot
+
+OMAP3_PATCH=1
 UBOOT_TAG=${STABLE}
 build_u-boot
 
