@@ -170,9 +170,10 @@ git_bisect
 fi
 
 if [ "${OMAP3_PATCH}" ] ; then
- git revert --no-edit dc7100f4080952798413fb63bb4134b22c57623a
+ git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
  git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
  git am "${DIR}/patches/0002-OMAP-MMC-Add-delay-before-waiting-for-status.patch"
+ git am "${DIR}/patches/0001-beagle-c4-should-not-be-showing-up-with-1GB-ram.patch"
 fi
 
 if [ "${OMAP4_PATCH}" ] ; then
