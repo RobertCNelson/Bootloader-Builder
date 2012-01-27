@@ -1,0 +1,26 @@
+From 30488445c5ce4c275ab0a603d7c4c1622586b6f2 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 27 Jan 2012 10:53:36 -0600
+Subject: [PATCH 1/2] omap: beagle: this is Special Computing C4
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/beagle/beagle.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
+index 6a457cb..cf55c79 100644
+--- a/board/ti/beagle/beagle.c
++++ b/board/ti/beagle/beagle.c
+@@ -159,7 +159,7 @@ void get_board_mem_timings(u32 *mcfg, u32 *ctrla, u32 *ctrlb, u32 *rfr_ctrl,
+ 	switch (get_board_revision()) {
+ 	case REVISION_C4:
+ 		if (pop_mfr == NAND_MFR_STMICRO && pop_id == 0xba) {
+-			/* 512MB DDR */
++			/* Beagle Rev C4 from Special Computing, 512MB DDR */
+ 			*mcfg = NUMONYX_V_MCFG_165(512 << 20);
+ 			*ctrla = NUMONYX_V_ACTIMA_165;
+ 			*ctrlb = NUMONYX_V_ACTIMB_165;
+-- 
+1.7.4.1
+

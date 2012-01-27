@@ -173,7 +173,8 @@ if [ "${OMAP3_PATCH}" ] ; then
  git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
  git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
  git am "${DIR}/patches/0002-OMAP-MMC-Add-delay-before-waiting-for-status.patch"
- git am "${DIR}/patches/0001-beagle-c4-should-not-be-showing-up-with-1GB-ram.patch"
+ git am "${DIR}/patches/0001-omap-beagle-this-is-Special-Computing-C4.patch"
+ git am "${DIR}/patches/0002-omap-beagle-re-add-c4-support.patch"
 fi
 
 if [ "${OMAP4_PATCH}" ] ; then
@@ -261,12 +262,7 @@ cleanup
 
 BOARD="beagleboard"
 
-XLOAD_CONFIG="omap3530beagle_config"
-build_omap_xloader
-
 UBOOT_CONFIG="omap3_beagle_config"
-UBOOT_TAG="v2011.09"
-build_u-boot
 
 OMAP3_PATCH=1
 UBOOT_TAG=${STABLE}
