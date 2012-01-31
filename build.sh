@@ -31,6 +31,7 @@ CCACHE=ccache
 
 STABLE="v2011.12"
 #TESTING="v2011.12-rc3"
+LATEST_GIT="137703b811502dfea364650fb3e17f20b4c21333"
 
 unset BISECT
 
@@ -286,6 +287,12 @@ build_u-boot
 
 #UBOOT_TAG="v2011.09-rc2"
 #build_u-boot
+
+if [ "${LATEST_GIT}" ] ; then
+ unset BEAGLEBONE_PATCH
+ UBOOT_GIT=${LATEST_GIT}
+ build_u-boot
+fi
 }
 
 function igep00x0 {
@@ -334,6 +341,12 @@ build_u-boot
 
 if [ "${TESTING}" ] ; then
  UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
+
+if [ "${LATEST_GIT}" ] ; then
+ unset OMAP4_PATCH
+ UBOOT_GIT=${LATEST_GIT}
  build_u-boot
 fi
 }
