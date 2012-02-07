@@ -65,6 +65,10 @@ if [ "-$SYST-" == "-lvrm-" ]; then
  CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 fi
 
+if [ "-$SYST-" == "-work-e6400-" ]; then
+ CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+fi
+
 function git_bisect {
 
 git bisect start
