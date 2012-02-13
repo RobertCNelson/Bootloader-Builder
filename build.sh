@@ -28,10 +28,10 @@ TEMPDIR=$(mktemp -d)
 
 CCACHE=ccache
 
-
 STABLE="v2011.12"
 #TESTING="v2011.12-rc3"
-LATEST_GIT="137703b811502dfea364650fb3e17f20b4c21333"
+#LATEST_GIT="137703b811502dfea364650fb3e17f20b4c21333"
+LATEST_GIT="9a3aae22edf1eda6326cc51c28631ca5c23b7706"
 
 unset BISECT
 
@@ -66,6 +66,10 @@ if [ "-$SYST-" == "-lvrm-" ]; then
 fi
 
 if [ "-$SYST-" == "-work-e6400-" ]; then
+ CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+fi
+
+if [ "-$SYST-" == "-work-p4-" ]; then
  CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 fi
 
@@ -277,6 +281,12 @@ if [ "${TESTING}" ] ; then
  UBOOT_TAG=${TESTING}
  build_u-boot
 fi
+
+if [ "${LATEST_GIT}" ] ; then
+ unset OMAP3_PATCH
+ UBOOT_GIT=${LATEST_GIT}
+ build_u-boot
+fi
 }
 
 function beaglebone {
@@ -288,9 +298,6 @@ BEAGLEBONE_PATCH=1
 UBOOT_CONFIG="am335x_evm_config"
 UBOOT_TAG="v2011.09"
 build_u-boot
-
-#UBOOT_TAG="v2011.09-rc2"
-#build_u-boot
 
 if [ "${LATEST_GIT}" ] ; then
  unset BEAGLEBONE_PATCH
@@ -313,6 +320,11 @@ build_u-boot
 
 if [ "${TESTING}" ] ; then
  UBOOT_TAG=${TESTING}
+ build_u-boot
+fi
+
+if [ "${LATEST_GIT}" ] ; then
+ UBOOT_GIT=${LATEST_GIT}
  build_u-boot
 fi
 }
