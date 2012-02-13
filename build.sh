@@ -188,7 +188,7 @@ fi
 
 if [ "${OMAP4_PATCH}" ] ; then
  git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
- git am "${DIR}/patches/0001-OMAP4-Panda-add-uEnv.txt-support.patch"
+ git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
 fi
 
 if [ "${BEAGLEBONE_PATCH}" ] ; then
