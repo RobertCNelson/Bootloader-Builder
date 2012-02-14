@@ -201,7 +201,7 @@ if [ "${BEAGLEBONE_PATCH}" ] ; then
 fi
 
 if [ "${AM3517_PATCH}" ] ; then
- RELEASE_VER="-r1"
+ RELEASE_VER="-r2"
  git am "${DIR}/patches/0001-am3517_crane-switch-to-uenv.txt.patch"
 fi
 

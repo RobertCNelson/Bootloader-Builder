@@ -1,18 +1,18 @@
-From 88ccee465fd6651c2fc99e803caf5810b22056e8 Mon Sep 17 00:00:00 2001
+From 50d367d2a2fbe8667d26e181a6710a926eb42243 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 12 Dec 2011 12:24:01 -0600
+Date: Tue, 14 Feb 2012 16:02:06 -0600
 Subject: [PATCH] am3517_crane: switch to uenv.txt
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am3517_crane.h |   34 ++++++++++++++++++++--------------
- 1 files changed, 20 insertions(+), 14 deletions(-)
+ include/configs/am3517_crane.h |   40 ++++++++++++++++++++++++----------------
+ 1 files changed, 24 insertions(+), 16 deletions(-)
 
 diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
-index 0a0c261..d855b27 100644
+index 0a0c261..bf0e6d7 100644
 --- a/include/configs/am3517_crane.h
 +++ b/include/configs/am3517_crane.h
-@@ -189,8 +189,8 @@
+@@ -189,18 +189,21 @@
  #define CONFIG_BOOTFILE		"uImage"
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -21,9 +21,13 @@ index 0a0c261..d855b27 100644
 +	"loadaddr=0x80200000\0" \
 +	"console=ttyO2,115200n8\0" \
  	"mmcdev=0\0" \
++	"mmcroot=/dev/mmcblk0p2 rw\0" \
++	"mmcrootfstype=ext3 rootwait\0" \
  	"mmcargs=setenv bootargs console=${console} " \
- 		"root=/dev/mmcblk0p2 rw " \
-@@ -198,9 +198,10 @@
+-		"root=/dev/mmcblk0p2 rw " \
+-		"rootfstype=ext3 rootwait\0" \
++		"root=${mmcroot} " \
++		"rootfstype=${mmcrootfstype}\0" \
  	"nandargs=setenv bootargs console=${console} " \
  		"root=/dev/mtdblock4 rw " \
  		"rootfstype=jffs2\0" \
@@ -37,7 +41,7 @@ index 0a0c261..d855b27 100644
  	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
-@@ -212,15 +213,20 @@
+@@ -212,15 +215,20 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"if mmc rescan ${mmcdev}; then " \
@@ -68,5 +72,5 @@ index 0a0c261..d855b27 100644
  #define CONFIG_AUTO_COMPLETE	1
  /*
 -- 
-1.7.4.1
+1.7.9
 
