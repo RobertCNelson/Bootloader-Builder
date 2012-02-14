@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2010-2011 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2010-2012 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -149,6 +149,8 @@ function build_u-boot {
 echo "Starting u-boot build for: ${BOARD}"
 echo "-----------------------------"
 
+RELEASE_VER="-r0"
+
 if [ ! -f ${DIR}/git/u-boot/.git/config ] ; then
  cd ${DIR}/git/
  #git clone git://git.denx.de/u-boot.git
@@ -179,6 +181,7 @@ git_bisect
 fi
 
 if [ "${OMAP3_PATCH}" ] ; then
+ RELEASE_VER="-r1"
  git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
  git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
  git am "${DIR}/patches/0002-OMAP-MMC-Add-delay-before-waiting-for-status.patch"
@@ -187,50 +190,55 @@ if [ "${OMAP3_PATCH}" ] ; then
 fi
 
 if [ "${OMAP4_PATCH}" ] ; then
+ RELEASE_VER="-r1"
  git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
  git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
 fi
 
 if [ "${BEAGLEBONE_PATCH}" ] ; then
-git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
+ RELEASE_VER="-r1"
+ git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
 fi
 
 if [ "${AM3517_PATCH}" ] ; then
-git am "${DIR}/patches/0001-am3517_crane-switch-to-uenv.txt.patch"
+ RELEASE_VER="-r1"
+ git am "${DIR}/patches/0001-am3517_crane-switch-to-uenv.txt.patch"
 fi
 
 if [ "${MX51EVK_PATCH}" ] ; then
-git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
-git am "${DIR}/patches/0002-mx51evk-use-partition-1.patch"
-git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
+ RELEASE_VER="-r1"
+ git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
+ git am "${DIR}/patches/0002-mx51evk-use-partition-1.patch"
+ git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
 fi
 
 if [ "${MX53LOCO_PATCH}" ] ; then
-git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
-git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
-git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
+ RELEASE_VER="-r1"
+ git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
+ git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
+ git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
 fi
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
-echo "Building u-boot: ${BOARD}-${UGIT_VERSION}"
+echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
 time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET} > /dev/null
 
 mkdir -p ${DIR}/deploy/${BOARD}
 
 #MLO loads u-boot.img by default over u-boot.bin
 if ls MLO >/dev/null 2>&1;then
- cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}
+ cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
  if ls u-boot.img >/dev/null 2>&1;then
-  cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.img
+  cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
  fi
 else
  if ls u-boot.bin >/dev/null 2>&1;then
-  cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.bin
+  cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
  fi
 fi
 
 if ls u-boot.imx >/dev/null 2>&1;then
- cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}.imx
+ cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
 fi
 
 cd ${DIR}/
