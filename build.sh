@@ -181,12 +181,11 @@ git_bisect
 fi
 
 if [ "${OMAP3_PATCH}" ] ; then
- RELEASE_VER="-r1"
+ RELEASE_VER="-r2"
  git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
  git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
- git am "${DIR}/patches/0002-OMAP-MMC-Add-delay-before-waiting-for-status.patch"
- git am "${DIR}/patches/0001-omap-beagle-this-is-Special-Computing-C4.patch"
  git am "${DIR}/patches/0002-omap-beagle-re-add-c4-support.patch"
+ git am "${DIR}/patches/0001-omap_hsmmc-Wait-for-CMDI-to-be-clear.patch"
 fi
 
 if [ "${OMAP4_PATCH}" ] ; then
