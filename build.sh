@@ -69,12 +69,8 @@ if [ "-$SYST-" == "-lvrm-" ]; then
  CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 fi
 
-if [ "-$SYST-" == "-work-e6400-" ]; then
- CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
-fi
-
-if [ "-$SYST-" == "-work-p4-" ]; then
- CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xwork-p4" ] || [ "x${SYST}" == "xx4-955" ] ; then
+	CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 fi
 
 function git_bisect {
@@ -198,6 +194,13 @@ if [ "${OMAP4_PATCH}" ] ; then
  git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
 fi
 
+	if [ "${igep00x0_patch}" ] ; then
+		RELEASE_VER="-r1"
+		git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
+		git am "${DIR}/patches/0001-omap_hsmmc-Wait-for-CMDI-to-be-clear.patch"
+		git am "${DIR}/patches/0001-convert-igep-to-uEnv.txt.patch"
+	fi
+
 if [ "${BEAGLEBONE_PATCH}" ] ; then
  RELEASE_VER="-r1"
  git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
@@ -208,19 +211,21 @@ if [ "${AM3517_PATCH}" ] ; then
  git am "${DIR}/patches/0001-am3517_crane-switch-to-uenv.txt.patch"
 fi
 
-if [ "${MX51EVK_PATCH}" ] ; then
- RELEASE_VER="-r1"
- git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
- git am "${DIR}/patches/0002-mx51evk-use-partition-1.patch"
- git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
-fi
+	if [ "${MX51EVK_PATCH}" ] ; then
+		RELEASE_VER="-r2"
+		git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
+		git am "${DIR}/patches/0002-mx51evk-use-partition-1.patch"
+		git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
+		git am "${DIR}/patches/0002-convert-mx51evk-to-uEnv.txt-bootscript.patch"
+	fi
 
-if [ "${MX53LOCO_PATCH}" ] ; then
- RELEASE_VER="-r1"
- git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
- git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
- git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
-fi
+	if [ "${MX53LOCO_PATCH}" ] ; then
+		RELEASE_VER="-r2"
+		git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
+		git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
+		git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
+		git am "${DIR}/patches/0001-convert-mx53loco-to-uEnv.txt-bootscript.patch"
+	fi
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
@@ -261,10 +266,7 @@ unset BISECT
 unset OMAP3_PATCH
 unset OMAP4_PATCH
 unset AM3517_PATCH
-unset IGEP0020_PATCH
 unset BEAGLEBONE_PATCH
-unset MX51EVK_PATCH
-unset MX53LOCO_PATCH
 unset UBOOT_TARGET
 }
 
@@ -319,26 +321,29 @@ fi
 }
 
 function igep00x0 {
-cleanup
-#IGEP0020_PATCH=1
+	cleanup
 
-BOARD="igep00x0"
-XLOAD_CONFIG="igep00x0_config"
-build_omap_xloader
+	BOARD="igep00x0"
 
-UBOOT_CONFIG="igep0020_config"
-UBOOT_TAG=${STABLE}
-build_u-boot
+	XLOAD_CONFIG="igep00x0_config"
+	build_omap_xloader
 
-if [ "${TESTING}" ] ; then
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
+	UBOOT_CONFIG="igep0020_config"
 
-if [ "${LATEST_GIT}" ] ; then
- UBOOT_GIT=${LATEST_GIT}
- build_u-boot
-fi
+	igep00x0_patch=1
+	UBOOT_TAG=${STABLE}
+	build_u-boot
+	unset igep00x0_patch
+
+	if [ "${TESTING}" ] ; then
+		UBOOT_TAG=${TESTING}
+		build_u-boot
+	fi
+
+	if [ "${LATEST_GIT}" ] ; then
+		UBOOT_GIT=${LATEST_GIT}
+		build_u-boot
+	fi
 }
 
 function am3517crane {
@@ -380,39 +385,39 @@ fi
 }
 
 function mx51evk {
-cleanup
-MX51EVK_PATCH=1
+	cleanup
 
-BOARD="mx51evk"
+	BOARD="mx51evk"
+	UBOOT_CONFIG="mx51evk_config"
+	UBOOT_TARGET="u-boot.imx"
 
-UBOOT_CONFIG="mx51evk_config"
-UBOOT_TARGET="u-boot.imx"
+	MX51EVK_PATCH=1
+	UBOOT_TAG=${STABLE}
+	build_u-boot
+	unset MX51EVK_PATCH
 
-UBOOT_TAG=${STABLE}
-build_u-boot
-
-if [ "${TESTING}" ] ; then
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
+	if [ "${TESTING}" ] ; then
+		UBOOT_TAG=${TESTING}
+		build_u-boot
+	fi
 }
 
 function mx53loco {
-cleanup
-MX53LOCO_PATCH=1
+	cleanup
 
-BOARD="mx53loco"
+	BOARD="mx53loco"
+	UBOOT_CONFIG="mx53loco_config"
+	UBOOT_TARGET="u-boot.imx"
 
-UBOOT_CONFIG="mx53loco_config"
-UBOOT_TARGET="u-boot.imx"
+	MX53LOCO_PATCH=1
+	UBOOT_TAG=${STABLE}
+	build_u-boot
+	unset MX53LOCO_PATCH
 
-UBOOT_TAG=${STABLE}
-build_u-boot
-
-if [ "${TESTING}" ] ; then
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
+	if [ "${TESTING}" ] ; then
+		UBOOT_TAG=${TESTING}
+		build_u-boot
+	fi
 }
 
 #at91sam9xeek

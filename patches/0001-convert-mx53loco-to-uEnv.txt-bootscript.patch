@@ -1,0 +1,66 @@
+From 50bcc7dafc8522482cecfabbd996d40214c61544 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 13 Mar 2012 18:31:28 -0500
+Subject: [PATCH 1/2] convert mx53loco to uEnv.txt bootscript
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/mx53loco.h |   28 ++++++++++++++--------------
+ 1 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index 34a4edd..53dafff 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -104,7 +104,6 @@
+ #define CONFIG_SYS_TEXT_BASE    0x77800000
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"script=boot.scr\0" \
+ 	"uimage=uImage\0" \
+ 	"mmcdev=0\0" \
+ 	"mmcpart=2\0" \
+@@ -113,10 +112,10 @@
+ 	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
+ 		"root=${mmcroot} " \
+ 		"rootfstype=${mmcrootfstype}\0" \
+-	"loadbootscript=" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+-	"bootscript=echo Running bootscript from mmc ...; " \
+-		"source\0" \
++	"bootenv=uEnv.txt\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t $loadaddr $filesize\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+@@ -130,15 +129,16 @@
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"if mmc rescan ${mmcdev}; then " \
+-		"if run loadbootscript; then " \
+-			"run bootscript; " \
+-		"else " \
+-			"if run loaduimage; then " \
+-				"run mmcboot; " \
+-			"else run netboot; " \
+-			"fi; " \
+-		"fi; " \
+-	"else run netboot; fi"
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if run loaduimage; then " \
++			"run mmcboot;" \
++		"fi;" \
++	"fi;" \
++	"run nandboot;" \
+ 
+ #define CONFIG_ARP_TIMEOUT	200UL
+ 
+-- 
+1.7.9.1
+
