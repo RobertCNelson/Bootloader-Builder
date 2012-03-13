@@ -215,8 +215,8 @@ fi
 		RELEASE_VER="-r2"
 		git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
 		git am "${DIR}/patches/0002-mx51evk-use-partition-1.patch"
-		git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
-		git am "${DIR}/patches/0002-convert-mx51evk-to-uEnv.txt-bootscript.patch"
+		git am "${DIR}/patches/0003-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
+		git am "${DIR}/patches/0004-convert-mx51evk-to-uEnv.txt-bootscript.patch"
 	fi
 
 	if [ "${MX53LOCO_PATCH}" ] ; then

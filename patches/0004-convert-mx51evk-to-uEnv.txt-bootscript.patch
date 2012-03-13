@@ -1,7 +1,7 @@
-From 8c6699e0d5f97b2db7f9226bfbdddccfd3631026 Mon Sep 17 00:00:00 2001
+From 20ccdd2ececc15496ff03f58040402e132437a93 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 13 Mar 2012 18:32:16 -0500
-Subject: [PATCH 2/2] convert mx51evk to uEnv.txt bootscript
+Subject: [PATCH 4/4] convert mx51evk to uEnv.txt bootscript
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
