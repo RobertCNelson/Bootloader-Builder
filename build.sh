@@ -223,8 +223,8 @@ fi
 		RELEASE_VER="-r2"
 		git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
 		git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
-		git am "${DIR}/patches/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
-		git am "${DIR}/patches/0001-convert-mx53loco-to-uEnv.txt-bootscript.patch"
+		git am "${DIR}/patches/0003-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
+		git am "${DIR}/patches/0004-convert-mx53loco-to-uEnv.txt-bootscript.patch"
 	fi
 
 make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}

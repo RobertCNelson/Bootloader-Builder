@@ -1,7 +1,7 @@
-From b93c826f355daf983fabec99f8f492bf1524d426 Mon Sep 17 00:00:00 2001
+From f4b10f7d362672a8551179904de64b9430b1efd2 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 21 Jun 2011 14:42:42 -0500
-Subject: [PATCH 2/2] mx53loco: use part 1
+Subject: [PATCH 2/4] mx53loco: use part 1
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index 24649b9..c44c019 100644
+index 3fd1c09..c9738ab 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
-@@ -97,7 +97,7 @@
+@@ -108,7 +108,7 @@
  	"script=boot.scr\0" \
  	"uimage=uImage\0" \
  	"mmcdev=0\0" \
@@ -22,5 +22,5 @@ index 24649b9..c44c019 100644
  	"mmcrootfstype=ext3 rootwait\0" \
  	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
 -- 
-1.7.4.1
+1.7.9.1
 
