@@ -35,7 +35,7 @@ STABLE="v2011.12"
 #LATEST_GIT="2acca35ce4604dcef933f07d90aa9c9c930e1049"
 #LATEST_GIT="54e96680cb96fb7a4b8f43fd949c62054004d3e5"
 #LATEST_GIT="fca94c3fd5deef33442813475a5af1650f2d2830"
-LATEST_GIT="e37ae40e9dec9af417c19de72f76becebf160730"
+#LATEST_GIT="e37ae40e9dec9af417c19de72f76becebf160730"
 LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
 
 unset BISECT
@@ -52,22 +52,21 @@ cd ${DIR}/
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-if test "-$ARCH-" = "-armv7l-" || test "-$ARCH-" = "-armv5tel-"
-then
- #using native gcc
- CC=
+if [ "x${ARCH}" == "xarmv7l" ] || [ "x${ARCH}" == "xarmv5tel" ] ; then
+	#using native gcc
+	CC=
 else
- #using Cross Compiler
- CC=arm-linux-gnueabi-
+	#using Cross Compiler
+	CC=arm-linux-gnueabi-
 fi
 
-if [ "-$SYST-" == "-hera-" ]; then
- #dl:http://rcn-ee.homeip.net:81/dl/bootloader/
- CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+if [ "x${SYST}" == "xhera" ] ; then
+	#dl:http://rcn-ee.homeip.net:81/dl/bootloader/
+	CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 fi
 
-if [ "-$SYST-" == "-lvrm-" ]; then
- CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+if [ "x${SYST}" == "xlvrm" ] ; then
+	CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 fi
 
 if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xwork-p4" ] || [ "x${SYST}" == "xx4-955" ] ; then
@@ -75,9 +74,7 @@ if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xwork-p4" ] || [ "x${SYST
 fi
 
 function git_bisect {
-
-git bisect start
-
+	git bisect start
 }
 
 function at91_loader {
@@ -245,11 +242,11 @@ function build_u-boot {
 		cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
 		if [ -f ${DIR}/build/u-boot/u-boot.img ] ; then 
 			 cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
-		 fi
+		fi
 	else
 		if [ -f ${DIR}/build/u-boot/u-boot.bin ] ; then
 			cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
-	 	fi
+		fi
 	fi
 
 	if [ -f ${DIR}/build/u-boot/u-boot.imx ] ; then
@@ -285,45 +282,44 @@ AT91BOOTSTRAP="1.16"
 at91_loader
 }
 
-#Omap3 Boards
+
 function beagleboard {
-cleanup
+	cleanup
 
-BOARD="beagleboard"
+	BOARD="beagleboard"
+	UBOOT_CONFIG="omap3_beagle_config"
 
-UBOOT_CONFIG="omap3_beagle_config"
+	OMAP3_PATCH=1
+	UBOOT_TAG=${STABLE}
+	build_u-boot
+	unset OMAP3_PATCH
 
-OMAP3_PATCH=1
-UBOOT_TAG=${STABLE}
-build_u-boot
+	if [ "${TESTING}" ] ; then
+		UBOOT_TAG=${TESTING}
+		build_u-boot
+	fi
 
-if [ "${TESTING}" ] ; then
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
-
-if [ "${LATEST_GIT}" ] ; then
- unset OMAP3_PATCH
- UBOOT_GIT=${LATEST_GIT}
- build_u-boot
-fi
+	if [ "${LATEST_GIT}" ] ; then
+		UBOOT_GIT=${LATEST_GIT}
+		build_u-boot
+	fi
 }
 
 function beaglebone {
-cleanup
+	cleanup
 
-BOARD="beaglebone"
+	BOARD="beaglebone"
+	UBOOT_CONFIG="am335x_evm_config"
 
-BEAGLEBONE_PATCH=1
-UBOOT_CONFIG="am335x_evm_config"
-UBOOT_TAG="v2011.09"
-build_u-boot
+	BEAGLEBONE_PATCH=1
+	UBOOT_TAG="v2011.09"
+	build_u-boot
+	unset BEAGLEBONE_PATCH
 
-if [ "${LATEST_GIT}" ] ; then
- unset BEAGLEBONE_PATCH
- UBOOT_GIT=${LATEST_GIT}
- build_u-boot
-fi
+	if [ "${LATEST_GIT}" ] ; then
+		UBOOT_GIT=${LATEST_GIT}
+		build_u-boot
+	fi
 }
 
 function igep00x0 {
@@ -353,18 +349,20 @@ function igep00x0 {
 }
 
 function am3517crane {
-cleanup
+	cleanup
 
-BOARD="am3517crane"
-AM3517_PATCH=1
-UBOOT_CONFIG="am3517_crane_config"
-UBOOT_TAG=${STABLE}
-build_u-boot
+	BOARD="am3517crane"
+	UBOOT_CONFIG="am3517_crane_config"
 
-if [ "${TESTING}" ] ; then
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
+	AM3517_PATCH=1
+	UBOOT_TAG=${STABLE}
+	build_u-boot
+	unset AM3517_PATCH
+
+	if [ "${TESTING}" ] ; then
+		UBOOT_TAG=${TESTING}
+		build_u-boot
+	fi
 }
 
 function pandaboard {
