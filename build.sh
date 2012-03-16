@@ -36,6 +36,7 @@ STABLE="v2011.12"
 #LATEST_GIT="54e96680cb96fb7a4b8f43fd949c62054004d3e5"
 #LATEST_GIT="fca94c3fd5deef33442813475a5af1650f2d2830"
 LATEST_GIT="e37ae40e9dec9af417c19de72f76becebf160730"
+LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
 
 unset BISECT
 
@@ -145,54 +146,60 @@ echo "-----------------------------"
 }
 
 function build_u-boot {
+	echo "Starting u-boot build for: ${BOARD}"
+	echo "-----------------------------"
 
-echo "Starting u-boot build for: ${BOARD}"
-echo "-----------------------------"
+	RELEASE_VER="-r0"
 
-RELEASE_VER="-r0"
+	if [ ! -f ${DIR}/git/u-boot/.git/config ] ; then
+		#git clone git://git.denx.de/u-boot.git
+		git clone git://github.com/RobertCNelson/u-boot.git ${DIR}/git/u-boot/
+	fi
 
-if [ ! -f ${DIR}/git/u-boot/.git/config ] ; then
- cd ${DIR}/git/
- #git clone git://git.denx.de/u-boot.git
- git clone git://github.com/RobertCNelson/u-boot.git
-fi
+	cd ${DIR}/git/u-boot/
+	git pull
+	cd ${DIR}/
 
-cd ${DIR}/git/u-boot/
-git pull
-cd ${DIR}/
+	if [ -d ${DIR}/build/u-boot ] ; then
+		rm -rf ${DIR}/build/u-boot || true
+	fi
 
-rm -rf ${DIR}/build/u-boot || true
-mkdir -p ${DIR}/build/u-boot
-git clone --shared ${DIR}/git/u-boot ${DIR}/build/u-boot
+	mkdir -p ${DIR}/build/u-boot
+	git clone --shared ${DIR}/git/u-boot ${DIR}/build/u-boot
 
-cd ${DIR}/build/u-boot
-make ARCH=arm CROSS_COMPILE=${CC} distclean
+	cd ${DIR}/build/u-boot
+	make ARCH=arm CROSS_COMPILE=${CC} distclean
 
-if [ "${UBOOT_GIT}" ] ; then
-git checkout ${UBOOT_GIT} -b u-boot-scratch
-else
-git checkout ${UBOOT_TAG} -b u-boot-scratch
-fi
+	if [ "${UBOOT_GIT}" ] ; then
+		git checkout ${UBOOT_GIT} -b u-boot-scratch
+	else
+		git checkout ${UBOOT_TAG} -b u-boot-scratch
+	fi
 
-UGIT_VERSION=$(git describe)
+	UGIT_VERSION=$(git describe)
 
-if [ "${BISECT}" ] ; then
-git_bisect
-fi
+	if [ "${BISECT}" ] ; then
+		git_bisect
+	fi
 
-if [ "${OMAP3_PATCH}" ] ; then
- RELEASE_VER="-r2"
- git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
- git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
- git am "${DIR}/patches/0002-omap-beagle-re-add-c4-support.patch"
- git am "${DIR}/patches/0001-omap_hsmmc-Wait-for-CMDI-to-be-clear.patch"
-fi
+	if [ "${OMAP3_PATCH}" ] ; then
+		RELEASE_VER="-r2"
+		git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
+		git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
+		git am "${DIR}/patches/0002-omap-beagle-re-add-c4-support.patch"
+		git am "${DIR}/patches/0001-omap_hsmmc-Wait-for-CMDI-to-be-clear.patch"
+	fi
 
-if [ "${OMAP4_PATCH}" ] ; then
- RELEASE_VER="-r1"
- git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
- git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
-fi
+	if [ "${OMAP4_PATCH}" ] ; then
+		RELEASE_VER="-r1"
+		git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
+		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
+	fi
+
+	if [ "${panda_latest_patch" ] ; then
+		RELEASE_VER="-r1"
+		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
+	fi
 
 	if [ "${igep00x0_patch}" ] ; then
 		RELEASE_VER="-r1"
@@ -201,15 +208,15 @@ fi
 		git am "${DIR}/patches/0001-convert-igep-to-uEnv.txt.patch"
 	fi
 
-if [ "${BEAGLEBONE_PATCH}" ] ; then
- RELEASE_VER="-r1"
- git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
-fi
+	if [ "${BEAGLEBONE_PATCH}" ] ; then
+		RELEASE_VER="-r1"
+		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
+	fi
 
-if [ "${AM3517_PATCH}" ] ; then
- RELEASE_VER="-r2"
- git am "${DIR}/patches/0001-am3517_crane-switch-to-uenv.txt.patch"
-fi
+	if [ "${AM3517_PATCH}" ] ; then
+		RELEASE_VER="-r2"
+		git am "${DIR}/patches/0001-am3517_crane-switch-to-uenv.txt.patch"
+	fi
 
 	if [ "${MX51EVK_PATCH}" ] ; then
 		RELEASE_VER="-r2"
@@ -227,34 +234,34 @@ fi
 		git am "${DIR}/patches/0004-convert-mx53loco-to-uEnv.txt-bootscript.patch"
 	fi
 
-make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
-echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
-time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET} > /dev/null
+	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
+	echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
+	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET} > /dev/null
 
-mkdir -p ${DIR}/deploy/${BOARD}
+	mkdir -p ${DIR}/deploy/${BOARD}
 
-#MLO loads u-boot.img by default over u-boot.bin
-if ls MLO >/dev/null 2>&1;then
- cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
- if ls u-boot.img >/dev/null 2>&1;then
-  cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
- fi
-else
- if ls u-boot.bin >/dev/null 2>&1;then
-  cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
- fi
-fi
+	#MLO loads u-boot.img by default over u-boot.bin
+	if [ -f ${DIR}/build/u-boot/MLO ] ; then
+		cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
+		if [ -f ${DIR}/build/u-boot/u-boot.img ] ; then 
+			 cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
+		 fi
+	else
+		if [ -f ${DIR}/build/u-boot/u-boot.bin ] ; then
+			cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
+	 	fi
+	fi
 
-if ls u-boot.imx >/dev/null 2>&1;then
- cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
-fi
+	if [ -f ${DIR}/build/u-boot/u-boot.imx ] ; then
+		cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
+	fi
 
-cd ${DIR}/
+	cd ${DIR}/
 
-rm -rf ${DIR}/build/u-boot
+	rm -rf ${DIR}/build/u-boot || true
 
-echo "u-boot build completed for: ${BOARD}"
-echo "-----------------------------"
+	echo "u-boot build completed for: ${BOARD}"
+	echo "-----------------------------"
 }
 
 function cleanup {
@@ -264,7 +271,6 @@ unset AT91BOOTSTRAP
 unset REVERT
 unset BISECT
 unset OMAP3_PATCH
-unset OMAP4_PATCH
 unset AM3517_PATCH
 unset BEAGLEBONE_PATCH
 unset UBOOT_TARGET
@@ -361,27 +367,28 @@ if [ "${TESTING}" ] ; then
 fi
 }
 
-#Omap4 Boards
 function pandaboard {
-cleanup
+	cleanup
 
-BOARD="pandaboard"
+	BOARD="pandaboard"
+	UBOOT_CONFIG="omap4_panda_config"
 
-OMAP4_PATCH=1
-UBOOT_CONFIG="omap4_panda_config"
-UBOOT_TAG=${STABLE}
-build_u-boot
+	OMAP4_PATCH=1
+	UBOOT_TAG=${STABLE}
+	build_u-boot
+	unset OMAP4_PATCH
 
-if [ "${TESTING}" ] ; then
- UBOOT_TAG=${TESTING}
- build_u-boot
-fi
+	if [ "${TESTING}" ] ; then
+		UBOOT_TAG=${TESTING}
+		build_u-boot
+	fi
 
-if [ "${LATEST_GIT}" ] ; then
- unset OMAP4_PATCH
- UBOOT_GIT=${LATEST_GIT}
- build_u-boot
-fi
+	if [ "${LATEST_GIT}" ] ; then
+		panda_latest_patch=1
+		UBOOT_GIT=${LATEST_GIT}
+		build_u-boot
+		unset panda_latest_patch
+	fi
 }
 
 function mx51evk {
