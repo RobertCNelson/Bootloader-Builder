@@ -41,8 +41,6 @@ STABLE="v2011.12"
 #LATEST_GIT="e37ae40e9dec9af417c19de72f76becebf160730"
 LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
 
-unset BISECT
-
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/latest/
@@ -106,7 +104,7 @@ function build_omap_xloader {
 	echo "Starting x-loader build for: ${BOARD}"
 	echo "-----------------------------"
 
-	if [ ! -d ${DIR}/git/x-loader ] ; then
+	if [ ! -f ${DIR}/git/x-loader/.git/config ] ; then
 		cd ${DIR}/git/
 		git clone git://gitorious.org/x-loader/x-loader.git
 		cd -
@@ -156,7 +154,7 @@ function build_u-boot {
 
 	cd ${DIR}/git/u-boot/
 	git pull
-	cd ${DIR}/
+	cd -
 
 	if [ -d ${DIR}/build/u-boot ] ; then
 		rm -rf ${DIR}/build/u-boot || true
@@ -176,10 +174,6 @@ function build_u-boot {
 
 	UGIT_VERSION=$(git describe)
 
-	if [ "${BISECT}" ] ; then
-		git_bisect
-	fi
-
 	if [ "${OMAP3_PATCH}" ] ; then
 		RELEASE_VER="-r2"
 		git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
@@ -194,7 +188,7 @@ function build_u-boot {
 		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
 	fi
 
-	if [ "${panda_latest_patch" ] ; then
+	if [ "${panda_latest_patch}" ] ; then
 		RELEASE_VER="-r1"
 		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
 	fi
@@ -267,7 +261,6 @@ function cleanup {
 	unset UBOOT_GIT
 	unset AT91BOOTSTRAP
 	unset REVERT
-	unset BISECT
 	unset OMAP3_PATCH
 	unset AM3517_PATCH
 	unset BEAGLEBONE_PATCH
