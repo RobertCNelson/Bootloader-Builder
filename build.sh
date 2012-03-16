@@ -28,6 +28,9 @@ TEMPDIR=$(mktemp -d)
 
 CCACHE=ccache
 
+ARCH=$(uname -m)
+SYST=$(uname -n)
+
 STABLE="v2011.12"
 #TESTING="v2011.12-rc3"
 #LATEST_GIT="137703b811502dfea364650fb3e17f20b4c21333"
@@ -44,102 +47,100 @@ mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/latest/
 
-cd ${DIR}/deploy/latest/
-rm -f bootloader || true
-wget http://rcn-ee.net/deb/tools/latest/bootloader
-cd ${DIR}/
+function dl_old_bootloaders {
+	if [ -f ${DIR}/deploy/latest/bootloader ] ; then
+		rm -f ${DIR}/deploy/latest/bootloader || true
+	fi
+	cd ${DIR}/deploy/latest/
+	wget http://rcn-ee.net/deb/tools/latest/bootloader
+	cd -
+}
 
-ARCH=$(uname -m)
-SYST=$(uname -n)
+function set_cross_compiler {
 
-if [ "x${ARCH}" == "xarmv7l" ] || [ "x${ARCH}" == "xarmv5tel" ] ; then
-	#using native gcc
-	CC=
-else
-	#using Cross Compiler
-	CC=arm-linux-gnueabi-
-fi
+	if [ "x${ARCH}" == "xarmv7l" ] ; then
+		#using native gcc
+		CC=
+	else
+		#using Cross Compiler
+		CC=arm-linux-gnueabi-
+	fi
 
-if [ "x${SYST}" == "xhera" ] ; then
-	#dl:http://rcn-ee.homeip.net:81/dl/bootloader/
-	CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
-fi
+	if [ "x${SYST}" == "xhera" ] ; then
+		#dl:http://rcn-ee.homeip.net:81/dl/bootloader/
+		CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+	fi
 
-if [ "x${SYST}" == "xlvrm" ] ; then
-	CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
-fi
+	if [ "x${SYST}" == "xlvrm" ] ; then
+		CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+	fi
 
-if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xwork-p4" ] || [ "x${SYST}" == "xx4-955" ] ; then
-	CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
-fi
-
-function git_bisect {
-	git bisect start
+	if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xwork-p4" ] || [ "x${SYST}" == "xx4-955" ] ; then
+		CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+	fi
 }
 
 function at91_loader {
-echo "Starting AT91Bootstrap build for: ${BOARD}"
-echo "-----------------------------"
+	echo "Starting AT91Bootstrap build for: ${BOARD}"
+	echo "-----------------------------"
 
-if ! ls ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip >/dev/null 2>&1;then
-wget --directory-prefix=${DIR}/dl/ ftp://www.at91.com/pub/at91bootstrap/AT91Bootstrap${AT91BOOTSTRAP}.zip
-fi
+	if ! ls ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip >/dev/null 2>&1;then
+		wget --directory-prefix=${DIR}/dl/ ftp://www.at91.com/pub/at91bootstrap/AT91Bootstrap${AT91BOOTSTRAP}.zip
+	fi
 
-rm -rf ${DIR}/Bootstrap-v${AT91BOOTSTRAP} || true
-unzip -q ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip
+	rm -rf ${DIR}/Bootstrap-v${AT91BOOTSTRAP} || true
+	unzip -q ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip
 
-cd ${DIR}/Bootstrap-v${AT91BOOTSTRAP}
-sed -i -e 's:/usr/local/bin/make-3.80:/usr/bin/make:g' go_build_bootstrap.sh
-sed -i -e 's:/opt/codesourcery/arm-2007q1/bin/arm-none-linux-gnueabi-:'${CC}':g' go_build_bootstrap.sh
-./go_build_bootstrap.sh
+	cd ${DIR}/Bootstrap-v${AT91BOOTSTRAP}
+	sed -i -e 's:/usr/local/bin/make-3.80:/usr/bin/make:g' go_build_bootstrap.sh
+	sed -i -e 's:/opt/codesourcery/arm-2007q1/bin/arm-none-linux-gnueabi-:'${CC}':g' go_build_bootstrap.sh
+	./go_build_bootstrap.sh
 
-cd ${DIR}/
+	cd -
 
-echo "AT91Bootstrap build completed for: ${BOARD}"
-echo "-----------------------------"
-
+	echo "AT91Bootstrap build completed for: ${BOARD}"
+	echo "-----------------------------"
 }
 
 function build_omap_xloader {
+	echo "Starting x-loader build for: ${BOARD}"
+	echo "-----------------------------"
 
-echo "Starting x-loader build for: ${BOARD}"
-echo "-----------------------------"
+	if [ ! -d ${DIR}/git/x-loader ] ; then
+		cd ${DIR}/git/
+		git clone git://gitorious.org/x-loader/x-loader.git
+		cd -
+	fi
 
-if ! ls ${DIR}/git/x-loader >/dev/null 2>&1;then
-cd ${DIR}/git/
-git clone git://gitorious.org/x-loader/x-loader.git
-cd ${DIR}/
-fi
+	cd ${DIR}/git/x-loader/
+	git pull
+	cd -
 
-cd ${DIR}/git/x-loader/
-git pull
-cd ${DIR}/
+	rm -rf ${DIR}/build/x-loader || true
+	mkdir -p ${DIR}/build/x-loader
+	git clone --shared ${DIR}/git/x-loader ${DIR}/build/x-loader
 
-rm -rf ${DIR}/build/x-loader || true
-mkdir -p ${DIR}/build/x-loader
-git clone --shared ${DIR}/git/x-loader ${DIR}/build/x-loader
+	cd ${DIR}/build/x-loader
+	make ARCH=arm distclean
 
-cd ${DIR}/build/x-loader
-make ARCH=arm distclean
+	XGIT_VERSION=$(git rev-parse --short HEAD)
+	XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
+	XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
 
-XGIT_VERSION=$(git rev-parse --short HEAD)
-XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
-XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
+	make ARCH=arm distclean &> /dev/null
+	make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
+	echo "Building x-loader: ${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}"
+	make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift > /dev/null
 
-make ARCH=arm distclean &> /dev/null
-make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
-echo "Building x-loader: ${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}"
-make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift > /dev/null
+	mkdir -p ${DIR}/deploy/${BOARD}
+	cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
 
-mkdir -p ${DIR}/deploy/${BOARD}
-cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
+	cd ${DIR}/
 
-cd ${DIR}/
+	rm -rf ${DIR}/build/x-loader
 
-rm -rf ${DIR}/build/x-loader
-
-echo "x-loader build completed for: ${BOARD}"
-echo "-----------------------------"
+	echo "x-loader build completed for: ${BOARD}"
+	echo "-----------------------------"
 }
 
 function build_u-boot {
@@ -262,26 +263,38 @@ function build_u-boot {
 }
 
 function cleanup {
-unset UBOOT_TAG
-unset UBOOT_GIT
-unset AT91BOOTSTRAP
-unset REVERT
-unset BISECT
-unset OMAP3_PATCH
-unset AM3517_PATCH
-unset BEAGLEBONE_PATCH
-unset UBOOT_TARGET
+	unset UBOOT_TAG
+	unset UBOOT_GIT
+	unset AT91BOOTSTRAP
+	unset REVERT
+	unset BISECT
+	unset OMAP3_PATCH
+	unset AM3517_PATCH
+	unset BEAGLEBONE_PATCH
+	unset UBOOT_TARGET
 }
 
-#AT91Sam Boards
 function at91sam9xeek {
-cleanup
+	cleanup
 
-BOARD="at91sam9xeek"
-AT91BOOTSTRAP="1.16"
-at91_loader
+	BOARD="at91sam9xeek"
+	AT91BOOTSTRAP="1.16"
+	at91_loader
 }
 
+function build_testing {
+	if [ "${TESTING}" ] ; then
+		UBOOT_TAG=${TESTING}
+		build_u-boot
+	fi
+}
+
+function build_latest {
+	if [ "${LATEST_GIT}" ] ; then
+		UBOOT_GIT=${LATEST_GIT}
+		build_u-boot
+	fi
+}
 
 function beagleboard {
 	cleanup
@@ -294,16 +307,10 @@ function beagleboard {
 	build_u-boot
 	unset OMAP3_PATCH
 
-	if [ "${TESTING}" ] ; then
-		UBOOT_TAG=${TESTING}
-		build_u-boot
-	fi
-
-	if [ "${LATEST_GIT}" ] ; then
-		UBOOT_GIT=${LATEST_GIT}
-		build_u-boot
-	fi
+	build_testing
+	build_latest
 }
+
 
 function beaglebone {
 	cleanup
@@ -316,10 +323,7 @@ function beaglebone {
 	build_u-boot
 	unset BEAGLEBONE_PATCH
 
-	if [ "${LATEST_GIT}" ] ; then
-		UBOOT_GIT=${LATEST_GIT}
-		build_u-boot
-	fi
+	build_latest
 }
 
 function igep00x0 {
@@ -337,15 +341,8 @@ function igep00x0 {
 	build_u-boot
 	unset igep00x0_patch
 
-	if [ "${TESTING}" ] ; then
-		UBOOT_TAG=${TESTING}
-		build_u-boot
-	fi
-
-	if [ "${LATEST_GIT}" ] ; then
-		UBOOT_GIT=${LATEST_GIT}
-		build_u-boot
-	fi
+	build_testing
+	build_latest
 }
 
 function am3517crane {
@@ -359,10 +356,8 @@ function am3517crane {
 	build_u-boot
 	unset AM3517_PATCH
 
-	if [ "${TESTING}" ] ; then
-		UBOOT_TAG=${TESTING}
-		build_u-boot
-	fi
+	build_testing
+	build_latest
 }
 
 function pandaboard {
@@ -376,17 +371,11 @@ function pandaboard {
 	build_u-boot
 	unset OMAP4_PATCH
 
-	if [ "${TESTING}" ] ; then
-		UBOOT_TAG=${TESTING}
-		build_u-boot
-	fi
+	build_testing
 
-	if [ "${LATEST_GIT}" ] ; then
-		panda_latest_patch=1
-		UBOOT_GIT=${LATEST_GIT}
-		build_u-boot
-		unset panda_latest_patch
-	fi
+	panda_latest_patch=1
+	build_latest
+	unset panda_latest_patch
 }
 
 function mx51evk {
@@ -401,10 +390,8 @@ function mx51evk {
 	build_u-boot
 	unset MX51EVK_PATCH
 
-	if [ "${TESTING}" ] ; then
-		UBOOT_TAG=${TESTING}
-		build_u-boot
-	fi
+	build_testing
+	build_latest
 }
 
 function mx53loco {
@@ -419,11 +406,12 @@ function mx53loco {
 	build_u-boot
 	unset MX53LOCO_PATCH
 
-	if [ "${TESTING}" ] ; then
-		UBOOT_TAG=${TESTING}
-		build_u-boot
-	fi
+	build_testing
+	build_latest
 }
+
+dl_old_bootloaders
+set_cross_compiler
 
 #at91sam9xeek
 
