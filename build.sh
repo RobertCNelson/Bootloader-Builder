@@ -173,11 +173,12 @@ function build_u-boot {
 	UGIT_VERSION=$(git describe)
 
 	if [ "${OMAP3_PATCH}" ] ; then
-		RELEASE_VER="-r2"
+		RELEASE_VER="-r3"
 		git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
 		git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
 		git am "${DIR}/patches/0002-omap-beagle-re-add-c4-support.patch"
 		git am "${DIR}/patches/0001-omap_hsmmc-Wait-for-CMDI-to-be-clear.patch"
+		git am "${DIR}/patches/0001-beagle-make-ulcd-configure-correctly-out-of-the-box.patch"
 	fi
 
 	if [ "${OMAP4_PATCH}" ] ; then
