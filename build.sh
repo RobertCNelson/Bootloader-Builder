@@ -37,7 +37,7 @@ STABLE="v2011.12"
 #Using as stable for panda/panda_es:
 #LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
 
-LATEST_GIT="dbb87bbd8eff11cf974caa2b5cc397aea444bc5a"
+LATEST_GIT="7cb30b13f12077c7eec8ce2419cd96cd65ace8e2"
 
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
