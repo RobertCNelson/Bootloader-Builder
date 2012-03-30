@@ -37,7 +37,7 @@ STABLE="v2011.12"
 #Using as stable for panda/panda_es:
 #LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
 
-LATEST_GIT="7cb30b13f12077c7eec8ce2419cd96cd65ace8e2"
+LATEST_GIT="017e1f3f9fc8745cc12bbd924b0cbc4d6ee5dbf8"
 
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
@@ -173,9 +173,7 @@ function build_u-boot {
 	UGIT_VERSION=$(git describe)
 
 	if [ "${zImage_support}" ] ; then
-		RELEASE_VER="-rz2"
-		git am "${DIR}/patches/0001-BOOT-Add-bootz-command-to-boot-Linux-zImage-on-ARM.patch"
-		git am "${DIR}/patches/0002-BOOT-Add-RAW-ramdisk-support-to-bootz.patch"
+		RELEASE_VER="-rz3"
 		git am "${DIR}/patches/0001-add-bootz-support.patch"
 		git am "${DIR}/patches/0002-also-enable-raw-initrd-support.patch"
 		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
