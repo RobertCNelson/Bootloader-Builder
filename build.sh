@@ -173,10 +173,11 @@ function build_u-boot {
 	UGIT_VERSION=$(git describe)
 
 	if [ "${zImage_support}" ] ; then
-		RELEASE_VER="-rz1"
+		RELEASE_VER="-rz2"
 		git am "${DIR}/patches/0001-BOOT-Add-bootz-command-to-boot-Linux-zImage-on-ARM.patch"
 		git am "${DIR}/patches/0002-BOOT-Add-RAW-ramdisk-support-to-bootz.patch"
 		git am "${DIR}/patches/0001-add-bootz-support.patch"
+		git am "${DIR}/patches/0002-also-enable-raw-initrd-support.patch"
 		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
 	fi
 
