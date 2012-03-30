@@ -172,6 +172,13 @@ function build_u-boot {
 
 	UGIT_VERSION=$(git describe)
 
+	if [ "${zImage_support}" ] ; then
+		RELEASE_VER="-rz"
+		git am "${DIR}/patches/0001-BOOT-Add-bootz-command-to-boot-Linux-zImage-on-ARM.patch"
+		git am "${DIR}/patches/0002-BOOT-Add-RAW-ramdisk-support-to-bootz.patch"
+		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
+	fi
+
 	if [ "${OMAP3_PATCH}" ] ; then
 		RELEASE_VER="-r3"
 		git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
@@ -288,6 +295,15 @@ function build_latest {
 	fi
 }
 
+function build_zimage {
+	zImage_support=1
+	if [ "${LATEST_GIT}" ] ; then
+		UBOOT_GIT=${LATEST_GIT}
+		build_u-boot
+	fi
+	unset zImage_support
+}
+
 function beagleboard {
 	cleanup
 
@@ -301,6 +317,7 @@ function beagleboard {
 
 	build_testing
 	build_latest
+	build_zimage
 }
 
 
@@ -368,6 +385,7 @@ function pandaboard {
 	panda_latest_patch=1
 	build_latest
 	unset panda_latest_patch
+	build_zimage
 }
 
 function mx51evk {

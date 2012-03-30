@@ -1,0 +1,100 @@
+From 6db1b07bd397104925c9839bc87d64531af5f085 Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marek.vasut@gmail.com>
+Date: Sun, 18 Mar 2012 11:47:58 +0000
+Subject: [PATCH 2/2] BOOT: Add RAW ramdisk support to bootz
+
+This patch allows loading RAW ramdisk via bootz command. The raw ramdisk is
+loaded only in case it's size is specified:
+
+  bootz <kernel addr> <ramdisk addr>:<ramdisk size> <fdt addr>
+
+For example:
+
+  bootz 0x42000000 0x43000000:0x12345 0x44000000
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Rob Herring <rob.herring@calxeda.com>
+Cc: Tom Warren <TWarren@nvidia.com>
+Cc: albert.u.boot@aribaud.net
+Cc: afleming@gmail.com
+Cc: Simon Glass <sjg@chromium.org>
+Cc: Stephen Warren <swarren@nvidia.com>
+Cc: Nicolas Pitre <nico@fluxnic.net>
+Cc: Wolfgang Denk <wd@denx.de>
+Cc: Detlev Zundel <dzu@denx.de>
+---
+ README             |    5 +++++
+ common/cmd_bootm.c |    6 ++++--
+ common/image.c     |   15 ++++++++++++---
+ 3 files changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/README b/README
+index 3148b46..62a3e5d 100644
+--- a/README
++++ b/README
+@@ -4381,6 +4381,11 @@ On some platforms, it's possible to boot Linux zImage. This is done
+ using the "bootz" command. The syntax of "bootz" command is the same
+ as the syntax of "bootm" command.
+ 
++Note, defining the CONFIG_SUPPORT_INITRD_RAW allows user to supply
++kernel with raw initrd images. The syntax is slightly different, the
++address of the initrd must be augmented by it's size, in the following
++format: "<initrd addres>:<initrd size>".
++
+ 
+ Standalone HOWTO:
+ =================
+diff --git a/common/cmd_bootm.c b/common/cmd_bootm.c
+index 5e5d572..9ad2535 100644
+--- a/common/cmd_bootm.c
++++ b/common/cmd_bootm.c
+@@ -1629,9 +1629,11 @@ static int do_bootz(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ U_BOOT_CMD(
+ 	bootz,	CONFIG_SYS_MAXARGS,	1,	do_bootz,
+ 	"boot Linux zImage image from memory",
+-	"[addr [initrd] [fdt]]\n    - boot Linux zImage stored in memory\n"
++	"[addr [initrd[:size]] [fdt]]\n"
++	"    - boot Linux zImage stored in memory\n"
+ 	"\tThe argument 'initrd' is optional and specifies the address\n"
+-	"\tof the initrd in memory.\n"
++	"\tof the initrd in memory. The optional argument ':size' allows\n"
++	"\tspecifying the size of RAW initrd.\n"
+ #if defined(CONFIG_OF_LIBFDT)
+ 	"\tWhen booting a Linux kernel which requires a flat device-tree\n"
+ 	"\ta third argument is required which is the address of the\n"
+diff --git a/common/image.c b/common/image.c
+index 8c644b7..103e0e6 100644
+--- a/common/image.c
++++ b/common/image.c
+@@ -797,6 +797,7 @@ int boot_get_ramdisk(int argc, char * const argv[], bootm_headers_t *images,
+ 	ulong rd_addr, rd_load;
+ 	ulong rd_data, rd_len;
+ 	const image_header_t *rd_hdr;
++	char *end;
+ #if defined(CONFIG_FIT)
+ 	void		*fit_hdr;
+ 	const char	*fit_uname_config = NULL;
+@@ -994,9 +995,17 @@ int boot_get_ramdisk(int argc, char * const argv[], bootm_headers_t *images,
+ 			break;
+ #endif
+ 		default:
+-			puts("Wrong Ramdisk Image Format\n");
+-			rd_data = rd_len = rd_load = 0;
+-			return 1;
++#ifdef CONFIG_SUPPORT_RAW_INITRD
++			if (argc >= 3 && (end = strchr(argv[2], ':'))) {
++				rd_len = simple_strtoul(++end, NULL, 16);
++				rd_data = rd_addr;
++			} else
++#endif
++			{
++				puts("Wrong Ramdisk Image Format\n");
++				rd_data = rd_len = rd_load = 0;
++				return 1;
++			}
+ 		}
+ 	} else if (images->legacy_hdr_valid &&
+ 			image_check_type(&images->legacy_hdr_os_copy,
+-- 
+1.7.9.1
+

@@ -1,0 +1,283 @@
+From 3912280f861c41bbf99760a3f8e1779a26cb9730 Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marex@denx.de>
+Date: Wed, 14 Mar 2012 21:52:45 +0000
+Subject: [PATCH 1/2] BOOT: Add "bootz" command to boot Linux zImage on ARM
+
+This command boots Linux zImage from where the zImage is loaded to. Passing
+initrd and fdt is supported.
+
+Tested on i.MX28 based DENX M28EVK
+Tested on PXA270 based Voipac PXA270.
+
+NOTE: This currently only supports ARM, but other architectures can be easily
+added by defining bootz_setup().
+
+Signed-off-by: Marek Vasut <marek.vasut@gmail.com>
+Cc: Tom Warren <TWarren@nvidia.com>
+Cc: albert.u.boot@aribaud.net
+Cc: afleming@gmail.com,
+Cc: Simon Glass <sjg@chromium.org>,
+Cc: Stephen Warren <swarren@nvidia.com>
+Cc: Nicolas Pitre <nico@fluxnic.net>
+Cc: Wolfgang Denk <wd@denx.de>
+Cc: Detlev Zundel <dzu@denx.de>
+---
+ README                   |    8 +++
+ arch/arm/lib/bootm.c     |   30 ++++++++++
+ common/cmd_bootm.c       |  141 +++++++++++++++++++++++++++++++++++++++++++---
+ include/config_cmd_all.h |    1 +
+ 4 files changed, 171 insertions(+), 9 deletions(-)
+
+diff --git a/README b/README
+index b69a3b6..3148b46 100644
+--- a/README
++++ b/README
+@@ -3553,6 +3553,7 @@ go	- start application at address 'addr'
+ run	- run commands in an environment variable
+ bootm	- boot application image from memory
+ bootp	- boot image via network using BootP/TFTP protocol
++bootz   - boot zImage from memory
+ tftpboot- boot image via network using TFTP protocol
+ 	       and env variables "ipaddr" and "serverip"
+ 	       (and eventually "gatewayip")
+@@ -4373,6 +4374,13 @@ U-Boot supports the following image types:
+ 	useful when you configure U-Boot to use a real shell (hush)
+ 	as command interpreter.
+ 
++Booting the Linux zImage:
++-------------------------
++
++On some platforms, it's possible to boot Linux zImage. This is done
++using the "bootz" command. The syntax of "bootz" command is the same
++as the syntax of "bootm" command.
++
+ 
+ Standalone HOWTO:
+ =================
+diff --git a/arch/arm/lib/bootm.c b/arch/arm/lib/bootm.c
+index 2961ab2..82c44f1 100644
+--- a/arch/arm/lib/bootm.c
++++ b/arch/arm/lib/bootm.c
+@@ -348,3 +348,33 @@ static ulong get_sp(void)
+ 	asm("mov %0, sp" : "=r"(ret) : );
+ 	return ret;
+ }
++
++#ifdef CONFIG_CMD_BOOTZ
++
++struct zimage_header {
++	uint32_t	code[9];
++	uint32_t	zi_magic;
++	uint32_t	zi_start;
++	uint32_t	zi_end;
++};
++
++#define	LINUX_ARM_ZIMAGE_MAGIC	0x016f2818
++
++int bootz_setup(void *image, void **start, void **end)
++{
++	struct zimage_header *zi = (struct zimage_header *)image;
++
++	if (zi->zi_magic != LINUX_ARM_ZIMAGE_MAGIC) {
++		puts("Bad Linux ARM zImage magic!\n");
++		return 1;
++	}
++
++	*start = (void *)zi->zi_start;
++	*end = (void *)zi->zi_end;
++
++	debug("Kernel image @ 0x%08x [ 0x%08x - 0x%08x ]\n",
++		(uint32_t)image, (uint32_t)*start, (uint32_t)*end);
++
++	return 0;
++}
++#endif	/* CONFIG_CMD_BOOTZ */
+diff --git a/common/cmd_bootm.c b/common/cmd_bootm.c
+index d88f6c0..5e5d572 100644
+--- a/common/cmd_bootm.c
++++ b/common/cmd_bootm.c
+@@ -169,25 +169,25 @@ void arch_preboot_os(void) __attribute__((weak, alias("__arch_preboot_os")));
+ 
+ #define IH_INITRD_ARCH IH_ARCH_DEFAULT
+ 
+-static void bootm_start_lmb(void)
+-{
+ #ifdef CONFIG_LMB
++static void boot_start_lmb(bootm_headers_t *images)
++{
+ 	ulong		mem_start;
+ 	phys_size_t	mem_size;
+ 
+-	lmb_init(&images.lmb);
++	lmb_init(&images->lmb);
+ 
+ 	mem_start = getenv_bootm_low();
+ 	mem_size = getenv_bootm_size();
+ 
+-	lmb_add(&images.lmb, (phys_addr_t)mem_start, mem_size);
++	lmb_add(&images->lmb, (phys_addr_t)mem_start, mem_size);
+ 
+-	arch_lmb_reserve(&images.lmb);
+-	board_lmb_reserve(&images.lmb);
++	arch_lmb_reserve(&images->lmb);
++	board_lmb_reserve(&images->lmb);
++}
+ #else
+-# define lmb_reserve(lmb, base, size)
++static inline void boot_start_lmb(bootm_headers_t *images) { }
+ #endif
+-}
+ 
+ static int bootm_start(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ {
+@@ -197,7 +197,7 @@ static int bootm_start(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]
+ 	memset((void *)&images, 0, sizeof(images));
+ 	images.verify = getenv_yesno("verify");
+ 
+-	bootm_start_lmb();
++	boot_start_lmb(&images);
+ 
+ 	bootstage_mark_name(BOOTSTAGE_ID_BOOTM_START, "bootm_start");
+ 
+@@ -1518,3 +1518,126 @@ static int do_bootm_integrity(int flag, int argc, char * const argv[],
+ 	return 1;
+ }
+ #endif
++
++#ifdef CONFIG_CMD_BOOTZ
++
++static int __bootz_setup(void *image, void **start, void **end)
++{
++	/* Please define bootz_setup() for your platform */
++
++	puts("Your platform's zImage format isn't supported yet!\n");
++	return -1;
++}
++int bootz_setup(void *image, void **start, void **end)
++	__attribute__((weak, alias("__bootz_setup")));
++
++/*
++ * zImage booting support
++ */
++static int bootz_start(cmd_tbl_t *cmdtp, int flag, int argc,
++			char * const argv[], bootm_headers_t *images)
++{
++	int ret;
++	void *zi_start, *zi_end;
++
++	memset(images, 0, sizeof(bootm_headers_t));
++
++	boot_start_lmb(images);
++
++	/* Setup Linux kernel zImage entry point */
++	if (argc < 2) {
++		images->ep = load_addr;
++		debug("*  kernel: default image load address = 0x%08lx\n",
++				load_addr);
++	} else {
++		images->ep = simple_strtoul(argv[1], NULL, 16);
++		debug("*  kernel: cmdline image address = 0x%08lx\n",
++			images->ep);
++	}
++
++	ret = bootz_setup((void *)images->ep, &zi_start, &zi_end);
++	if (ret != 0)
++		return 1;
++
++	lmb_reserve(&images->lmb, images->ep, zi_end - zi_start);
++
++	/* Find ramdisk */
++	ret = boot_get_ramdisk(argc, argv, images, IH_INITRD_ARCH,
++			&images->rd_start, &images->rd_end);
++	if (ret) {
++		puts("Ramdisk image is corrupt or invalid\n");
++		return 1;
++	}
++
++#if defined(CONFIG_OF_LIBFDT)
++	/* find flattened device tree */
++	ret = boot_get_fdt(flag, argc, argv, images,
++			   &images->ft_addr, &images->ft_len);
++	if (ret) {
++		puts("Could not find a valid device tree\n");
++		return 1;
++	}
++
++	set_working_fdt_addr(images->ft_addr);
++#endif
++
++	return 0;
++}
++
++static int do_bootz(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++	ulong		iflag;
++	bootm_headers_t	images;
++
++	if (bootz_start(cmdtp, flag, argc, argv, &images))
++		return 1;
++
++	/*
++	 * We have reached the point of no return: we are going to
++	 * overwrite all exception vector code, so we cannot easily
++	 * recover from any failures any more...
++	 */
++	iflag = disable_interrupts();
++
++#if defined(CONFIG_CMD_USB)
++	/*
++	 * turn off USB to prevent the host controller from writing to the
++	 * SDRAM while Linux is booting. This could happen (at least for OHCI
++	 * controller), because the HCCA (Host Controller Communication Area)
++	 * lies within the SDRAM and the host controller writes continously to
++	 * this area (as busmaster!). The HccaFrameNumber is for example
++	 * updated every 1 ms within the HCCA structure in SDRAM! For more
++	 * details see the OpenHCI specification.
++	 */
++	usb_stop();
++#endif
++
++#ifdef CONFIG_SILENT_CONSOLE
++	fixup_silent_linux();
++#endif
++	arch_preboot_os();
++
++	do_bootm_linux(0, argc, argv, &images);
++#ifdef DEBUG
++	puts("\n## Control returned to monitor - resetting...\n");
++#endif
++	do_reset(cmdtp, flag, argc, argv);
++
++	return 1;
++}
++
++U_BOOT_CMD(
++	bootz,	CONFIG_SYS_MAXARGS,	1,	do_bootz,
++	"boot Linux zImage image from memory",
++	"[addr [initrd] [fdt]]\n    - boot Linux zImage stored in memory\n"
++	"\tThe argument 'initrd' is optional and specifies the address\n"
++	"\tof the initrd in memory.\n"
++#if defined(CONFIG_OF_LIBFDT)
++	"\tWhen booting a Linux kernel which requires a flat device-tree\n"
++	"\ta third argument is required which is the address of the\n"
++	"\tdevice-tree blob. To boot that kernel without an initrd image,\n"
++	"\tuse a '-' for the second argument. If you do not pass a third\n"
++	"\ta bd_info struct will be passed instead\n"
++#endif
++);
++#endif	/* CONFIG_CMD_BOOTZ */
+diff --git a/include/config_cmd_all.h b/include/config_cmd_all.h
+index 9716f9c..2c6b829 100644
+--- a/include/config_cmd_all.h
++++ b/include/config_cmd_all.h
+@@ -20,6 +20,7 @@
+ #define CONFIG_CMD_BEDBUG	/* Include BedBug Debugger	*/
+ #define CONFIG_CMD_BMP		/* BMP support			*/
+ #define CONFIG_CMD_BOOTD	/* bootd			*/
++#define CONFIG_CMD_BOOTZ	/* boot zImage			*/
+ #define CONFIG_CMD_BSP		/* Board Specific functions	*/
+ #define CONFIG_CMD_CACHE	/* icache, dcache		*/
+ #define CONFIG_CMD_CDP		/* Cisco Discovery Protocol	*/
+-- 
+1.7.9.1
+
