@@ -1,4 +1,4 @@
-From e0214dcb654c82e00313dd143dd4c26219b3c5af Mon Sep 17 00:00:00 2001
+From 355da459c18864e6f01596b2265e7e50f82ff70b Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Sun, 1 Apr 2012 11:57:02 -0500
 Subject: [PATCH] beagle: ulcd passthru support
@@ -83,7 +83,7 @@ index 8b07eef..6d97ee4 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_A:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 912991c..e87a753 100644
+index ec189d9..843f2a6 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -224,6 +224,7 @@
@@ -101,7 +101,7 @@ index 912991c..e87a753 100644
 +		"buddy2=${buddy2} "\
  		"camera=${camera} "\
  		"vram=${vram} " \
- 		"omapfb.mode=dvi:${dvimode} " \
+ 		"omapfb.mode=${defaultdisplay}:${dvimode} " \
 @@ -250,6 +252,7 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
@@ -109,14 +109,14 @@ index 912991c..e87a753 100644
 +		"buddy2=${buddy2} "\
  		"camera=${camera} "\
  		"vram=${vram} " \
- 		"omapfb.mode=dvi:${dvimode} " \
+ 		"omapfb.mode=${defaultdisplay}:${dvimode} " \
 @@ -264,6 +267,7 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
 +		"buddy2=${buddy2} "\
  		"vram=${vram} " \
- 		"omapfb.mode=dvi:${dvimode} " \
+ 		"omapfb.mode=${defaultdisplay}:${dvimode} " \
  		"omapdss.def_disp=${defaultdisplay} " \
 -- 
 1.7.9.1

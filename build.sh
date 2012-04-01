@@ -185,7 +185,8 @@ function build_u-boot {
 	fi
 
 	if [ "${beagle_fixes}" ] ; then
-		RELEASE_VER="-r0"
+		RELEASE_VER="-r1"
+		git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
 		git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
 	fi
 

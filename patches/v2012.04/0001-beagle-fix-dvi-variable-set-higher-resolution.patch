@@ -1,0 +1,53 @@
+From b5ba94e6645636a3926817b4bbf196910ee9cbb3 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Sun, 1 Apr 2012 12:23:15 -0500
+Subject: [PATCH] beagle: fix dvi variable, set higher resolution
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/omap3_beagle.h |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
+index 912991c..ec189d9 100644
+--- a/include/configs/omap3_beagle.h
++++ b/include/configs/omap3_beagle.h
+@@ -227,7 +227,7 @@
+ 	"optargs=\0" \
+ 	"camera=none\0" \
+ 	"vram=12M\0" \
+-	"dvimode=640x480MR-16@60\0" \
++	"dvimode=1280x720MR-16@60\0" \
+ 	"defaultdisplay=dvi\0" \
+ 	"mmcdev=0\0" \
+ 	"mmcroot=/dev/mmcblk0p2 rw\0" \
+@@ -242,7 +242,7 @@
+ 		"buddy=${buddy} "\
+ 		"camera=${camera} "\
+ 		"vram=${vram} " \
+-		"omapfb.mode=dvi:${dvimode} " \
++		"omapfb.mode=${defaultdisplay}:${dvimode} " \
+ 		"omapdss.def_disp=${defaultdisplay} " \
+ 		"root=${mmcroot} " \
+ 		"rootfstype=${mmcrootfstype}\0" \
+@@ -252,7 +252,7 @@
+ 		"buddy=${buddy} "\
+ 		"camera=${camera} "\
+ 		"vram=${vram} " \
+-		"omapfb.mode=dvi:${dvimode} " \
++		"omapfb.mode=${defaultdisplay}:${dvimode} " \
+ 		"omapdss.def_disp=${defaultdisplay} " \
+ 		"root=${nandroot} " \
+ 		"rootfstype=${nandrootfstype}\0" \
+@@ -265,7 +265,7 @@
+ 		"mpurate=${mpurate} " \
+ 		"buddy=${buddy} "\
+ 		"vram=${vram} " \
+-		"omapfb.mode=dvi:${dvimode} " \
++		"omapfb.mode=${defaultdisplay}:${dvimode} " \
+ 		"omapdss.def_disp=${defaultdisplay} " \
+ 		"root=${ramroot} " \
+ 		"rootfstype=${ramrootfstype}\0" \
+-- 
+1.7.9.1
+
