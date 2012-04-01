@@ -1,0 +1,76 @@
+From 4f183ab854a6fcabe389ad26f559180853924ad9 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Sun, 1 Apr 2012 11:48:03 -0500
+Subject: [PATCH] am3517_crane: convert to uEnv.txt bootscript
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/am3517_crane.h |   40 ++++++++++++++++++++++++----------------
+ 1 files changed, 24 insertions(+), 16 deletions(-)
+
+diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
+index a2eb7ca..c351038 100644
+--- a/include/configs/am3517_crane.h
++++ b/include/configs/am3517_crane.h
+@@ -191,18 +191,21 @@
+ #define CONFIG_BOOTFILE		"uImage"
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"loadaddr=0x82000000\0" \
+-	"console=ttyS2,115200n8\0" \
++	"loadaddr=0x80200000\0" \
++	"console=ttyO2,115200n8\0" \
+ 	"mmcdev=0\0" \
++	"mmcroot=/dev/mmcblk0p2 rw\0" \
++	"mmcrootfstype=ext3 rootwait\0" \
+ 	"mmcargs=setenv bootargs console=${console} " \
+-		"root=/dev/mmcblk0p2 rw " \
+-		"rootfstype=ext3 rootwait\0" \
++		"root=${mmcroot} " \
++		"rootfstype=${mmcrootfstype}\0" \
+ 	"nandargs=setenv bootargs console=${console} " \
+ 		"root=/dev/mtdblock4 rw " \
+ 		"rootfstype=jffs2\0" \
+-	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
+-	"bootscript=echo Running bootscript from mmc ...; " \
+-		"source ${loadaddr}\0" \
++	"bootenv=uEnv.txt\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t $loadaddr $filesize\0" \
+ 	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+@@ -214,15 +217,20 @@
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"if mmc rescan ${mmcdev}; then " \
+-		"if run loadbootscript; then " \
+-			"run bootscript; " \
+-		"else " \
+-			"if run loaduimage; then " \
+-				"run mmcboot; " \
+-			"else run nandboot; " \
+-			"fi; " \
+-		"fi; " \
+-	"else run nandboot; fi"
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if test -n $uenvcmd; then " \
++			"echo Running uenvcmd ...;" \
++			"run uenvcmd;" \
++		"fi;" \
++		"if run loaduimage; then " \
++			"run mmcboot;" \
++		"fi;" \
++	"fi;" \
++	"run nandboot;" \
+ 
+ #define CONFIG_AUTO_COMPLETE	1
+ /*
+-- 
+1.7.9.1
+

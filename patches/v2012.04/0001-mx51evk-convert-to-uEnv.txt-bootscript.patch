@@ -1,0 +1,76 @@
+From 62630aae7d239f2d814ca2d74b3ac9fbf2ebbab9 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Sun, 1 Apr 2012 11:50:06 -0500
+Subject: [PATCH] mx51evk: convert to uEnv.txt bootscript
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/mx51evk.h |   31 ++++++++++++++++---------------
+ 1 files changed, 16 insertions(+), 15 deletions(-)
+
+diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
+index 4d98873..90808c0 100644
+--- a/include/configs/mx51evk.h
++++ b/include/configs/mx51evk.h
+@@ -93,6 +93,7 @@
+ #define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
+ #define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
++#define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+ #define CONFIG_CMD_FAT
+ #define CONFIG_DOS_PARTITION
+ 
+@@ -148,19 +149,18 @@
+ #define CONFIG_LOADADDR		0x90800000	/* loadaddr env var */
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"script=boot.scr\0" \
+ 	"uimage=uImage\0" \
+ 	"mmcdev=0\0" \
+-	"mmcpart=2\0" \
++	"mmcpart=1\0" \
+ 	"mmcroot=/dev/mmcblk0p3 rw\0" \
+ 	"mmcrootfstype=ext3 rootwait\0" \
+ 	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
+ 		"root=${mmcroot} " \
+ 		"rootfstype=${mmcrootfstype}\0" \
+-	"loadbootscript=" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+-	"bootscript=echo Running bootscript from mmc ...; " \
+-		"source\0" \
++	"bootenv=uEnv.txt\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t $loadaddr $filesize\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+@@ -174,15 +174,16 @@
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"if mmc rescan ${mmcdev}; then " \
+-		"if run loadbootscript; then " \
+-			"run bootscript; " \
+-		"else " \
+-			"if run loaduimage; then " \
+-				"run mmcboot; " \
+-			"else run netboot; " \
+-			"fi; " \
+-		"fi; " \
+-	"else run netboot; fi"
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if run loaduimage; then " \
++			"run mmcboot;" \
++		"fi;" \
++	"fi;" \
++	"run nandboot;" \
+ 
+ #define CONFIG_ARP_TIMEOUT	200UL
+ 
+-- 
+1.7.9.1
+

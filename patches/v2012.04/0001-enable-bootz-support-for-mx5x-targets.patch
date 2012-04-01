@@ -1,0 +1,40 @@
+From 88ce0784f77b825a26630817b8362911d60f8ada Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Sun, 1 Apr 2012 11:36:18 -0500
+Subject: [PATCH] enable bootz support for mx5x targets
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/mx51evk.h  |    2 ++
+ include/configs/mx53loco.h |    2 ++
+ 2 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
+index 1477b21..4d98873 100644
+--- a/include/configs/mx51evk.h
++++ b/include/configs/mx51evk.h
+@@ -90,6 +90,8 @@
+ #define CONFIG_MMC
+ 
+ #define CONFIG_CMD_MMC
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_CMD_FAT
+ #define CONFIG_DOS_PARTITION
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index 34a4edd..2c55b19 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -54,6 +54,8 @@
+ 
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_CMD_FAT
+ #define CONFIG_DOS_PARTITION
+-- 
+1.7.9.1
+

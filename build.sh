@@ -32,12 +32,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2011.12"
-#TESTING="v2011.12-rc3"
+TESTING="v2012.04-rc1"
 
 #Using as stable for panda/panda_es:
 #LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
-
-LATEST_GIT="017e1f3f9fc8745cc12bbd924b0cbc4d6ee5dbf8"
+#LATEST_GIT="017e1f3f9fc8745cc12bbd924b0cbc4d6ee5dbf8"
 
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
@@ -172,11 +171,22 @@ function build_u-boot {
 
 	UGIT_VERSION=$(git describe)
 
-	if [ "${zImage_support}" ] ; then
-		RELEASE_VER="-rz3"
-		git am "${DIR}/patches/0001-add-bootz-support.patch"
-		git am "${DIR}/patches/0002-also-enable-raw-initrd-support.patch"
-		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
+	if [ "${enable_zImage_support}" ] ; then
+		git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
+		git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-mx5x-targets.patch"
+	fi
+
+	if [ "${enable_uenv_support}" ] ; then
+		git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
+		git am "${DIR}/patches/v2012.04/0001-igep0020-convert-to-uEnv.txt-bootscript.patch"
+		git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
+		git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
+		git am "${DIR}/patches/v2012.04/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
+	fi
+
+	if [ "${beagle_fixes}" ] ; then
+		RELEASE_VER="-r0"
+		git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
 	fi
 
 	if [ "${OMAP3_PATCH}" ] ; then
@@ -191,11 +201,6 @@ function build_u-boot {
 	if [ "${OMAP4_PATCH}" ] ; then
 		RELEASE_VER="-r1"
 		git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
-		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
-	fi
-
-	if [ "${panda_latest_patch}" ] ; then
-		RELEASE_VER="-r1"
 		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
 	fi
 
@@ -315,9 +320,12 @@ function beagleboard {
 	build_u-boot
 	unset OMAP3_PATCH
 
+	enable_zImage_support=1
+	beagle_fixes=1
 	build_testing
 	build_latest
-	build_zimage
+	unset beagle_fixes
+	unset enable_zImage_support
 }
 
 
@@ -332,7 +340,10 @@ function beaglebone {
 	build_u-boot
 	unset BEAGLEBONE_PATCH
 
+	enable_zImage_support=1
+	build_testing
 	build_latest
+	unset enable_zImage_support
 }
 
 function igep00x0 {
@@ -350,8 +361,12 @@ function igep00x0 {
 	build_u-boot
 	unset igep00x0_patch
 
+	enable_zImage_support=1
+	enable_uenv_support=1
 	build_testing
 	build_latest
+	unset enable_uenv_support
+	unset enable_zImage_support
 }
 
 function am3517crane {
@@ -365,8 +380,12 @@ function am3517crane {
 	build_u-boot
 	unset AM3517_PATCH
 
+	enable_zImage_support=1
+	enable_uenv_support=1
 	build_testing
 	build_latest
+	unset enable_uenv_support
+	unset enable_zImage_support
 }
 
 function pandaboard {
@@ -380,12 +399,12 @@ function pandaboard {
 	build_u-boot
 	unset OMAP4_PATCH
 
+	enable_zImage_support=1
+	enable_uenv_support=1
 	build_testing
-
-	panda_latest_patch=1
 	build_latest
-	unset panda_latest_patch
-	build_zimage
+	unset enable_uenv_support
+	unset enable_zImage_support
 }
 
 function mx51evk {
@@ -400,8 +419,12 @@ function mx51evk {
 	build_u-boot
 	unset MX51EVK_PATCH
 
+	enable_zImage_support=1
+	enable_uenv_support=1
 	build_testing
 	build_latest
+	unset enable_uenv_support
+	unset enable_zImage_support
 }
 
 function mx53loco {
@@ -416,8 +439,12 @@ function mx53loco {
 	build_u-boot
 	unset MX53LOCO_PATCH
 
+	enable_zImage_support=1
+	enable_uenv_support=1
 	build_testing
 	build_latest
+	unset enable_uenv_support
+	unset enable_zImage_support
 }
 
 dl_old_bootloaders
