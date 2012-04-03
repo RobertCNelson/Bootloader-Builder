@@ -70,7 +70,7 @@ function set_cross_compiler {
 		CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 	fi
 
-	if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xwork-p4" ] || [ "x${SYST}" == "xx4-955" ] ; then
+	if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xhades" ] || [ "x${SYST}" == "xx4-955" ] ; then
 		CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 	fi
 }
@@ -190,6 +190,11 @@ function build_u-boot {
 		git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
 	fi
 
+	if [ "${imx_ethernet_fixes}" ] ; then
+		RELEASE_VER="-r1"
+		git am "${DIR}/patches/v2012.04/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
+	fi
+
 	if [ "${OMAP3_PATCH}" ] ; then
 		RELEASE_VER="-r3"
 		git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
@@ -244,20 +249,27 @@ function build_u-boot {
 
 	mkdir -p ${DIR}/deploy/${BOARD}
 
-	#MLO loads u-boot.img by default over u-boot.bin
-	if [ -f ${DIR}/build/u-boot/MLO ] ; then
+	unset UBOOT_DONE
+
+	#Freescale targets just need u-boot.imx from u-boot
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/u-boot/u-boot.imx ] ; then
+		cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
+		UBOOT_DONE=1
+	fi
+
+	#SPL based targets, need MLO and u-boot.img from u-boot
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/u-boot/MLO ] ; then
 		cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
 		if [ -f ${DIR}/build/u-boot/u-boot.img ] ; then 
 			 cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
 		fi
-	else
-		if [ -f ${DIR}/build/u-boot/u-boot.bin ] ; then
-			cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
-		fi
+		UBOOT_DONE=1
 	fi
 
-	if [ -f ${DIR}/build/u-boot/u-boot.imx ] ; then
-		cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
+	#Just u-boot.bin
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/u-boot/u-boot.bin ] ; then
+		cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
+		UBOOT_DONE=1
 	fi
 
 	cd ${DIR}/
@@ -422,8 +434,10 @@ function mx51evk {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
+	imx_ethernet_fixes=1
 	build_testing
 	build_latest
+	unset imx_ethernet_fixes
 	unset enable_uenv_support
 	unset enable_zImage_support
 }
@@ -442,8 +456,10 @@ function mx53loco {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
+	imx_ethernet_fixes=1
 	build_testing
 	build_latest
+	unset imx_ethernet_fixes
 	unset enable_uenv_support
 	unset enable_zImage_support
 }
