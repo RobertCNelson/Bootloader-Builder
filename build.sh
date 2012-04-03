@@ -182,6 +182,10 @@ function build_u-boot {
 		git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
 		git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
 		git am "${DIR}/patches/v2012.04/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
+#		if [ "x${BOARD}" == "xbeaglebone" ] ; then
+#			RELEASE_VER="-r1"
+#			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
+#		fi
 	fi
 
 	if [ "${beagle_fixes}" ] ; then
@@ -354,8 +358,10 @@ function beaglebone {
 	unset BEAGLEBONE_PATCH
 
 	enable_zImage_support=1
+	enable_uenv_support=1
 	build_testing
 	build_latest
+	unset enable_uenv_support
 	unset enable_zImage_support
 }
 
