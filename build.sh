@@ -182,10 +182,10 @@ function build_u-boot {
 		git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
 		git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
 		git am "${DIR}/patches/v2012.04/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
-#		if [ "x${BOARD}" == "xbeaglebone" ] ; then
-#			RELEASE_VER="-r1"
-#			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
-#		fi
+		if [ "x${BOARD}" == "xbeaglebone" ] ; then
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
+		fi
 	fi
 
 	if [ "${beagle_fixes}" ] ; then

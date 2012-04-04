@@ -1,21 +1,25 @@
-From 616752435419f112f966052c6b7018a777d5dd6f Mon Sep 17 00:00:00 2001
+From 37292eb02b3a67f48c4764bd699c05bbca84d1d0 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 3 Apr 2012 12:30:56 -0500
 Subject: [PATCH] am335 convert to uEnv.txt bootscript
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h |   47 ++++++++++++++++++++++++++++++++++++++++-
- 1 files changed, 45 insertions(+), 2 deletions(-)
+ include/configs/am335x_evm.h |   57 +++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 53 insertions(+), 4 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 7fc7990..493262d 100644
+index 7fc7990..979f708 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -28,6 +28,10 @@
+@@ -26,13 +26,23 @@
+ #include <asm/arch/cpu.h>
+ #include <asm/arch/hardware.h>
  
- #define CONFIG_ENV_SIZE			0x400
- #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
+-#define CONFIG_ENV_SIZE			0x400
+-#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
++#define CONFIG_ENV_SIZE			0x2000
++#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
 +
 +#define CONFIG_SYS_LONGHELP		/* undef to save memory */
 +#define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser */
@@ -23,7 +27,18 @@ index 7fc7990..493262d 100644
  #define CONFIG_SYS_PROMPT		"U-Boot# "
  #define CONFIG_SYS_NO_FLASH
  #define MACH_TYPE_TIAM335EVM		3589	/* Until the next sync */
-@@ -40,9 +44,46 @@
+ #define CONFIG_MACH_TYPE		MACH_TYPE_TIAM335EVM
+ 
++#define CONFIG_OF_LIBFDT		1
++
++#define CONFIG_CMDLINE_TAG		1	/* enable passing of ATAGs */
++#define CONFIG_SETUP_MEMORY_TAGS	1
++#define CONFIG_INITRD_TAG		1
++
+ #define CONFIG_CMD_ASKENV
+ #define CONFIG_VERSION_VARIABLE
+ 
+@@ -40,9 +50,46 @@
  #define CONFIG_BOOTDELAY		3
  #define CONFIG_SYS_AUTOLOAD		"no"
  #define CONFIG_BOOTFILE			"uImage"
@@ -66,13 +81,13 @@ index 7fc7990..493262d 100644
 +		"if run loaduimage; then " \
 +			"run mmcboot;" \
 +		"fi;" \
-+	"fi"
++	"fi" \
 +
 +#define CONFIG_AUTO_COMPLETE		1
  
  /* Clock Defines */
  #define V_OSCK				24000000  /* Clock output from T2 */
-@@ -83,6 +124,8 @@
+@@ -83,6 +130,8 @@
  #define CONFIG_CMD_EXT2
  #define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
  #define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
