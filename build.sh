@@ -464,11 +464,11 @@ set_cross_compiler
 
 #at91sam9xeek
 
+am3517crane
 beagleboard
 beaglebone
 igep00x0
-am3517crane
-pandaboard
 mx51evk
 mx53loco
+pandaboard
 
