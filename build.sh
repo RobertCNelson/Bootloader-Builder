@@ -32,7 +32,7 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2011.12"
-TESTING="v2012.04-rc1"
+TESTING="v2012.04-rc2"
 
 #Using as stable for panda/panda_es:
 #LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
@@ -182,21 +182,12 @@ function build_u-boot {
 		git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
 		git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
 		git am "${DIR}/patches/v2012.04/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
-		if [ "x${BOARD}" == "xbeaglebone" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
-		fi
+		git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
 	fi
 
 	if [ "${beagle_fixes}" ] ; then
-		RELEASE_VER="-r1"
 		git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
 		git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
-	fi
-
-	if [ "${imx_ethernet_fixes}" ] ; then
-		RELEASE_VER="-r1"
-		git am "${DIR}/patches/v2012.04/0001-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
 	fi
 
 	if [ "${OMAP3_PATCH}" ] ; then
@@ -438,12 +429,11 @@ function mx51evk {
 	build_u-boot
 	unset MX51EVK_PATCH
 
+	unset UBOOT_TARGET
 	enable_zImage_support=1
 	enable_uenv_support=1
-	imx_ethernet_fixes=1
 	build_testing
 	build_latest
-	unset imx_ethernet_fixes
 	unset enable_uenv_support
 	unset enable_zImage_support
 }
@@ -460,12 +450,11 @@ function mx53loco {
 	build_u-boot
 	unset MX53LOCO_PATCH
 
+	unset UBOOT_TARGET
 	enable_zImage_support=1
 	enable_uenv_support=1
-	imx_ethernet_fixes=1
 	build_testing
 	build_latest
-	unset imx_ethernet_fixes
 	unset enable_uenv_support
 	unset enable_zImage_support
 }
