@@ -32,7 +32,7 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2011.12"
-TESTING="v2012.04-rc2"
+TESTING="v2012.04-rc3"
 
 #Using as stable for panda/panda_es:
 #LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
