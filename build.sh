@@ -190,12 +190,6 @@ function build_u-boot {
 		git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
 	fi
 
-	if [ "${OMAP4_PATCH}" ] ; then
-		RELEASE_VER="-r1"
-		git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
-		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
-	fi
-
 	if [ "${BEAGLEBONE_PATCH}" ] ; then
 		RELEASE_VER="-r1"
 		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
@@ -376,9 +370,6 @@ function pandaboard {
 
 	BOARD="pandaboard"
 	UBOOT_CONFIG="omap4_panda_config"
-
-	OMAP4_PATCH=1
-	unset OMAP4_PATCH
 
 	enable_zImage_support=1
 	enable_uenv_support=1
