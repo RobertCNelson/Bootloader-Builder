@@ -195,14 +195,6 @@ function build_u-boot {
 		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
 	fi
 
-	if [ "${MX53LOCO_PATCH}" ] ; then
-		RELEASE_VER="-r2"
-		git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
-		git am "${DIR}/patches/0002-mx53loco-use-part-1.patch"
-		git am "${DIR}/patches/0003-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
-		git am "${DIR}/patches/0004-convert-mx53loco-to-uEnv.txt-bootscript.patch"
-	fi
-
 	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 	echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
 	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET} > /dev/null
@@ -395,9 +387,6 @@ function mx53loco {
 	BOARD="mx53loco"
 	UBOOT_CONFIG="mx53loco_config"
 	UBOOT_TARGET="u-boot.imx"
-
-	MX53LOCO_PATCH=1
-	unset MX53LOCO_PATCH
 
 	unset UBOOT_TARGET
 	enable_zImage_support=1
