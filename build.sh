@@ -195,14 +195,6 @@ function build_u-boot {
 		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
 	fi
 
-	if [ "${MX51EVK_PATCH}" ] ; then
-		RELEASE_VER="-r2"
-		git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
-		git am "${DIR}/patches/0002-mx51evk-use-partition-1.patch"
-		git am "${DIR}/patches/0003-net-eth.c-fix-eth_write_hwaddr-to-use-dev-enetaddr-a.patch"
-		git am "${DIR}/patches/0004-convert-mx51evk-to-uEnv.txt-bootscript.patch"
-	fi
-
 	if [ "${MX53LOCO_PATCH}" ] ; then
 		RELEASE_VER="-r2"
 		git am "${DIR}/patches/0001-mx53loco-enable-ext-support.patch"
@@ -386,9 +378,6 @@ function mx51evk {
 	BOARD="mx51evk"
 	UBOOT_CONFIG="mx51evk_config"
 	UBOOT_TARGET="u-boot.imx"
-
-	MX51EVK_PATCH=1
-	unset MX51EVK_PATCH
 
 	unset UBOOT_TARGET
 	enable_zImage_support=1
