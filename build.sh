@@ -196,13 +196,6 @@ function build_u-boot {
 		git am "${DIR}/patches/0001-panda-convert-to-uEnv.txt.patch"
 	fi
 
-	if [ "${igep00x0_patch}" ] ; then
-		RELEASE_VER="-r1"
-		git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
-		git am "${DIR}/patches/0001-omap_hsmmc-Wait-for-CMDI-to-be-clear.patch"
-		git am "${DIR}/patches/0001-convert-igep-to-uEnv.txt.patch"
-	fi
-
 	if [ "${BEAGLEBONE_PATCH}" ] ; then
 		RELEASE_VER="-r1"
 		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
@@ -359,9 +352,6 @@ function igep00x0 {
 	build_omap_xloader
 
 	UBOOT_CONFIG="igep0020_config"
-
-	igep00x0_patch=1
-	unset igep00x0_patch
 
 	enable_zImage_support=1
 	enable_uenv_support=1
