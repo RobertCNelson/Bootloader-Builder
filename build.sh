@@ -201,11 +201,6 @@ function build_u-boot {
 		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
 	fi
 
-	if [ "${AM3517_PATCH}" ] ; then
-		RELEASE_VER="-r2"
-		git am "${DIR}/patches/0001-am3517_crane-switch-to-uenv.txt.patch"
-	fi
-
 	if [ "${MX51EVK_PATCH}" ] ; then
 		RELEASE_VER="-r2"
 		git am "${DIR}/patches/0001-mx51evk-enable-ext2-support.patch"
@@ -264,7 +259,6 @@ function cleanup {
 	unset UBOOT_GIT
 	unset AT91BOOTSTRAP
 	unset REVERT
-	unset AM3517_PATCH
 	unset BEAGLEBONE_PATCH
 	unset UBOOT_TARGET
 }
@@ -367,9 +361,6 @@ function am3517crane {
 
 	BOARD="am3517crane"
 	UBOOT_CONFIG="am3517_crane_config"
-
-	AM3517_PATCH=1
-	unset AM3517_PATCH
 
 	enable_zImage_support=1
 	enable_uenv_support=1
