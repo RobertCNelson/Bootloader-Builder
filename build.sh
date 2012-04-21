@@ -31,8 +31,8 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2011.12"
-TESTING="v2012.04-rc3"
+STABLE="v2012.04"
+#TESTING="v2012.04-rc3"
 
 #Using as stable for panda/panda_es:
 #LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
@@ -294,6 +294,13 @@ function at91sam9xeek {
 	at91_loader
 }
 
+function build_stable {
+	if [ "${STABLE}" ] ; then
+		UBOOT_TAG=${STABLE}
+		build_u-boot
+	fi
+}
+
 function build_testing {
 	if [ "${TESTING}" ] ; then
 		UBOOT_TAG=${TESTING}
@@ -324,12 +331,11 @@ function beagleboard {
 	UBOOT_CONFIG="omap3_beagle_config"
 
 	OMAP3_PATCH=1
-	UBOOT_TAG=${STABLE}
-	build_u-boot
 	unset OMAP3_PATCH
 
 	enable_zImage_support=1
 	beagle_fixes=1
+	build_stable
 	build_testing
 	build_latest
 	unset beagle_fixes
@@ -350,6 +356,7 @@ function beaglebone {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -367,12 +374,11 @@ function igep00x0 {
 	UBOOT_CONFIG="igep0020_config"
 
 	igep00x0_patch=1
-	UBOOT_TAG=${STABLE}
-	build_u-boot
 	unset igep00x0_patch
 
 	enable_zImage_support=1
 	enable_uenv_support=1
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -386,12 +392,11 @@ function am3517crane {
 	UBOOT_CONFIG="am3517_crane_config"
 
 	AM3517_PATCH=1
-	UBOOT_TAG=${STABLE}
-	build_u-boot
 	unset AM3517_PATCH
 
 	enable_zImage_support=1
 	enable_uenv_support=1
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -405,12 +410,11 @@ function pandaboard {
 	UBOOT_CONFIG="omap4_panda_config"
 
 	OMAP4_PATCH=1
-	UBOOT_TAG=${STABLE}
-	build_u-boot
 	unset OMAP4_PATCH
 
 	enable_zImage_support=1
 	enable_uenv_support=1
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -425,13 +429,12 @@ function mx51evk {
 	UBOOT_TARGET="u-boot.imx"
 
 	MX51EVK_PATCH=1
-	UBOOT_TAG=${STABLE}
-	build_u-boot
 	unset MX51EVK_PATCH
 
 	unset UBOOT_TARGET
 	enable_zImage_support=1
 	enable_uenv_support=1
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -446,13 +449,12 @@ function mx53loco {
 	UBOOT_TARGET="u-boot.imx"
 
 	MX53LOCO_PATCH=1
-	UBOOT_TAG=${STABLE}
-	build_u-boot
 	unset MX53LOCO_PATCH
 
 	unset UBOOT_TARGET
 	enable_zImage_support=1
 	enable_uenv_support=1
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
