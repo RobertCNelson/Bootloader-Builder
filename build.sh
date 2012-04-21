@@ -190,15 +190,6 @@ function build_u-boot {
 		git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
 	fi
 
-	if [ "${OMAP3_PATCH}" ] ; then
-		RELEASE_VER="-r3"
-		git am "${DIR}/patches/0001-Revert-armv7-disable-L2-cache-in-cleanup_before_linu.patch"
-		git am "${DIR}/patches/0001-beagleboard-add-support-for-scanning-loop-through-ex.patch"
-		git am "${DIR}/patches/0002-omap-beagle-re-add-c4-support.patch"
-		git am "${DIR}/patches/0001-omap_hsmmc-Wait-for-CMDI-to-be-clear.patch"
-		git am "${DIR}/patches/0001-beagle-make-ulcd-configure-correctly-out-of-the-box.patch"
-	fi
-
 	if [ "${OMAP4_PATCH}" ] ; then
 		RELEASE_VER="-r1"
 		git am "${DIR}/patches/0001-omap4-fix-boot-issue-on-ES2.0-Panda.patch"
@@ -280,7 +271,6 @@ function cleanup {
 	unset UBOOT_GIT
 	unset AT91BOOTSTRAP
 	unset REVERT
-	unset OMAP3_PATCH
 	unset AM3517_PATCH
 	unset BEAGLEBONE_PATCH
 	unset UBOOT_TARGET
@@ -329,9 +319,6 @@ function beagleboard {
 
 	BOARD="beagleboard"
 	UBOOT_CONFIG="omap3_beagle_config"
-
-	OMAP3_PATCH=1
-	unset OMAP3_PATCH
 
 	enable_zImage_support=1
 	beagle_fixes=1
