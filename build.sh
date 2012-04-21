@@ -197,7 +197,7 @@ function build_u-boot {
 
 	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 	echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
-	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${UBOOT_TARGET} > /dev/null
+	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" > /dev/null
 
 	mkdir -p ${DIR}/deploy/${BOARD}
 
@@ -238,7 +238,6 @@ function cleanup {
 	unset AT91BOOTSTRAP
 	unset REVERT
 	unset BEAGLEBONE_PATCH
-	unset UBOOT_TARGET
 }
 
 function at91sam9xeek {
@@ -369,9 +368,7 @@ function mx51evk {
 
 	BOARD="mx51evk"
 	UBOOT_CONFIG="mx51evk_config"
-	UBOOT_TARGET="u-boot.imx"
 
-	unset UBOOT_TARGET
 	enable_zImage_support=1
 	enable_uenv_support=1
 	build_stable
@@ -386,9 +383,7 @@ function mx53loco {
 
 	BOARD="mx53loco"
 	UBOOT_CONFIG="mx53loco_config"
-	UBOOT_TARGET="u-boot.imx"
 
-	unset UBOOT_TARGET
 	enable_zImage_support=1
 	enable_uenv_support=1
 	build_stable
