@@ -31,7 +31,7 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2012.04"
+STABLE="v2012.04.01"
 #TESTING="v2012.04-rc3"
 
 #Using as stable for panda/panda_es:
