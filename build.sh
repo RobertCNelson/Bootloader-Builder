@@ -188,6 +188,8 @@ function build_u-boot {
 	if [ "${beagle_fixes}" ] ; then
 		git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
 		git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
+		RELEASE_VER="-r1"
+		git am "${DIR}/patches/v2012.04/0001-beagle-fix-timed-out-in-wait_for_bb-message-in-SPL.patch"
 	fi
 
 	if [ "${BEAGLEBONE_PATCH}" ] ; then
