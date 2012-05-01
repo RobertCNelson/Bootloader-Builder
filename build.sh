@@ -193,8 +193,8 @@ function build_u-boot {
 	fi
 
 	if [ "${BEAGLEBONE_PATCH}" ] ; then
-		RELEASE_VER="-r1"
-		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_05.03.01.00
+		RELEASE_VER="-r2"
+		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_04.06.00.08
 	fi
 
 	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
