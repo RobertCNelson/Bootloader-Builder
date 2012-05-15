@@ -38,6 +38,15 @@ STABLE="v2012.04.01"
 #LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
 #LATEST_GIT="017e1f3f9fc8745cc12bbd924b0cbc4d6ee5dbf8"
 
+unset GIT_OPTS
+unset GIT_NOEDIT
+LC_ALL=C git help pull | grep -m 1 -e "--no-edit" &>/dev/null && GIT_NOEDIT=1
+
+if [ "${GIT_NOEDIT}" ] ; then
+	echo "Detected git 1.7.10 or later, this script will pull via [git pull --no-edit]"
+	GIT_OPTS+="--no-edit"
+fi
+
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/latest/
@@ -108,7 +117,7 @@ function build_omap_xloader {
 	fi
 
 	cd ${DIR}/git/x-loader/
-	git pull
+	git pull ${GIT_OPTS}
 	cd -
 
 	rm -rf ${DIR}/build/x-loader || true
@@ -150,7 +159,7 @@ function build_u-boot {
 	fi
 
 	cd ${DIR}/git/u-boot/
-	git pull
+	git pull ${GIT_OPTS}
 	cd -
 
 	if [ -d ${DIR}/build/u-boot ] ; then
@@ -170,6 +179,12 @@ function build_u-boot {
 	fi
 
 	UGIT_VERSION=$(git describe)
+
+	if [ "${imx_branch}" ] ; then
+		git pull ${GIT_OPTS} git://git.denx.de/u-boot-imx.git master
+		git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
+		git am "${DIR}/patches/v2012.07/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
+	fi
 
 	if [ "${enable_zImage_support}" ] ; then
 		git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
@@ -194,7 +209,7 @@ function build_u-boot {
 
 	if [ "${BEAGLEBONE_PATCH}" ] ; then
 		RELEASE_VER="-r2"
-		git pull git://github.com/RobertCNelson/u-boot.git am335xpsp_04.06.00.08
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git am335xpsp_04.06.00.08
 	fi
 
 	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
@@ -278,6 +293,15 @@ function build_zimage {
 		build_u-boot
 	fi
 	unset zImage_support
+}
+
+function build_imx_branch {
+	imx_branch=1
+	if [ "${STABLE}" ] ; then
+		UBOOT_TAG=${STABLE}
+		build_u-boot
+	fi
+	unset imx_branch
 }
 
 function beagleboard {
@@ -393,6 +417,7 @@ function mx53loco {
 	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
+	build_imx_branch
 }
 
 dl_old_bootloaders
