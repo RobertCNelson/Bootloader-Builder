@@ -182,6 +182,7 @@ function build_u-boot {
 
 	if [ "${imx_branch}" ] ; then
 		git pull ${GIT_OPTS} git://git.denx.de/u-boot-imx.git master
+		UGIT_VERSION=$(git describe)
 		git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
 		git am "${DIR}/patches/v2012.07/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
 	fi
