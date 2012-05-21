@@ -34,9 +34,7 @@ SYST=$(uname -n)
 STABLE="v2012.04.01"
 #TESTING="v2012.04-rc3"
 
-#Using as stable for panda/panda_es:
-#LATEST_GIT="6751b05f855bbe56005d5b88d4eb58bcd52170d2"
-#LATEST_GIT="017e1f3f9fc8745cc12bbd924b0cbc4d6ee5dbf8"
+LATEST_GIT="2ab5be7af009b4a40efe2fa5471497c97e70ed28"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -73,10 +71,6 @@ function set_cross_compiler {
 	if [ "x${SYST}" == "xhera" ] ; then
 		#dl:http://rcn-ee.homeip.net:81/dl/bootloader/
 		CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
-	fi
-
-	if [ "x${SYST}" == "xlvrm" ] ; then
-		CC=/opt/sata1/git_repo/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 	fi
 
 	if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xhades" ] || [ "x${SYST}" == "xx4-955" ] ; then
@@ -180,32 +174,44 @@ function build_u-boot {
 
 	UGIT_VERSION=$(git describe)
 
-	if [ "${imx_branch}" ] ; then
-		git pull ${GIT_OPTS} git://git.denx.de/u-boot-imx.git master
-		UGIT_VERSION=$(git describe)
-		git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
-		git am "${DIR}/patches/v2012.07/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
-	fi
-
 	if [ "${enable_zImage_support}" ] ; then
-		git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
-		git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-mx5x-targets.patch"
+		if [ "${v2012_07}" ] ; then
+			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-ti-omap-targets.patch"
+			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
+		else
+			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
+			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-mx5x-targets.patch"
+		fi
 	fi
 
 	if [ "${enable_uenv_support}" ] ; then
-		git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
-		git am "${DIR}/patches/v2012.04/0001-igep0020-convert-to-uEnv.txt-bootscript.patch"
-		git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
-		git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
-		git am "${DIR}/patches/v2012.04/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
-		git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
+		if [ "${v2012_07}" ] ; then
+			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.07/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
+
+		else
+			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.04/0001-igep0020-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.04/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
+		fi
 	fi
 
 	if [ "${beagle_fixes}" ] ; then
-		git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
-		git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
-		RELEASE_VER="-r1"
-		git am "${DIR}/patches/v2012.04/0001-beagle-fix-timed-out-in-wait_for_bb-message-in-SPL.patch"
+		if [ "${v2012_07}" ] ; then
+			git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
+			git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
+		else
+			git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
+			git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2012.04/0001-beagle-fix-timed-out-in-wait_for_bb-message-in-SPL.patch"
+		fi
 	fi
 
 	if [ "${BEAGLEBONE_PATCH}" ] ; then
@@ -281,10 +287,12 @@ function build_testing {
 }
 
 function build_latest {
+	v2012_07=1
 	if [ "${LATEST_GIT}" ] ; then
 		UBOOT_GIT=${LATEST_GIT}
 		build_u-boot
 	fi
+	unset v2012_07
 }
 
 function build_zimage {
@@ -294,15 +302,6 @@ function build_zimage {
 		build_u-boot
 	fi
 	unset zImage_support
-}
-
-function build_imx_branch {
-	imx_branch=1
-	if [ "${STABLE}" ] ; then
-		UBOOT_TAG=${STABLE}
-		build_u-boot
-	fi
-	unset imx_branch
 }
 
 function beagleboard {
@@ -418,7 +417,6 @@ function mx53loco {
 	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
-	build_imx_branch
 }
 
 dl_old_bootloaders
