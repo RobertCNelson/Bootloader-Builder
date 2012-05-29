@@ -190,9 +190,10 @@ function build_u-boot {
 			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.07/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
 
+			git am "${DIR}/patches/v2012.07/0002-mx53loco-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.07/0003-mx53loco-Fix-revision-of-Dialog-boards.patch"
 		else
 			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.04/0001-igep0020-convert-to-uEnv.txt-bootscript.patch"
