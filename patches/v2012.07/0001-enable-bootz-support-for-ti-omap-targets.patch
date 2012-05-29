@@ -1,4 +1,4 @@
-From a054224a63084dbfbc210180484b1ee942f3d7ba Mon Sep 17 00:00:00 2001
+From d492971fd9feaa62f5623d197c01973299726fbb Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Sun, 1 Apr 2012 11:34:53 -0500
 Subject: [PATCH] enable bootz support for ti/omap targets
@@ -26,7 +26,7 @@ index d0fbc88..7fc7990 100644
   /* Physical Memory Map */
  #define CONFIG_NR_DRAM_BANKS		1		/*  1 bank of DRAM */
 diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
-index 1233985..b173c4d 100644
+index 827a615..02dd084 100644
 --- a/include/configs/am3517_crane.h
 +++ b/include/configs/am3517_crane.h
 @@ -144,6 +144,8 @@
@@ -37,7 +37,7 @@ index 1233985..b173c4d 100644
 +#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
  #define CONFIG_CMD_NAND		/* NAND support			*/
  #define CONFIG_CMD_DHCP
- #define CONFIG_CMD_PING
+ #undef CONFIG_CMD_PING
 diff --git a/include/configs/igep00x0.h b/include/configs/igep00x0.h
 index a99f332..15b7536 100644
 --- a/include/configs/igep00x0.h
