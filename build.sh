@@ -50,7 +50,7 @@ mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/latest/
 
-function dl_old_bootloaders {
+dl_old_bootloaders () {
 	if [ -f ${DIR}/deploy/latest/bootloader ] ; then
 		rm -f ${DIR}/deploy/latest/bootloader || true
 	fi
@@ -59,7 +59,7 @@ function dl_old_bootloaders {
 	cd -
 }
 
-function set_cross_compiler {
+set_cross_compiler () {
 
 	if [ "x${ARCH}" == "xarmv7l" ] ; then
 		#using native gcc
@@ -79,7 +79,7 @@ function set_cross_compiler {
 	fi
 }
 
-function at91_loader {
+at91_loader () {
 	echo "Starting AT91Bootstrap build for: ${BOARD}"
 	echo "-----------------------------"
 
@@ -101,7 +101,7 @@ function at91_loader {
 	echo "-----------------------------"
 }
 
-function build_omap_xloader {
+build_omap_xloader () {
 	echo "Starting x-loader build for: ${BOARD}"
 	echo "-----------------------------"
 
@@ -142,7 +142,7 @@ function build_omap_xloader {
 	echo "-----------------------------"
 }
 
-function build_u-boot {
+build_u_boot () {
 	echo "Starting u-boot build for: ${BOARD}"
 	echo "-----------------------------"
 
@@ -258,7 +258,7 @@ function build_u-boot {
 	echo "-----------------------------"
 }
 
-function cleanup {
+cleanup () {
 	unset UBOOT_TAG
 	unset UBOOT_GIT
 	unset AT91BOOTSTRAP
@@ -266,7 +266,7 @@ function cleanup {
 	unset BEAGLEBONE_PATCH
 }
 
-function at91sam9xeek {
+at91sam9xeek () {
 	cleanup
 
 	BOARD="at91sam9xeek"
@@ -274,39 +274,39 @@ function at91sam9xeek {
 	at91_loader
 }
 
-function build_stable {
+build_stable () {
 	if [ "${STABLE}" ] ; then
 		UBOOT_TAG=${STABLE}
-		build_u-boot
+		build_u_boot
 	fi
 }
 
-function build_testing {
+build_testing () {
 	if [ "${TESTING}" ] ; then
 		UBOOT_TAG=${TESTING}
-		build_u-boot
+		build_u_boot
 	fi
 }
 
-function build_latest {
+build_latest () {
 	v2012_07=1
 	if [ "${LATEST_GIT}" ] ; then
 		UBOOT_GIT=${LATEST_GIT}
-		build_u-boot
+		build_u_boot
 	fi
 	unset v2012_07
 }
 
-function build_zimage {
+build_zimage () {
 	zImage_support=1
 	if [ "${LATEST_GIT}" ] ; then
 		UBOOT_GIT=${LATEST_GIT}
-		build_u-boot
+		build_u_boot
 	fi
 	unset zImage_support
 }
 
-function beagleboard {
+beagleboard () {
 	cleanup
 
 	BOARD="beagleboard"
@@ -322,7 +322,7 @@ function beagleboard {
 }
 
 
-function beaglebone {
+beaglebone () {
 	cleanup
 
 	BOARD="beaglebone"
@@ -330,7 +330,7 @@ function beaglebone {
 
 	BEAGLEBONE_PATCH=1
 	UBOOT_TAG="v2011.09"
-	build_u-boot
+	build_u_boot
 	unset BEAGLEBONE_PATCH
 
 	enable_zImage_support=1
@@ -361,7 +361,7 @@ function igep00x0 {
 	unset enable_zImage_support
 }
 
-function am3517crane {
+am3517crane () {
 	cleanup
 
 	BOARD="am3517crane"
@@ -391,7 +391,7 @@ function pandaboard {
 	unset enable_zImage_support
 }
 
-function mx51evk {
+mx51evk () {
 	cleanup
 
 	BOARD="mx51evk"
@@ -406,7 +406,7 @@ function mx51evk {
 	unset enable_zImage_support
 }
 
-function mx53loco {
+mx53loco () {
 	cleanup
 
 	BOARD="mx53loco"
@@ -421,6 +421,17 @@ function mx53loco {
 	unset enable_zImage_support
 }
 
+mx6qsabrelite () {
+	cleanup
+
+	BOARD="mx6qsabrelite"
+	UBOOT_CONFIG="mx6qsabrelite_config"
+
+#	build_stable
+	build_testing
+	build_latest
+}
+
 dl_old_bootloaders
 set_cross_compiler
 
@@ -432,5 +443,6 @@ beaglebone
 igep00x0
 mx51evk
 mx53loco
+mx6qsabrelite
 pandaboard
 
