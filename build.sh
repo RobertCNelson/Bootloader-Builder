@@ -34,8 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.04.01"
 #TESTING="v2012.04-rc3"
 
-#LATEST_GIT="4398d55991eb3c2484a2a8e991d701e5d7a64874"
-LATEST_GIT="fedab338f3459315cb69627fcf46032ec8df1753"
+#LATEST_GIT="b86a475c1a602c6ee44f4469d933df8792418a7a"
+LATEST_GIT="4398d55991eb3c2484a2a8e991d701e5d7a64874"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -143,7 +143,7 @@ build_omap_xloader () {
 }
 
 build_u_boot () {
-	echo "Starting u-boot ${BUILD} build for: ${BOARD}"
+	echo "Starting u-boot build for: ${BOARD}"
 	echo "-----------------------------"
 
 	RELEASE_VER="-r0"
@@ -275,7 +275,6 @@ at91sam9xeek () {
 }
 
 build_stable () {
-	BUILD="stable"
 	if [ "${STABLE}" ] ; then
 		UBOOT_TAG=${STABLE}
 		build_u_boot
@@ -283,7 +282,6 @@ build_stable () {
 }
 
 build_testing () {
-	BUILD="testing"
 	if [ "${TESTING}" ] ; then
 		UBOOT_TAG=${TESTING}
 		build_u_boot
@@ -291,7 +289,6 @@ build_testing () {
 }
 
 build_latest () {
-	BUILD="latest"
 	v2012_07=1
 	if [ "${LATEST_GIT}" ] ; then
 		UBOOT_GIT=${LATEST_GIT}
@@ -301,7 +298,6 @@ build_latest () {
 }
 
 build_zimage () {
-	BUILD="zimage"
 	zImage_support=1
 	if [ "${LATEST_GIT}" ] ; then
 		UBOOT_GIT=${LATEST_GIT}
