@@ -34,8 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.04.01"
 #TESTING="v2012.04-rc3"
 
-#LATEST_GIT="b86a475c1a602c6ee44f4469d933df8792418a7a"
-LATEST_GIT="4398d55991eb3c2484a2a8e991d701e5d7a64874"
+#LATEST_GIT="4398d55991eb3c2484a2a8e991d701e5d7a64874"
+LATEST_GIT="58e22f8a15adec39d24d060180d76a4cbe86a04b"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -193,7 +193,6 @@ build_u_boot () {
 			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
 
 			git am "${DIR}/patches/v2012.07/0002-mx53loco-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.07/0003-mx53loco-Fix-revision-of-Dialog-boards.patch"
 		else
 			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.04/0001-igep0020-convert-to-uEnv.txt-bootscript.patch"
