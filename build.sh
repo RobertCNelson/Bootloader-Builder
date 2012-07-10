@@ -32,10 +32,10 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2012.04.01"
-#TESTING="v2012.04-rc3"
+TESTING="v2012.07-rc1"
 
 #LATEST_GIT="4398d55991eb3c2484a2a8e991d701e5d7a64874"
-LATEST_GIT="58e22f8a15adec39d24d060180d76a4cbe86a04b"
+#LATEST_GIT="58e22f8a15adec39d24d060180d76a4cbe86a04b"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -74,7 +74,7 @@ set_cross_compiler () {
 		CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 	fi
 
-	if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xhades" ] || [ "x${SYST}" == "xx4-955" ] ; then
+	if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xhades" ] || [ "x${SYST}" == "xx4-955" ] || [ "x${SYST}" == "xe350" ] ; then
 		CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
 	fi
 }
@@ -206,7 +206,8 @@ build_u_boot () {
 	if [ "${beagle_fixes}" ] ; then
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
-			git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
+
+			git am "${DIR}/patches/v2012.07/0001-beagle-ulcd-passthru-support.patch"
 		else
 			git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
 			git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
@@ -281,6 +282,7 @@ build_stable () {
 }
 
 build_testing () {
+	v2012_07=1
 	if [ "${TESTING}" ] ; then
 		UBOOT_TAG=${TESTING}
 		build_u_boot
