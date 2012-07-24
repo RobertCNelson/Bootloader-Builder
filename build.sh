@@ -414,7 +414,7 @@ mx53loco () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+#	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support

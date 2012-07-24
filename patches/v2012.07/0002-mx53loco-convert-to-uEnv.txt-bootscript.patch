@@ -1,18 +1,18 @@
-From 4fd4a9cbd4488e81a049aca55a22f2307d785b6b Mon Sep 17 00:00:00 2001
+From ee01ef85c31cbea570fc17519b3d3641afbe9eec Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Sun, 1 Apr 2012 11:51:14 -0500
+Date: Tue, 24 Jul 2012 15:53:51 -0500
 Subject: [PATCH] mx53loco: convert to uEnv.txt bootscript
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx53loco.h |   30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ include/configs/mx53loco.h |   34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
 
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index ea750db..8383867 100644
+index 831155f..b159409 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
-@@ -123,19 +123,18 @@
+@@ -120,19 +120,19 @@
  #define CONFIG_SYS_TEXT_BASE    0x77800000
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -31,29 +31,34 @@ index ea750db..8383867 100644
 -	"bootscript=echo Running bootscript from mmc ...; " \
 -		"source\0" \
 +	"bootenv=uEnv.txt\0" \
++	"loadext2bootenv=ext2load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 +	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 +	"importbootenv=echo Importing environment from mmc ...; " \
 +		"env import -t $loadaddr $filesize\0" \
  	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
-@@ -149,15 +148,16 @@
+@@ -146,15 +146,21 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"if mmc rescan ${mmcdev}; then " \
 -		"if run loadbootscript; then " \
 -			"run bootscript; " \
--		"else " \
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadext2bootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
+ 		"else " \
 -			"if run loaduimage; then " \
 -				"run mmcboot; " \
 -			"else run netboot; " \
 -			"fi; " \
 -		"fi; " \
 -	"else run netboot; fi"
-+		"echo SD/MMC found on device ${mmcdev};" \
 +		"if run loadbootenv; then " \
 +			"echo Loaded environment from ${bootenv};" \
 +			"run importbootenv;" \
++		"fi;" \
 +		"fi;" \
 +		"if run loaduimage; then " \
 +			"run mmcboot;" \
@@ -64,5 +69,5 @@ index ea750db..8383867 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-1.7.10
+1.7.10.4
 
