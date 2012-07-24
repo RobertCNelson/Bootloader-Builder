@@ -188,10 +188,10 @@ build_u_boot () {
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
 
 			git am "${DIR}/patches/v2012.07/0002-mx53loco-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.07/0002-mx51evk-convert-to-uEnv.txt-bootscript.patch"
 		else
 			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.04/0001-igep0020-convert-to-uEnv.txt-bootscript.patch"
@@ -399,7 +399,7 @@ mx51evk () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+#	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
