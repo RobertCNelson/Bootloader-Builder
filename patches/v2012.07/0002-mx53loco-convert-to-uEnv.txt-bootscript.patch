@@ -1,22 +1,23 @@
-From ee01ef85c31cbea570fc17519b3d3641afbe9eec Mon Sep 17 00:00:00 2001
+From ba6e5760153e43d5e9ddc11cbd062624dd6def56 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 24 Jul 2012 15:53:51 -0500
 Subject: [PATCH] mx53loco: convert to uEnv.txt bootscript
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx53loco.h |   34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+ include/configs/mx53loco.h |   35 +++++++++++++++++++++--------------
+ 1 file changed, 21 insertions(+), 14 deletions(-)
 
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index 831155f..b159409 100644
+index 831155f..d446543 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
-@@ -120,19 +120,19 @@
+@@ -120,19 +120,20 @@
  #define CONFIG_SYS_TEXT_BASE    0x77800000
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
 -	"script=boot.scr\0" \
++	"dtb_file=imx53-qsb.dtb\0" \
  	"uimage=uImage\0" \
  	"mmcdev=0\0" \
 -	"mmcpart=2\0" \
@@ -38,7 +39,7 @@ index 831155f..b159409 100644
  	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
-@@ -146,15 +146,21 @@
+@@ -146,15 +147,21 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"if mmc rescan ${mmcdev}; then " \
