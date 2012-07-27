@@ -32,7 +32,7 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2012.04.01"
-TESTING="v2012.07-rc2"
+TESTING="v2012.07-rc3"
 
 #LATEST_GIT="0b15d51ed07db4c318d9c6b02b394ba5a3bc4296"
 
