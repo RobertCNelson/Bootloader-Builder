@@ -31,8 +31,8 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2012.04.01"
-TESTING="v2012.07-rc3"
+STABLE="v2012.07"
+#TESTING="v2012.07-rc3"
 
 #LATEST_GIT="0b15d51ed07db4c318d9c6b02b394ba5a3bc4296"
 
@@ -178,40 +178,23 @@ build_u_boot () {
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-ti-omap-targets.patch"
 			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
-		else
-			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
-			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-mx5x-targets.patch"
 		fi
 	fi
 
 	if [ "${enable_uenv_support}" ] ; then
 		if [ "${v2012_07}" ] ; then
-			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
-
+			git am "${DIR}/patches/v2012.07/0001-panda-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.07/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
+			git am "${DIR}/patches/v2012.07/0001-am335-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0002-mx53loco-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0002-mx51evk-convert-to-uEnv.txt-bootscript.patch"
-		else
-			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.04/0001-igep0020-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.04/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.04/0001-mx51evk-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.04/0001-mx53loco-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.04/0001-am335-convert-to-uEnv.txt-bootscript.patch"
 		fi
 	fi
 
 	if [ "${beagle_fixes}" ] ; then
 		if [ "${v2012_07}" ] ; then
-			git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
-
+			git am "${DIR}/patches/v2012.07/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
 			git am "${DIR}/patches/v2012.07/0001-beagle-ulcd-passthru-support.patch"
-		else
-			git am "${DIR}/patches/v2012.04/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
-			git am "${DIR}/patches/v2012.04/0001-beagle-ulcd-passthru-support.patch"
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2012.04/0001-beagle-fix-timed-out-in-wait_for_bb-message-in-SPL.patch"
 		fi
 	fi
 
@@ -274,6 +257,7 @@ at91sam9xeek () {
 }
 
 build_stable () {
+	v2012_07=1
 	if [ "${STABLE}" ] ; then
 		UBOOT_TAG=${STABLE}
 		build_u_boot
@@ -399,7 +383,7 @@ mx51evk () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -414,7 +398,7 @@ mx53loco () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -427,7 +411,7 @@ mx6qsabrelite () {
 	BOARD="mx6qsabrelite"
 	UBOOT_CONFIG="mx6qsabrelite_config"
 
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 }
