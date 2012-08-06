@@ -203,6 +203,13 @@ build_u_boot () {
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git am335xpsp_04.06.00.08
 	fi
 
+	if [ "${mx53loco_patch}" ] ; then
+		if [ "${v2012_07}" ] ; then
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2012.07/0003-MX5-mx53loco-do-not-overwrite-the-console.patch"
+		fi
+	fi
+
 	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 	echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
 	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" > /dev/null
@@ -398,7 +405,9 @@ mx53loco () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
+	mx53loco_patch=1
 	build_stable
+	unset mx53loco_patch
 	build_testing
 	build_latest
 	unset enable_uenv_support
