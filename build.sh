@@ -31,8 +31,8 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2012.07"
-#TESTING="v2012.07-rc3"
+STABLE="v2012.04.01"
+TESTING="v2012.07"
 
 LATEST_GIT="56249fea3d5e32cddcd9160e51ec93a9c4327c6b"
 
@@ -178,6 +178,8 @@ build_u_boot () {
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-ti-omap-targets.patch"
 			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
+		else
+			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
 		fi
 	fi
 
@@ -188,6 +190,8 @@ build_u_boot () {
 			git am "${DIR}/patches/v2012.07/0001-am335-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0002-mx53loco-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0002-mx51evk-convert-to-uEnv.txt-bootscript.patch"
+		else
+			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 		fi
 	fi
 
@@ -264,7 +268,6 @@ at91sam9xeek () {
 }
 
 build_stable () {
-	v2012_07=1
 	if [ "${STABLE}" ] ; then
 		UBOOT_TAG=${STABLE}
 		build_u_boot
@@ -277,6 +280,7 @@ build_testing () {
 		UBOOT_TAG=${TESTING}
 		build_u_boot
 	fi
+	unset v2012_07
 }
 
 build_latest () {
@@ -305,7 +309,7 @@ beagleboard () {
 
 	enable_zImage_support=1
 	beagle_fixes=1
-	build_stable
+#	build_stable
 	build_testing
 	build_latest
 	unset beagle_fixes
@@ -326,7 +330,7 @@ beaglebone () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+#	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -345,7 +349,7 @@ function igep00x0 {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+#	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -360,7 +364,7 @@ am3517crane () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+#	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -390,7 +394,7 @@ mx51evk () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+#	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -406,9 +410,9 @@ mx53loco () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	mx53loco_patch=1
-	build_stable
-	unset mx53loco_patch
+#	build_stable
 	build_testing
+	unset mx53loco_patch
 	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
@@ -420,7 +424,7 @@ mx6qsabrelite () {
 	BOARD="mx6qsabrelite"
 	UBOOT_CONFIG="mx6qsabrelite_config"
 
-	build_stable
+#	build_stable
 	build_testing
 	build_latest
 }
