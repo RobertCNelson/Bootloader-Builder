@@ -214,9 +214,15 @@ build_u_boot () {
 		fi
 	fi
 
+	unset BUILDTARGET
+	if [ "${mx6qsabrelite_patch}" ] ; then
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git mx6qsabrelite_v2011.12_linaro_lt_imx6
+		BUILDTARGET="u-boot.imx"
+	fi
+
 	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 	echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
-	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" > /dev/null
+	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
 
 	mkdir -p ${DIR}/deploy/${BOARD}
 
@@ -423,6 +429,11 @@ mx6qsabrelite () {
 
 	BOARD="mx6qsabrelite"
 	UBOOT_CONFIG="mx6qsabrelite_config"
+
+	mx6qsabrelite_patch=1
+	UBOOT_TAG="v2011.12"
+	build_u_boot
+	unset mx6qsabrelite_patch
 
 #	build_stable
 	build_testing
