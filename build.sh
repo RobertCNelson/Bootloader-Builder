@@ -216,6 +216,16 @@ build_u_boot () {
 		BUILDTARGET="u-boot.imx"
 	fi
 
+	if [ -f "${DIR}/stop.after.patch" ] ; then
+		echo "-----------------------------"
+		pwd
+		echo "-----------------------------"
+		echo "make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}"
+		echo "make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET}"
+		echo "-----------------------------"
+		exit
+	fi
+
 	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 	echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
 	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
