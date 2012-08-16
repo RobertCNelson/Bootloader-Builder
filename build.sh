@@ -59,22 +59,18 @@ dl_old_bootloaders () {
 }
 
 set_cross_compiler () {
-
-	if [ "x${ARCH}" == "xarmv7l" ] ; then
-		#using native gcc
-		CC=
-	else
-		#using Cross Compiler
-		CC=arm-linux-gnueabi-
+	if [ ! "${CC}" ] ; then
+		if [ "x${ARCH}" == "xarmv7l" ] ; then
+			#using native gcc
+			CC=
+		else
+			#using Cross Compiler
+			CC=arm-linux-gnueabi-
+		fi
 	fi
 
-	if [ "x${SYST}" == "xhera" ] ; then
-		#dl:http://rcn-ee.homeip.net:81/dl/bootloader/
-		CC=/mnt/sata0/git_repo/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
-	fi
-
-	if [ "x${SYST}" == "xwork-e6400" ] || [ "x${SYST}" == "xhades" ] || [ "x${SYST}" == "xx4-955" ] || [ "x${SYST}" == "xe350" ] ; then
-		CC=/opt/github/linaro-tools/cross-gcc/build/sysroot/home/voodoo/opt/gcc-linaro-cross/bin/arm-linux-gnueabi-
+	if [ -f ${DIR}/rcn-ee.host ] ; then
+		source ${DIR}/host/rcn-ee-host.sh
 	fi
 }
 
