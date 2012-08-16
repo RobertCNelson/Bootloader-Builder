@@ -195,6 +195,8 @@ build_u_boot () {
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
 			git am "${DIR}/patches/v2012.07/0001-beagle-ulcd-passthru-support.patch"
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2012.07/0002-beagle-add-kmsmode-for-ulcd-and-default-dtb_file.patch"
 		fi
 	fi
 
@@ -349,7 +351,7 @@ beaglebone () {
 	unset enable_zImage_support
 }
 
-function igep00x0 {
+igep00x0 () {
 	cleanup
 
 	BOARD="igep00x0"
@@ -383,7 +385,7 @@ am3517crane () {
 	unset enable_zImage_support
 }
 
-function pandaboard {
+pandaboard () {
 	cleanup
 
 	BOARD="pandaboard"

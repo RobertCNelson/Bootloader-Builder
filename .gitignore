@@ -3,3 +3,6 @@ git
 dl
 Bootstrap*
 build
+*.host
+stop.after.patch
+
