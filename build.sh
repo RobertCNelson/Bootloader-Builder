@@ -191,6 +191,11 @@ build_u_boot () {
 		fi
 	fi
 
+	if [ "${panda_fixes}" ] ; then
+		RELEASE_VER="-r1"
+		git am "${DIR}/patches/v2012.04/0003-panda-let-the-bootloader-set-the-intial-screen-resol.patch"
+	fi
+
 	if [ "${beagle_fixes}" ] ; then
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
@@ -393,7 +398,9 @@ pandaboard () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
+	panda_fixes=1
 	build_stable
+	unset panda_fixes
 	build_testing
 	build_latest
 	unset enable_uenv_support
