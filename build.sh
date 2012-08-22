@@ -31,8 +31,8 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2012.04.01"
-TESTING="v2012.07"
+STABLE="v2012.07"
+#TESTING="v2012.07"
 
 LATEST_GIT="b4f106be2d8a4eb34ce41c5306d5a4fcc37e60e3"
 
@@ -107,7 +107,7 @@ build_omap_xloader () {
 	fi
 
 	cd ${DIR}/git/x-loader/
-	git pull ${GIT_OPTS}
+	git pull ${GIT_OPTS} || true
 	cd -
 
 	rm -rf ${DIR}/build/x-loader || true
@@ -149,7 +149,7 @@ build_u_boot () {
 	fi
 
 	cd ${DIR}/git/u-boot/
-	git pull ${GIT_OPTS}
+	git pull ${GIT_OPTS} || true
 	cd -
 
 	if [ -d ${DIR}/build/u-boot ] ; then
@@ -287,10 +287,12 @@ at91sam9xeek () {
 }
 
 build_stable () {
+	v2012_07=1
 	if [ "${STABLE}" ] ; then
 		UBOOT_TAG=${STABLE}
 		build_u_boot
 	fi
+	unset v2012_07
 }
 
 build_testing () {
@@ -349,7 +351,7 @@ beaglebone () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -368,7 +370,7 @@ igep00x0 () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -383,7 +385,7 @@ am3517crane () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -399,8 +401,15 @@ pandaboard () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	panda_fixes=1
-	build_stable
+	UBOOT_TAG="v2012.04.01"
+	build_u_boot
 	unset panda_fixes
+	unset enable_uenv_support
+	unset enable_zImage_support
+
+	enable_zImage_support=1
+	enable_uenv_support=1
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -415,7 +424,7 @@ mx51evk () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 	unset enable_uenv_support
@@ -431,7 +440,7 @@ mx53loco () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	mx53loco_patch=1
-#	build_stable
+	build_stable
 	build_testing
 	unset mx53loco_patch
 	build_latest
@@ -450,7 +459,7 @@ mx6qsabrelite () {
 	build_u_boot
 	unset mx6qsabrelite_patch
 
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 }
@@ -468,4 +477,3 @@ mx51evk
 mx53loco
 mx6qsabrelite
 pandaboard
-
