@@ -171,23 +171,27 @@ build_u_boot () {
 	UGIT_VERSION=$(git describe)
 
 	if [ "${enable_zImage_support}" ] ; then
+		if [ "${v2012_04}" ] ; then
+			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
+		fi
+
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-ti-omap-targets.patch"
 			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
-		else
-			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
 		fi
 	fi
 
 	if [ "${enable_uenv_support}" ] ; then
+		if [ "${v2012_04}" ] ; then
+			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
+		fi
+
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0001-am335-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0002-mx53loco-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0002-mx51evk-convert-to-uEnv.txt-bootscript.patch"
-		else
-			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 		fi
 	fi
 
@@ -313,15 +317,6 @@ build_latest () {
 	unset v2012_07
 }
 
-build_zimage () {
-	zImage_support=1
-	if [ "${LATEST_GIT}" ] ; then
-		UBOOT_GIT=${LATEST_GIT}
-		build_u_boot
-	fi
-	unset zImage_support
-}
-
 beagleboard () {
 	cleanup
 
@@ -330,7 +325,7 @@ beagleboard () {
 
 	enable_zImage_support=1
 	beagle_fixes=1
-#	build_stable
+	build_stable
 	build_testing
 	build_latest
 	unset beagle_fixes
@@ -398,6 +393,7 @@ pandaboard () {
 	BOARD="pandaboard"
 	UBOOT_CONFIG="omap4_panda_config"
 
+	v2012_04=1
 	enable_zImage_support=1
 	enable_uenv_support=1
 	panda_fixes=1
@@ -406,6 +402,7 @@ pandaboard () {
 	unset panda_fixes
 	unset enable_uenv_support
 	unset enable_zImage_support
+	unset v2012_04
 
 	enable_zImage_support=1
 	enable_uenv_support=1
