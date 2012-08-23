@@ -1,0 +1,199 @@
+From 8df1bf24ddf255da6f37b0c46d50e42a4f5b879e Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 22 Aug 2012 19:06:15 -0500
+Subject: [PATCH 2/2] imx convert to uEnv.txt n fixes
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/freescale/mx53loco/mx53loco.c |   12 ++++++------
+ include/configs/mx51evk.h           |   33 ++++++++++++++++++++-------------
+ include/configs/mx53loco.h          |   29 +++++++++++++++++++----------
+ include/configs/mx6qsabrelite.h     |    7 ++++---
+ 4 files changed, 49 insertions(+), 32 deletions(-)
+
+diff --git a/board/freescale/mx53loco/mx53loco.c b/board/freescale/mx53loco/mx53loco.c
+index cbdcfad..7cfb3f4 100644
+--- a/board/freescale/mx53loco/mx53loco.c
++++ b/board/freescale/mx53loco/mx53loco.c
+@@ -495,14 +495,14 @@ int print_cpuinfo(void)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_BOARD_LATE_INIT
+-int board_late_init(void)
++/*
++ * Do not overwrite the console
++ * Use always serial for U-Boot console
++ */
++int overwrite_console(void)
+ {
+-	setenv("stdout", "serial");
+-
+-	return 0;
++	return 1;
+ }
+-#endif
+ 
+ int board_init(void)
+ {
+diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
+index 5fc79fd..8f4ad85 100644
+--- a/include/configs/mx51evk.h
++++ b/include/configs/mx51evk.h
+@@ -93,6 +93,7 @@
+ #define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
+ #define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
++#define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+ #define CONFIG_CMD_FAT
+ #define CONFIG_DOS_PARTITION
+ 
+@@ -158,19 +159,20 @@
+ #define CONFIG_LOADADDR		0x90800000	/* loadaddr env var */
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"script=boot.scr\0" \
++	"dtb_file=imx51-babbage.dtb\0" \
+ 	"uimage=uImage\0" \
+ 	"mmcdev=0\0" \
+-	"mmcpart=2\0" \
++	"mmcpart=1\0" \
+ 	"mmcroot=/dev/mmcblk0p3 rw\0" \
+ 	"mmcrootfstype=ext3 rootwait\0" \
+ 	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
+ 		"root=${mmcroot} " \
+ 		"rootfstype=${mmcrootfstype}\0" \
+-	"loadbootscript=" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+-	"bootscript=echo Running bootscript from mmc ...; " \
+-		"source\0" \
++	"bootenv=uEnv.txt\0" \
++	"loadext2bootenv=ext2load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t $loadaddr $filesize\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+@@ -184,15 +186,20 @@
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"if mmc rescan ${mmcdev}; then " \
+-		"if run loadbootscript; then " \
+-			"run bootscript; " \
+-		"else " \
+-			"if run loaduimage; then " \
+-				"run mmcboot; " \
+-			"else run netboot; " \
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadext2bootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if run loaduimage; then " \
++			"run mmcboot;" \
+ 			"fi; " \
+ 		"fi; " \
+-	"else run netboot; fi"
++	"run nandboot;" \
+ 
+ #define CONFIG_ARP_TIMEOUT	200UL
+ 
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index 1dcda35..ebe5d3b 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -119,19 +119,20 @@
+ #define CONFIG_SYS_TEXT_BASE    0x77800000
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"script=boot.scr\0" \
++	"dtb_file=imx53-qsb.dtb\0" \
+ 	"uimage=uImage\0" \
+ 	"mmcdev=0\0" \
+-	"mmcpart=2\0" \
++	"mmcpart=1\0" \
+ 	"mmcroot=/dev/mmcblk0p3 rw\0" \
+ 	"mmcrootfstype=ext3 rootwait\0" \
+ 	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
+ 		"root=${mmcroot} " \
+ 		"rootfstype=${mmcrootfstype}\0" \
+-	"loadbootscript=" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+-	"bootscript=echo Running bootscript from mmc ...; " \
+-		"source\0" \
++	"bootenv=uEnv.txt\0" \
++	"loadext2bootenv=ext2load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t $loadaddr $filesize\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+@@ -145,15 +146,21 @@
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"if mmc rescan ${mmcdev}; then " \
+-		"if run loadbootscript; then " \
+-			"run bootscript; " \
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadext2bootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
+ 		"else " \
++		"if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"fi;" \
+ 			"if run loaduimage; then " \
+ 				"run mmcboot; " \
+-			"else run netboot; " \
+ 			"fi; " \
+ 		"fi; " \
+-	"else run netboot; fi"
++	"run nandboot;" \
+ 
+ #define CONFIG_ARP_TIMEOUT	200UL
+ 
+@@ -223,6 +230,8 @@
+ #define CONFIG_VIDEO_IPUV3
+ #define CONFIG_CFB_CONSOLE
+ #define CONFIG_VGA_AS_SINGLE_DEVICE
++#define CONFIG_SYS_CONSOLE_IS_IN_ENV
++#define CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE
+ #define CONFIG_VIDEO_BMP_RLE8
+ #define CONFIG_SPLASH_SCREEN
+ #define CONFIG_BMP_16BPP
+diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
+index eb4df94..f9a7eab 100644
+--- a/include/configs/mx6qsabrelite.h
++++ b/include/configs/mx6qsabrelite.h
+@@ -142,16 +142,17 @@
+ 	"console=ttymxc1\0" \
+ 	"fdt_high=0xffffffff\0"	  \
+ 	"initrd_high=0xffffffff\0" \
++	"dtb_file=imx6q-sabrelite.dtb\0" \
+        "mmcdev=0\0" \
+-       "mmcpart=2\0" \
++       "mmcpart=1\0" \
+        "mmcroot=/dev/mmcblk0p3 rootwait rw\0" \
+        "mmcargs=setenv bootargs console=${console},${baudrate} " \
+ 	       "root=${mmcroot}\0" \
+        "loadbootscript=" \
+-	       "fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++	       "ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+        "bootscript=echo Running bootscript from mmc ...; " \
+ 	       "source\0" \
+-       "loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
++       "loaduimage=ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+        "mmcboot=echo Booting from mmc ...; " \
+ 	       "run mmcargs; " \
+ 	       "bootm\0" \
+-- 
+1.7.10.4
+

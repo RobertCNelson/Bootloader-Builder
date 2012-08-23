@@ -1,0 +1,124 @@
+From 8e7e2db5be2cb71962de5be83f3ecc1a94a3ccc5 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 22 Aug 2012 18:44:51 -0500
+Subject: [PATCH] enable bootz support
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/am335x_evm.h    |    2 ++
+ include/configs/am3517_crane.h  |    2 ++
+ include/configs/igep00x0.h      |    2 ++
+ include/configs/mx51evk.h       |    2 ++
+ include/configs/mx53loco.h      |    2 ++
+ include/configs/mx6qsabrelite.h |    2 ++
+ include/configs/omap3_beagle.h  |    2 ++
+ include/configs/omap4_common.h  |    2 ++
+ 8 files changed, 16 insertions(+)
+
+diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
+index d0fbc88..7fc7990 100644
+--- a/include/configs/am335x_evm.h
++++ b/include/configs/am335x_evm.h
+@@ -81,6 +81,8 @@
+ #define CONFIG_DOS_PARTITION
+ #define CONFIG_CMD_FAT
+ #define CONFIG_CMD_EXT2
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ 
+  /* Physical Memory Map */
+ #define CONFIG_NR_DRAM_BANKS		1		/*  1 bank of DRAM */
+diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
+index 54ab3eb..acd1284 100644
+--- a/include/configs/am3517_crane.h
++++ b/include/configs/am3517_crane.h
+@@ -144,6 +144,8 @@
+ 
+ #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+ #define CONFIG_CMD_MMC		/* MMC support			*/
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_CMD_NAND		/* NAND support			*/
+ #define CONFIG_CMD_DHCP
+ #undef CONFIG_CMD_PING
+diff --git a/include/configs/igep00x0.h b/include/configs/igep00x0.h
+index 88e2e3a..d03e2d9 100644
+--- a/include/configs/igep00x0.h
++++ b/include/configs/igep00x0.h
+@@ -105,6 +105,8 @@
+ #define CONFIG_CMD_FAT		/* FAT support			*/
+ #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+ #define CONFIG_CMD_MMC		/* MMC support			*/
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_CMD_ONENAND	/* ONENAND support		*/
+ #define CONFIG_CMD_NET		/* bootp, tftpboot, rarpboot	*/
+ #define CONFIG_CMD_DHCP
+diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
+index e975f54..5fc79fd 100644
+--- a/include/configs/mx51evk.h
++++ b/include/configs/mx51evk.h
+@@ -90,6 +90,8 @@
+ #define CONFIG_MMC
+ 
+ #define CONFIG_CMD_MMC
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_CMD_FAT
+ #define CONFIG_DOS_PARTITION
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index 597c4e4..1dcda35 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -54,6 +54,8 @@
+ 
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_CMD_FAT
+ #define CONFIG_CMD_EXT2
+diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
+index 0d376ba..eb4df94 100644
+--- a/include/configs/mx6qsabrelite.h
++++ b/include/configs/mx6qsabrelite.h
+@@ -72,6 +72,8 @@
+ 
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_CMD_EXT2
+ #define CONFIG_CMD_FAT
+diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
+index 657780e..a028c16 100644
+--- a/include/configs/omap3_beagle.h
++++ b/include/configs/omap3_beagle.h
+@@ -151,6 +151,8 @@
+ #define CONFIG_CMD_CACHE
+ #define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+ #define CONFIG_CMD_FAT		/* FAT support			*/
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
+ #define CONFIG_CMD_MTDPARTS	/* Enable MTD parts commands */
+ #define CONFIG_MTD_DEVICE	/* needed for mtdparts commands */
+diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
+index 2192c2b..d13ce7c 100644
+--- a/include/configs/omap4_common.h
++++ b/include/configs/omap4_common.h
+@@ -128,6 +128,8 @@
+ #define CONFIG_CMD_FAT		/* FAT support                  */
+ #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+ #define CONFIG_CMD_MMC		/* MMC support                  */
++#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ 
+ /* Disabled commands */
+ #undef CONFIG_CMD_NET
+-- 
+1.7.10.4
+

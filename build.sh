@@ -170,11 +170,18 @@ build_u_boot () {
 
 	UGIT_VERSION=$(git describe)
 
+	if [ "${v2012_10}" ] ; then
+		#bootz:
+		git am "${DIR}/patches/v2012.10/0001-enable-bootz-support.patch"
+		#uEnv.txt
+		git am "${DIR}/patches/v2012.10/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+		git am "${DIR}/patches/v2012.10/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+	fi
+
 	if [ "${enable_zImage_support}" ] ; then
 		if [ "${v2012_04}" ] ; then
 			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
 		fi
-
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-ti-omap-targets.patch"
 			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
@@ -185,7 +192,6 @@ build_u_boot () {
 		if [ "${v2012_04}" ] ; then
 			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 		fi
-
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-panda-convert-to-uEnv.txt-bootscript.patch"
 			git am "${DIR}/patches/v2012.07/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
@@ -300,21 +306,21 @@ build_stable () {
 }
 
 build_testing () {
-	v2012_07=1
+	v2012_10=1
 	if [ "${TESTING}" ] ; then
 		UBOOT_TAG=${TESTING}
 		build_u_boot
 	fi
-	unset v2012_07
+	unset v2012_10
 }
 
 build_latest () {
-	v2012_07=1
+	v2012_10=1
 	if [ "${LATEST_GIT}" ] ; then
 		UBOOT_GIT=${LATEST_GIT}
 		build_u_boot
 	fi
-	unset v2012_07
+	unset v2012_10
 }
 
 beagleboard () {
@@ -326,10 +332,11 @@ beagleboard () {
 	enable_zImage_support=1
 	beagle_fixes=1
 	build_stable
-	build_testing
-	build_latest
 	unset beagle_fixes
 	unset enable_zImage_support
+
+	build_testing
+	build_latest
 }
 
 
@@ -347,10 +354,11 @@ beaglebone () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	build_stable
-	build_testing
-	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
+
+	build_testing
+	build_latest
 }
 
 igep00x0 () {
@@ -366,10 +374,11 @@ igep00x0 () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	build_stable
-	build_testing
-	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
+
+	build_testing
+	build_latest
 }
 
 am3517crane () {
@@ -381,10 +390,11 @@ am3517crane () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	build_stable
-	build_testing
-	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
+
+	build_testing
+	build_latest
 }
 
 pandaboard () {
@@ -407,10 +417,11 @@ pandaboard () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	build_stable
-	build_testing
-	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
+
+	build_testing
+	build_latest
 }
 
 mx51evk () {
@@ -422,10 +433,11 @@ mx51evk () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	build_stable
-	build_testing
-	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
+
+	build_testing
+	build_latest
 }
 
 mx53loco () {
@@ -438,11 +450,12 @@ mx53loco () {
 	enable_uenv_support=1
 	mx53loco_patch=1
 	build_stable
-	build_testing
 	unset mx53loco_patch
-	build_latest
 	unset enable_uenv_support
 	unset enable_zImage_support
+
+	build_testing
+	build_latest
 }
 
 mx6qsabrelite () {
@@ -456,7 +469,12 @@ mx6qsabrelite () {
 	build_u_boot
 	unset mx6qsabrelite_patch
 
+	enable_zImage_support=1
+	enable_uenv_support=1
 	build_stable
+	unset enable_uenv_support
+	unset enable_zImage_support
+
 	build_testing
 	build_latest
 }
