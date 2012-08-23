@@ -233,6 +233,10 @@ build_u_boot () {
 		BUILDTARGET="u-boot.imx"
 	fi
 
+	if [ "${odroidx_patch}" ] ; then
+		git am "${DIR}/patches/v2012.10/0001-Exynos-Add-minimal-support-for-ODROID-X.patch"
+	fi
+
 	if [ -f "${DIR}/stop.after.patch" ] ; then
 		echo "-----------------------------"
 		pwd
@@ -479,6 +483,24 @@ mx6qsabrelite () {
 	build_latest
 }
 
+odroidx () {
+	cleanup
+
+	BOARD="odroidx"
+	UBOOT_CONFIG="odroidx_config"
+
+#	enable_zImage_support=1
+#	enable_uenv_support=1
+#	build_stable
+#	unset enable_uenv_support
+#	unset enable_zImage_support
+
+	odroidx_patch=1
+	build_testing
+	build_latest
+	unset odroidx_patch
+}
+
 dl_old_bootloaders
 set_cross_compiler
 
@@ -492,3 +514,4 @@ mx51evk
 mx53loco
 mx6qsabrelite
 pandaboard
+odroidx
