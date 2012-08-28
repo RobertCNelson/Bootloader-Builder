@@ -204,6 +204,8 @@ build_u_boot () {
 	if [ "${panda_fixes}" ] ; then
 		RELEASE_VER="-r1"
 		git am "${DIR}/patches/v2012.04/0003-panda-let-the-bootloader-set-the-intial-screen-resol.patch"
+		RELEASE_VER="-r2"
+		git am "${DIR}/patches/v2012.04/0004-panda-set-dtb_file-based-on-core.patch"
 	fi
 
 	if [ "${beagle_fixes}" ] ; then

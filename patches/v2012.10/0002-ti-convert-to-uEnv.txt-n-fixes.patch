@@ -6,11 +6,12 @@ Subject: [PATCH 2/2] ti convert to uEnv.txt n fixes
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/beagle/beagle.c       |   33 ++++++++++++++++++++++----
+ board/ti/panda/panda.c         |    6 +++++
  include/configs/am335x_evm.h   |   51 ++++++++++++++++++++++++++++++++++++----
  include/configs/am3517_crane.h |   40 ++++++++++++++++++-------------
  include/configs/omap3_beagle.h |   13 ++++++----
  include/configs/omap4_common.h |   31 +++++++++++++++---------
- 5 files changed, 129 insertions(+), 39 deletions(-)
+ 6 files changed, 135 insertions(+), 39 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index 2ef2290..db9a453 100644
@@ -86,6 +87,23 @@ index 2ef2290..db9a453 100644
  	twl4030_power_init();
  	switch (get_board_revision()) {
  	case REVISION_XM_A:
+diff --git a/board/ti/panda/panda.c b/board/ti/panda/panda.c
+index ee82771..e0563ef 100644
+--- a/board/ti/panda/panda.c
++++ b/board/ti/panda/panda.c
+@@ -128,6 +128,12 @@ int misc_init_r(void)
+ 
+ 	writel(altclksrc, &scrm->altclksrc);
+ 
++	if (omap_revision() < OMAP4460_ES1_0) {
++		setenv("dtb_file", "omap4-panda.dtb");
++	} else {
++		setenv("dtb_file", "omap4-pandaES.dtb");
++	}
++
+ 	return 0;
+ }
+ 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
 index 7fc7990..90374c9 100644
 --- a/include/configs/am335x_evm.h
