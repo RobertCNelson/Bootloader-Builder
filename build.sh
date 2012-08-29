@@ -74,6 +74,30 @@ set_cross_compiler () {
 	fi
 }
 
+git_generic () {
+	echo "Starting ${project} build for: ${BOARD}"
+	echo "-----------------------------"
+
+	RELEASE_VER="-r0"
+
+	if [ ! -f ${DIR}/git/${project}/.git/config ] ; then
+		git clone git://github.com/RobertCNelson/${project}.git ${DIR}/git/${project}/
+	fi
+
+	cd ${DIR}/git/${project}/
+	git pull ${GIT_OPTS} || true
+	cd -
+
+	if [ -d ${DIR}/build/${project} ] ; then
+		rm -rf ${DIR}/build/${project} || true
+	fi
+
+	mkdir -p ${DIR}/build/${project}
+	git clone --shared ${DIR}/git/${project} ${DIR}/build/${project}
+
+	cd ${DIR}/build/${project}
+}
+
 at91_loader () {
 	echo "Starting AT91Bootstrap build for: ${BOARD}"
 	echo "-----------------------------"
@@ -97,24 +121,9 @@ at91_loader () {
 }
 
 build_omap_xloader () {
-	echo "Starting x-loader build for: ${BOARD}"
-	echo "-----------------------------"
+	project="x-loader"
+	git_generic
 
-	if [ ! -f ${DIR}/git/x-loader/.git/config ] ; then
-		cd ${DIR}/git/
-		git clone git://gitorious.org/x-loader/x-loader.git
-		cd -
-	fi
-
-	cd ${DIR}/git/x-loader/
-	git pull ${GIT_OPTS} || true
-	cd -
-
-	rm -rf ${DIR}/build/x-loader || true
-	mkdir -p ${DIR}/build/x-loader
-	git clone --shared ${DIR}/git/x-loader ${DIR}/build/x-loader
-
-	cd ${DIR}/build/x-loader
 	make ARCH=arm distclean
 
 	XGIT_VERSION=$(git rev-parse --short HEAD)
@@ -138,28 +147,9 @@ build_omap_xloader () {
 }
 
 build_u_boot () {
-	echo "Starting u-boot build for: ${BOARD}"
-	echo "-----------------------------"
+	project="u-boot"
+	git_generic
 
-	RELEASE_VER="-r0"
-
-	if [ ! -f ${DIR}/git/u-boot/.git/config ] ; then
-		#git clone git://git.denx.de/u-boot.git
-		git clone git://github.com/RobertCNelson/u-boot.git ${DIR}/git/u-boot/
-	fi
-
-	cd ${DIR}/git/u-boot/
-	git pull ${GIT_OPTS} || true
-	cd -
-
-	if [ -d ${DIR}/build/u-boot ] ; then
-		rm -rf ${DIR}/build/u-boot || true
-	fi
-
-	mkdir -p ${DIR}/build/u-boot
-	git clone --shared ${DIR}/git/u-boot ${DIR}/build/u-boot
-
-	cd ${DIR}/build/u-boot
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 
 	if [ "${UBOOT_GIT}" ] ; then
@@ -344,7 +334,6 @@ beagleboard () {
 	build_testing
 	build_latest
 }
-
 
 beaglebone () {
 	cleanup
