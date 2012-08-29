@@ -252,22 +252,22 @@ build_u_boot () {
 	unset UBOOT_DONE
 
 	#Freescale targets just need u-boot.imx from u-boot
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/u-boot/u-boot.imx ] ; then
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
 		cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
 		UBOOT_DONE=1
 	fi
 
 	#SPL based targets, need MLO and u-boot.img from u-boot
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/u-boot/MLO ] ; then
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] ; then
 		cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
-		if [ -f ${DIR}/build/u-boot/u-boot.img ] ; then 
+		if [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
 			 cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
 		fi
 		UBOOT_DONE=1
 	fi
 
 	#Just u-boot.bin
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/u-boot/u-boot.bin ] ; then
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
 		cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
 		UBOOT_DONE=1
 	fi
