@@ -290,7 +290,7 @@ at91sam9xeek () {
 	at91_loader
 }
 
-build_stable () {
+build_uboot_stable () {
 	v2012_07=1
 	if [ "${STABLE}" ] ; then
 		GIT_SHA=${STABLE}
@@ -299,7 +299,7 @@ build_stable () {
 	unset v2012_07
 }
 
-build_testing () {
+build_uboot_testing () {
 	v2012_10=1
 	if [ "${TESTING}" ] ; then
 		GIT_SHA=${TESTING}
@@ -308,7 +308,7 @@ build_testing () {
 	unset v2012_10
 }
 
-build_latest () {
+build_uboot_latest () {
 	v2012_10=1
 	if [ "${LATEST_GIT}" ] ; then
 		GIT_SHA=${LATEST_GIT}
@@ -325,12 +325,12 @@ beagleboard () {
 
 	enable_zImage_support=1
 	beagle_fixes=1
-	build_stable
+	build_uboot_stable
 	unset beagle_fixes
 	unset enable_zImage_support
 
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 beaglebone () {
@@ -346,12 +346,12 @@ beaglebone () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+	build_uboot_stable
 	unset enable_uenv_support
 	unset enable_zImage_support
 
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 igep00x0 () {
@@ -366,12 +366,12 @@ igep00x0 () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+	build_uboot_stable
 	unset enable_uenv_support
 	unset enable_zImage_support
 
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 am3517crane () {
@@ -382,12 +382,12 @@ am3517crane () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+	build_uboot_stable
 	unset enable_uenv_support
 	unset enable_zImage_support
 
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 pandaboard () {
@@ -409,12 +409,12 @@ pandaboard () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+	build_uboot_stable
 	unset enable_uenv_support
 	unset enable_zImage_support
 
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 mx51evk () {
@@ -425,12 +425,12 @@ mx51evk () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+	build_uboot_stable
 	unset enable_uenv_support
 	unset enable_zImage_support
 
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 mx53loco () {
@@ -442,13 +442,13 @@ mx53loco () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	mx53loco_patch=1
-	build_stable
+	build_uboot_stable
 	unset mx53loco_patch
 	unset enable_uenv_support
 	unset enable_zImage_support
 
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 mx6qsabrelite () {
@@ -464,12 +464,12 @@ mx6qsabrelite () {
 
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_stable
+	build_uboot_stable
 	unset enable_uenv_support
 	unset enable_zImage_support
 
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 odroidx () {
@@ -480,13 +480,13 @@ odroidx () {
 
 #	enable_zImage_support=1
 #	enable_uenv_support=1
-#	build_stable
+#	build_uboot_stable
 #	unset enable_uenv_support
 #	unset enable_zImage_support
 
 	odroidx_patch=1
-	build_testing
-	build_latest
+	build_uboot_testing
+	build_uboot_latest
 	unset odroidx_patch
 }
 
