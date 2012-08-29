@@ -98,6 +98,15 @@ git_generic () {
 	cd ${DIR}/build/${project}
 }
 
+git_cleanup () {
+	cd ${DIR}/
+
+	rm -rf ${DIR}/build/${project} || true
+
+	echo "${project} build completed for: ${BOARD}"
+	echo "-----------------------------"
+}
+
 at91_loader () {
 	echo "Starting AT91Bootstrap build for: ${BOARD}"
 	echo "-----------------------------"
@@ -138,12 +147,7 @@ build_omap_xloader () {
 	mkdir -p ${DIR}/deploy/${BOARD}
 	cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
 
-	cd ${DIR}/
-
-	rm -rf ${DIR}/build/x-loader
-
-	echo "x-loader build completed for: ${BOARD}"
-	echo "-----------------------------"
+	git_cleanup
 }
 
 build_u_boot () {
@@ -268,12 +272,7 @@ build_u_boot () {
 		UBOOT_DONE=1
 	fi
 
-	cd ${DIR}/
-
-	rm -rf ${DIR}/build/u-boot || true
-
-	echo "u-boot build completed for: ${BOARD}"
-	echo "-----------------------------"
+	git_cleanup
 }
 
 cleanup () {
