@@ -1,0 +1,96 @@
+From fb57c00bd869bf23254afc2035021ad45d83179d Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 29 Aug 2012 17:25:58 -0500
+Subject: [PATCH] WIP: at91sam9x5ek mmc support
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c |   12 +++++++++++
+ board/atmel/at91sam9x5ek/at91sam9x5ek.c          |   23 ++++++++++++++++++++++
+ include/configs/at91sam9x5ek.h                   |    9 +++++++++
+ 3 files changed, 44 insertions(+)
+
+diff --git a/arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c b/arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c
+index 6d77219..e89e6b7 100644
+--- a/arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c
++++ b/arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c
+@@ -230,3 +230,15 @@ void at91_macb_hw_init(void)
+ #endif
+ }
+ #endif
++
++#if defined(CONFIG_GENERIC_ATMEL_MCI)
++void at91_mci_hw_init(void)
++{
++	at91_set_a_periph(AT91_PIO_PORTA, 17, 1);	/* MCCK */
++	at91_set_a_periph(AT91_PIO_PORTA, 16, 1);	/* MCCDA */
++	at91_set_a_periph(AT91_PIO_PORTA, 15, 1);	/* MCDA0 */
++	at91_set_a_periph(AT91_PIO_PORTA, 18, 1);	/* MCDA1 */
++	at91_set_a_periph(AT91_PIO_PORTA, 19, 1);	/* MCDA2 */
++	at91_set_a_periph(AT91_PIO_PORTA, 20, 1);	/* MCDA3 */
++}
++#endif
+diff --git a/board/atmel/at91sam9x5ek/at91sam9x5ek.c b/board/atmel/at91sam9x5ek/at91sam9x5ek.c
+index 88b3478..1dacea1 100644
+--- a/board/atmel/at91sam9x5ek/at91sam9x5ek.c
++++ b/board/atmel/at91sam9x5ek/at91sam9x5ek.c
+@@ -42,6 +42,10 @@
+ #ifdef CONFIG_ATMEL_SPI
+ #include <spi.h>
+ #endif
++#ifdef CONFIG_GENERIC_ATMEL_MCI
++# include <mmc.h>
++# include <atmel_mci.h>
++#endif
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+@@ -220,6 +224,25 @@ void lcd_show_board_info(void)
+ #endif /* CONFIG_LCD_INFO */
+ #endif /* CONFIG_LCD */
+ 
++#ifdef CONFIG_GENERIC_ATMEL_MCI
++int board_mmc_init(bd_t *bd)
++{
++	struct at91_pmc *pmc = (struct at91_pmc *)ATMEL_BASE_PMC;
++
++	/* Enable MCI clock. */
++	writel(1 << ATMEL_ID_HSMCI0, &pmc->pcer);
++	/* Initialize MCI hardware. */
++	at91_mci_hw_init();
++	/* Register the device. */
++	return atmel_mci_init((void *)ATMEL_BASE_HSMCI0);
++}
++
++int board_mmc_getcd(struct mmc *mmc)
++{
++	return !at91_get_pio_value(CONFIG_SYS_MMC_CD_PIN);
++}
++#endif
++
+ /* SPI chip select control */
+ #ifdef CONFIG_ATMEL_SPI
+ int spi_cs_is_valid(unsigned int bus, unsigned int cs)
+diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
+index 82f6b48..52b8071 100644
+--- a/include/configs/at91sam9x5ek.h
++++ b/include/configs/at91sam9x5ek.h
+@@ -135,6 +135,15 @@
+ #define CONFIG_NET_RETRY_COUNT		20
+ #define CONFIG_MACB_SEARCH_PHY
+ 
++/* MMC */
++#define CONFIG_MMC
++#define CONFIG_GENERIC_MMC
++#define CONFIG_GENERIC_ATMEL_MCI
++#define CONFIG_SYS_MMC_CD_PIN		AT91_PIO_PORTD, 15
++#define CONFIG_CMD_MMC			1
++#define CONFIG_DOS_PARTITION		1
++#define CONFIG_CMD_FAT			1
++
+ #define CONFIG_SYS_LOAD_ADDR		0x22000000	/* load address */
+ 
+ #define CONFIG_SYS_MEMTEST_START	CONFIG_SYS_SDRAM_BASE
+-- 
+1.7.10.4
+
