@@ -74,6 +74,24 @@ set_cross_compiler () {
 	fi
 }
 
+armv5_embedded_toolchain () {
+	armv5_ver="gcc-arm-none-eabi-4_6-2012q2"
+	armv5_date="20120614"
+	ARMV5_GCC_EMBEDDED="${armv5_ver}-${armv5_date}.tar.bz2"
+	if [ ! -f ${DIR}/dl/${armv5_date} ] ; then
+		echo "Installing gcc-arm-embedded toolchain"
+		echo "-----------------------------"
+		wget -c --directory-prefix=${DIR}/dl/ https://launchpad.net/gcc-arm-embedded/4.6/4.6-2012-q2-update/+download/${ARMV5_GCC_EMBEDDED}
+		touch ${DIR}/dl/${armv5_date}
+		if [ -d ${DIR}/dl/${armv5_ver} ] ; then
+			rm -rf ${DIR}/dl/${armv5_ver} || true
+		fi
+		tar xjf ${DIR}/dl/${ARMV5_GCC_EMBEDDED} -C ${DIR}/dl/
+	fi
+
+	armv5_gcc="${DIR}/dl/${armv5_ver}/bin/arm-none-eabi-"
+}
+
 git_generic () {
 	echo "Starting ${project} build for: ${BOARD}"
 	echo "-----------------------------"
@@ -112,26 +130,19 @@ git_cleanup () {
 	echo "-----------------------------"
 }
 
-at91_loader () {
-	echo "Starting AT91Bootstrap build for: ${BOARD}"
-	echo "-----------------------------"
+build_at91bootstrap () {
+	project="AT91Bootstrap"
+	git_generic
 
-	if ! ls ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip >/dev/null 2>&1;then
-		wget --directory-prefix=${DIR}/dl/ ftp://www.at91.com/pub/at91bootstrap/AT91Bootstrap${AT91BOOTSTRAP}.zip
-	fi
+	make CROSS_COMPILE=${armv5_gcc} clean &> /dev/null
+	make CROSS_COMPILE=${armv5_gcc} ${AT91BOOTSTRAP_CONFIG}_defconfig
+	echo "Building ${project}: ${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin"
+	make CROSS_COMPILE=${armv5_gcc} > /dev/null
 
-	rm -rf ${DIR}/Bootstrap-v${AT91BOOTSTRAP} || true
-	unzip -q ${DIR}/dl/AT91Bootstrap${AT91BOOTSTRAP}.zip
+	mkdir -p ${DIR}/deploy/${BOARD}/
+	cp -v binaries/*.bin ${DIR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin
 
-	cd ${DIR}/Bootstrap-v${AT91BOOTSTRAP}
-	sed -i -e 's:/usr/local/bin/make-3.80:/usr/bin/make:g' go_build_bootstrap.sh
-	sed -i -e 's:/opt/codesourcery/arm-2007q1/bin/arm-none-linux-gnueabi-:'${CC}':g' go_build_bootstrap.sh
-	./go_build_bootstrap.sh
-
-	cd -
-
-	echo "AT91Bootstrap build completed for: ${BOARD}"
-	echo "-----------------------------"
+	git_cleanup
 }
 
 build_omap_xloader () {
@@ -146,7 +157,7 @@ build_omap_xloader () {
 
 	make ARCH=arm distclean &> /dev/null
 	make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
-	echo "Building x-loader: ${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}"
+	echo "Building ${project}: ${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}"
 	make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift > /dev/null
 
 	mkdir -p ${DIR}/deploy/${BOARD}
@@ -242,7 +253,7 @@ build_u_boot () {
 	fi
 
 	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
-	echo "Building u-boot: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
+	echo "Building ${project}: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
 	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
 
 	mkdir -p ${DIR}/deploy/${BOARD}
@@ -277,17 +288,9 @@ cleanup () {
 	unset GIT_SHA
 	unset UBOOT_TAG
 	unset UBOOT_GIT
-	unset AT91BOOTSTRAP
 	unset REVERT
 	unset BEAGLEBONE_PATCH
-}
-
-at91sam9xeek () {
-	cleanup
-
-	BOARD="at91sam9xeek"
-	AT91BOOTSTRAP="1.16"
-	at91_loader
+	set_cross_compiler
 }
 
 build_uboot_stable () {
@@ -315,6 +318,16 @@ build_uboot_latest () {
 		build_u_boot
 	fi
 	unset v2012_10
+}
+
+at91sam9x5ek () {
+	cleanup
+	armv5_embedded_toolchain
+
+	BOARD="at91sam9x5ek"
+	GIT_SHA="3bc818332eaba746c320cb9459b05be731db60a4"
+	AT91BOOTSTRAP_CONFIG="at91sam9x5sduboot"
+	build_at91bootstrap
 }
 
 beagleboard () {
@@ -491,9 +504,8 @@ odroidx () {
 }
 
 dl_old_bootloaders
-set_cross_compiler
 
-#at91sam9xeek
+at91sam9x5ek
 
 am3517crane
 beagleboard
