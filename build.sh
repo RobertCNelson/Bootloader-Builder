@@ -96,6 +96,11 @@ git_generic () {
 	git clone --shared ${DIR}/git/${project} ${DIR}/build/${project}
 
 	cd ${DIR}/build/${project}
+
+	if [ "${GIT_SHA}" ] ; then
+		echo "Checking out: ${GIT_SHA}"
+		git checkout ${GIT_SHA} -b ${project}-scratch
+	fi
 }
 
 git_cleanup () {
@@ -155,13 +160,6 @@ build_u_boot () {
 	git_generic
 
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
-
-	if [ "${UBOOT_GIT}" ] ; then
-		git checkout ${UBOOT_GIT} -b u-boot-scratch
-	else
-		git checkout ${UBOOT_TAG} -b u-boot-scratch
-	fi
-
 	UGIT_VERSION=$(git describe)
 
 	if [ "${v2012_10}" ] ; then
@@ -276,6 +274,7 @@ build_u_boot () {
 }
 
 cleanup () {
+	unset GIT_SHA
 	unset UBOOT_TAG
 	unset UBOOT_GIT
 	unset AT91BOOTSTRAP
@@ -294,7 +293,7 @@ at91sam9xeek () {
 build_stable () {
 	v2012_07=1
 	if [ "${STABLE}" ] ; then
-		UBOOT_TAG=${STABLE}
+		GIT_SHA=${STABLE}
 		build_u_boot
 	fi
 	unset v2012_07
@@ -303,7 +302,7 @@ build_stable () {
 build_testing () {
 	v2012_10=1
 	if [ "${TESTING}" ] ; then
-		UBOOT_TAG=${TESTING}
+		GIT_SHA=${TESTING}
 		build_u_boot
 	fi
 	unset v2012_10
@@ -312,7 +311,7 @@ build_testing () {
 build_latest () {
 	v2012_10=1
 	if [ "${LATEST_GIT}" ] ; then
-		UBOOT_GIT=${LATEST_GIT}
+		GIT_SHA=${LATEST_GIT}
 		build_u_boot
 	fi
 	unset v2012_10
@@ -341,7 +340,7 @@ beaglebone () {
 	UBOOT_CONFIG="am335x_evm_config"
 
 	BEAGLEBONE_PATCH=1
-	UBOOT_TAG="v2011.09"
+	GIT_SHA="v2011.09"
 	build_u_boot
 	unset BEAGLEBONE_PATCH
 
@@ -401,7 +400,7 @@ pandaboard () {
 	enable_zImage_support=1
 	enable_uenv_support=1
 	panda_fixes=1
-	UBOOT_TAG="v2012.04.01"
+	GIT_SHA="v2012.04.01"
 	build_u_boot
 	unset panda_fixes
 	unset enable_uenv_support
@@ -459,7 +458,7 @@ mx6qsabrelite () {
 	UBOOT_CONFIG="mx6qsabrelite_config"
 
 	mx6qsabrelite_patch=1
-	UBOOT_TAG="v2011.12"
+	GIT_SHA="v2011.12"
 	build_u_boot
 	unset mx6qsabrelite_patch
 
