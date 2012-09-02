@@ -34,7 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.07"
 #TESTING="v2012.07"
 
-LATEST_GIT="e66443fdb5355e68cfdbbdd37248c4b7eb4968f5"
+#LATEST_GIT="e66443fdb5355e68cfdbbdd37248c4b7eb4968f5"
+LATEST_GIT="6e2fbdea1b26d75314d87c380a36b0015bf824cf"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -211,10 +212,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.04/0004-panda-set-dtb_file-based-on-core.patch"
 	fi
 
-	if [ "${at91sam9x5ek_patch}" ] ; then
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git at91sam9x5ek-v2012.07
-	fi
-
 	if [ "${beagle_fixes}" ] ; then
 		if [ "${v2012_07}" ] ; then
 			git am "${DIR}/patches/v2012.07/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
@@ -336,14 +333,9 @@ at91sam9x5ek () {
 	UBOOT_CONFIG="at91sam9x5ek_nandflash_config"
 	CC=${armv5_gcc}
 
-	at91sam9x5ek_patch=1
-	GIT_SHA="v2012.07"
-	build_u_boot
-	unset at91sam9x5ek_patch
-
 #	build_uboot_stable
 #	build_uboot_testing
-#	build_uboot_latest
+	build_uboot_latest
 }
 
 beagleboard () {
@@ -519,6 +511,17 @@ odroidx () {
 	unset odroidx_patch
 }
 
+rpi_b () {
+	cleanup
+
+	BOARD="rpi_b"
+	UBOOT_CONFIG="rpi_b_config"
+
+#	build_uboot_stable
+#	build_uboot_testing
+	build_uboot_latest
+}
+
 dl_old_bootloaders
 
 at91sam9x5ek
@@ -530,5 +533,7 @@ igep00x0
 mx51evk
 mx53loco
 mx6qsabrelite
-pandaboard
 odroidx
+pandaboard
+rpi_b
+

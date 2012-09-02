@@ -5,19 +5,18 @@ Subject: [PATCH 2/2] ti convert to uEnv.txt n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/beagle/beagle.c       |   33 ++++++++++++++++++++++----
- board/ti/panda/panda.c         |    6 +++++
- include/configs/am335x_evm.h   |   51 ++++++++++++++++++++++++++++++++++++----
- include/configs/am3517_crane.h |   40 ++++++++++++++++++-------------
- include/configs/omap3_beagle.h |   13 ++++++----
- include/configs/omap4_common.h |   31 +++++++++++++++---------
- 6 files changed, 135 insertions(+), 39 deletions(-)
+ board/ti/beagle/beagle.c       |   33 +++++++++++++++++++++++++++++----
+ board/ti/panda/panda.c         |    6 ++++++
+ include/configs/am3517_crane.h |   40 ++++++++++++++++++++++++----------------
+ include/configs/omap3_beagle.h |   13 +++++++++----
+ include/configs/omap4_common.h |   31 ++++++++++++++++++++-----------
+ 5 files changed, 88 insertions(+), 35 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
-index 2ef2290..db9a453 100644
+index 99f833f..35140e3 100644
 --- a/board/ti/beagle/beagle.c
 +++ b/board/ti/beagle/beagle.c
-@@ -67,6 +67,7 @@
+@@ -65,6 +65,7 @@
  #define BBTOYS_WIFI			0x01000B00
  #define BBTOYS_VGA			0x02000B00
  #define BBTOYS_LCD			0x03000B00
@@ -25,12 +24,12 @@ index 2ef2290..db9a453 100644
  #define BCT_BRETTL3			0x01000F00
  #define BCT_BRETTL4			0x02000F00
  #define BEAGLE_NO_EEPROM		0xffffffff
-@@ -211,18 +212,18 @@ void get_board_mem_timings(u32 *mcfg, u32 *ctrla, u32 *ctrlb, u32 *rfr_ctrl,
+@@ -209,18 +210,18 @@ void get_board_mem_timings(u32 *mcfg, u32 *ctrla, u32 *ctrlb, u32 *rfr_ctrl,
   *		bus 1 for the availability of an AT24C01B serial EEPROM.
   *		returns the device_vendor field from the EEPROM
   */
--unsigned int get_expansion_id(void)
-+unsigned int get_expansion_id(int eeprom_address)
+-static unsigned int get_expansion_id(void)
++static unsigned int get_expansion_id(int eeprom_address)
  {
  	i2c_set_bus_num(EXPANSION_EEPROM_I2C_BUS);
  
@@ -104,92 +103,11 @@ index ee82771..e0563ef 100644
  	return 0;
  }
  
-diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 7fc7990..90374c9 100644
---- a/include/configs/am335x_evm.h
-+++ b/include/configs/am335x_evm.h
-@@ -26,13 +26,22 @@
- #include <asm/arch/cpu.h>
- #include <asm/arch/hardware.h>
- 
--#define CONFIG_ENV_SIZE			0x400
--#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
-+#define CONFIG_ENV_SIZE			0x2000
-+#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
-+
-+#define CONFIG_SYS_LONGHELP		/* undef to save memory */
-+#define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser */
- #define CONFIG_SYS_PROMPT		"U-Boot# "
- #define CONFIG_SYS_NO_FLASH
- #define MACH_TYPE_TIAM335EVM		3589	/* Until the next sync */
- #define CONFIG_MACH_TYPE		MACH_TYPE_TIAM335EVM
- 
-+#define CONFIG_OF_LIBFDT		1
-+
-+#define CONFIG_CMDLINE_TAG		1	/* enable passing of ATAGs */
-+#define CONFIG_SETUP_MEMORY_TAGS	1
-+#define CONFIG_INITRD_TAG		1
-+
- #define CONFIG_CMD_ASKENV
- #define CONFIG_VERSION_VARIABLE
- 
-@@ -41,8 +50,40 @@
- #define CONFIG_SYS_AUTOLOAD		"no"
- #define CONFIG_BOOTFILE			"uImage"
- #define CONFIG_EXTRA_ENV_SETTINGS \
--	"verify=yes\0" \
--	"ramdisk_file=ramdisk.gz\0" \
-+	"loadaddr=0x82000000\0" \
-+	"console=ttyO0,115200n8\0" \
-+	"mmcdev=0\0" \
-+	"mmcroot=/dev/mmcblk0p2 rw\0" \
-+	"mmcrootfstype=ext4 rootwait\0" \
-+	"mmcargs=setenv bootargs console=${console} " \
-+		"root=${mmcroot} " \
-+		"rootfstype=${mmcrootfstype}\0" \
-+	"bootenv=uEnv.txt\0" \
-+	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
-+	"importbootenv=echo Importing environment from mmc ...; " \
-+		"env import -t $loadaddr $filesize\0" \
-+	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
-+	"mmcboot=echo Booting from mmc ...; " \
-+		"run mmcargs; " \
-+		"bootm ${loadaddr}\0" \
-+
-+#define CONFIG_BOOTCOMMAND \
-+	"if mmc rescan ${mmcdev}; then " \
-+		"echo SD/MMC found on device ${mmcdev};" \
-+		"if run loadbootenv; then " \
-+			"echo Loaded environment from ${bootenv};" \
-+			"run importbootenv;" \
-+		"fi;" \
-+		"if test -n $uenvcmd; then " \
-+			"echo Running uenvcmd ...;" \
-+			"run uenvcmd;" \
-+		"fi;" \
-+		"if run loaduimage; then " \
-+			"run mmcboot;" \
-+		"fi;" \
-+	"fi" \
-+
-+#define CONFIG_AUTO_COMPLETE		1
- 
- /* Clock Defines */
- #define V_OSCK				24000000  /* Clock output from T2 */
-@@ -83,6 +124,8 @@
- #define CONFIG_CMD_EXT2
- #define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
- #define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
-+#define CONFIG_CMD_SETEXPR	/* Evaluate expressions		*/
-+#define CONFIG_CMD_RUN		/* run command in env variable  */
- 
-  /* Physical Memory Map */
- #define CONFIG_NR_DRAM_BANKS		1		/*  1 bank of DRAM */
 diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
-index acd1284..e64842c 100644
+index 5120584..7f9b1db 100644
 --- a/include/configs/am3517_crane.h
 +++ b/include/configs/am3517_crane.h
-@@ -190,18 +190,21 @@
+@@ -189,18 +189,21 @@
  #define CONFIG_BOOTFILE		"uImage"
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -218,7 +136,7 @@ index acd1284..e64842c 100644
  	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
-@@ -213,15 +216,20 @@
+@@ -212,15 +215,20 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"if mmc rescan ${mmcdev}; then " \
@@ -249,21 +167,20 @@ index acd1284..e64842c 100644
  #define CONFIG_AUTO_COMPLETE	1
  /*
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index a028c16..8e6d5dc 100644
+index 9719cc4..899db45 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
-@@ -221,16 +221,18 @@
- 
+@@ -222,15 +222,17 @@
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"loadaddr=0x80200000\0" \
-+	"dtb_file=omap3-beagle.dtb\0" \
  	"rdaddr=0x81000000\0" \
++	"dtb_file=omap3-beagle.dtb\0" \
  	"usbtty=cdc_acm\0" \
  	"bootfile=uImage.beagle\0" \
  	"console=ttyO2,115200n8\0" \
  	"mpurate=auto\0" \
- 	"buddy=none "\
-+	"buddy2=none "\
+ 	"buddy=none\0" \
++	"buddy2=none\0" \
  	"optargs=\0" \
  	"camera=none\0" \
  	"vram=12M\0" \
@@ -308,7 +225,7 @@ index a028c16..8e6d5dc 100644
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
 diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
-index d13ce7c..e33f447 100644
+index 40ae353..4f486d7 100644
 --- a/include/configs/omap4_common.h
 +++ b/include/configs/omap4_common.h
 @@ -151,30 +151,39 @@

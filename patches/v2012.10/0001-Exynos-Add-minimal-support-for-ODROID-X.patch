@@ -44,10 +44,10 @@ Subject: [PATCH] Exynos: Add minimal support for ODROID-X.
  create mode 100644 include/max77686_pmic.h
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index c5a6f2f..4b22936 100644
+index 4aabcff..c4330a6 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -719,6 +719,10 @@ Heungjun Kim <riverful.kim@samsung.com>
+@@ -731,6 +731,10 @@ Heungjun Kim <riverful.kim@samsung.com>
  
  	trats			ARM ARMV7 (EXYNOS4210 SoC)
  
@@ -59,10 +59,10 @@ index c5a6f2f..4b22936 100644
  	scb9328		ARM920T (i.MXL)
  
 diff --git a/arch/arm/cpu/armv7/exynos/clock.c b/arch/arm/cpu/armv7/exynos/clock.c
-index f7829b2..f042934 100644
+index 4f3b451..6c36ad6 100644
 --- a/arch/arm/cpu/armv7/exynos/clock.c
 +++ b/arch/arm/cpu/armv7/exynos/clock.c
-@@ -293,6 +293,8 @@ static unsigned long exynos4_get_uart_clk(int dev_index)
+@@ -320,6 +320,8 @@ static unsigned long exynos4_get_uart_clk(int dev_index)
  		sclk = get_pll_clk(EPLL);
  	else if (sel == 0x8)
  		sclk = get_pll_clk(VPLL);
@@ -71,7 +71,7 @@ index f7829b2..f042934 100644
  	else
  		return 0;
  
-@@ -427,7 +429,11 @@ static unsigned long exynos4_get_lcd_clk(void)
+@@ -454,7 +456,11 @@ static unsigned long exynos4_get_lcd_clk(void)
  	 * CLK_SRC_LCD0
  	 * FIMD0_SEL [3:0]
  	 */
@@ -83,7 +83,7 @@ index f7829b2..f042934 100644
  	sel = sel & 0xf;
  
  	/*
-@@ -448,7 +454,11 @@ static unsigned long exynos4_get_lcd_clk(void)
+@@ -475,7 +481,11 @@ static unsigned long exynos4_get_lcd_clk(void)
  	 * CLK_DIV_LCD0
  	 * FIMD0_RATIO [3:0]
  	 */
@@ -95,7 +95,7 @@ index f7829b2..f042934 100644
  	ratio = ratio & 0xf;
  
  	pclk = sclk / (ratio + 1);
-@@ -484,10 +494,18 @@ void exynos4_set_lcd_clk(void)
+@@ -553,10 +563,18 @@ void exynos4_set_lcd_clk(void)
  	 * MIPI0_SEL		[12:15]
  	 * set lcd0 src clock 0x6: SCLK_MPLL
  	 */
@@ -114,7 +114,7 @@ index f7829b2..f042934 100644
  
  	/*
  	 * CLK_GATE_IP_LCD0
-@@ -499,9 +517,17 @@ void exynos4_set_lcd_clk(void)
+@@ -568,9 +586,17 @@ void exynos4_set_lcd_clk(void)
  	 * CLK_PPMULCD0		[5]
  	 * Gating all clocks for FIMD0
  	 */
@@ -132,7 +132,7 @@ index f7829b2..f042934 100644
  
  	/*
  	 * CLK_DIV_LCD0
-@@ -515,7 +541,11 @@ void exynos4_set_lcd_clk(void)
+@@ -584,7 +610,11 @@ void exynos4_set_lcd_clk(void)
  	 */
  	cfg &= ~(0xf);
  	cfg |= 0x1;
@@ -143,8 +143,8 @@ index f7829b2..f042934 100644
 +#endif
  }
  
- void exynos4_set_mipi_clk(void)
-@@ -532,10 +562,18 @@ void exynos4_set_mipi_clk(void)
+ void exynos5_set_lcd_clk(void)
+@@ -663,10 +693,18 @@ void exynos4_set_mipi_clk(void)
  	 * MIPI0_SEL		[12:15]
  	 * set mipi0 src clock 0x6: SCLK_MPLL
  	 */
@@ -163,7 +163,7 @@ index f7829b2..f042934 100644
  
  	/*
  	 * CLK_SRC_MASK_LCD0
-@@ -545,9 +583,17 @@ void exynos4_set_mipi_clk(void)
+@@ -676,9 +714,17 @@ void exynos4_set_mipi_clk(void)
  	 * MIPI0_MASK		[12]
  	 * set src mask mipi0 0x1: Unmask
  	 */
@@ -181,7 +181,7 @@ index f7829b2..f042934 100644
  
  	/*
  	 * CLK_GATE_IP_LCD0
-@@ -559,9 +605,17 @@ void exynos4_set_mipi_clk(void)
+@@ -690,9 +736,17 @@ void exynos4_set_mipi_clk(void)
  	 * CLK_PPMULCD0		[5]
  	 * Gating all clocks for MIPI0
  	 */
@@ -199,7 +199,7 @@ index f7829b2..f042934 100644
  
  	/*
  	 * CLK_DIV_LCD0
-@@ -575,7 +629,11 @@ void exynos4_set_mipi_clk(void)
+@@ -706,7 +760,11 @@ void exynos4_set_mipi_clk(void)
  	 */
  	cfg &= ~(0xf << 16);
  	cfg |= (0x1 << 16);
@@ -211,7 +211,7 @@ index f7829b2..f042934 100644
  }
  
  /*
-@@ -601,6 +659,31 @@ static unsigned long exynos5_get_i2c_clk(void)
+@@ -732,6 +790,31 @@ static unsigned long exynos5_get_i2c_clk(void)
  	return aclk_66;
  }
  
@@ -243,7 +243,7 @@ index f7829b2..f042934 100644
  unsigned long get_pll_clk(int pllreg)
  {
  	if (cpu_is_exynos5())
-@@ -619,9 +702,11 @@ unsigned long get_arm_clk(void)
+@@ -750,9 +833,11 @@ unsigned long get_arm_clk(void)
  
  unsigned long get_i2c_clk(void)
  {
@@ -258,7 +258,7 @@ index f7829b2..f042934 100644
  		return 0;
  	}
 diff --git a/arch/arm/cpu/armv7/exynos/pinmux.c b/arch/arm/cpu/armv7/exynos/pinmux.c
-index d28f055..37d7c20 100644
+index 7776add..14c609e 100644
 --- a/arch/arm/cpu/armv7/exynos/pinmux.c
 +++ b/arch/arm/cpu/armv7/exynos/pinmux.c
 @@ -26,6 +26,309 @@
@@ -571,7 +571,7 @@ index d28f055..37d7c20 100644
  static void exynos5_uart_config(int peripheral)
  {
  	struct exynos5_gpio_part1 *gpio1 =
-@@ -265,6 +568,8 @@ int exynos_pinmux_config(int peripheral, int flags)
+@@ -269,6 +572,8 @@ int exynos_pinmux_config(int peripheral, int flags)
  {
  	if (cpu_is_exynos5())
  		return exynos5_pinmux_config(peripheral, flags);
@@ -581,7 +581,7 @@ index d28f055..37d7c20 100644
  		debug("pinmux functionality not supported\n");
  		return -1;
 diff --git a/arch/arm/cpu/armv7/exynos/power.c b/arch/arm/cpu/armv7/exynos/power.c
-index 4116781..4f97fa7 100644
+index d4bce6d..68208ee 100644
 --- a/arch/arm/cpu/armv7/exynos/power.c
 +++ b/arch/arm/cpu/armv7/exynos/power.c
 @@ -25,6 +25,14 @@
@@ -599,9 +599,9 @@ index 4116781..4f97fa7 100644
  static void exynos4_mipi_phy_control(unsigned int dev_index,
  					unsigned int enable)
  {
-@@ -74,3 +82,9 @@ void set_usbhost_phy_ctrl(unsigned int enable)
+@@ -95,3 +103,9 @@ void set_dp_phy_ctrl(unsigned int enable)
  	if (cpu_is_exynos5())
- 		exynos5_set_usbhost_phy_ctrl(enable);
+ 		exynos5_dp_phy_control(enable);
  }
 +
 +void ps_hold_setup(void)
@@ -610,7 +610,7 @@ index 4116781..4f97fa7 100644
 +        exynos4_ps_hold_setup();
 +}
 diff --git a/arch/arm/include/asm/arch-exynos/clock.h b/arch/arm/include/asm/arch-exynos/clock.h
-index 50da958..aaa24b6 100644
+index fce38ef..aacefd1 100644
 --- a/arch/arm/include/asm/arch-exynos/clock.h
 +++ b/arch/arm/include/asm/arch-exynos/clock.h
 @@ -34,7 +34,15 @@ struct exynos4_clock {
@@ -957,7 +957,7 @@ index 50da958..aaa24b6 100644
  
  struct exynos5_clock {
 diff --git a/arch/arm/include/asm/arch-exynos/cpu.h b/arch/arm/include/asm/arch-exynos/cpu.h
-index 0e6ea87..70d438c 100644
+index 2cd4ae1..205b5ec 100644
 --- a/arch/arm/include/asm/arch-exynos/cpu.h
 +++ b/arch/arm/include/asm/arch-exynos/cpu.h
 @@ -37,8 +37,8 @@
@@ -972,18 +972,20 @@ index 0e6ea87..70d438c 100644
  #define EXYNOS4_GPIO_PART1_BASE		0x11400000
  #define EXYNOS4_FIMD_BASE		0x11C00000
 diff --git a/arch/arm/include/asm/arch-exynos/power.h b/arch/arm/include/asm/arch-exynos/power.h
-index e5467e2..1c95577 100644
+index d2fdb59..7c913e6 100644
 --- a/arch/arm/include/asm/arch-exynos/power.h
 +++ b/arch/arm/include/asm/arch-exynos/power.h
-@@ -859,4 +859,8 @@ void set_usbhost_phy_ctrl(unsigned int enable);
- 
+@@ -860,6 +860,10 @@ void set_usbhost_phy_ctrl(unsigned int enable);
  #define POWER_USB_HOST_PHY_CTRL_EN		(1 << 0)
  #define POWER_USB_HOST_PHY_CTRL_DISABLE		(0 << 0)
-+
+ 
 +void ps_hold_setup(void);
 +
 +#define POWER_PS_HOLD_CONTROL_DATA_HIGH (1 << 8)
- #endif
++
+ void set_dp_phy_ctrl(unsigned int enable);
+ 
+ #define EXYNOS_DP_PHY_ENABLE		(1 << 0)
 diff --git a/arch/arm/include/asm/mach-types.h b/arch/arm/include/asm/mach-types.h
 index 2d5c3bc..2592fa3 100644
 --- a/arch/arm/include/asm/mach-types.h
@@ -2925,10 +2927,10 @@ index 0000000..1a51913
 +	return EXIT_SUCCESS;
 +}
 diff --git a/boards.cfg b/boards.cfg
-index fdb84ad..f65baa4 100644
+index 72e7803..8ffb735 100644
 --- a/boards.cfg
 +++ b/boards.cfg
-@@ -252,7 +252,9 @@ omap5_evm                    arm         armv7       omap5_evm           ti		oma
+@@ -262,7 +262,9 @@ omap5_evm                    arm         armv7       omap5_evm           ti		oma
  s5p_goni                     arm         armv7       goni                samsung        s5pc1xx
  smdkc100                     arm         armv7       smdkc100            samsung        s5pc1xx
  origen			     arm	 armv7	     origen		 samsung	exynos
