@@ -174,6 +174,12 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
 
+	if [ "${mno_unaligned_access}" ] ; then
+		#remove r1 on next merge
+		RELEASE_VER="-r1"
+		git am "${DIR}/patches/v2012.10/0001-Revert-Revert-arm-armv7-add-compile-option-mno-unali.patch"
+	fi
+
 	if [ "${v2012_10}" ] ; then
 		#bootz:
 		git am "${DIR}/patches/v2012.10/0001-enable-bootz-support.patch"
@@ -450,8 +456,10 @@ mx51evk () {
 	unset enable_uenv_support
 	unset enable_zImage_support
 
+	mno_unaligned_access=1
 	build_uboot_testing
 	build_uboot_latest
+	unset mno_unaligned_access
 }
 
 mx53loco () {
@@ -468,8 +476,10 @@ mx53loco () {
 	unset enable_uenv_support
 	unset enable_zImage_support
 
+	mno_unaligned_access=1
 	build_uboot_testing
 	build_uboot_latest
+	unset mno_unaligned_access
 }
 
 mx6qsabrelite () {
@@ -489,8 +499,10 @@ mx6qsabrelite () {
 	unset enable_uenv_support
 	unset enable_zImage_support
 
+	mno_unaligned_access=1
 	build_uboot_testing
 	build_uboot_latest
+	unset mno_unaligned_access
 }
 
 odroidx () {
