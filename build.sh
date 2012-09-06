@@ -227,11 +227,6 @@ build_u_boot () {
 		fi
 	fi
 
-	if [ "${BEAGLEBONE_PATCH}" ] ; then
-		RELEASE_VER="-r2"
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git am335xpsp_04.06.00.08
-	fi
-
 	if [ "${mx53loco_patch}" ] ; then
 		if [ "${v2012_07}" ] ; then
 			RELEASE_VER="-r1"
@@ -293,10 +288,6 @@ build_u_boot () {
 
 cleanup () {
 	unset GIT_SHA
-	unset UBOOT_TAG
-	unset UBOOT_GIT
-	unset REVERT
-	unset BEAGLEBONE_PATCH
 	set_cross_compiler
 }
 
@@ -366,14 +357,9 @@ beaglebone () {
 	BOARD="beaglebone"
 	UBOOT_CONFIG="am335x_evm_config"
 
-	BEAGLEBONE_PATCH=1
-	GIT_SHA="v2011.09"
-	build_u_boot
-	unset BEAGLEBONE_PATCH
-
 	enable_zImage_support=1
 	enable_uenv_support=1
-	build_uboot_stable
+#	build_uboot_stable
 	unset enable_uenv_support
 	unset enable_zImage_support
 
