@@ -132,7 +132,7 @@ git_cleanup () {
 }
 
 build_at91bootstrap () {
-	project="AT91Bootstrap"
+	project="at91bootstrap"
 	git_generic
 
 	make CROSS_COMPILE=${armv5_gcc} clean &> /dev/null
@@ -323,7 +323,7 @@ at91sam9x5ek () {
 	armv5_embedded_toolchain
 
 	BOARD="at91sam9x5ek"
-	GIT_SHA="3bc818332eaba746c320cb9459b05be731db60a4"
+	GIT_SHA="8e099c3a47f11c03b1ebe5cbc8d7406063b55262"
 	AT91BOOTSTRAP_CONFIG="at91sam9x5sduboot"
 	build_at91bootstrap
 
