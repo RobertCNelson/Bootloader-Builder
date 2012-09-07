@@ -1,0 +1,89 @@
+From 40a00c67462c358695aed50a278d9a30e1fccb7f Mon Sep 17 00:00:00 2001
+From: Josh Wu <josh.wu@atmel.com>
+Date: Fri, 7 Sep 2012 18:39:33 +0800
+Subject: [PATCH 2/2] ARM: at91sam9x5: enable MCI0 support for 9x5ek board.
+
+Signed-off-by: Josh Wu <josh.wu@atmel.com>
+---
+ arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c |   13 +++++++++++++
+ board/atmel/at91sam9x5ek/at91sam9x5ek.c          |   16 ++++++++++++++++
+ include/configs/at91sam9x5ek.h                   |    8 ++++++++
+ 3 files changed, 37 insertions(+)
+
+diff --git a/arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c b/arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c
+index 6d77219..3608e7c 100644
+--- a/arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c
++++ b/arch/arm/cpu/arm926ejs/at91/at91sam9x5_devices.c
+@@ -230,3 +230,16 @@ void at91_macb_hw_init(void)
+ #endif
+ }
+ #endif
++
++#if defined(CONFIG_GENERIC_ATMEL_MCI)
++void at91_mci_hw_init(void)
++{
++	/* Initialize the MCI0 */
++	at91_set_a_periph(AT91_PIO_PORTA, 17, 1);	/* MCCK */
++	at91_set_a_periph(AT91_PIO_PORTA, 16, 1);	/* MCCDA */
++	at91_set_a_periph(AT91_PIO_PORTA, 15, 1);	/* MCDA0 */
++	at91_set_a_periph(AT91_PIO_PORTA, 18, 1);	/* MCDA1 */
++	at91_set_a_periph(AT91_PIO_PORTA, 19, 1);	/* MCDA2 */
++	at91_set_a_periph(AT91_PIO_PORTA, 20, 1);	/* MCDA3 */
++}
++#endif
+diff --git a/board/atmel/at91sam9x5ek/at91sam9x5ek.c b/board/atmel/at91sam9x5ek/at91sam9x5ek.c
+index ae408bc..cfece83 100644
+--- a/board/atmel/at91sam9x5ek/at91sam9x5ek.c
++++ b/board/atmel/at91sam9x5ek/at91sam9x5ek.c
+@@ -42,6 +42,9 @@
+ #ifdef CONFIG_ATMEL_SPI
+ #include <spi.h>
+ #endif
++#ifdef CONFIG_GENERIC_ATMEL_MCI
++#include <mmc.h>
++#endif
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+@@ -254,6 +257,19 @@ void spi_cs_deactivate(struct spi_slave *slave)
+ }
+ #endif /* CONFIG_ATMEL_SPI */
+ 
++#ifdef CONFIG_GENERIC_ATMEL_MCI
++int board_mmc_init(bd_t *bd)
++{
++	/* Enable clock */
++	struct at91_pmc *pmc = (struct at91_pmc *)ATMEL_BASE_PMC;
++	writel(1 << ATMEL_ID_HSMCI0, &pmc->pcer);
++
++	at91_mci_hw_init();
++
++	return atmel_mci_init((void *)ATMEL_BASE_HSMCI0);
++}
++#endif
++
+ int board_early_init_f(void)
+ {
+ 	at91_seriald_hw_init();
+diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
+index 1ceb31a..974e08f 100644
+--- a/include/configs/at91sam9x5ek.h
++++ b/include/configs/at91sam9x5ek.h
+@@ -136,6 +136,14 @@
+ #define CONFIG_CMD_UBIFS
+ #endif
+ 
++/* MMC */
++#define CONFIG_MMC
++#define CONFIG_CMD_MMC
++#define CONFIG_CMD_FAT
++#define CONFIG_GENERIC_MMC
++#define CONFIG_GENERIC_ATMEL_MCI
++#define CONFIG_DOS_PARTITION
++
+ /* Ethernet */
+ #define CONFIG_MACB
+ #define CONFIG_RMII
+-- 
+1.7.10.4
+
