@@ -190,6 +190,7 @@ build_u_boot () {
 		#Atmel:
 		git am "${DIR}/patches/v2012.10/0001-mmc-at91-add-multi-block-read-write-support.patch"
 		git am "${DIR}/patches/v2012.10/0002-ARM-at91sam9x5-enable-MCI0-support-for-9x5ek-board.patch"
+		git am "${DIR}/patches/v2012.10/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
 	fi
 
 	if [ "${enable_zImage_support}" ] ; then
