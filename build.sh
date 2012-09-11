@@ -64,15 +64,15 @@ set_cross_compiler () {
 		if [ "x${ARCH}" == "xarmv7l" ] ; then
 			#using native gcc
 			CC=
-		else
-			#using Cross Compiler
-			CC=arm-linux-gnueabi-
+#		else
+#			#using Cross Compiler
+#			CC=arm-linux-gnueabi-
 		fi
 	fi
-
-	if [ -f ${DIR}/rcn-ee.host ] ; then
-		source ${DIR}/host/rcn-ee-host.sh
-	fi
+#
+#	if [ -f ${DIR}/rcn-ee.host ] ; then
+#		source ${DIR}/host/rcn-ee-host.sh
+#	fi
 }
 
 armv5_embedded_toolchain () {
@@ -90,7 +90,28 @@ armv5_embedded_toolchain () {
 		tar xjf ${DIR}/dl/${ARMV5_GCC_EMBEDDED} -C ${DIR}/dl/
 	fi
 
-	armv5_gcc="${DIR}/dl/${armv5_ver}/bin/arm-none-eabi-"
+	CC="${DIR}/dl/${armv5_ver}/bin/arm-none-eabi-"
+}
+
+armv7_toolchain () {
+	#https://launchpad.net/linaro-toolchain-binaries/+download
+	#https://launchpad.net/linaro-toolchain-binaries/trunk/2012.04/+download/gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux.tar.bz2
+
+	armv7_ver="2012.04"
+	armv7_date="20120426"
+	ARMV7_GCC="gcc-linaro-arm-linux-gnueabi-${armv7_ver}-${armv7_date}_linux.tar.bz2"
+	if [ ! -f ${DIR}/dl/${armv7_date} ] ; then
+		echo "Installing gcc-arm toolchain"
+		echo "-----------------------------"
+		wget -c --directory-prefix=${DIR}/dl/ https://launchpad.net/linaro-toolchain-binaries/trunk/${armv7_ver}/+download/${ARMV7_GCC}
+		touch ${DIR}/dl/${armv7_date}
+		if [ -d ${DIR}/dl/${armv7_ver} ] ; then
+			rm -rf ${DIR}/dl/${armv7_ver} || true
+		fi
+		tar xjf ${DIR}/dl/${ARMV7_GCC} -C ${DIR}/dl/
+	fi
+
+	CC="${DIR}/dl/gcc-linaro-arm-linux-gnueabi-${armv7_ver}-${armv7_date}_linux/bin/arm-linux-gnueabi-"
 }
 
 git_generic () {
@@ -135,10 +156,10 @@ build_at91bootstrap () {
 	project="at91bootstrap"
 	git_generic
 
-	make CROSS_COMPILE=${armv5_gcc} clean &> /dev/null
-	make CROSS_COMPILE=${armv5_gcc} ${AT91BOOTSTRAP_CONFIG}_defconfig
+	make CROSS_COMPILE=${CC} clean &> /dev/null
+	make CROSS_COMPILE=${CC} ${AT91BOOTSTRAP_CONFIG}_defconfig
 	echo "Building ${project}: ${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin"
-	make CROSS_COMPILE=${armv5_gcc} > /dev/null
+	make CROSS_COMPILE=${CC} > /dev/null
 
 	mkdir -p ${DIR}/deploy/${BOARD}/
 	cp -v binaries/*.bin ${DIR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin
@@ -333,7 +354,6 @@ at91sam9x5ek () {
 	build_at91bootstrap
 
 	UBOOT_CONFIG="at91sam9x5ek_nandflash_config"
-	CC=${armv5_gcc}
 
 #	build_uboot_stable
 #	build_uboot_testing
@@ -342,6 +362,7 @@ at91sam9x5ek () {
 
 beagleboard () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="beagleboard"
 	UBOOT_CONFIG="omap3_beagle_config"
@@ -358,6 +379,7 @@ beagleboard () {
 
 beaglebone () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="beaglebone"
 	UBOOT_CONFIG="am335x_evm_config"
@@ -374,6 +396,7 @@ beaglebone () {
 
 igep00x0 () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="igep00x0"
 
@@ -394,6 +417,7 @@ igep00x0 () {
 
 am3517crane () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="am3517crane"
 	UBOOT_CONFIG="am3517_crane_config"
@@ -410,6 +434,7 @@ am3517crane () {
 
 pandaboard () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="pandaboard"
 	UBOOT_CONFIG="omap4_panda_config"
@@ -437,6 +462,7 @@ pandaboard () {
 
 mx51evk () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="mx51evk"
 	UBOOT_CONFIG="mx51evk_config"
@@ -455,6 +481,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="mx53loco"
 	UBOOT_CONFIG="mx53loco_config"
@@ -475,6 +502,7 @@ mx53loco () {
 
 mx6qsabrelite () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="mx6qsabrelite"
 	UBOOT_CONFIG="mx6qsabrelite_config"
@@ -498,6 +526,7 @@ mx6qsabrelite () {
 
 odroidx () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="odroidx"
 	UBOOT_CONFIG="odroidx_config"
@@ -516,6 +545,7 @@ odroidx () {
 
 rpi_b () {
 	cleanup
+	armv7_toolchain
 
 	BOARD="rpi_b"
 	UBOOT_CONFIG="rpi_b_config"
