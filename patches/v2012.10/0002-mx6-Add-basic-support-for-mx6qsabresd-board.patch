@@ -1,0 +1,404 @@
+From 77c60046539982d6728571e7e3a0c9e0975f1e0b Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Date: Thu, 13 Sep 2012 10:18:20 -0300
+Subject: [PATCH 2/2] mx6: Add basic support for mx6qsabresd board.
+
+mx6qsabresd is a board based on mx6q SoC with the following features:
+- 1GB of DDR3
+- 1 USB OTG port
+- 1 HDMI output port
+- SPI NOR
+- LVDS panel
+- Gigabit Ethernet
+- Camera Connector
+- eMMC and SD card slot
+- Audio
+
+Add very basic support for it.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ MAINTAINERS                               |    1 +
+ board/freescale/mx6qsabresd/Makefile      |   41 +++++++
+ board/freescale/mx6qsabresd/mx6qsabresd.c |  118 ++++++++++++++++++++
+ boards.cfg                                |    1 +
+ include/configs/mx6qsabresd.h             |  170 +++++++++++++++++++++++++++++
+ 5 files changed, 331 insertions(+)
+ create mode 100644 board/freescale/mx6qsabresd/Makefile
+ create mode 100644 board/freescale/mx6qsabresd/mx6qsabresd.c
+ create mode 100644 include/configs/mx6qsabresd.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4aabcff..130d0cc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -654,6 +654,7 @@ Fabio Estevam <fabio.estevam@freescale.com>
+ 	mx31pdk		i.MX31
+ 	mx53ard		i.MX53
+ 	mx53smd		i.MX53
++	mx6qsabresd	i.MX6Q
+ 
+ Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
+ 
+diff --git a/board/freescale/mx6qsabresd/Makefile b/board/freescale/mx6qsabresd/Makefile
+new file mode 100644
+index 0000000..5693772
+--- /dev/null
++++ b/board/freescale/mx6qsabresd/Makefile
+@@ -0,0 +1,41 @@
++#
++# Copyright (C) 2007, Guennadi Liakhovetski <lg@denx.de>
++#
++# (C) Copyright 2011 Freescale Semiconductor, Inc.
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License as
++# published by the Free Software Foundation; either version 2 of
++# the License, or (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++# MA 02111-1307 USA
++#
++
++include $(TOPDIR)/config.mk
++
++LIB    = $(obj)lib$(BOARD).o
++
++COBJS  := mx6qsabresd.o
++
++SRCS   := $(COBJS:.o=.c)
++OBJS   := $(addprefix $(obj),$(COBJS))
++
++$(LIB):        $(obj).depend $(OBJS)
++	$(call cmd_link_o_target, $(OBJS))
++
++#########################################################################
++
++# defines $(obj).depend target
++include $(SRCTREE)/rules.mk
++
++sinclude $(obj).depend
++
++#########################################################################
+diff --git a/board/freescale/mx6qsabresd/mx6qsabresd.c b/board/freescale/mx6qsabresd/mx6qsabresd.c
+new file mode 100644
+index 0000000..c86b51b
+--- /dev/null
++++ b/board/freescale/mx6qsabresd/mx6qsabresd.c
+@@ -0,0 +1,118 @@
++/*
++ * Copyright (C) 2012 Freescale Semiconductor, Inc.
++ *
++ * Author: Fabio Estevam <fabio.estevam@freescale.com>
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <common.h>
++#include <asm/io.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/imx-regs.h>
++#include <asm/arch/iomux.h>
++#include <asm/arch/mx6x_pins.h>
++#include <asm/errno.h>
++#include <asm/gpio.h>
++#include <asm/imx-common/iomux-v3.h>
++#include <mmc.h>
++#include <fsl_esdhc.h>
++#include <miiphy.h>
++#include <netdev.h>
++DECLARE_GLOBAL_DATA_PTR;
++
++#define UART_PAD_CTRL  (PAD_CTL_PKE | PAD_CTL_PUE |            \
++	PAD_CTL_PUS_100K_UP | PAD_CTL_SPEED_MED |               \
++	PAD_CTL_DSE_40ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
++
++#define USDHC_PAD_CTRL (PAD_CTL_PKE | PAD_CTL_PUE |            \
++	PAD_CTL_PUS_47K_UP  | PAD_CTL_SPEED_LOW |               \
++	PAD_CTL_DSE_80ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
++
++#define ENET_PAD_CTRL  (PAD_CTL_PKE | PAD_CTL_PUE |		\
++	PAD_CTL_PUS_100K_UP | PAD_CTL_SPEED_MED   |		\
++	PAD_CTL_DSE_40ohm   | PAD_CTL_HYS)
++
++int dram_init(void)
++{
++	gd->ram_size = get_ram_size((void *)PHYS_SDRAM, PHYS_SDRAM_SIZE);
++
++	return 0;
++}
++
++iomux_v3_cfg_t uart1_pads[] = {
++	MX6Q_PAD_CSI0_DAT10__UART1_TXD | MUX_PAD_CTRL(UART_PAD_CTRL),
++	MX6Q_PAD_CSI0_DAT11__UART1_RXD | MUX_PAD_CTRL(UART_PAD_CTRL),
++};
++
++iomux_v3_cfg_t usdhc3_pads[] = {
++	MX6Q_PAD_SD3_CLK__USDHC3_CLK   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++	MX6Q_PAD_SD3_CMD__USDHC3_CMD   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++	MX6Q_PAD_SD3_DAT0__USDHC3_DAT0 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++	MX6Q_PAD_SD3_DAT1__USDHC3_DAT1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++	MX6Q_PAD_SD3_DAT2__USDHC3_DAT2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++	MX6Q_PAD_SD3_DAT3__USDHC3_DAT3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++	MX6Q_PAD_NANDF_D0__GPIO_2_0    | MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
++};
++
++static void setup_iomux_uart(void)
++{
++	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
++}
++
++#ifdef CONFIG_FSL_ESDHC
++struct fsl_esdhc_cfg usdhc_cfg[1] = {
++	{USDHC3_BASE_ADDR},
++};
++
++int board_mmc_getcd(struct mmc *mmc)
++{
++	gpio_direction_input(IMX_GPIO_NR(2, 0));
++	return !gpio_get_value(IMX_GPIO_NR(2, 0));
++}
++
++int board_mmc_init(bd_t *bis)
++{
++	imx_iomux_v3_setup_multiple_pads(usdhc3_pads, ARRAY_SIZE(usdhc3_pads));
++
++	return fsl_esdhc_initialize(bis, &usdhc_cfg[0]);
++}
++#endif
++
++u32 get_board_rev(void)
++{
++	return 0x63000;
++}
++
++int board_early_init_f(void)
++{
++	setup_iomux_uart();
++
++	return 0;
++}
++
++int board_init(void)
++{
++	/* address of boot parameters */
++	gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
++
++	return 0;
++}
++
++int checkboard(void)
++{
++	puts("Board: MX6Q-SabreSD\n");
++
++	return 0;
++}
+diff --git a/boards.cfg b/boards.cfg
+index c6b1dec..7e22ba3 100644
+--- a/boards.cfg
++++ b/boards.cfg
+@@ -232,6 +232,7 @@ ima3-mx53                    arm         armv7       ima3-mx53           esg
+ vision2                      arm         armv7       vision2             ttcontrol      mx5		vision2:IMX_CONFIG=board/ttcontrol/vision2/imximage_hynix.cfg
+ mx6qarm2                     arm         armv7       mx6qarm2            freescale      mx6		mx6qarm2:IMX_CONFIG=board/freescale/mx6qarm2/imximage.cfg
+ mx6qsabrelite                arm         armv7       mx6qsabrelite       freescale      mx6		mx6qsabrelite:IMX_CONFIG=board/freescale/imx/ddr/mx6q_4x_mt41j128.cfg
++mx6qsabresd                  arm         armv7       mx6qsabresd         freescale      mx6		mx6qsabresd:IMX_CONFIG=board/freescale/imx/ddr/mx6q_4x_mt41j128.cfg
+ cm_t35                       arm         armv7       cm_t35              -              omap3
+ omap3_overo                  arm         armv7       overo               -              omap3
+ omap3_pandora                arm         armv7       pandora             -              omap3
+diff --git a/include/configs/mx6qsabresd.h b/include/configs/mx6qsabresd.h
+new file mode 100644
+index 0000000..448ce28
+--- /dev/null
++++ b/include/configs/mx6qsabresd.h
+@@ -0,0 +1,170 @@
++/*
++ * Copyright (C) 2012 Freescale Semiconductor, Inc.
++ *
++ * Configuration settings for the Freescale i.MX6Q SabreSD board.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.         See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __CONFIG_H
++#define __CONFIG_H
++
++#define CONFIG_MX6Q
++#define CONFIG_SYS_MX6_HCLK            24000000
++#define CONFIG_SYS_MX6_CLK32           32768
++#define CONFIG_DISPLAY_CPUINFO
++#define CONFIG_DISPLAY_BOARDINFO
++
++#define CONFIG_MACH_TYPE	3980
++
++#include <asm/arch/imx-regs.h>
++
++#define CONFIG_CMDLINE_TAG
++#define CONFIG_SETUP_MEMORY_TAGS
++#define CONFIG_INITRD_TAG
++#define CONFIG_REVISION_TAG
++
++/* Size of malloc() pool */
++#define CONFIG_SYS_MALLOC_LEN          CONFIG_ENV_SIZE
++
++#define CONFIG_ARCH_CPU_INIT
++#define CONFIG_BOARD_EARLY_INIT_F
++#define CONFIG_MXC_GPIO
++
++#define CONFIG_MXC_UART
++#define CONFIG_MXC_UART_BASE           UART1_BASE
++
++/* MMC Configs */
++#define CONFIG_FSL_ESDHC
++#define CONFIG_FSL_USDHC
++#define CONFIG_SYS_FSL_ESDHC_ADDR      0
++#define CONFIG_SYS_FSL_USDHC_NUM       2
++
++#define CONFIG_MMC
++#define CONFIG_CMD_MMC
++#define CONFIG_GENERIC_MMC
++#define CONFIG_CMD_EXT2
++#define CONFIG_CMD_FAT
++#define CONFIG_DOS_PARTITION
++
++/* allow to overwrite serial and ethaddr */
++#define CONFIG_ENV_OVERWRITE
++#define CONFIG_CONS_INDEX              1
++#define CONFIG_BAUDRATE                        115200
++
++/* Command definition */
++#include <config_cmd_default.h>
++
++#undef CONFIG_CMD_IMLS
++
++#define CONFIG_BOOTDELAY               3
++
++#define CONFIG_LOADADDR                        0x10800000
++#define CONFIG_SYS_TEXT_BASE           0x17800000
++
++#define CONFIG_EXTRA_ENV_SETTINGS \
++	"script=boot.scr\0" \
++	"uimage=uImage\0" \
++	"console=ttymxc0\0" \
++	"fdt_high=0xffffffff\0"	  \
++	"initrd_high=0xffffffff\0" \
++	"mmcdev=0\0" \
++	"mmcpart=2\0" \
++	"mmcroot=/dev/mmcblk0p3 rootwait rw\0" \
++	"mmcargs=setenv bootargs console=${console},${baudrate} " \
++		"root=${mmcroot}\0" \
++	"loadbootscript=" \
++		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++	"bootscript=echo Running bootscript from mmc ...; " \
++		"source\0" \
++	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
++		"mmcboot=echo Booting from mmc ...; " \
++		"run mmcargs; " \
++		"bootm\0" \
++	"netargs=setenv bootargs console=${console},${baudrate} " \
++		"root=/dev/nfs " \
++		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
++	"netboot=echo Booting from net ...; " \
++		"run netargs; " \
++		"dhcp ${uimage}; bootm\0" \
++
++#define CONFIG_BOOTCOMMAND \
++	"mmc dev ${mmcdev};" \
++	"if mmc rescan ${mmcdev}; then " \
++		"if run loadbootscript; then " \
++		"run bootscript; " \
++		"else " \
++			"if run loaduimage; then " \
++				"run mmcboot; " \
++			"else run netboot; " \
++			"fi; " \
++		"fi; " \
++	"else run netboot; fi"
++
++#define CONFIG_ARP_TIMEOUT     200UL
++
++/* Miscellaneous configurable options */
++#define CONFIG_SYS_LONGHELP
++#define CONFIG_SYS_HUSH_PARSER
++#define CONFIG_SYS_PROMPT_HUSH_PS2     "> "
++#define CONFIG_SYS_PROMPT              "MX6QSABRESD U-Boot > "
++#define CONFIG_AUTO_COMPLETE
++#define CONFIG_SYS_CBSIZE              256
++
++/* Print Buffer Size */
++#define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
++#define CONFIG_SYS_MAXARGS             16
++#define CONFIG_SYS_BARGSIZE CONFIG_SYS_CBSIZE
++
++#define CONFIG_SYS_MEMTEST_START       0x10000000
++#define CONFIG_SYS_MEMTEST_END         0x10010000
++
++#define CONFIG_SYS_LOAD_ADDR           CONFIG_LOADADDR
++#define CONFIG_SYS_HZ                  1000
++
++#define CONFIG_CMDLINE_EDITING
++#define CONFIG_STACKSIZE               (128 * 1024)
++
++/* Physical Memory Map */
++#define CONFIG_NR_DRAM_BANKS           1
++#define PHYS_SDRAM                     MMDC0_ARB_BASE_ADDR
++#define PHYS_SDRAM_SIZE                        (1u * 1024 * 1024 * 1024)
++
++#define CONFIG_SYS_SDRAM_BASE          PHYS_SDRAM
++#define CONFIG_SYS_INIT_RAM_ADDR       IRAM_BASE_ADDR
++#define CONFIG_SYS_INIT_RAM_SIZE       IRAM_SIZE
++
++#define CONFIG_SYS_INIT_SP_OFFSET \
++	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
++#define CONFIG_SYS_INIT_SP_ADDR \
++	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
++
++/* FLASH and environment organization */
++#define CONFIG_SYS_NO_FLASH
++
++#define CONFIG_ENV_SIZE			(8 * 1024)
++
++#define CONFIG_ENV_IS_IN_MMC
++
++#if defined(CONFIG_ENV_IS_IN_MMC)
++#define CONFIG_ENV_OFFSET		(6 * 64 * 1024)
++#define CONFIG_SYS_MMC_ENV_DEV		0
++#endif
++
++#define CONFIG_OF_LIBFDT
++
++#define CONFIG_SYS_DCACHE_OFF
++
++#ifndef CONFIG_SYS_DCACHE_OFF
++#define CONFIG_CMD_CACHE
++#endif
++
++#endif                         /* __CONFIG_H */
+-- 
+1.7.10.4
+

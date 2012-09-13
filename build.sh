@@ -212,6 +212,10 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.10/0001-mmc-at91-add-multi-block-read-write-support.patch"
 		git am "${DIR}/patches/v2012.10/0002-ARM-at91sam9x5-enable-MCI0-support-for-9x5ek-board.patch"
 		git am "${DIR}/patches/v2012.10/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
+
+		#Freescale: mx6qsabresd
+		git am "${DIR}/patches/v2012.10/0001-mx6q-Factor-out-common-DDR3-init-code.patch"
+		git am "${DIR}/patches/v2012.10/0002-mx6-Add-basic-support-for-mx6qsabresd-board.patch"
 	fi
 
 	if [ "${enable_zImage_support}" ] ; then
@@ -524,6 +528,19 @@ mx6qsabrelite () {
 	unset mno_unaligned_access
 }
 
+mx6qsabresd () {
+	cleanup
+	armv7_toolchain
+
+	BOARD="mx6qsabresd"
+	UBOOT_CONFIG="mx6qsabresd_config"
+
+	mno_unaligned_access=1
+	build_uboot_testing
+	build_uboot_latest
+	unset mno_unaligned_access
+}
+
 odroidx () {
 	cleanup
 	armv7_toolchain
@@ -566,6 +583,7 @@ igep00x0
 mx51evk
 mx53loco
 mx6qsabrelite
+mx6qsabresd
 odroidx
 pandaboard
 rpi_b
