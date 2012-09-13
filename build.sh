@@ -51,28 +51,12 @@ mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/latest/
 
 dl_old_bootloaders () {
-	if [ -f ${DIR}/deploy/latest/bootloader ] ; then
-		rm -f ${DIR}/deploy/latest/bootloader || true
+	if [ -f ${DIR}/deploy/latest/bootloader-ng ] ; then
+		rm -f ${DIR}/deploy/latest/bootloader-ng || true
 	fi
 	cd ${DIR}/deploy/latest/
-	wget http://rcn-ee.net/deb/tools/latest/bootloader
+	wget http://rcn-ee.net/deb/tools/latest/bootloader-ng
 	cd -
-}
-
-set_cross_compiler () {
-	if [ ! "${CC}" ] ; then
-		if [ "x${ARCH}" == "xarmv7l" ] ; then
-			#using native gcc
-			CC=
-#		else
-#			#using Cross Compiler
-#			CC=arm-linux-gnueabi-
-		fi
-	fi
-#
-#	if [ -f ${DIR}/rcn-ee.host ] ; then
-#		source ${DIR}/host/rcn-ee-host.sh
-#	fi
 }
 
 armv5_embedded_toolchain () {
@@ -90,7 +74,12 @@ armv5_embedded_toolchain () {
 		tar xjf ${DIR}/dl/${ARMV5_GCC_EMBEDDED} -C ${DIR}/dl/
 	fi
 
-	CC="${DIR}/dl/${armv5_ver}/bin/arm-none-eabi-"
+	if [ "x${ARCH}" == "xarmv7l" ] ; then
+		#using native gcc
+		CC=
+	else
+		CC="${DIR}/dl/${armv5_ver}/bin/arm-none-eabi-"
+	fi
 }
 
 armv7_toolchain () {
@@ -111,7 +100,12 @@ armv7_toolchain () {
 		tar xjf ${DIR}/dl/${ARMV7_GCC} -C ${DIR}/dl/
 	fi
 
-	CC="${DIR}/dl/gcc-linaro-arm-linux-gnueabi-${armv7_ver}-${armv7_date}_linux/bin/arm-linux-gnueabi-"
+	if [ "x${ARCH}" == "xarmv7l" ] ; then
+		#using native gcc
+		CC=
+	else
+		CC="${DIR}/dl/gcc-linaro-arm-linux-gnueabi-${armv7_ver}-${armv7_date}_linux/bin/arm-linux-gnueabi-"
+	fi
 }
 
 git_generic () {
@@ -318,7 +312,6 @@ build_u_boot () {
 
 cleanup () {
 	unset GIT_SHA
-	set_cross_compiler
 }
 
 build_uboot_stable () {
