@@ -453,8 +453,10 @@ pandaboard () {
 	unset enable_uenv_support
 	unset enable_zImage_support
 
+	mno_unaligned_access=1
 	build_uboot_testing
 	build_uboot_latest
+	unset mno_unaligned_access
 }
 
 mx51evk () {
