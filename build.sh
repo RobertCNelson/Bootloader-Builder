@@ -182,6 +182,15 @@ build_omap_xloader () {
 	git_cleanup
 }
 
+halt_patching_uboot () {
+	pwd
+	echo "-----------------------------"
+	echo "make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}"
+	echo "make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET}"
+	echo "-----------------------------"
+	exit
+}
+
 build_u_boot () {
 	project="u-boot"
 	git_generic
