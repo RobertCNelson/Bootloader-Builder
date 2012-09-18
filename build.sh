@@ -34,8 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.07"
 #TESTING="v2012.07"
 
-#LATEST_GIT="a005f19eff946454985785788c344f10616d571e"
-LATEST_GIT="a6f0c4faa4c65a7b7048b12c9d180d7e1aad1721"
+#LATEST_GIT="a6f0c4faa4c65a7b7048b12c9d180d7e1aad1721"
+LATEST_GIT="037e9d33db9fc86c1e671d64077b2d1a19df7f24"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -199,8 +199,6 @@ build_u_boot () {
 	UGIT_VERSION=$(git describe)
 
 	if [ "${mno_unaligned_access}" ] ; then
-		#remove r1 on next merge
-		RELEASE_VER="-r1"
 		git am "${DIR}/patches/v2012.10/0001-Revert-Revert-arm-armv7-add-compile-option-mno-unali.patch"
 	fi
 
