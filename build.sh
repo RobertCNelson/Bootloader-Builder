@@ -218,6 +218,10 @@ build_u_boot () {
 		#Freescale: mx6qsabresd
 		git am "${DIR}/patches/v2012.10/0001-mx6q-Factor-out-common-DDR3-init-code.patch"
 		git am "${DIR}/patches/v2012.10/0002-mx6-Add-basic-support-for-mx6qsabresd-board.patch"
+
+		#Freescale: build fix: 
+		git am "${DIR}/patches/v2012.10/0004-i.MX-mxc_ipuv3_fb-add-ipuv3_fb_shutdown-routine-to-s.patch"
+		git am "${DIR}/patches/v2012.10/0005-i.MX-shut-down-video-before-launch-of-O-S.patch"
 	fi
 
 	if [ "${enable_zImage_support}" ] ; then
