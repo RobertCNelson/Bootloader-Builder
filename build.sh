@@ -32,10 +32,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2012.07"
-#TESTING="v2012.07"
+TESTING="v2012.10-rc1"
 
-#LATEST_GIT="49b3962d2021867924f9fc04288f486abb501d87"
-LATEST_GIT="3ab270d5df7ae7bf8d7b5d225ab1abb37297d77e"
+#LATEST_GIT="3ab270d5df7ae7bf8d7b5d225ab1abb37297d77e"
+#"v2012.10-rc1"
+#LATEST_GIT="ee1f4caaa2a3f79d692155eec8a4c7289d60e106"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -360,7 +361,7 @@ at91sam9x5ek () {
 	UBOOT_CONFIG="at91sam9x5ek_nandflash_config"
 
 #	build_uboot_stable
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -572,7 +573,7 @@ rpi_b () {
 	UBOOT_CONFIG="rpi_b_config"
 
 #	build_uboot_stable
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 }
 
