@@ -382,8 +382,10 @@ beagleboard () {
 	unset beagle_fixes
 	unset enable_zImage_support
 
+	mno_unaligned_access=1
 	build_uboot_testing
 	build_uboot_latest
+	unset mno_unaligned_access
 }
 
 beaglebone () {
@@ -422,8 +424,10 @@ igep00x0 () {
 	unset enable_uenv_support
 	unset enable_zImage_support
 
+	mno_unaligned_access=1
 	build_uboot_testing
 	build_uboot_latest
+	unset mno_unaligned_access
 }
 
 am3517crane () {
@@ -439,8 +443,10 @@ am3517crane () {
 	unset enable_uenv_support
 	unset enable_zImage_support
 
+	mno_unaligned_access=1
 	build_uboot_testing
 	build_uboot_latest
+	unset mno_unaligned_access
 }
 
 pandaboard () {
@@ -564,8 +570,10 @@ odroidx () {
 #	unset enable_zImage_support
 
 	odroidx_patch=1
+	mno_unaligned_access=1
 	build_uboot_testing
 	build_uboot_latest
+	unset mno_unaligned_access
 	unset odroidx_patch
 }
 
