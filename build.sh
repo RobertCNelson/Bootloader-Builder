@@ -34,9 +34,9 @@ SYST=$(uname -n)
 STABLE="v2012.07"
 TESTING="v2012.10-rc1"
 
-#LATEST_GIT="3ab270d5df7ae7bf8d7b5d225ab1abb37297d77e"
 #"v2012.10-rc1"
 #LATEST_GIT="ee1f4caaa2a3f79d692155eec8a4c7289d60e106"
+LATEST_GIT="cec2655c3b3b86f14a6a5c2cbb01833f7e3974be"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -222,6 +222,9 @@ build_u_boot () {
 		#Freescale: build fix: 
 		git am "${DIR}/patches/v2012.10/0004-i.MX-mxc_ipuv3_fb-add-ipuv3_fb_shutdown-routine-to-s.patch"
 		git am "${DIR}/patches/v2012.10/0005-i.MX-shut-down-video-before-launch-of-O-S.patch"
+
+		#TI: DDR3 Bone:
+		git am "${DIR}/patches/v2012.10/0002-am33xx-Enable-DDR3-for-DDR3-version-of-beaglebone.patch"
 	fi
 
 	if [ "${enable_zImage_support}" ] ; then
