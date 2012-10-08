@@ -580,7 +580,7 @@ odroidx () {
 	mno_unaligned_access=1
 	build_uboot_testing
 	unset mno_unaligned_access
-	build_uboot_latest
+#	build_uboot_latest
 	unset odroidx_patch
 }
 
