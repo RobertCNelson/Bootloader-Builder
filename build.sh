@@ -34,9 +34,9 @@ SYST=$(uname -n)
 STABLE="v2012.07"
 TESTING="v2012.10-rc2"
 
-#LATEST_GIT="cec2655c3b3b86f14a6a5c2cbb01833f7e3974be"
 #"v2012.10-rc2"
 #LATEST_GIT="221953d41dea8dce027b9ce6beee700d97ac2c83"
+LATEST_GIT="89e76b5f86b03e34077d16df8543851ff3029f9b"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -219,12 +219,14 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.10/0001-mx6q-Factor-out-common-DDR3-init-code.patch"
 		git am "${DIR}/patches/v2012.10/0002-mx6-Add-basic-support-for-mx6qsabresd-board.patch"
 
+		#TI: DDR3 Bone:
+		git am "${DIR}/patches/v2012.10/0002-am33xx-Enable-DDR3-for-DDR3-version-of-beaglebone.patch"
+	fi
+
+	if [ "${v2012_10_rc1}" ] ; then
 		#Freescale: build fix: 
 		git am "${DIR}/patches/v2012.10/0004-i.MX-mxc_ipuv3_fb-add-ipuv3_fb_shutdown-routine-to-s.patch"
 		git am "${DIR}/patches/v2012.10/0005-i.MX-shut-down-video-before-launch-of-O-S.patch"
-
-		#TI: DDR3 Bone:
-		git am "${DIR}/patches/v2012.10/0002-am33xx-Enable-DDR3-for-DDR3-version-of-beaglebone.patch"
 	fi
 
 	if [ "${enable_zImage_support}" ] ; then
@@ -339,12 +341,14 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
+	v2012_10_rc1=1
 	v2012_10=1
 	if [ "${TESTING}" ] ; then
 		GIT_SHA=${TESTING}
 		build_u_boot
 	fi
 	unset v2012_10
+	unset v2012_10_rc1
 }
 
 build_uboot_latest () {
@@ -387,8 +391,8 @@ beagleboard () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 beaglebone () {
@@ -406,8 +410,8 @@ beaglebone () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 igep00x0 () {
@@ -429,8 +433,8 @@ igep00x0 () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 am3517crane () {
@@ -448,8 +452,8 @@ am3517crane () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 pandaboard () {
@@ -478,8 +482,8 @@ pandaboard () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 mx51evk () {
@@ -497,8 +501,8 @@ mx51evk () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 mx53loco () {
@@ -518,8 +522,8 @@ mx53loco () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 mx6qsabrelite () {
@@ -542,8 +546,8 @@ mx6qsabrelite () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 mx6qsabresd () {
@@ -555,8 +559,8 @@ mx6qsabresd () {
 
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 }
 
 odroidx () {
@@ -575,8 +579,8 @@ odroidx () {
 	odroidx_patch=1
 	mno_unaligned_access=1
 	build_uboot_testing
-	build_uboot_latest
 	unset mno_unaligned_access
+	build_uboot_latest
 	unset odroidx_patch
 }
 
