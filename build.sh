@@ -32,11 +32,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2012.07"
-TESTING="v2012.10-rc2"
+TESTING="v2012.10-rc3"
 
-#"v2012.10-rc2"
-#LATEST_GIT="221953d41dea8dce027b9ce6beee700d97ac2c83"
-LATEST_GIT="89e76b5f86b03e34077d16df8543851ff3029f9b"
+#LATEST_GIT="89e76b5f86b03e34077d16df8543851ff3029f9b"
+#"v2012.10-rc3"
+#LATEST_GIT="c7c63221439ad87a8c05e7b42f9eae32ec7cc2d4"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -341,14 +341,14 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
-	v2012_10_rc1=1
+	#v2012_10_rc1=1
 	v2012_10=1
 	if [ "${TESTING}" ] ; then
 		GIT_SHA=${TESTING}
 		build_u_boot
 	fi
+	#unset v2012_10_rc1
 	unset v2012_10
-	unset v2012_10_rc1
 }
 
 build_uboot_latest () {
@@ -390,8 +390,8 @@ beagleboard () {
 	unset enable_zImage_support
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -409,8 +409,8 @@ beaglebone () {
 	unset enable_zImage_support
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -432,8 +432,8 @@ igep00x0 () {
 	unset enable_zImage_support
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -451,8 +451,8 @@ am3517crane () {
 	unset enable_zImage_support
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -481,8 +481,8 @@ pandaboard () {
 	unset enable_zImage_support
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -500,8 +500,8 @@ mx51evk () {
 	unset enable_zImage_support
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -521,8 +521,8 @@ mx53loco () {
 	unset enable_zImage_support
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -545,8 +545,8 @@ mx6qsabrelite () {
 	unset enable_zImage_support
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -558,8 +558,8 @@ mx6qsabresd () {
 	UBOOT_CONFIG="mx6qsabresd_config"
 
 	mno_unaligned_access=1
-	build_uboot_testing
 	unset mno_unaligned_access
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -578,7 +578,7 @@ odroidx () {
 
 	odroidx_patch=1
 	mno_unaligned_access=1
-	build_uboot_testing
+#	build_uboot_testing
 	unset mno_unaligned_access
 #	build_uboot_latest
 	unset odroidx_patch
