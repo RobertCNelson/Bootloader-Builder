@@ -31,12 +31,15 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2012.07"
-TESTING="v2012.10-rc3"
+STABLE="v2012.10"
+#TESTING="v2012.10"
 
 #LATEST_GIT="89e76b5f86b03e34077d16df8543851ff3029f9b"
 #"v2012.10-rc3"
 #LATEST_GIT="c7c63221439ad87a8c05e7b42f9eae32ec7cc2d4"
+#"v2012.10"
+#LATEST_GIT="6528ff0109d81c1f21d20f9f1370782bccf87bcb"
+
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -233,22 +236,11 @@ build_u_boot () {
 		if [ "${v2012_04}" ] ; then
 			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
 		fi
-		if [ "${v2012_07}" ] ; then
-			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-ti-omap-targets.patch"
-			git am "${DIR}/patches/v2012.07/0001-enable-bootz-support-for-mx5x-targets.patch"
-		fi
 	fi
 
 	if [ "${enable_uenv_support}" ] ; then
 		if [ "${v2012_04}" ] ; then
 			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
-		fi
-		if [ "${v2012_07}" ] ; then
-			git am "${DIR}/patches/v2012.07/0001-panda-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.07/0001-am3517_crane-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.07/0001-am335-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.07/0002-mx53loco-convert-to-uEnv.txt-bootscript.patch"
-			git am "${DIR}/patches/v2012.07/0002-mx51evk-convert-to-uEnv.txt-bootscript.patch"
 		fi
 	fi
 
@@ -257,22 +249,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.04/0003-panda-let-the-bootloader-set-the-intial-screen-resol.patch"
 		RELEASE_VER="-r2"
 		git am "${DIR}/patches/v2012.04/0004-panda-set-dtb_file-based-on-core.patch"
-	fi
-
-	if [ "${beagle_fixes}" ] ; then
-		if [ "${v2012_07}" ] ; then
-			git am "${DIR}/patches/v2012.07/0001-beagle-fix-dvi-variable-set-higher-resolution.patch"
-			git am "${DIR}/patches/v2012.07/0001-beagle-ulcd-passthru-support.patch"
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2012.07/0002-beagle-add-kmsmode-for-ulcd-and-default-dtb_file.patch"
-		fi
-	fi
-
-	if [ "${mx53loco_patch}" ] ; then
-		if [ "${v2012_07}" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2012.07/0003-MX5-mx53loco-do-not-overwrite-the-console.patch"
-		fi
 	fi
 
 	unset BUILDTARGET
@@ -332,32 +308,38 @@ cleanup () {
 }
 
 build_uboot_stable () {
-	v2012_07=1
+	v2012_10=1
 	if [ "${STABLE}" ] ; then
 		GIT_SHA=${STABLE}
 		build_u_boot
 	fi
-	unset v2012_07
+	unset v2012_10
 }
 
 build_uboot_testing () {
-	#v2012_10_rc1=1
-	v2012_10=1
+	#mno_unaligned_access=1
+	#v2013_01_rc1=1
+	#v2013_01=1
 	if [ "${TESTING}" ] ; then
 		GIT_SHA=${TESTING}
 		build_u_boot
 	fi
-	#unset v2012_10_rc1
-	unset v2012_10
+	#unset v2013_01=1
+	#unset v2013_01_rc1=1
+	#unset mno_unaligned_access
 }
 
 build_uboot_latest () {
-	v2012_10=1
+	#mno_unaligned_access=1
+	#v2013_01_rc1=1
+	#v2013_01=1
 	if [ "${LATEST_GIT}" ] ; then
 		GIT_SHA=${LATEST_GIT}
 		build_u_boot
 	fi
-	unset v2012_10
+	#unset v2013_01=1
+	#unset v2013_01_rc1=1
+	#unset mno_unaligned_access
 }
 
 at91sam9x5ek () {
@@ -371,7 +353,7 @@ at91sam9x5ek () {
 
 	UBOOT_CONFIG="at91sam9x5ek_nandflash_config"
 
-#	build_uboot_stable
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -383,14 +365,7 @@ beagleboard () {
 	BOARD="beagleboard"
 	UBOOT_CONFIG="omap3_beagle_config"
 
-	enable_zImage_support=1
-	beagle_fixes=1
 	build_uboot_stable
-	unset beagle_fixes
-	unset enable_zImage_support
-
-	mno_unaligned_access=1
-	unset mno_unaligned_access
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -402,14 +377,7 @@ beaglebone () {
 	BOARD="beaglebone"
 	UBOOT_CONFIG="am335x_evm_config"
 
-	enable_zImage_support=1
-	enable_uenv_support=1
-#	build_uboot_stable
-	unset enable_uenv_support
-	unset enable_zImage_support
-
-	mno_unaligned_access=1
-	unset mno_unaligned_access
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -425,14 +393,7 @@ igep00x0 () {
 
 	UBOOT_CONFIG="igep0020_config"
 
-	enable_zImage_support=1
-	enable_uenv_support=1
 	build_uboot_stable
-	unset enable_uenv_support
-	unset enable_zImage_support
-
-	mno_unaligned_access=1
-	unset mno_unaligned_access
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -444,14 +405,7 @@ am3517crane () {
 	BOARD="am3517crane"
 	UBOOT_CONFIG="am3517_crane_config"
 
-	enable_zImage_support=1
-	enable_uenv_support=1
 	build_uboot_stable
-	unset enable_uenv_support
-	unset enable_zImage_support
-
-	mno_unaligned_access=1
-	unset mno_unaligned_access
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -474,14 +428,7 @@ pandaboard () {
 	unset enable_zImage_support
 	unset v2012_04
 
-	enable_zImage_support=1
-	enable_uenv_support=1
 	build_uboot_stable
-	unset enable_uenv_support
-	unset enable_zImage_support
-
-	mno_unaligned_access=1
-	unset mno_unaligned_access
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -493,14 +440,7 @@ mx51evk () {
 	BOARD="mx51evk"
 	UBOOT_CONFIG="mx51evk_config"
 
-	enable_zImage_support=1
-	enable_uenv_support=1
 	build_uboot_stable
-	unset enable_uenv_support
-	unset enable_zImage_support
-
-	mno_unaligned_access=1
-	unset mno_unaligned_access
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -512,16 +452,7 @@ mx53loco () {
 	BOARD="mx53loco"
 	UBOOT_CONFIG="mx53loco_config"
 
-	enable_zImage_support=1
-	enable_uenv_support=1
-	mx53loco_patch=1
 	build_uboot_stable
-	unset mx53loco_patch
-	unset enable_uenv_support
-	unset enable_zImage_support
-
-	mno_unaligned_access=1
-	unset mno_unaligned_access
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -538,14 +469,7 @@ mx6qsabrelite () {
 	build_u_boot
 	unset mx6qsabrelite_patch
 
-	enable_zImage_support=1
-	enable_uenv_support=1
 	build_uboot_stable
-	unset enable_uenv_support
-	unset enable_zImage_support
-
-	mno_unaligned_access=1
-	unset mno_unaligned_access
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -557,8 +481,7 @@ mx6qsabresd () {
 	BOARD="mx6qsabresd"
 	UBOOT_CONFIG="mx6qsabresd_config"
 
-	mno_unaligned_access=1
-	unset mno_unaligned_access
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -577,9 +500,7 @@ odroidx () {
 #	unset enable_zImage_support
 
 	odroidx_patch=1
-	mno_unaligned_access=1
 #	build_uboot_testing
-	unset mno_unaligned_access
 #	build_uboot_latest
 	unset odroidx_patch
 }
@@ -591,7 +512,7 @@ rpi_b () {
 	BOARD="rpi_b"
 	UBOOT_CONFIG="rpi_b_config"
 
-#	build_uboot_stable
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
