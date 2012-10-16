@@ -34,12 +34,9 @@ SYST=$(uname -n)
 STABLE="v2012.10"
 #TESTING="v2012.10"
 
-#LATEST_GIT="89e76b5f86b03e34077d16df8543851ff3029f9b"
-#"v2012.10-rc3"
-#LATEST_GIT="c7c63221439ad87a8c05e7b42f9eae32ec7cc2d4"
 #"v2012.10"
 #LATEST_GIT="6528ff0109d81c1f21d20f9f1370782bccf87bcb"
-
+LATEST_GIT="bd23b22badadcdc414a900828253961fc5ec6c39"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -206,6 +203,23 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.10/0001-Revert-Revert-arm-armv7-add-compile-option-mno-unali.patch"
 	fi
 
+	if [ "${v2013_01_rc1}" ] ; then
+		#bootz:
+		git am "${DIR}/patches/v2013.01-rc1/0001-enable-bootz-support.patch"
+
+		#TI:
+		git am "${DIR}/patches/v2013.01-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+		git am "${DIR}/patches/v2013.01-rc1/0003-am33xx-Enable-DDR3-for-DDR3-version-of-beaglebone.patch"
+
+		#Freescale:
+		git am "${DIR}/patches/v2013.01-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+
+		#Atmel:
+		git am "${DIR}/patches/v2013.01-rc1/0001-mmc-at91-add-multi-block-read-write-support.patch"
+		git am "${DIR}/patches/v2013.01-rc1/0002-ARM-at91sam9x5-enable-MCI0-support-for-9x5ek-board.patch"
+		git am "${DIR}/patches/v2013.01-rc1/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
+	fi
+
 	if [ "${v2012_10}" ] ; then
 		#bootz:
 		git am "${DIR}/patches/v2012.10/0001-enable-bootz-support.patch"
@@ -318,27 +332,27 @@ build_uboot_stable () {
 
 build_uboot_testing () {
 	#mno_unaligned_access=1
-	#v2013_01_rc1=1
+	v2013_01_rc1=1
 	#v2013_01=1
 	if [ "${TESTING}" ] ; then
 		GIT_SHA=${TESTING}
 		build_u_boot
 	fi
-	#unset v2013_01=1
-	#unset v2013_01_rc1=1
+	#unset v2013_01
+	unset v2013_01_rc1
 	#unset mno_unaligned_access
 }
 
 build_uboot_latest () {
 	#mno_unaligned_access=1
-	#v2013_01_rc1=1
+	v2013_01_rc1=1
 	#v2013_01=1
 	if [ "${LATEST_GIT}" ] ; then
 		GIT_SHA=${LATEST_GIT}
 		build_u_boot
 	fi
-	#unset v2013_01=1
-	#unset v2013_01_rc1=1
+	#unset v2013_01
+	unset v2013_01_rc1
 	#unset mno_unaligned_access
 }
 
