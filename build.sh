@@ -36,7 +36,6 @@ STABLE="v2012.10"
 
 #"v2012.10"
 #LATEST_GIT="6528ff0109d81c1f21d20f9f1370782bccf87bcb"
-
 LATEST_GIT="bd23b22badadcdc414a900828253961fc5ec6c39"
 
 unset GIT_OPTS
@@ -50,16 +49,7 @@ fi
 
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
-mkdir -p ${DIR}/deploy/latest/
-
-dl_old_bootloaders () {
-	if [ -f ${DIR}/deploy/latest/bootloader-ng ] ; then
-		rm -f ${DIR}/deploy/latest/bootloader-ng || true
-	fi
-	cd ${DIR}/deploy/latest/
-	wget http://rcn-ee.net/deb/tools/latest/bootloader-ng
-	cd -
-}
+mkdir -p ${DIR}/deploy/
 
 armv5_embedded_toolchain () {
 	armv5_ver="gcc-arm-none-eabi-4_6-2012q2"
@@ -531,8 +521,6 @@ rpi_b () {
 	build_uboot_testing
 	build_uboot_latest
 }
-
-dl_old_bootloaders
 
 at91sam9x5ek
 
