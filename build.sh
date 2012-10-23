@@ -534,11 +534,11 @@ odroidx () {
 	unset odroidx_patch
 }
 
-rpi_b () {
+rpib () {
 	cleanup
 	armv7_toolchain
 
-	BOARD="rpi_b"
+	BOARD="rpib"
 	UBOOT_CONFIG="rpi_b_config"
 
 	build_uboot_stable
@@ -557,5 +557,5 @@ mx6qsabrelite
 mx6qsabresd
 odroidx
 pandaboard
-rpi_b
+rpib
 
