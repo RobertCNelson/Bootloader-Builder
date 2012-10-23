@@ -307,7 +307,7 @@ build_u_boot () {
 	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] ; then
 		cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
 		md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} | awk '{print $1}')
-		echo "${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}_${md5sum}" >> ${DIR}/deploy/latest
+		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}_${md5sum}" >> ${DIR}/deploy/latest
 		if [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
 			cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
 			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img | awk '{print $1}')
