@@ -212,6 +212,7 @@ build_u_boot () {
 		#TI:
 		git am "${DIR}/patches/v2013.01-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
 		git am "${DIR}/patches/v2013.01-rc1/0003-am33xx-Enable-DDR3-for-DDR3-version-of-beaglebone.patch"
+		git am "${DIR}/patches/v2013.01-rc1/0004-am335x-add-mux-config-for-DDR3-version-of-beaglebone.patch"
 
 		#Freescale:
 		git am "${DIR}/patches/v2013.01-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
@@ -240,6 +241,10 @@ build_u_boot () {
 
 		#TI: DDR3 Bone:
 		git am "${DIR}/patches/v2012.10/0002-am33xx-Enable-DDR3-for-DDR3-version-of-beaglebone.patch"
+		if [ "x${BOARD}" == "xbeaglebone" ] ; then
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2012.10/0003-am335x-add-mux-config-for-DDR3-version-of-beaglebone.patch"
+		fi
 	fi
 
 	if [ "${v2012_10_rc1}" ] ; then
@@ -542,7 +547,6 @@ rpi_b () {
 }
 
 at91sam9x5ek
-
 am3517crane
 beagleboard
 beaglebone

@@ -1,0 +1,36 @@
+From 41bc69212c9cfd5c6b5dd32f24bc6178b9696285 Mon Sep 17 00:00:00 2001
+From: Koen Kooi <koen@dominion.thruhere.net>
+Date: Tue, 23 Oct 2012 13:56:40 +0200
+Subject: [PATCH 3/3] am335x: add mux config for DDR3 version of beaglebone
+
+This fixes the following boothang in SPL:
+
+	Unknown board, cannot configure pinmux.### ERROR ### Please RESET the board ###
+
+Future commits will add pinmuxes for more on-board peripherals.
+
+Signed-off-by: Koen Kooi <koen@dominion.thruhere.net>
+---
+ board/ti/am335x/mux.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
+index 80becd5..73d2173 100644
+--- a/board/ti/am335x/mux.c
++++ b/board/ti/am335x/mux.c
+@@ -448,6 +448,12 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
+ 		configure_module_pin_mux(gpio0_7_pin_mux);
+ 		configure_module_pin_mux(rgmii1_pin_mux);
+ 		configure_module_pin_mux(mmc0_pin_mux_sk_evm);
++	} else if (!strncmp(header->name, "A335BNLT", HDR_NAME_LEN)) {
++		/* Beaglebone LT pinmux */
++		configure_module_pin_mux(i2c1_pin_mux);
++		configure_module_pin_mux(mii1_pin_mux);
++		configure_module_pin_mux(mmc0_pin_mux);
++		configure_module_pin_mux(mmc1_pin_mux);
+ 	} else {
+ 		puts("Unknown board, cannot configure pinmux.");
+ 		hang();
+-- 
+1.7.10.4
+
