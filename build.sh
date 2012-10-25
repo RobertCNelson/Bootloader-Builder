@@ -50,7 +50,7 @@ mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/
 
-rm -rf ${DIR}/deploy/latest || true
+rm -rf ${DIR}/deploy/latest-bootloader.log || true
 
 #export MIRROR="http://example.com"
 #./build.sh
@@ -157,7 +157,7 @@ build_at91bootstrap () {
 	mkdir -p ${DIR}/deploy/${BOARD}/
 	cp -v binaries/*.bin ${DIR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin
 	md5sum=$(md5sum ${DIR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin | awk '{print $1}')
-	echo "${BOARD}_${MIRROR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin_${md5sum}" >> ${DIR}/deploy/latest
+	echo "${BOARD}_${MIRROR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 
 	git_cleanup
 }
@@ -180,7 +180,7 @@ build_omap_xloader () {
 	mkdir -p ${DIR}/deploy/${BOARD}
 	cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
 	md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION} | awk '{print $1}')
-	echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}_${md5sum}" >> ${DIR}/deploy/latest
+	echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 
 	git_cleanup
 }
@@ -304,7 +304,7 @@ build_u_boot () {
 	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
 		cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
 		md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx | awk '{print $1}')
-		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx_${md5sum}" >> ${DIR}/deploy/latest
+		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 		UBOOT_DONE=1
 	fi
 
@@ -312,11 +312,11 @@ build_u_boot () {
 	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] ; then
 		cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
 		md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} | awk '{print $1}')
-		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}_${md5sum}" >> ${DIR}/deploy/latest
+		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 		if [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
 			cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
 			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img | awk '{print $1}')
-			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img_${md5sum}" >> ${DIR}/deploy/latest
+			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 		fi
 		UBOOT_DONE=1
 	fi
@@ -325,7 +325,7 @@ build_u_boot () {
 	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
 		cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
 		md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin | awk '{print $1}')
-		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin_${md5sum}" >> ${DIR}/deploy/latest
+		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 		UBOOT_DONE=1
 	fi
 
