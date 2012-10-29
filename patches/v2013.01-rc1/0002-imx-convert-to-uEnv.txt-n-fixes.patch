@@ -11,7 +11,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 41 insertions(+), 26 deletions(-)
 
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index d4c6aba..b701d1b 100644
+index b4ae94b..a56c276 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
 @@ -92,6 +92,7 @@
@@ -52,7 +52,7 @@ index d4c6aba..b701d1b 100644
 @@ -185,15 +187,20 @@
  
  #define CONFIG_BOOTCOMMAND \
- 	"if mmc rescan ${mmcdev}; then " \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"if run loadbootscript; then " \
 -			"run bootscript; " \
 -		"else " \
@@ -78,7 +78,7 @@ index d4c6aba..b701d1b 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index dd477ce..a482059 100644
+index 6446417..8f2a7b4 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
 @@ -117,19 +117,20 @@
@@ -111,7 +111,7 @@ index dd477ce..a482059 100644
 @@ -143,15 +144,21 @@
  
  #define CONFIG_BOOTCOMMAND \
- 	"if mmc rescan ${mmcdev}; then " \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"if run loadbootscript; then " \
 -			"run bootscript; " \
 +		"echo SD/MMC found on device ${mmcdev};" \
@@ -119,10 +119,10 @@ index dd477ce..a482059 100644
 +			"echo Loaded environment from ${bootenv};" \
 +			"run importbootenv;" \
  		"else " \
-+		"if run loadbootenv; then " \
-+			"echo Loaded environment from ${bootenv};" \
-+			"run importbootenv;" \
-+		"fi;" \
++			"if run loadbootenv; then " \
++				"echo Loaded environment from ${bootenv};" \
++				"run importbootenv;" \
++			"fi;" \
 +		"fi;" \
  			"if run loaduimage; then " \
  				"run mmcboot; " \
@@ -135,7 +135,7 @@ index dd477ce..a482059 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
-index db9ebc3..abd8d6a 100644
+index bc345c0..76f9766 100644
 --- a/include/configs/mx6qsabrelite.h
 +++ b/include/configs/mx6qsabrelite.h
 @@ -144,16 +144,17 @@
@@ -145,17 +145,17 @@ index db9ebc3..abd8d6a 100644
 +	"dtb_file=imx6q-sabrelite.dtb\0" \
         "mmcdev=0\0" \
 -       "mmcpart=2\0" \
-+       "mmcpart=1\0" \
++		"mmcpart=1\0" \
         "mmcroot=/dev/mmcblk0p3 rootwait rw\0" \
         "mmcargs=setenv bootargs console=${console},${baudrate} " \
  	       "root=${mmcroot}\0" \
         "loadbootscript=" \
 -	       "fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
-+	       "ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
         "bootscript=echo Running bootscript from mmc ...; " \
  	       "source\0" \
 -       "loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
-+       "loaduimage=ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
++		"loaduimage=ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
         "mmcboot=echo Booting from mmc ...; " \
  	       "run mmcargs; " \
  	       "bootm\0" \

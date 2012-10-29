@@ -104,7 +104,7 @@ index 4feef78..6e446d2 100644
  }
  
 diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
-index 18e806d..7e5ee91 100644
+index 121c8e8..4ecfafb 100644
 --- a/include/configs/am3517_crane.h
 +++ b/include/configs/am3517_crane.h
 @@ -189,18 +189,21 @@
@@ -139,7 +139,7 @@ index 18e806d..7e5ee91 100644
 @@ -212,15 +215,20 @@
  
  #define CONFIG_BOOTCOMMAND \
- 	"if mmc rescan ${mmcdev}; then " \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"if run loadbootscript; then " \
 -			"run bootscript; " \
 -		"else " \
@@ -167,7 +167,7 @@ index 18e806d..7e5ee91 100644
  #define CONFIG_AUTO_COMPLETE	1
  /*
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 89a3685..dfcfa42 100644
+index 3d94d2c..63b4873 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -222,15 +222,17 @@
@@ -225,7 +225,7 @@ index 89a3685..dfcfa42 100644
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
 diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
-index 0c69283..987c39c 100644
+index c42200a..dac0f65 100644
 --- a/include/configs/omap4_common.h
 +++ b/include/configs/omap4_common.h
 @@ -151,30 +151,39 @@
@@ -256,7 +256,7 @@ index 0c69283..987c39c 100644
  		"bootm ${loadaddr}\0" \
  
  #define CONFIG_BOOTCOMMAND \
- 	"if mmc rescan ${mmcdev}; then " \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"if run loadbootscript; then " \
 -			"run bootscript; " \
 -		"else " \

@@ -34,8 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.10"
 #TESTING="v2012.10"
 
-#LATEST_GIT="186fc4db263fc6332d6712be99a9a387087d29c7"
-LATEST_GIT="5e8f98319d8582d6a066610b5f1ec9b1a3f79704"
+#LATEST_GIT="5e8f98319d8582d6a066610b5f1ec9b1a3f79704"
+LATEST_GIT="5bb3505fa867ded03cbee83f7722ab5182930637"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -211,15 +211,12 @@ build_u_boot () {
 
 		#TI:
 		git am "${DIR}/patches/v2013.01-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		git am "${DIR}/patches/v2013.01-rc1/0003-am33xx-Enable-DDR3-for-DDR3-version-of-beaglebone.patch"
 		git am "${DIR}/patches/v2013.01-rc1/0004-am335x-add-mux-config-for-DDR3-version-of-beaglebone.patch"
 
 		#Freescale:
 		git am "${DIR}/patches/v2013.01-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
 
 		#Atmel:
-		git am "${DIR}/patches/v2013.01-rc1/0001-mmc-at91-add-multi-block-read-write-support.patch"
-		git am "${DIR}/patches/v2013.01-rc1/0002-ARM-at91sam9x5-enable-MCI0-support-for-9x5ek-board.patch"
 		git am "${DIR}/patches/v2013.01-rc1/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
 	fi
 

@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 37 insertions(+), 11 deletions(-)
 
 diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
-index 7b3a1e9..80a5139 100644
+index 71f765b..0bf0b62 100644
 --- a/include/configs/at91sam9x5ek.h
 +++ b/include/configs/at91sam9x5ek.h
 @@ -35,6 +35,7 @@
@@ -20,16 +20,16 @@ index 7b3a1e9..80a5139 100644
  #define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs */
  #define CONFIG_SETUP_MEMORY_TAGS
  #define CONFIG_INITRD_TAG
-@@ -142,6 +143,8 @@
+@@ -143,6 +144,8 @@
+ #ifdef CONFIG_CMD_MMC
  #define CONFIG_MMC
- #define CONFIG_CMD_MMC
  #define CONFIG_CMD_FAT
 +#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
 +#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
  #define CONFIG_GENERIC_MMC
  #define CONFIG_GENERIC_ATMEL_MCI
  #define CONFIG_DOS_PARTITION
-@@ -163,9 +166,6 @@
+@@ -165,9 +168,6 @@
  #define CONFIG_ENV_OFFSET		0xc0000
  #define CONFIG_ENV_OFFSET_REDUND	0x100000
  #define CONFIG_ENV_SIZE		0x20000		/* 1 sector = 128 kB */
@@ -39,7 +39,7 @@ index 7b3a1e9..80a5139 100644
  #else
  #ifdef CONFIG_SYS_USE_SPIFLASH
  /* bootstrap + u-boot + env + linux in spi flash */
-@@ -174,17 +174,43 @@
+@@ -176,17 +176,43 @@
  #define CONFIG_ENV_SIZE		0x3000
  #define CONFIG_ENV_SECT_SIZE	0x1000
  #define CONFIG_ENV_SPI_MAX_HZ	30000000
