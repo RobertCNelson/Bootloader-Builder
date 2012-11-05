@@ -32,10 +32,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2012.10"
-#TESTING="v2012.10"
+TESTING="v2013.01-rc1"
 
-#LATEST_GIT="5bb3505fa867ded03cbee83f7722ab5182930637"
-LATEST_GIT="ed296d206a1840c0a0b6c1322379c950f9996905"
+#LATEST_GIT="ed296d206a1840c0a0b6c1322379c950f9996905"
+#v2013.01-rc1
+#LATEST_GIT="3ae7b240ad8c723d02aa79654220a07049b7ae4d"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -119,6 +120,7 @@ git_generic () {
 
 	cd ${DIR}/git/${project}/
 	git pull ${GIT_OPTS} || true
+	git fetch --tags || true
 	cd -
 
 	if [ -d ${DIR}/build/${project} ] ; then
