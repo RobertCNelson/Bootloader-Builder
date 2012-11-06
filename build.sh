@@ -34,9 +34,9 @@ SYST=$(uname -n)
 STABLE="v2012.10"
 TESTING="v2013.01-rc1"
 
-#LATEST_GIT="ed296d206a1840c0a0b6c1322379c950f9996905"
 #v2013.01-rc1
 #LATEST_GIT="3ae7b240ad8c723d02aa79654220a07049b7ae4d"
+LATEST_GIT="1cc619be8b73abbee2fd6faf2cd4ade27b516531"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -207,6 +207,20 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.10/0001-Revert-Revert-arm-armv7-add-compile-option-mno-unali.patch"
 	fi
 
+	if [ "${v2013_01_rc2}" ] ; then
+		#bootz:
+		git am "${DIR}/patches/v2013.01-rc2/0001-enable-bootz-support.patch"
+
+		#TI:
+		git am "${DIR}/patches/v2013.01-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+
+		#Freescale:
+		git am "${DIR}/patches/v2013.01-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+
+		#Atmel:
+		git am "${DIR}/patches/v2013.01-rc1/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
+	fi
+
 	if [ "${v2013_01_rc1}" ] ; then
 		#bootz:
 		git am "${DIR}/patches/v2013.01-rc1/0001-enable-bootz-support.patch"
@@ -345,7 +359,6 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
-	#mno_unaligned_access=1
 	v2013_01_rc1=1
 	#v2013_01=1
 	if [ "${TESTING}" ] ; then
@@ -354,20 +367,17 @@ build_uboot_testing () {
 	fi
 	#unset v2013_01
 	unset v2013_01_rc1
-	#unset mno_unaligned_access
 }
 
 build_uboot_latest () {
-	#mno_unaligned_access=1
-	v2013_01_rc1=1
+	v2013_01_rc2=1
 	#v2013_01=1
 	if [ "${LATEST_GIT}" ] ; then
 		GIT_SHA=${LATEST_GIT}
 		build_u_boot
 	fi
 	#unset v2013_01
-	unset v2013_01_rc1
-	#unset mno_unaligned_access
+	unset v2013_01_rc2
 }
 
 at91sam9x5ek () {
