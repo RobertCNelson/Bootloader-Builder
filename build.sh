@@ -305,41 +305,67 @@ build_u_boot () {
 		exit
 	fi
 
-	make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
-	echo "Building ${project}: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
-	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
-
 	mkdir -p ${DIR}/deploy/${BOARD}
 
-	unset UBOOT_DONE
-
-	#Freescale targets just need u-boot.imx from u-boot
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
-		cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
-		md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx | awk '{print $1}')
-		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
-		UBOOT_DONE=1
+	unset pre_built
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER} ] ; then
+		pre_built=1
 	fi
 
-	#SPL based targets, need MLO and u-boot.img from u-boot
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] ; then
-		cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
-		md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} | awk '{print $1}')
-		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
-		if [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
-			cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
-			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img | awk '{print $1}')
-			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} ] ; then
+		pre_built=1
+	fi
+
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin ] ; then
+		pre_built=1
+	fi
+
+	if [ -f ${DIR}/force_rebuild ] ; then
+		unset pre_built
+	fi
+
+	if [ ! "${pre_built}" ] ; then
+		make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
+		echo "Building ${project}: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
+		time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
+
+		unset UBOOT_DONE
+		#Freescale targets just need u-boot.imx from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
+			cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
+			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx | awk '{print $1}')
+			touch ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx_${md5sum}
+			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			UBOOT_DONE=1
 		fi
-		UBOOT_DONE=1
-	fi
 
-	#Just u-boot.bin
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
-		cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
-		md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin | awk '{print $1}')
-		echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
-		UBOOT_DONE=1
+		#SPL based targets, need MLO and u-boot.img from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] ; then
+			cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
+			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} | awk '{print $1}')
+			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			if [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
+				cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
+				md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img | awk '{print $1}')
+				touch ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img_${md5sum}
+				echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			fi
+			UBOOT_DONE=1
+		fi
+
+		#Just u-boot.bin
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
+			cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
+			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin | awk '{print $1}')
+			touch ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin_${md5sum}
+			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			UBOOT_DONE=1
+		fi
+	else
+		echo "-----------------------------"
+		echo "Skipping Binary Build: as [${BOARD}-${UGIT_VERSION}${RELEASE_VER}] was previously built."
+		echo "Override skipping with [touch force_rebuild] to force rebuild"
+		echo "-----------------------------"
 	fi
 
 	git_cleanup
