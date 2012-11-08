@@ -59,14 +59,17 @@ if [ ! "${MIRROR}" ] ; then
 	MIRROR="http:"
 fi
 
+WGET="wget -c --directory-prefix=${DIR}/dl/"
+
 armv5_embedded_toolchain () {
-	armv5_ver="gcc-arm-none-eabi-4_6-2012q2"
-	armv5_date="20120614"
+	#https://launchpad.net/gcc-arm-embedded/4.6/4.6-2012-q4-update/+download/gcc-arm-none-eabi-4_6-2012q4-20121016.tar.bz2
+	armv5_ver="gcc-arm-none-eabi-4_6-2012q4"
+	armv5_date="20121016"
 	ARMV5_GCC_EMBEDDED="${armv5_ver}-${armv5_date}.tar.bz2"
 	if [ ! -f ${DIR}/dl/${armv5_date} ] ; then
 		echo "Installing gcc-arm-embedded toolchain"
 		echo "-----------------------------"
-		wget -c --directory-prefix=${DIR}/dl/ https://launchpad.net/gcc-arm-embedded/4.6/4.6-2012-q2-update/+download/${ARMV5_GCC_EMBEDDED}
+		${WGET} https://launchpad.net/gcc-arm-embedded/4.6/4.6-2012-q4-update/+download/${ARMV5_GCC_EMBEDDED}
 		touch ${DIR}/dl/${armv5_date}
 		if [ -d ${DIR}/dl/${armv5_ver} ] ; then
 			rm -rf ${DIR}/dl/${armv5_ver} || true
@@ -92,7 +95,7 @@ armv7_toolchain () {
 	if [ ! -f ${DIR}/dl/${armv7_date} ] ; then
 		echo "Installing gcc-arm toolchain"
 		echo "-----------------------------"
-		wget -c --directory-prefix=${DIR}/dl/ https://launchpad.net/linaro-toolchain-binaries/trunk/${armv7_ver}/+download/${ARMV7_GCC}
+		${WGET} https://launchpad.net/linaro-toolchain-binaries/trunk/${armv7_ver}/+download/${ARMV7_GCC}
 		touch ${DIR}/dl/${armv7_date}
 		if [ -d ${DIR}/dl/${armv7_ver} ] ; then
 			rm -rf ${DIR}/dl/${armv7_ver} || true
