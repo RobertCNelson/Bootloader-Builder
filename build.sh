@@ -34,9 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.10"
 TESTING="v2013.01-rc1"
 
-#v2013.01-rc1
-#LATEST_GIT="3ae7b240ad8c723d02aa79654220a07049b7ae4d"
-LATEST_GIT="1cc619be8b73abbee2fd6faf2cd4ade27b516531"
+#LATEST_GIT="1cc619be8b73abbee2fd6faf2cd4ade27b516531"
+LATEST_GIT="59852d03867108217fe88e3bfc3e1e9cedfe63c5"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -216,6 +215,7 @@ build_u_boot () {
 
 		#TI:
 		git am "${DIR}/patches/v2013.01-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+		git am "${DIR}/patches/v2013.01-rc1/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
 
 		#Freescale:
 		git am "${DIR}/patches/v2013.01-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
