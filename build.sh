@@ -237,6 +237,12 @@ build_u_boot () {
 
 		#Atmel:
 		git am "${DIR}/patches/v2013.01-rc1/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
+
+		#TI: v2012.04 functionality
+		if [ "x${BOARD}" == "xpandaboard" ] ; then
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2013.01-rc1/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
+		fi
 	fi
 
 	if [ "${v2012_10}" ] ; then
