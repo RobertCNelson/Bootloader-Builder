@@ -323,15 +323,15 @@ build_u_boot () {
 	mkdir -p ${DIR}/deploy/${BOARD}
 
 	unset pre_built
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx ] ; then
+	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx ] ; then
 		pre_built=1
 	fi
 
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} ] ; then
+	if [ -f ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} ] ; then
 		pre_built=1
 	fi
 
-	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin ] ; then
+	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin ] ; then
 		pre_built=1
 	fi
 
