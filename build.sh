@@ -34,8 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.10"
 TESTING="v2013.01-rc1"
 
-#LATEST_GIT="59852d03867108217fe88e3bfc3e1e9cedfe63c5"
-LATEST_GIT="66dc452bfe13b0e276adddf3997b9c5abc00115d"
+#LATEST_GIT="66dc452bfe13b0e276adddf3997b9c5abc00115d"
+LATEST_GIT="d41b3cc16fd97da23900f79e8fefdeedeebde8f6"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -221,7 +221,7 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.01-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
 
 		#Atmel:
-		git am "${DIR}/patches/v2013.01-rc1/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
+		git am "${DIR}/patches/v2013.01-rc2/0001-at91-enable-bootz-and-uEnv.txt-support.patch"
 	fi
 
 	if [ "${v2013_01_rc1}" ] ; then
@@ -434,6 +434,8 @@ at91sam9x5ek () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
 	build_uboot_latest
 }
 

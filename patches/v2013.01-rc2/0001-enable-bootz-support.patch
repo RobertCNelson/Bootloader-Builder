@@ -1,6 +1,6 @@
 From 71144911b297dddbd191256629aec6d313183518 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 6 Nov 2012 09:16:15 -0600
+Date: Thu, 29 Nov 2012 10:19:56 -0600
 Subject: [PATCH] enable bootz support
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -19,7 +19,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  11 files changed, 21 insertions(+)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index b6e48f8..512ec9b 100644
+index ab9549b..396ee8c 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -144,6 +144,8 @@
@@ -32,7 +32,7 @@ index b6e48f8..512ec9b 100644
  #define CONFIG_SPI
  #define CONFIG_OMAP3_SPI
 diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
-index 20a3df5..121c8e8 100644
+index e1ad1e5..eef6b56 100644
 --- a/include/configs/am3517_crane.h
 +++ b/include/configs/am3517_crane.h
 @@ -143,6 +143,8 @@
@@ -45,7 +45,7 @@ index 20a3df5..121c8e8 100644
  #define CONFIG_CMD_DHCP
  #undef CONFIG_CMD_PING
 diff --git a/include/configs/igep00x0.h b/include/configs/igep00x0.h
-index c81ab76..6f38226 100644
+index be7937d..bf7a937 100644
 --- a/include/configs/igep00x0.h
 +++ b/include/configs/igep00x0.h
 @@ -106,6 +106,8 @@
@@ -58,7 +58,7 @@ index c81ab76..6f38226 100644
  #define CONFIG_CMD_ONENAND	/* ONENAND support		*/
  #endif
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index 225d359..64b4bd6 100644
+index f00cec2..75d4450 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
 @@ -89,6 +89,8 @@
@@ -71,7 +71,7 @@ index 225d359..64b4bd6 100644
  #define CONFIG_CMD_FAT
  #define CONFIG_DOS_PARTITION
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index a1b27ce..d044f7f 100644
+index a110176..d3f4f11 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
 @@ -52,6 +52,8 @@
@@ -84,7 +84,7 @@ index a1b27ce..d044f7f 100644
  #define CONFIG_CMD_FAT
  #define CONFIG_CMD_EXT2
 diff --git a/include/configs/mx6qarm2.h b/include/configs/mx6qarm2.h
-index 23562a8..307610f 100644
+index 28a3deb..5cf16fd 100644
 --- a/include/configs/mx6qarm2.h
 +++ b/include/configs/mx6qarm2.h
 @@ -49,6 +49,8 @@
@@ -94,10 +94,10 @@ index 23562a8..307610f 100644
 +#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
 +#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
  #define CONFIG_GENERIC_MMC
- #define CONFIG_MMC_BOUNCE_BUFFER
+ #define CONFIG_BOUNCE_BUFFER
  #define CONFIG_CMD_FAT
 diff --git a/include/configs/mx6qsabre_common.h b/include/configs/mx6qsabre_common.h
-index bfb9cd4..871c0cd 100644
+index a5c93d0..858132f 100644
 --- a/include/configs/mx6qsabre_common.h
 +++ b/include/configs/mx6qsabre_common.h
 @@ -44,6 +44,8 @@
@@ -107,10 +107,10 @@ index bfb9cd4..871c0cd 100644
 +#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
 +#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
  #define CONFIG_GENERIC_MMC
- #define CONFIG_MMC_BOUNCE_BUFFER
+ #define CONFIG_BOUNCE_BUFFER
  #define CONFIG_CMD_EXT2
 diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
-index b56d7ca..eb47c6a 100644
+index a28d5a5..949b513 100644
 --- a/include/configs/mx6qsabrelite.h
 +++ b/include/configs/mx6qsabrelite.h
 @@ -71,6 +71,8 @@
@@ -120,13 +120,13 @@ index b56d7ca..eb47c6a 100644
 +#define CONFIG_CMD_BOOTZ	/* bootz zImage support		*/
 +#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
  #define CONFIG_GENERIC_MMC
- #define CONFIG_MMC_BOUNCE_BUFFER
+ #define CONFIG_BOUNCE_BUFFER
  #define CONFIG_CMD_EXT2
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 7a3cc16..3d94d2c 100644
+index 12d65f2..4976c25 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
-@@ -151,6 +151,8 @@
+@@ -149,6 +149,8 @@
  #define CONFIG_CMD_CACHE
  #define CONFIG_CMD_EXT2		/* EXT2 Support			*/
  #define CONFIG_CMD_FAT		/* FAT support			*/
