@@ -320,18 +320,20 @@ build_u_boot () {
 		exit
 	fi
 
+	uboot_filename="${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
+
 	mkdir -p ${DIR}/deploy/${BOARD}
 
 	unset pre_built
-	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx ] ; then
+	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx ] ; then
 		pre_built=1
 	fi
 
-	if [ -f ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} ] ; then
+	if [ -f ${DIR}/deploy/${BOARD}/MLO-${uboot_filename} ] ; then
 		pre_built=1
 	fi
 
-	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin ] ; then
+	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin ] ; then
 		pre_built=1
 	fi
 
@@ -341,44 +343,44 @@ build_u_boot () {
 
 	if [ ! "${pre_built}" ] ; then
 		make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
-		echo "Building ${project}: ${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
+		echo "Building ${project}: ${uboot_filename}"
 		time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
 
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
-			cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx
-			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx | awk '{print $1}')
-			touch ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx_${md5sum}
-			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.imx_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx
+			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx | awk '{print $1}')
+			touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_${md5sum}
+			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 			UBOOT_DONE=1
 		fi
 
 		#SPL based targets, need MLO and u-boot.img from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] ; then
-			cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}
-			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER} | awk '{print $1}')
-			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${UGIT_VERSION}${RELEASE_VER}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${uboot_filename}
+			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${uboot_filename} | awk '{print $1}')
+			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${uboot_filename}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 			if [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
-				cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img
-				md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img | awk '{print $1}')
-				touch ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img_${md5sum}
-				echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.img_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+				cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img
+				md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img | awk '{print $1}')
+				touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_${md5sum}
+				echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 			fi
 			UBOOT_DONE=1
 		fi
 
 		#Just u-boot.bin
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
-			cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin
-			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin | awk '{print $1}')
-			touch ${DIR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin_${md5sum}
-			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${BOARD}-${UGIT_VERSION}${RELEASE_VER}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin
+			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin | awk '{print $1}')
+			touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_${md5sum}
+			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 			UBOOT_DONE=1
 		fi
 	else
 		echo "-----------------------------"
-		echo "Skipping Binary Build: as [${BOARD}-${UGIT_VERSION}${RELEASE_VER}] was previously built."
+		echo "Skipping Binary Build: as [${uboot_filename}] was previously built."
 		echo "Override skipping with [touch force_rebuild] to force rebuild"
 		echo "-----------------------------"
 	fi
