@@ -351,6 +351,9 @@ build_u_boot () {
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
 			cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx
 			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx | awk '{print $1}')
+			if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_* ] ; then
+				rm -rf ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_* || true
+			fi
 			touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_${md5sum}
 			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 			UBOOT_DONE=1
@@ -364,6 +367,9 @@ build_u_boot () {
 			if [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
 				cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img
 				md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img | awk '{print $1}')
+				if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_* ] ; then
+					rm -rf ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_* || true
+				fi
 				touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_${md5sum}
 				echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 			fi
@@ -374,6 +380,9 @@ build_u_boot () {
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
 			cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin
 			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin | awk '{print $1}')
+			if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_* ] ; then
+				rm -rf ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_* || true
+			fi
 			touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_${md5sum}
 			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 			UBOOT_DONE=1
