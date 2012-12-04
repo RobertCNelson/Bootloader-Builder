@@ -660,6 +660,7 @@ rpib () {
 	build_uboot_latest
 }
 
+arndale5250
 at91sam9x5ek
 am3517crane
 beagleboard
