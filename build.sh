@@ -403,6 +403,18 @@ build_u_boot () {
 			UBOOT_DONE=1
 		fi
 
+		#Samsung SPL
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
+			filename_search="spl/u-boot-spl.bin"
+			filename_id="deploy/${BOARD}/u-boot-spl-${uboot_filename}.bin"
+			file_save
+
+			filename_search="u-boot.bin"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.bin"
+			file_save
+			UBOOT_DONE=1
+		fi
+
 		#Just u-boot.bin
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
 			filename_search="u-boot.bin"
