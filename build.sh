@@ -110,6 +110,32 @@ armv7_toolchain () {
 	fi
 }
 
+armv7hf_toolchain () {
+	#https://launchpad.net/linaro-toolchain-binaries/+download
+	#https://launchpad.net/linaro-toolchain-binaries/trunk/2012.11/+download/gcc-linaro-arm-linux-gnueabihf-4.7-2012.11-20121123_linux.tar.bz2
+
+	armv7hf_ver="2012.11"
+	armv7hf_date="20121123"
+	armv7hf_gcc="gcc-linaro-arm-linux-gnueabihf-4.7-${armv7hf_ver}-${armv7hf_date}_linux.tar.bz2"
+	if [ ! -f ${DIR}/dl/${armv7hf_date} ] ; then
+		echo "Installing gcc-arm toolchain"
+		echo "-----------------------------"
+		${WGET} https://launchpad.net/linaro-toolchain-binaries/trunk/${armv7hf_ver}/+download/${armv7hf_gcc}
+		touch ${DIR}/dl/${armv7hf_date}
+		if [ -d ${DIR}/dl/${armv7hf_ver} ] ; then
+			rm -rf ${DIR}/dl/${armv7hf_ver} || true
+		fi
+		tar xjf ${DIR}/dl/${armv7hf_gcc} -C ${DIR}/dl/
+	fi
+
+	if [ "x${ARCH}" == "xarmv7l" ] ; then
+		#using native gcc
+		CC=
+	else
+		CC="${DIR}/dl/gcc-linaro-arm-linux-gnueabihf-4.7-${armv7hf_ver}-${armv7hf_date}_linux/bin/arm-linux-gnueabihf-"
+	fi
+}
+
 git_generic () {
 	echo "Starting ${project} build for: ${BOARD}"
 	echo "-----------------------------"
