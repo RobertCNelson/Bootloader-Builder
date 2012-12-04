@@ -1,0 +1,2335 @@
+From 3871cf5eaa19d223272156f046f8f8262a7cb694 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 4 Dec 2012 14:30:46 -0600
+Subject: [PATCH] MegaPatch: add arndale5250 support, from:
+ http://git.linaro.org/gitweb?p=people/ronynandy/u-boot-arndale.git;a=shortlog;h=refs/heads/lue_arndale
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ arch/arm/cpu/armv7/exynos/clock.c            |  131 ++++++++-
+ arch/arm/cpu/armv7/exynos/pinmux.c           |   62 +++-
+ arch/arm/include/asm/arch-exynos/clk.h       |    1 +
+ arch/arm/include/asm/arch-exynos/dwmmc.h     |   36 +++
+ arch/arm/include/asm/arch-exynos/ehci.h      |   19 ++
+ arch/arm/include/asm/arch-exynos/gpio.h      |   19 ++
+ arch/arm/include/asm/arch-exynos/periph.h    |    1 +
+ arch/arm/include/asm/arch-s5pc1xx/gpio.h     |    7 +-
+ board/samsung/smdk5250/lowlevel_init.S       |    5 +
+ board/samsung/smdk5250/smdk5250.c            |   19 +-
+ board/samsung/smdk5250/smdk5250_spl.c        |    4 +-
+ board/samsung/trats/trats.c                  |   80 ++----
+ board/samsung/universal_c210/Makefile        |    1 -
+ board/samsung/universal_c210/lowlevel_init.S |  395 -------------------------
+ board/samsung/universal_c210/universal.c     |   82 ++----
+ boards.cfg                                   |    1 +
+ drivers/gpio/s5p_gpio.c                      |    6 +-
+ drivers/mmc/Makefile                         |    2 +
+ drivers/mmc/dw_mmc.c                         |  400 ++++++++++++++++++++++++++
+ drivers/mmc/exynos_dw_mmc.c                  |   63 ++++
+ drivers/serial/serial_s5p.c                  |   13 +-
+ drivers/usb/host/ehci-exynos.c               |   40 ++-
+ include/configs/arndale5250.h                |  224 +++++++++++++++
+ include/configs/s5pc210_universal.h          |    2 +
+ include/configs/smdk5250.h                   |    8 +
+ include/configs/trats.h                      |   17 +-
+ include/dwmmc.h                              |  186 ++++++++++++
+ 27 files changed, 1285 insertions(+), 539 deletions(-)
+ create mode 100644 arch/arm/include/asm/arch-exynos/dwmmc.h
+ delete mode 100644 board/samsung/universal_c210/lowlevel_init.S
+ create mode 100644 drivers/mmc/dw_mmc.c
+ create mode 100644 drivers/mmc/exynos_dw_mmc.c
+ create mode 100644 include/configs/arndale5250.h
+ create mode 100644 include/dwmmc.h
+
+diff --git a/arch/arm/cpu/armv7/exynos/clock.c b/arch/arm/cpu/armv7/exynos/clock.c
+index 4f3b451..b99b238 100644
+--- a/arch/arm/cpu/armv7/exynos/clock.c
++++ b/arch/arm/cpu/armv7/exynos/clock.c
+@@ -387,6 +387,44 @@ static unsigned long exynos5_get_uart_clk(int dev_index)
+ 	return uclk;
+ }
+ 
++/* exynos4: return mmc clock frequency */
++static unsigned long exynos4_get_mmc_clk(int dev_index)
++{
++	struct exynos4_clock *clk =
++		(struct exynos4_clock *)samsung_get_base_clock();
++	unsigned long uclk, sclk;
++	unsigned int sel;
++	unsigned int ratio;
++	unsigned int pre_ratio;
++
++	sel = readl(&clk->src_fsys);
++	sel = (sel >> (dev_index << 2)) & 0xf;
++
++	if (sel == 0x6)
++		sclk = get_pll_clk(MPLL);
++	else if (sel == 0x7)
++		sclk = get_pll_clk(EPLL);
++	else if (sel == 0x8)
++		sclk = get_pll_clk(VPLL);
++	else
++		return 0;
++
++	if (dev_index == 0) {
++		ratio = readl(&clk->div_fsys0);
++		pre_ratio = readl(&clk->div_fsys0);
++	} else if (dev_index == 4) {
++		ratio = readl(&clk->div_fsys3);
++		pre_ratio = readl(&clk->div_fsys3);
++	} else
++		return 0;
++
++	ratio = ratio & 0xf;
++	pre_ratio = (pre_ratio >> (dev_index + 8)) & 0xff;
++	uclk = (sclk /(ratio + 1))/(pre_ratio + 1);
++
++	return uclk;
++}
++
+ /* exynos4: set the mmc clock */
+ static void exynos4_set_mmc_clk(int dev_index, unsigned int div)
+ {
+@@ -414,13 +452,28 @@ static void exynos4_set_mmc_clk(int dev_index, unsigned int div)
+ 	writel(val, addr);
+ }
+ 
+-/* exynos5: set the mmc clock */
+-static void exynos5_set_mmc_clk(int dev_index, unsigned int div)
++/* exynos5: return mmc clock frequency */
++static unsigned long exynos5_get_mmc_clk(int dev_index)
+ {
+ 	struct exynos5_clock *clk =
+ 		(struct exynos5_clock *)samsung_get_base_clock();
+-	unsigned int addr;
+-	unsigned int val;
++	unsigned long uclk, sclk;
++	unsigned int sel;
++	unsigned int ratio;
++	unsigned int pre_ratio;
++	unsigned int addr, addr_mmc;
++
++	sel = readl(&clk->src_fsys);
++	sel = (sel >> (dev_index << 2)) & 0xf;
++
++	if (sel == 0x6)
++		sclk = get_pll_clk(MPLL);
++	else if (sel == 0x7)
++		sclk = get_pll_clk(EPLL);
++	else if (sel == 0x8)
++		sclk = get_pll_clk(VPLL);
++	else
++		return 0;
+ 
+ 	/*
+ 	 * CLK_DIV_FSYS1
+@@ -435,6 +488,54 @@ static void exynos5_set_mmc_clk(int dev_index, unsigned int div)
+ 		dev_index -= 2;
+ 	}
+ 
++	ratio = readl(addr);
++	ratio = (ratio >> (dev_index << 2)) & 0xf;
++	pre_ratio = readl(addr);
++	pre_ratio = (pre_ratio >> ((dev_index<< 4) + 8)) & 0xff;
++
++	uclk = (sclk /(ratio + 1))/(pre_ratio + 1);
++
++	/* Actual sclk mmc is available after mmc divider */
++	ratio = readl(addr_mmc);
++	ratio = (ratio >> 24 ) & 0x7;
++
++	return uclk;
++}
++
++/* exynos5: set the mmc clock */
++static void exynos5_set_mmc_clk(int dev_index, unsigned int div)
++{
++	struct exynos5_clock *clk =
++		(struct exynos5_clock *)samsung_get_base_clock();
++	unsigned int addr;
++	unsigned int val;
++
++	if (dev_index < 2) {
++		addr = (unsigned int)&clk->div_fsys1;
++	} else {
++		addr = (unsigned int)&clk->div_fsys2;
++		dev_index -= 2;
++	}
++
++	/*
++	 * CLK_DIV_FSYS1
++	 * MMC0_RATIO[3:0], MMC1_RATIO[3:0]
++	 * CLK_DIV_FSYS2
++	 * MMC2_RATIO[3:0], MMC3_RATIO[3:0]
++	 * Bypass the divider ratio and use only pre ratio to select
++	 * the sclk mmc
++	 */
++
++	val = readl(addr);
++	val &= ~(0xf << (dev_index * 16));
++	writel(val, addr);
++
++	/*
++	 * CLK_DIV_FSYS1
++	 * MMC0_PRE_RATIO [15:8], MMC1_PRE_RATIO [31:24]
++	 * CLK_DIV_FSYS2
++	 * MMC2_PRE_RATIO [15:8], MMC3_PRE_RATIO [31:24]
++	 */
+ 	val = readl(addr);
+ 	val &= ~(0xff << ((dev_index << 4) + 8));
+ 	val |= (div & 0xff) << ((dev_index << 4) + 8);
+@@ -774,6 +875,14 @@ unsigned long get_uart_clk(int dev_index)
+ 		return exynos4_get_uart_clk(dev_index);
+ }
+ 
++unsigned long get_mmc_clk(int dev_index)
++{
++	if (cpu_is_exynos5())
++		return exynos5_get_mmc_clk(dev_index);
++	else
++		return exynos4_get_mmc_clk(dev_index);
++}
++
+ void set_mmc_clk(int dev_index, unsigned int div)
+ {
+ 	if (cpu_is_exynos5())
+@@ -803,3 +912,17 @@ void set_mipi_clk(void)
+ 	if (cpu_is_exynos4())
+ 		exynos4_set_mipi_clk();
+ }
++
++/*
++ * Dump some core clockes.
++ */
++int do_showclocks(void)
++{
++	printf("\n");
++	printf("USDHC1     %8d kHz\n", get_mmc_clk(0));
++	printf("USDHC2     %8d kHz\n", get_mmc_clk(1));
++	printf("USDHC3     %8d kHz\n", get_mmc_clk(2));
++	printf("USDHC4     %8d kHz\n", get_mmc_clk(3));
++
++	return 0;
++}
+diff --git a/arch/arm/cpu/armv7/exynos/pinmux.c b/arch/arm/cpu/armv7/exynos/pinmux.c
+index 7776add..45d48dc 100644
+--- a/arch/arm/cpu/armv7/exynos/pinmux.c
++++ b/arch/arm/cpu/armv7/exynos/pinmux.c
+@@ -102,12 +102,12 @@ static int exynos5_mmc_config(int peripheral, int flags)
+ 			s5p_gpio_set_drv(bank_ext, i, GPIO_DRV_4X);
+ 		}
+ 	}
+-	for (i = 0; i < 2; i++) {
++	for (i = 0; i < 2 ; i++) {
+ 		s5p_gpio_cfg_pin(bank, i, GPIO_FUNC(0x2));
+ 		s5p_gpio_set_pull(bank, i, GPIO_PULL_NONE);
+ 		s5p_gpio_set_drv(bank, i, GPIO_DRV_4X);
+ 	}
+-	for (i = 3; i <= 6; i++) {
++	for (i = 2; i <= 6; i++) {
+ 		s5p_gpio_cfg_pin(bank, i, GPIO_FUNC(0x2));
+ 		s5p_gpio_set_pull(bank, i, GPIO_PULL_UP);
+ 		s5p_gpio_set_drv(bank, i, GPIO_DRV_4X);
+@@ -265,10 +265,68 @@ static int exynos5_pinmux_config(int peripheral, int flags)
+ 	return 0;
+ }
+ 
++static int exynos4_mmc_config(int peripheral, int flags)
++{
++	struct exynos4_gpio_part2 *gpio2 =
++		(struct exynos4_gpio_part2 *)samsung_get_base_gpio_part2();
++	struct s5p_gpio_bank *bank, *bank_ext;
++	int i;
++
++	switch (peripheral) {
++	case PERIPH_ID_SDMMC0:
++		bank = &gpio2->k0;
++		bank_ext = &gpio2->k1;
++		break;
++	case PERIPH_ID_SDMMC2:
++		bank = &gpio2->k2;
++		bank_ext = &gpio2->k3;
++		break;
++	default:
++		return -1;
++	}
++	for (i = 0; i < 7; i++) {
++		if (i == 2)
++			continue;
++		s5p_gpio_cfg_pin(bank, i,  GPIO_FUNC(0x2));
++		s5p_gpio_set_pull(bank, i, GPIO_PULL_NONE);
++		s5p_gpio_set_drv(bank, i, GPIO_DRV_4X);
++	}
++	if (flags & PINMUX_FLAG_8BIT_MODE) {
++		for (i = 3; i < 7; i++) {
++			s5p_gpio_cfg_pin(bank_ext, i,  GPIO_FUNC(0x3));
++			s5p_gpio_set_pull(bank_ext, i, GPIO_PULL_NONE);
++			s5p_gpio_set_drv(bank_ext, i, GPIO_DRV_4X);
++		}
++	}
++
++	return 0;
++}
++
++static int exynos4_pinmux_config(int peripheral, int flags)
++{
++	switch (peripheral) {
++	case PERIPH_ID_SDMMC0:
++	case PERIPH_ID_SDMMC2:
++		return exynos4_mmc_config(peripheral, flags);
++	case PERIPH_ID_SDMMC1:
++	case PERIPH_ID_SDMMC3:
++	case PERIPH_ID_SDMMC4:
++		printf("SDMMC device %d not implemented\n", peripheral);
++		return -1;
++	default:
++		debug("%s: invalid peripheral %d", __func__, peripheral);
++		return -1;
++	}
++
++	return 0;
++}
++
+ int exynos_pinmux_config(int peripheral, int flags)
+ {
+ 	if (cpu_is_exynos5())
+ 		return exynos5_pinmux_config(peripheral, flags);
++	else if (cpu_is_exynos4())
++		return exynos4_pinmux_config(peripheral, flags);
+ 	else {
+ 		debug("pinmux functionality not supported\n");
+ 		return -1;
+diff --git a/arch/arm/include/asm/arch-exynos/clk.h b/arch/arm/include/asm/arch-exynos/clk.h
+index 5529025..e015668 100644
+--- a/arch/arm/include/asm/arch-exynos/clk.h
++++ b/arch/arm/include/asm/arch-exynos/clk.h
+@@ -33,6 +33,7 @@ unsigned long get_pll_clk(int pllreg);
+ unsigned long get_arm_clk(void);
+ unsigned long get_i2c_clk(void);
+ unsigned long get_pwm_clk(void);
++unsigned long get_mmc_clk(int dev_index);
+ unsigned long get_uart_clk(int dev_index);
+ void set_mmc_clk(int dev_index, unsigned int div);
+ unsigned long get_lcd_clk(void);
+diff --git a/arch/arm/include/asm/arch-exynos/dwmmc.h b/arch/arm/include/asm/arch-exynos/dwmmc.h
+new file mode 100644
+index 0000000..8acdf9b
+--- /dev/null
++++ b/arch/arm/include/asm/arch-exynos/dwmmc.h
+@@ -0,0 +1,36 @@
++/*
++ * (C) Copyright 2012 SAMSUNG Electronics
++ * Jaehoon Chung <jh80.chung@samsung.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ */
++
++#define DWMCI_CLKSEL		0x09C
++#define DWMCI_SHIFT_0		0x0
++#define DWMCI_SHIFT_1		0x1
++#define DWMCI_SHIFT_2		0x2
++#define DWMCI_SHIFT_3		0x3
++#define DWMCI_SET_SAMPLE_CLK(x)	(x)
++#define DWMCI_SET_DRV_CLK(x)	((x) << 16)
++#define DWMCI_SET_DIV_RATIO(x)	((x) << 24)
++
++int exynos_dwmci_init(u32 regbase, int bus_width, int index);
++
++static inline unsigned int exynos_dwmmc_init(int index, int bus_width)
++{
++	unsigned int base = samsung_get_base_mmc() + (0x10000 * index);
++	return exynos_dwmci_init(base, bus_width, index);
++}
+diff --git a/arch/arm/include/asm/arch-exynos/ehci.h b/arch/arm/include/asm/arch-exynos/ehci.h
+index 8aeff8a..663d319 100644
+--- a/arch/arm/include/asm/arch-exynos/ehci.h
++++ b/arch/arm/include/asm/arch-exynos/ehci.h
+@@ -37,6 +37,25 @@
+ 
+ #define HOST_CTRL0_FSEL_MASK			(7 << 16)
+ 
++#define HSIC_CTRL_REFCLKSEL                     (0x2)
++#define HSIC_CTRL_REFCLKSEL_MASK                (0x3)
++#define HSIC_CTRL_REFCLKSEL_SHIFT               (23)
++
++#define HSIC_CTRL_REFCLKDIV_12                  (0x24)
++#define HSIC_CTRL_REFCLKDIV_15                  (0x1C)
++#define HSIC_CTRL_REFCLKDIV_16                  (0x1A)
++#define HSIC_CTRL_REFCLKDIV_19_2                (0x15)
++#define HSIC_CTRL_REFCLKDIV_20                  (0x14)
++#define HSIC_CTRL_REFCLKDIV_MASK                (0x7f)
++#define HSIC_CTRL_REFCLKDIV_SHIFT               (16)
++
++#define HSIC_CTRL_SIDDQ                         (0x1 << 6)
++#define HSIC_CTRL_FORCESLEEP                    (0x1 << 5)
++#define HSIC_CTRL_FORCESUSPEND                  (0x1 << 4)
++#define HSIC_CTRL_WORDINTERFACE                 (0x1 << 3)
++#define HSIC_CTRL_UTMISWRST                     (0x1 << 2)
++#define HSIC_CTRL_PHYSWRST                      (0x1 << 0)
++
+ #define EHCICTRL_ENAINCRXALIGN			(1 << 29)
+ #define EHCICTRL_ENAINCR4			(1 << 28)
+ #define EHCICTRL_ENAINCR8			(1 << 27)
+diff --git a/arch/arm/include/asm/arch-exynos/gpio.h b/arch/arm/include/asm/arch-exynos/gpio.h
+index 97be4ea..4db8fd6 100644
+--- a/arch/arm/include/asm/arch-exynos/gpio.h
++++ b/arch/arm/include/asm/arch-exynos/gpio.h
+@@ -207,6 +207,25 @@ static inline unsigned int s5p_gpio_base(int nr)
+ 	return 0;
+ }
+ 
++static inline unsigned int s5p_gpio_part_max(int nr)
++{
++	if (cpu_is_exynos5()) {
++		if (nr < EXYNOS5_GPIO_PART1_MAX)
++			return 0;
++		else if (nr < EXYNOS5_GPIO_PART2_MAX)
++			return EXYNOS5_GPIO_PART1_MAX;
++		else
++			return EXYNOS5_GPIO_PART2_MAX;
++
++	} else if (cpu_is_exynos4()) {
++		if (nr < EXYNOS4_GPIO_PART1_MAX)
++			return 0;
++		else
++			return EXYNOS4_GPIO_PART1_MAX;
++	}
++
++	return 0;
++}
+ #endif
+ 
+ /* Pin configurations */
+diff --git a/arch/arm/include/asm/arch-exynos/periph.h b/arch/arm/include/asm/arch-exynos/periph.h
+index b861d7d..082611c 100644
+--- a/arch/arm/include/asm/arch-exynos/periph.h
++++ b/arch/arm/include/asm/arch-exynos/periph.h
+@@ -42,6 +42,7 @@ enum periph_id {
+ 	PERIPH_ID_SDMMC1,
+ 	PERIPH_ID_SDMMC2,
+ 	PERIPH_ID_SDMMC3,
++	PERIPH_ID_SDMMC4,
+ 	PERIPH_ID_SROMC,
+ 	PERIPH_ID_UART0,
+ 	PERIPH_ID_UART1,
+diff --git a/arch/arm/include/asm/arch-s5pc1xx/gpio.h b/arch/arm/include/asm/arch-s5pc1xx/gpio.h
+index 76b901b..00e498d 100644
+--- a/arch/arm/include/asm/arch-s5pc1xx/gpio.h
++++ b/arch/arm/include/asm/arch-s5pc1xx/gpio.h
+@@ -143,7 +143,12 @@ static inline unsigned int s5p_gpio_base(int nr)
+ 	return S5PC110_GPIO_BASE;
+ }
+ 
+-#define s5pc110_gpio_get_nr(bank, pin) \
++static inline unsigned int s5p_gpio_part_max(int nr)
++{
++	return 0;
++}
++
++#define s5pc110_gpio_get_nr(bank, pin)	  \
+ 	((((((unsigned int)&(((struct s5pc110_gpio *)S5PC110_GPIO_BASE)->bank))\
+ 	    - S5PC110_GPIO_BASE) / sizeof(struct s5p_gpio_bank)) \
+ 	  * GPIO_PER_BANK) + pin)
+diff --git a/board/samsung/smdk5250/lowlevel_init.S b/board/samsung/smdk5250/lowlevel_init.S
+index bc6cb6f..69947a7 100644
+--- a/board/samsung/smdk5250/lowlevel_init.S
++++ b/board/samsung/smdk5250/lowlevel_init.S
+@@ -55,6 +55,11 @@ lowlevel_init:
+ 	cmp	r1, r2
+ 	beq	wakeup_reset
+ 
++	/*PS-Hold High*/
++	ldr r0, =0x1004330c
++	ldr r1, [r0]
++	orr r1, r1, #0x100
++	str r1, [r0]
+ 	/*
+ 	 * If U-boot is already running in RAM, no need to relocate U-Boot.
+ 	 * Memory controller must be configured before relocating U-Boot
+diff --git a/board/samsung/smdk5250/smdk5250.c b/board/samsung/smdk5250/smdk5250.c
+index a5816e4..81945f0 100644
+--- a/board/samsung/smdk5250/smdk5250.c
++++ b/board/samsung/smdk5250/smdk5250.c
+@@ -26,7 +26,7 @@
+ #include <netdev.h>
+ #include <asm/arch/cpu.h>
+ #include <asm/arch/gpio.h>
+-#include <asm/arch/mmc.h>
++#include <asm/arch/dwmmc.h>
+ #include <asm/arch/pinmux.h>
+ #include <asm/arch/sromc.h>
+ 
+@@ -120,7 +120,7 @@ int board_eth_init(bd_t *bis)
+ #ifdef CONFIG_DISPLAY_BOARDINFO
+ int checkboard(void)
+ {
+-	printf("\nBoard: SMDK5250\n");
++	printf("\nBoard: %s\n",CONFIG_IDENT_STRING);
+ 
+ 	return 0;
+ }
+@@ -131,13 +131,22 @@ int board_mmc_init(bd_t *bis)
+ {
+ 	int err;
+ 
+-	err = exynos_pinmux_config(PERIPH_ID_SDMMC0, PINMUX_FLAG_8BIT_MODE);
++	err = exynos_pinmux_config(PERIPH_ID_SDMMC2, PINMUX_FLAG_NONE);
+ 	if (err) {
+-		debug("SDMMC0 not configured\n");
++		debug("SDMMC2 not configured\n");
+ 		return err;
+ 	}
+ 
+-	err = s5p_mmc_init(0, 8);
++	err = exynos_dwmmc_init(2, 4);
++
++        err = exynos_pinmux_config(PERIPH_ID_SDMMC0, PINMUX_FLAG_8BIT_MODE);
++        if (err) {
++                debug("SDMMC0 not configured\n");
++                return err;
++        }
++
++        err = exynos_dwmmc_init(0, 8);
++
+ 	return err;
+ }
+ #endif
+diff --git a/board/samsung/smdk5250/smdk5250_spl.c b/board/samsung/smdk5250/smdk5250_spl.c
+index 1d453ca..1f0ce72 100644
+--- a/board/samsung/smdk5250/smdk5250_spl.c
++++ b/board/samsung/smdk5250/smdk5250_spl.c
+@@ -49,8 +49,8 @@ static struct spl_machine_param machine_param
+ 	.uboot_size	= 0x100000,
+ 
+ 	.boot_source	= BOOT_MODE_OM,
+-	.frequency_mhz	= 800,
+-	.arm_freq_mhz	= 1700,
++	.frequency_mhz	= CONFIG_BUS_CLK_FREQ,
++	.arm_freq_mhz	= CONFIG_ARM_CLK_FREQ,
+ 	.serial_base	= 0x12c30000,
+ 	.i2c_base	= 0x12c60000,
+ 	.mem_manuf	= MEM_MANUF_SAMSUNG,
+diff --git a/board/samsung/trats/trats.c b/board/samsung/trats/trats.c
+index e11a892..d5c681c 100644
+--- a/board/samsung/trats/trats.c
++++ b/board/samsung/trats/trats.c
+@@ -29,6 +29,7 @@
+ #include <asm/arch/cpu.h>
+ #include <asm/arch/gpio.h>
+ #include <asm/arch/mmc.h>
++#include <asm/arch/pinmux.h>
+ #include <asm/arch/clock.h>
+ #include <asm/arch/clk.h>
+ #include <asm/arch/mipi_dsim.h>
+@@ -93,7 +94,9 @@ void i2c_init_board(void)
+ int dram_init(void)
+ {
+ 	gd->ram_size = get_ram_size((long *)PHYS_SDRAM_1, PHYS_SDRAM_1_SIZE) +
+-		get_ram_size((long *)PHYS_SDRAM_2, PHYS_SDRAM_2_SIZE);
++		get_ram_size((long *)PHYS_SDRAM_2, PHYS_SDRAM_2_SIZE) +
++		get_ram_size((long *)PHYS_SDRAM_3, PHYS_SDRAM_3_SIZE) +
++		get_ram_size((long *)PHYS_SDRAM_4, PHYS_SDRAM_4_SIZE);
+ 
+ 	return 0;
+ }
+@@ -104,6 +107,10 @@ void dram_init_banksize(void)
+ 	gd->bd->bi_dram[0].size = PHYS_SDRAM_1_SIZE;
+ 	gd->bd->bi_dram[1].start = PHYS_SDRAM_2;
+ 	gd->bd->bi_dram[1].size = PHYS_SDRAM_2_SIZE;
++	gd->bd->bi_dram[2].start = PHYS_SDRAM_3;
++	gd->bd->bi_dram[2].size = PHYS_SDRAM_3_SIZE;
++	gd->bd->bi_dram[3].start = PHYS_SDRAM_4;
++	gd->bd->bi_dram[3].size = PHYS_SDRAM_4_SIZE;
+ }
+ 
+ static unsigned int get_hw_revision(void)
+@@ -151,54 +158,22 @@ int board_mmc_init(bd_t *bis)
+ {
+ 	struct exynos4_gpio_part2 *gpio =
+ 		(struct exynos4_gpio_part2 *)samsung_get_base_gpio_part2();
+-	int i, err;
++	int err;
+ 
+ 	/* eMMC_EN: SD_0_CDn: GPK0[2] Output High */
+ 	s5p_gpio_direction_output(&gpio->k0, 2, 1);
+ 	s5p_gpio_set_pull(&gpio->k0, 2, GPIO_PULL_NONE);
+ 
+ 	/*
+-	 * eMMC GPIO:
+-	 * SDR 8-bit@48MHz at MMC0
+-	 * GPK0[0]	SD_0_CLK(2)
+-	 * GPK0[1]	SD_0_CMD(2)
+-	 * GPK0[2]	SD_0_CDn	-> Not used
+-	 * GPK0[3:6]	SD_0_DATA[0:3](2)
+-	 * GPK1[3:6]	SD_0_DATA[0:3](3)
+-	 *
+-	 * DDR 4-bit@26MHz at MMC4
+-	 * GPK0[0]	SD_4_CLK(3)
+-	 * GPK0[1]	SD_4_CMD(3)
+-	 * GPK0[2]	SD_4_CDn	-> Not used
+-	 * GPK0[3:6]	SD_4_DATA[0:3](3)
+-	 * GPK1[3:6]	SD_4_DATA[4:7](4)
+-	 */
+-	for (i = 0; i < 7; i++) {
+-		if (i == 2)
+-			continue;
+-		/* GPK0[0:6] special function 2 */
+-		s5p_gpio_cfg_pin(&gpio->k0, i, 0x2);
+-		/* GPK0[0:6] pull disable */
+-		s5p_gpio_set_pull(&gpio->k0, i, GPIO_PULL_NONE);
+-		/* GPK0[0:6] drv 4x */
+-		s5p_gpio_set_drv(&gpio->k0, i, GPIO_DRV_4X);
+-	}
+-
+-	for (i = 3; i < 7; i++) {
+-		/* GPK1[3:6] special function 3 */
+-		s5p_gpio_cfg_pin(&gpio->k1, i, 0x3);
+-		/* GPK1[3:6] pull disable */
+-		s5p_gpio_set_pull(&gpio->k1, i, GPIO_PULL_NONE);
+-		/* GPK1[3:6] drv 4x */
+-		s5p_gpio_set_drv(&gpio->k1, i, GPIO_DRV_4X);
+-	}
+-
+-	/*
+ 	 * MMC device init
+ 	 * mmc0	 : eMMC (8-bit buswidth)
+ 	 * mmc2	 : SD card (4-bit buswidth)
+ 	 */
+-	err = s5p_mmc_init(0, 8);
++	err = exynos_pinmux_config(PERIPH_ID_SDMMC0, PINMUX_FLAG_8BIT_MODE);
++	if (err)
++		debug("SDMMC0 not configured\n");
++	else
++		err = s5p_mmc_init(0, 8);
+ 
+ 	/* T-flash detect */
+ 	s5p_gpio_cfg_pin(&gpio->x3, 4, 0xf);
+@@ -209,24 +184,11 @@ int board_mmc_init(bd_t *bis)
+ 	 * GPX3[4] T-flash detect pin
+ 	 */
+ 	if (!s5p_gpio_get_value(&gpio->x3, 4)) {
+-		/*
+-		 * SD card GPIO:
+-		 * GPK2[0]	SD_2_CLK(2)
+-		 * GPK2[1]	SD_2_CMD(2)
+-		 * GPK2[2]	SD_2_CDn	-> Not used
+-		 * GPK2[3:6]	SD_2_DATA[0:3](2)
+-		 */
+-		for (i = 0; i < 7; i++) {
+-			if (i == 2)
+-				continue;
+-			/* GPK2[0:6] special function 2 */
+-			s5p_gpio_cfg_pin(&gpio->k2, i, 0x2);
+-			/* GPK2[0:6] pull disable */
+-			s5p_gpio_set_pull(&gpio->k2, i, GPIO_PULL_NONE);
+-			/* GPK2[0:6] drv 4x */
+-			s5p_gpio_set_drv(&gpio->k2, i, GPIO_DRV_4X);
+-		}
+-		err = s5p_mmc_init(2, 4);
++		err = exynos_pinmux_config(PERIPH_ID_SDMMC2, PINMUX_FLAG_NONE);
++		if (err)
++			debug("SDMMC2 not configured\n");
++		else
++			err = s5p_mmc_init(2, 4);
+ 	}
+ 
+ 	return err;
+@@ -359,6 +321,10 @@ static void board_power_init(void)
+ 	writel(0, (unsigned int)&pwr->lcd1_configuration);
+ 	writel(0, (unsigned int)&pwr->gps_configuration);
+ 	writel(0, (unsigned int)&pwr->gps_alive_configuration);
++
++	/* It is necessary to power down core 1 */
++	/* to successfully boot CPU1 in kernel */
++	writel(0, (unsigned int)&pwr->arm_core1_configuration);
+ }
+ 
+ static void board_uart_init(void)
+diff --git a/board/samsung/universal_c210/Makefile b/board/samsung/universal_c210/Makefile
+index bfec08f..587cc1b 100644
+--- a/board/samsung/universal_c210/Makefile
++++ b/board/samsung/universal_c210/Makefile
+@@ -26,7 +26,6 @@ include $(TOPDIR)/config.mk
+ LIB	= $(obj)lib$(BOARD).o
+ 
+ COBJS-y	:= universal.o onenand.o
+-SOBJS	:= lowlevel_init.o
+ 
+ SRCS    := $(SOBJS:.o=.S) $(COBJS-y:.o=.c)
+ OBJS	:= $(addprefix $(obj),$(COBJS-y))
+diff --git a/board/samsung/universal_c210/lowlevel_init.S b/board/samsung/universal_c210/lowlevel_init.S
+deleted file mode 100644
+index dc7f69e..0000000
+--- a/board/samsung/universal_c210/lowlevel_init.S
++++ /dev/null
+@@ -1,395 +0,0 @@
+-/*
+- * Lowlevel setup for universal board based on EXYNOS4210
+- *
+- * Copyright (C) 2010 Samsung Electronics
+- * Kyungmin Park <kyungmin.park@samsung.com>
+- *
+- * See file CREDITS for list of people who contributed to this
+- * project.
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License as
+- * published by the Free Software Foundation; either version 2 of
+- * the License, or (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+- * MA 02111-1307 USA
+- */
+-
+-#include <config.h>
+-#include <version.h>
+-#include <asm/arch/cpu.h>
+-#include <asm/arch/clock.h>
+-
+-/*
+- * Register usages:
+- *
+- * r5 has zero always
+- * r7 has GPIO part1 base 0x11400000
+- * r6 has GPIO part2 base 0x11000000
+- */
+-
+-	.globl lowlevel_init
+-lowlevel_init:
+-	mov	r11, lr
+-
+-	/* r5 has always zero */
+-	mov	r5, #0
+-
+-	ldr	r7, =EXYNOS4_GPIO_PART1_BASE
+-	ldr	r6, =EXYNOS4_GPIO_PART2_BASE
+-
+-	/* System Timer */
+-	ldr	r0, =EXYNOS4_SYSTIMER_BASE
+-	ldr	r1, =0x5000
+-	str	r1, [r0, #0x0]
+-	ldr	r1, =0xffffffff
+-	str	r1, [r0, #0x8]
+-	ldr	r1, =0x49
+-	str	r1, [r0, #0x4]
+-
+-	/* PMIC manual reset */
+-	/* nPOWER: XEINT_23: GPX2[7] */
+-	add	r0, r6, #0xC40			@ EXYNOS4_GPIO_X2_OFFSET
+-	ldr	r1, [r0, #0x0]
+-	bic	r1, r1, #(0xf << 28)		@ 28 = 7 * 4-bit
+-	orr	r1, r1, #(0x1 << 28)		@ Output
+-	str	r1, [r0, #0x0]
+-
+-	ldr	r1, [r0, #0x4]
+-	orr	r1, r1, #(1 << 7)		@ 7 = 7 * 1-bit
+-	str	r1, [r0, #0x4]
+-
+-	/* init system clock */
+-	bl	system_clock_init
+-
+-	/* Disable Watchdog */
+-	ldr	r0, =EXYNOS4_WATCHDOG_BASE		@0x10060000
+-	str	r5, [r0]
+-
+-	/* UART */
+-	bl	uart_asm_init
+-
+-	/* PMU init */
+-	bl	system_power_init
+-
+-	bl	tzpc_init
+-
+-	mov	lr, r11
+-	mov	pc, lr
+-	nop
+-	nop
+-	nop
+-
+-/*
+- * uart_asm_init: Initialize UART's pins
+- */
+-uart_asm_init:
+-	/*
+-	 * setup UART0-UART4 GPIOs (part1)
+-	 * GPA1CON[3] = I2C_3_SCL (3)
+-	 * GPA1CON[2] = I2C_3_SDA (3)
+-	 */
+-	mov	r0, r7
+-	ldr	r1, =0x22222222
+-	str	r1, [r0, #0x00]			@ EXYNOS4_GPIO_A0_OFFSET
+-	ldr	r1, =0x00223322
+-	str	r1, [r0, #0x20]			@ EXYNOS4_GPIO_A1_OFFSET
+-
+-	/* UART_SEL GPY4[7] (part2) at EXYNOS4 */
+-	add	r0, r6, #0x1A0			@ EXYNOS4_GPIO_Y4_OFFSET
+-	ldr	r1, [r0, #0x0]
+-	bic	r1, r1, #(0xf << 28)		@ 28 = 7 * 4-bit
+-	orr	r1, r1, #(0x1 << 28)
+-	str	r1, [r0, #0x0]
+-
+-	ldr	r1, [r0, #0x8]
+-	bic	r1, r1, #(0x3 << 14)		@ 14 = 7 * 2-bit
+-	orr	r1, r1, #(0x3 << 14)		@ Pull-up enabled
+-	str	r1, [r0, #0x8]
+-
+-	ldr	r1, [r0, #0x4]
+-	orr	r1, r1, #(1 << 7)		@ 7 = 7 * 1-bit
+-	str	r1, [r0, #0x4]
+-
+-	mov	pc, lr
+-	nop
+-	nop
+-	nop
+-
+-system_clock_init:
+-	ldr	r0, =EXYNOS4_CLOCK_BASE
+-
+-	/* APLL(1), MPLL(1), CORE(0), HPM(0) */
+-	ldr	r1, =0x0101
+-	ldr	r2, =0x14200			@ CLK_SRC_CPU
+-	str	r1, [r0, r2]
+-
+-	/* wait ?us */
+-	mov	r1, #0x10000
+-1:	subs	r1, r1, #1
+-	bne	1b
+-
+-	/*
+-	 * CLK_SRC_TOP0
+-	 * MUX_ONENAND_SEL[28]	0: DOUT133, 1: DOUT166
+-	 * MUX_VPLL_SEL[8]	0: FINPLL,  1: FOUTVPLL
+-	 * MUX_EPLL_SEL[4]	0: FINPLL,  1: FOUTEPLL
+-	 */
+-	ldr	r1, =0x10000110
+-	ldr	r2, =0x0C210			@ CLK_SRC_TOP
+-	str	r1, [r0, r2]
+-
+-	/* SATA: SCLKMPLL(0), MMC[0:4]: SCLKMPLL(6) */
+-	ldr	r1, =0x0066666
+-	ldr	r2, =0x0C240			@ CLK_SRC_FSYS
+-	str	r1, [r0, r2]
+-	/* UART[0:5], PWM: SCLKMPLL(6) */
+-	ldr	r1, =0x6666666
+-	ldr	r2, =0x0C250			@ CLK_SRC_PERIL0_OFFSET
+-	str	r1, [r0, r2]
+-
+-	/* CPU0: CORE, COREM0, COREM1, PERI, ATB, PCLK_DBG, APLL */
+-	ldr	r1, =0x0133730
+-	ldr	r2, =0x14500			@ CLK_DIV_CPU0
+-	str	r1, [r0, r2]
+-	/* CPU1: COPY, HPM */
+-	ldr	r1, =0x03
+-	ldr	r2, =0x14504			@ CLK_DIV_CPU1
+-	str	r1, [r0, r2]
+-	/* DMC0: ACP, ACP_PCLK, DPHY, DMC, DMCD, DMCP, COPY2 CORE_TIMER */
+-	ldr	r1, =0x13111113
+-	ldr	r2, =0x10500			@ CLK_DIV_DMC0
+-	str	r1, [r0, r2]
+-	/* DMC1: PWI, DVSEM, DPM */
+-	ldr	r1, =0x01010100
+-	ldr	r2, =0x10504			@ CLK_DIV_DMC1
+-	str	r1, [r0, r2]
+-	/* LEFTBUS: GDL, GPL */
+-	ldr	r1, =0x13
+-	ldr	r2, =0x04500			@ CLK_DIV_LEFTBUS
+-	str	r1, [r0, r2]
+-	/* RIGHHTBUS: GDR, GPR */
+-	ldr	r1, =0x13
+-	ldr	r2, =0x08500			@ CLK_DIV_RIGHTBUS
+-	str	r1, [r0, r2]
+-	/*
+-	 * CLK_DIV_TOP
+-	 * ONENAND_RATIOD[18:16]: 0 SCLK_ONENAND = MOUTONENAND / (n + 1)
+-	 * ACLK_200, ACLK_100, ACLK_160, ACLK_133,
+-	 */
+-	ldr	r1, =0x00005473
+-	ldr	r2, =0x0C510			@ CLK_DIV_TOP
+-	str	r1, [r0, r2]
+-	/* MMC[0:1] */
+-	ldr	r1, =0x000f000f			/* 800(MPLL) / (15 + 1) */
+-	ldr	r2, =0x0C544			@ CLK_DIV_FSYS1
+-	str	r1, [r0, r2]
+-	/* MMC[2:3] */
+-	ldr	r1, =0x000f000f			/* 800(MPLL) / (15 + 1) */
+-	ldr	r2, =0x0C548			@ CLK_DIV_FSYS2
+-	str	r1, [r0, r2]
+-	/* MMC4 */
+-	ldr	r1, =0x000f			/* 800(MPLL) / (15 + 1) */
+-	ldr	r2, =0x0C54C			@ CLK_DIV_FSYS3
+-	str	r1, [r0, r2]
+-	/* UART[0:5] */
+-	ldr	r1, =0x774777
+-	ldr	r2, =0x0C550			@ CLK_DIV_PERIL0
+-	str	r1, [r0, r2]
+-	/* SLIMBUS: ???, PWM */
+-	ldr	r1, =0x8
+-	ldr	r2, =0x0C55C			@ CLK_DIV_PERIL3
+-	str	r1, [r0, r2]
+-
+-	/* PLL Setting */
+-	ldr	r1, =0x1C20
+-	ldr	r2, =0x14000			@ APLL_LOCK
+-	str	r1, [r0, r2]
+-	ldr	r2, =0x14008			@ MPLL_LOCK
+-	str	r1, [r0, r2]
+-	ldr	r2, =0x0C010			@ EPLL_LOCK
+-	str	r1, [r0, r2]
+-	ldr	r2, =0x0C020			@ VPLL_LOCK
+-	str	r1, [r0, r2]
+-
+-	/* APLL */
+-	ldr	r1, =0x8000001c
+-	ldr	r2, =0x14104			@ APLL_CON1
+-	str	r1, [r0, r2]
+-	ldr	r1, =0x80c80601			@ 800MHz
+-	ldr	r2, =0x14100			@ APLL_CON0
+-	str	r1, [r0, r2]
+-	/* MPLL */
+-	ldr	r1, =0x8000001C
+-	ldr	r2, =0x1410C			@ MPLL_CON1
+-	str	r1, [r0, r2]
+-	ldr	r1, =0x80c80601			@ 800MHz
+-	ldr	r2, =0x14108			@ MPLL_CON0
+-	str	r1, [r0, r2]
+-	/* EPLL */
+-	ldr	r1, =0x0
+-	ldr	r2, =0x0C114			@ EPLL_CON1
+-	str	r1, [r0, r2]
+-	ldr	r1, =0x80300302			@ 96MHz
+-	ldr	r2, =0x0C110			@ EPLL_CON0
+-	str	r1, [r0, r2]
+-	/* VPLL */
+-	ldr	r1, =0x11000400
+-	ldr	r2, =0x0C124			@ VPLL_CON1
+-	str	r1, [r0, r2]
+-	ldr	r1, =0x80350302			@ 108MHz
+-	ldr	r2, =0x0C120			@ VPLL_CON0
+-	str	r1, [r0, r2]
+-
+-	/*
+-	 * SMMUJPEG[11], JPEG[6], CSIS1[5]		: 0111 1001
+-	 * Turn off all
+-	 */
+-	ldr	r1, =0xFFF80000
+-	ldr	r2, =0x0C920			@ CLK_GATE_IP_CAM
+-	str	r1, [r0, r2]
+-
+-	/* Turn off all */
+-	ldr	r1, =0xFFFFFFC0
+-	ldr	r2, =0x0C924			@ CLK_GATE_IP_VP
+-	str	r1, [r0, r2]
+-
+-	/* Turn off all */
+-	ldr	r1, =0xFFFFFFE0
+-	ldr	r2, =0x0C928			@ CLK_GATE_IP_MFC
+-	str	r1, [r0, r2]
+-
+-	/* Turn off all */
+-	ldr	r1, =0xFFFFFFFC
+-	ldr	r2, =0x0C92C			@ CLK_GATE_IP_G3D
+-	str	r1, [r0, r2]
+-
+-	/* Turn off all */
+-	ldr	r1, =0xFFFFFC00
+-	ldr	r2, =0x0C930			@ CLK_GATE_IP_IMAGE
+-	str	r1, [r0, r2]
+-
+-	/* DSIM0[3], MDNIE0[2], MIE0[1]			: 0001 */
+-	ldr	r1, =0xFFFFFFF1
+-	ldr	r2, =0x0C934			@ CLK_GATE_IP_LCD0
+-	str	r1, [r0, r2]
+-
+-	/* Turn off all */
+-	ldr	r1, =0xFFFFFFC0
+-	ldr	r2, =0x0C938			@ CLK_GATE_IP_LCD1
+-	str	r1, [r0, r2]
+-
+-	/*
+-	 * SMMUPCIE[18], NFCON[16]			: 1111 1010
+-	 * PCIE[14],  SATA[10], SDMMC43[9:8]		: 1011 1000
+-	 * SDMMC1[6], TSI[4], SATAPHY[3], PCIEPHY[2]	: 1010 0011
+-	 */
+-	ldr	r1, =0xFFFAB8A3
+-	ldr	r2, =0x0C940			@ CLK_GATE_IP_FSYS
+-	str	r1, [r0, r2]
+-
+-	/* Turn off all */
+-	ldr	r1, =0xFFFFFFFC
+-	ldr	r2, =0x0C94C			@ CLK_GATE_IP_GPS
+-	str	r1, [r0, r2]
+-
+-	/*
+-	 * AC97[27], SPDIF[26], SLIMBUS[25]		: 1111 0001
+-	 * I2C2[8]					: 1111 1110
+-	 */
+-	ldr	r1, =0xF1FFFEFF
+-	ldr	r2, =0x0C950			@ CLK_GATE_IP_PERIL
+-	str	r1, [r0, r2]
+-
+-	/*
+-	 * KEYIF[16]					: 1111 1110
+-	 */
+-	ldr	r1, =0xFFFEFFFF
+-	ldr	r2, =0x0C960			@ CLK_GATE_IP_PERIR
+-	str	r1, [r0, r2]
+-
+-	/* LCD1[5], G3D[3], MFC[2], TV[1]		: 1101 0001 */
+-	ldr	r1, =0xFFFFFFD1
+-	ldr	r2, =0x0C970			@ CLK_GATE_BLOCK
+-	str	r1, [r0, r2]
+-	mov	pc, lr
+-	nop
+-	nop
+-	nop
+-
+-system_power_init:
+-	ldr	r0, =EXYNOS4_POWER_BASE		@ 0x10020000
+-
+-	ldr	r2, =0x330C			@ PS_HOLD_CONTROL
+-	ldr	r1, [r0, r2]
+-	orr	r1, r1, #(0x3 << 8)		@ Data High, Output En
+-	str	r1, [r0, r2]
+-
+-	/* Power Down */
+-	add	r2, r0, #0x3000
+-	str	r5, [r2, #0xC20]		@ TV_CONFIGURATION
+-	str	r5, [r2, #0xC40]		@ MFC_CONFIGURATION
+-	str	r5, [r2, #0xC60]		@ G3D_CONFIGURATION
+-	str	r5, [r2, #0xCA0]		@ LCD1_CONFIGURATION
+-	str	r5, [r2, #0xCE0]		@ GPS_CONFIGURATION
+-
+-	mov	pc, lr
+-	nop
+-	nop
+-	nop
+-
+-tzpc_init:
+-	ldr	r0, =0x10110000
+-	mov	r1, #0x0
+-	str	r1, [r0]
+-	mov	r1, #0xff
+-	str	r1, [r0, #0x0804]
+-	str	r1, [r0, #0x0810]
+-	str	r1, [r0, #0x081C]
+-	str	r1, [r0, #0x0828]
+-
+-	ldr	r0, =0x10120000
+-	mov	r1, #0x0
+-	str	r1, [r0]
+-	mov	r1, #0xff
+-	str	r1, [r0, #0x0804]
+-	str	r1, [r0, #0x0810]
+-	str	r1, [r0, #0x081C]
+-	str	r1, [r0, #0x0828]
+-
+-	ldr	r0, =0x10130000
+-	mov	r1, #0x0
+-	str	r1, [r0]
+-	mov	r1, #0xff
+-	str	r1, [r0, #0x0804]
+-	str	r1, [r0, #0x0810]
+-	str	r1, [r0, #0x081C]
+-	str	r1, [r0, #0x0828]
+-
+-	ldr	r0, =0x10140000
+-	mov	r1, #0x0
+-	str	r1, [r0]
+-	mov	r1, #0xff
+-	str	r1, [r0, #0x0804]
+-	str	r1, [r0, #0x0810]
+-	str	r1, [r0, #0x081C]
+-	str	r1, [r0, #0x0828]
+-
+-	ldr	r0, =0x10150000
+-	mov	r1, #0x0
+-	str	r1, [r0]
+-	mov	r1, #0xff
+-	str	r1, [r0, #0x0804]
+-	str	r1, [r0, #0x0810]
+-	str	r1, [r0, #0x081C]
+-	str	r1, [r0, #0x0828]
+-
+-	mov	pc, lr
+diff --git a/board/samsung/universal_c210/universal.c b/board/samsung/universal_c210/universal.c
+index 90fff5c..ded97ca 100644
+--- a/board/samsung/universal_c210/universal.c
++++ b/board/samsung/universal_c210/universal.c
+@@ -27,10 +27,12 @@
+ #include <asm/arch/adc.h>
+ #include <asm/arch/gpio.h>
+ #include <asm/arch/mmc.h>
++#include <asm/arch/pinmux.h>
+ #include <pmic.h>
+ #include <usb/s3c_udc.h>
+ #include <asm/arch/cpu.h>
+ #include <max8998_pmic.h>
++#include <asm/arch/watchdog.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+@@ -177,7 +179,7 @@ int checkboard(void)
+ #ifdef CONFIG_GENERIC_MMC
+ int board_mmc_init(bd_t *bis)
+ {
+-	int i, err;
++	int err;
+ 
+ 	switch (get_hwrev()) {
+ 	case 0:
+@@ -200,75 +202,30 @@ int board_mmc_init(bd_t *bis)
+ 	}
+ 
+ 	/*
+-	 * eMMC GPIO:
+-	 * SDR 8-bit@48MHz at MMC0
+-	 * GPK0[0]	SD_0_CLK(2)
+-	 * GPK0[1]	SD_0_CMD(2)
+-	 * GPK0[2]	SD_0_CDn	-> Not used
+-	 * GPK0[3:6]	SD_0_DATA[0:3](2)
+-	 * GPK1[3:6]	SD_0_DATA[0:3](3)
+-	 *
+-	 * DDR 4-bit@26MHz at MMC4
+-	 * GPK0[0]	SD_4_CLK(3)
+-	 * GPK0[1]	SD_4_CMD(3)
+-	 * GPK0[2]	SD_4_CDn	-> Not used
+-	 * GPK0[3:6]	SD_4_DATA[0:3](3)
+-	 * GPK1[3:6]	SD_4_DATA[4:7](4)
++	 * MMC device init
++	 * mmc0	 : eMMC (8-bit buswidth)
++	 * mmc2	 : SD card (4-bit buswidth)
+ 	 */
+-	for (i = 0; i < 7; i++) {
+-		if (i == 2)
+-			continue;
+-		/* GPK0[0:6] special function 2 */
+-		s5p_gpio_cfg_pin(&gpio2->k0, i, 0x2);
+-		/* GPK0[0:6] pull disable */
+-		s5p_gpio_set_pull(&gpio2->k0, i, GPIO_PULL_NONE);
+-		/* GPK0[0:6] drv 4x */
+-		s5p_gpio_set_drv(&gpio2->k0, i, GPIO_DRV_4X);
+-	}
+-
+-	for (i = 3; i < 7; i++) {
+-		/* GPK1[3:6] special function 3 */
+-		s5p_gpio_cfg_pin(&gpio2->k1, i, 0x3);
+-		/* GPK1[3:6] pull disable */
+-		s5p_gpio_set_pull(&gpio2->k1, i, GPIO_PULL_NONE);
+-		/* GPK1[3:6] drv 4x */
+-		s5p_gpio_set_drv(&gpio2->k1, i, GPIO_DRV_4X);
+-	}
++	err = exynos_pinmux_config(PERIPH_ID_SDMMC0, PINMUX_FLAG_8BIT_MODE);
++	if (err)
++		debug("SDMMC0 not configured\n");
++	else
++		err = s5p_mmc_init(0, 8);
+ 
+ 	/* T-flash detect */
+ 	s5p_gpio_cfg_pin(&gpio2->x3, 4, 0xf);
+ 	s5p_gpio_set_pull(&gpio2->x3, 4, GPIO_PULL_UP);
+ 
+ 	/*
+-	 * MMC device init
+-	 * mmc0	 : eMMC (8-bit buswidth)
+-	 * mmc2	 : SD card (4-bit buswidth)
+-	 */
+-	err = s5p_mmc_init(0, 8);
+-
+-	/*
+ 	 * Check the T-flash  detect pin
+ 	 * GPX3[4] T-flash detect pin
+ 	 */
+ 	if (!s5p_gpio_get_value(&gpio2->x3, 4)) {
+-		/*
+-		 * SD card GPIO:
+-		 * GPK2[0]	SD_2_CLK(2)
+-		 * GPK2[1]	SD_2_CMD(2)
+-		 * GPK2[2]	SD_2_CDn	-> Not used
+-		 * GPK2[3:6]	SD_2_DATA[0:3](2)
+-		 */
+-		for (i = 0; i < 7; i++) {
+-			if (i == 2)
+-				continue;
+-			/* GPK2[0:6] special function 2 */
+-			s5p_gpio_cfg_pin(&gpio2->k2, i, 0x2);
+-			/* GPK2[0:6] pull disable */
+-			s5p_gpio_set_pull(&gpio2->k2, i, GPIO_PULL_NONE);
+-			/* GPK2[0:6] drv 4x */
+-			s5p_gpio_set_drv(&gpio2->k2, i, GPIO_DRV_4X);
+-		}
+-		err = s5p_mmc_init(2, 4);
++		err = exynos_pinmux_config(PERIPH_ID_SDMMC2, PINMUX_FLAG_NONE);
++		if (err)
++			debug("SDMMC2 not configured\n");
++		else
++			err = s5p_mmc_init(2, 4);
+ 	}
+ 
+ 	return err;
+@@ -320,3 +277,10 @@ struct s3c_plat_otg_data s5pc210_otg_data = {
+ 	.usb_flags = PHY0_SLEEP,
+ };
+ #endif
++
++int board_early_init_f(void)
++{
++	wdt_stop();
++
++	return 0;
++}
+diff --git a/boards.cfg b/boards.cfg
+index c724353..ba08d4c 100644
+--- a/boards.cfg
++++ b/boards.cfg
+@@ -271,6 +271,7 @@ smdkc100                     arm         armv7       smdkc100            samsung
+ origen			     arm	 armv7	     origen		 samsung	exynos
+ s5pc210_universal            arm         armv7       universal_c210      samsung        exynos
+ smdk5250		     arm	 armv7	     smdk5250		 samsung	exynos
++arndale5250		     arm	 armv7	     smdk5250		 samsung	exynos	arndale5250:ARNDALE5250
+ smdkv310		     arm	 armv7	     smdkv310		 samsung	exynos
+ trats                        arm         armv7       trats               samsung        exynos
+ harmony                      arm         armv7:arm720t harmony           nvidia         tegra20
+diff --git a/drivers/gpio/s5p_gpio.c b/drivers/gpio/s5p_gpio.c
+index 47f3213..656bf4a 100644
+--- a/drivers/gpio/s5p_gpio.c
++++ b/drivers/gpio/s5p_gpio.c
+@@ -144,9 +144,11 @@ void s5p_gpio_set_rate(struct s5p_gpio_bank *bank, int gpio, int mode)
+ 
+ struct s5p_gpio_bank *s5p_gpio_get_bank(unsigned gpio)
+ {
+-	int bank = gpio / GPIO_PER_BANK;
+-	bank *= sizeof(struct s5p_gpio_bank);
++	int bank;
++	unsigned g = gpio - s5p_gpio_part_max(gpio);
+ 
++	bank = g / GPIO_PER_BANK;
++	bank *= sizeof(struct s5p_gpio_bank);
+ 	return (struct s5p_gpio_bank *) (s5p_gpio_base(gpio) + bank);
+ }
+ 
+diff --git a/drivers/mmc/Makefile b/drivers/mmc/Makefile
+index 565ba6a..8af6694 100644
+--- a/drivers/mmc/Makefile
++++ b/drivers/mmc/Makefile
+@@ -47,6 +47,8 @@ COBJS-$(CONFIG_SDHCI) += sdhci.o
+ COBJS-$(CONFIG_S5P_SDHCI) += s5p_sdhci.o
+ COBJS-$(CONFIG_SH_MMCIF) += sh_mmcif.o
+ COBJS-$(CONFIG_TEGRA_MMC) += tegra_mmc.o
++COBJS-$(CONFIG_DWMMC) += dw_mmc.o
++COBJS-$(CONFIG_EXYNOS_DWMMC) += exynos_dw_mmc.o
+ 
+ COBJS	:= $(COBJS-y)
+ SRCS	:= $(COBJS:.o=.c)
+diff --git a/drivers/mmc/dw_mmc.c b/drivers/mmc/dw_mmc.c
+new file mode 100644
+index 0000000..e634e1d
+--- /dev/null
++++ b/drivers/mmc/dw_mmc.c
+@@ -0,0 +1,400 @@
++/*
++ * (C) Copyright 2012 SAMSUNG Electronics
++ * Jaehoon Chung <jh80.chung@samsung.com>
++ * Rajeshawari Shinde <rajeshwari.s@samsung.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,  MA 02111-1307 USA
++ *
++ */
++
++#include <common.h>
++#include <malloc.h>
++#include <mmc.h>
++#include <dwmmc.h>
++#include <asm/arch/clk.h>
++#include <asm-generic/errno.h>
++
++#define PAGE_SIZE 4096
++
++static int dwmci_wait_reset(struct dwmci_host *host, u32 value)
++{
++	unsigned long timeout = 1000;
++	u32 ctrl;
++
++	dwmci_writel(host, DWMCI_CTRL, value);
++
++	while (timeout--) {
++		ctrl = dwmci_readl(host, DWMCI_CTRL);
++		if (!(ctrl & DWMCI_RESET_ALL))
++			return 1;
++		if (timeout == 0)
++			break;
++	}
++	return 0;
++}
++
++static void dwmci_set_idma_desc(u8 *idmac, unsigned int des0,
++		unsigned int des1, unsigned int des2)
++{
++	struct dwmci_idmac *desc = (struct dwmci_idmac *)idmac;
++
++	desc->des0 = des0;
++	desc->des1 = des1;
++	desc->des2 = des2;
++	desc->des3 = (unsigned int)desc + sizeof(struct dwmci_idmac);
++}
++
++static void dwmci_prepare_data(struct dwmci_host *host,
++		struct mmc_data *data)
++{
++	unsigned long ctrl;
++	unsigned int i = 0, flag, cnt, blk_cnt;
++	struct dwmci_idmac *p;
++	ulong data_start, data_end, start_addr;
++	ALLOC_CACHE_ALIGN_BUFFER(struct dwmci_idmac, idmac, 65565);
++
++
++	p = idmac;
++	blk_cnt = data->blocks;
++
++	dwmci_wait_reset(host, DWMCI_CTRL_FIFO_RESET);
++
++	if (data->flags == MMC_DATA_READ)
++		start_addr = (unsigned int)data->dest;
++	else
++		start_addr = (unsigned int)data->src;
++
++	do {
++		flag = DWMCI_IDMAC_OWN | DWMCI_IDMAC_CH ;
++		flag |= (i == 0) ? DWMCI_IDMAC_FS : 0;
++		if (blk_cnt <= 8) {
++			flag |= DWMCI_IDMAC_LD;
++			cnt = data->blocksize * blk_cnt;
++		} else {
++			flag &= ~DWMCI_IDMAC_LD;
++			cnt = data->blocksize * 8;
++		}
++
++		dwmci_set_idma_desc((u8 *)p, flag, cnt,
++				start_addr + (i * PAGE_SIZE));
++
++		if (blk_cnt <= 8)
++			break;
++		blk_cnt -= 8;
++		p++;
++		i++;
++	} while(1);
++
++	data_start = (ulong)idmac;
++	data_end = (ulong)p;
++	flush_dcache_range(data_start, data_end + ARCH_DMA_MINALIGN);
++
++	dwmci_writel(host, DWMCI_DBADDR, (unsigned int)(idmac));
++
++	ctrl = dwmci_readl(host, DWMCI_CTRL);
++	ctrl |= DWMCI_IDMAC_EN | DWMCI_DMA_EN;
++	dwmci_writel(host, DWMCI_CTRL, ctrl);
++
++	ctrl = dwmci_readl(host, DWMCI_BMOD);
++	ctrl |= DWMCI_BMOD_IDMAC_FB | DWMCI_BMOD_IDMAC_EN;
++	dwmci_writel(host, DWMCI_BMOD, ctrl);
++
++	dwmci_writel(host, DWMCI_BLKSIZ, data->blocksize);
++	dwmci_writel(host, DWMCI_BYTCNT, data->blocksize * data->blocks);
++}
++
++static int dwmci_set_transfer_mode(struct dwmci_host *host,
++		struct mmc_data *data)
++{
++	unsigned long mode;
++
++	mode = DWMCI_CMD_DATA_EXP;
++	if (data->flags & MMC_DATA_WRITE)
++		mode |= DWMCI_CMD_RW;
++
++	return mode;
++}
++
++static int dwmci_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd,
++		struct mmc_data *data)
++{
++	struct dwmci_host *host = (struct dwmci_host *)mmc->priv;
++	int flags = 0, i;
++	unsigned int timeout = 100000;
++	u32 retry = 10000;
++	u32 mask, ctrl;
++
++	while (dwmci_readl(host, DWMCI_STATUS) & DWMCI_BUSY) {
++		if (timeout == 0) {
++			printf("Timeout on data busy\n");
++			return TIMEOUT;
++		}
++		timeout--;
++	}
++
++	dwmci_writel(host, DWMCI_RINTSTS, DWMCI_INTMSK_ALL);
++
++	if (data)
++		dwmci_prepare_data(host, data);
++
++
++	dwmci_writel(host, DWMCI_CMDARG, cmd->cmdarg);
++
++	if (data) {
++		flags = dwmci_set_transfer_mode(host, data);
++	}
++
++	if ((cmd->resp_type & MMC_RSP_136) && (cmd->resp_type & MMC_RSP_BUSY))
++		return -1;
++
++	if (cmd->cmdidx == MMC_CMD_STOP_TRANSMISSION)
++		flags |= DWMCI_CMD_ABORT_STOP;
++	else
++		flags |= DWMCI_CMD_PRV_DAT_WAIT;
++
++	if (cmd->resp_type & MMC_RSP_PRESENT) {
++		flags |= DWMCI_CMD_RESP_EXP;
++		if (cmd->resp_type & MMC_RSP_136)
++			flags |= DWMCI_CMD_RESP_LENGTH;
++	}
++
++	if (cmd->resp_type & MMC_RSP_CRC)
++		flags |= DWMCI_CMD_CHECK_CRC;
++
++	flags |= (cmd->cmdidx | DWMCI_CMD_START | DWMCI_CMD_USE_HOLD_REG);
++
++	debug("Sending CMD%d\n",cmd->cmdidx);
++
++	dwmci_writel(host, DWMCI_CMD, flags);
++
++	for (i = 0; i < retry; i++) {
++		mask = dwmci_readl(host, DWMCI_RINTSTS);
++		if (mask & DWMCI_INTMSK_CDONE) {
++			if (!data)
++				dwmci_writel(host, DWMCI_RINTSTS, mask);
++			break;
++		}
++	}
++
++	if (i == retry)
++		return TIMEOUT;
++
++	if (mask & DWMCI_INTMSK_RTO) {
++		debug("Response Timeout..\n");
++		return TIMEOUT;
++	} else if (mask & DWMCI_INTMSK_RE) {
++		debug("Response Error..\n");
++		return -1;
++	}
++
++
++	if (cmd->resp_type & MMC_RSP_PRESENT) {
++		if (cmd->resp_type & MMC_RSP_136) {
++			cmd->response[0] = dwmci_readl(host, DWMCI_RESP3);
++			cmd->response[1] = dwmci_readl(host, DWMCI_RESP2);
++			cmd->response[2] = dwmci_readl(host, DWMCI_RESP1);
++			cmd->response[3] = dwmci_readl(host, DWMCI_RESP0);
++		} else {
++			cmd->response[0] = dwmci_readl(host, DWMCI_RESP0);
++		}
++	}
++
++	if (data) {
++		while (1) {
++			mask = dwmci_readl(host, DWMCI_RINTSTS);
++			if (mask & (DWMCI_DATA_ERR | DWMCI_DATA_TOUT)) {
++				debug("DATA ERROR!\n");
++				return -1;
++			} else if (mask & DWMCI_INTMSK_DTO)
++				break;
++		}
++
++		dwmci_writel(host, DWMCI_RINTSTS, mask);
++
++		ctrl = dwmci_readl(host, DWMCI_CTRL);
++		ctrl &= ~(DWMCI_DMA_EN);
++		dwmci_writel(host, DWMCI_CTRL, ctrl);
++	}
++
++	udelay(100);
++
++	return 0;
++}
++
++static int dwmci_setup_bus(struct dwmci_host *host, u32 freq)
++{
++	u32 div, status;
++	int timeout = 10000;
++	unsigned long sclk;
++
++	if (freq == host->clock)
++		return 0;
++
++	/*
++	 * If host->mmc_clk didn't define,
++	 * then assume that host->bus_hz is source clock value.
++	 * host->bus_hz should be set from user.
++	 */
++	if (host->mmc_clk)
++		sclk = host->mmc_clk(host->dev_index);
++	else if (host->bus_hz)
++		sclk = host->bus_hz;
++	else {
++		printf("Didn't get source clock value..\n");
++		return -EINVAL;
++	}
++
++	for (div = 1; div < 255; div++) {
++		if ((sclk / (2 * div)) <= freq) {
++			break;
++		}
++	}
++
++	dwmci_writel(host, DWMCI_CLKENA, 0);
++	dwmci_writel(host, DWMCI_CLKSRC, 0);
++
++	dwmci_writel(host, DWMCI_CLKDIV, div);
++	dwmci_writel(host, DWMCI_CMD, DWMCI_CMD_PRV_DAT_WAIT |
++			DWMCI_CMD_UPD_CLK | DWMCI_CMD_START);
++
++	do {
++		status = dwmci_readl(host, DWMCI_CMD);
++		if (timeout == 0) {
++			printf("TIMEOUT error!!\n");
++			return -ETIMEDOUT;
++		}
++	} while ((status & DWMCI_CMD_START) && timeout--);
++
++	dwmci_writel(host, DWMCI_CLKENA, DWMCI_CLKEN_ENABLE |
++			DWMCI_CLKEN_LOW_PWR);
++
++	dwmci_writel(host, DWMCI_CMD, DWMCI_CMD_PRV_DAT_WAIT |
++			DWMCI_CMD_UPD_CLK | DWMCI_CMD_START);
++
++	timeout = 10000;
++	do {
++		status = dwmci_readl(host, DWMCI_CMD);
++		if (timeout == 0) {
++			printf("TIMEOUT error!!\n");
++			return -ETIMEDOUT;
++		}
++	} while ((status & DWMCI_CMD_START) && timeout--);
++
++	host->clock = freq;
++
++	return 0;
++}
++
++static void dwmci_set_ios(struct mmc *mmc)
++{
++	struct dwmci_host *host = (struct dwmci_host *)mmc->priv;
++	u32 ctype;
++
++	debug("Buswidth = %d, clock: %d\n",mmc->bus_width, mmc->clock);
++
++	dwmci_setup_bus(host, mmc->clock);
++	switch (mmc->bus_width) {
++	case 8:
++		ctype = DWMCI_CTYPE_8BIT;
++		break;
++	case 4:
++		ctype = DWMCI_CTYPE_4BIT;
++		break;
++	default:
++		ctype = DWMCI_CTYPE_1BIT;
++		break;
++	}
++
++	dwmci_writel(host, DWMCI_CTYPE, ctype);
++
++	if (host->clksel)
++		host->clksel(host);
++}
++
++static int dwmci_init(struct mmc *mmc)
++{
++	struct dwmci_host *host = (struct dwmci_host *)mmc->priv;
++	u32 fifo_size, fifoth_val;
++
++	dwmci_writel(host, DWMCI_PWREN, 1);
++
++	if (!dwmci_wait_reset(host, DWMCI_RESET_ALL)) {
++		debug("%s[%d] Fail-reset!!\n",__func__,__LINE__);
++		return -1;
++	}
++
++	dwmci_writel(host, DWMCI_RINTSTS, 0xFFFFFFFF);
++	dwmci_writel(host, DWMCI_INTMASK, 0);
++
++	dwmci_writel(host, DWMCI_TMOUT, 0xFFFFFFFF);
++
++	dwmci_writel(host, DWMCI_IDINTEN, 0);
++	dwmci_writel(host, DWMCI_BMOD, 1);
++
++	fifo_size = dwmci_readl(host, DWMCI_FIFOTH);
++	if (host->fifoth_val)
++		fifoth_val = host->fifoth_val;
++	else
++		fifoth_val = (0x2 << 28) | ((fifo_size/2 -1) << 16) |
++			((fifo_size/2) << 0);
++	dwmci_writel(host, DWMCI_FIFOTH, fifoth_val);
++
++	dwmci_writel(host, DWMCI_CLKENA, 0);
++	dwmci_writel(host, DWMCI_CLKSRC, 0);
++
++	return 0;
++}
++
++int add_dwmci(struct dwmci_host *host, u32 max_clk, u32 min_clk, int index)
++{
++	struct mmc *mmc;
++	int err = 0;
++
++	mmc = malloc(sizeof(struct mmc));
++	if (!mmc) {
++		printf("mmc malloc fail!\n");
++		return -1;
++	}
++
++	mmc->priv = host;
++	host->mmc = mmc;
++
++	sprintf(mmc->name, "%s", host->name);
++	mmc->send_cmd = dwmci_send_cmd;
++	mmc->set_ios = dwmci_set_ios;
++	mmc->init = dwmci_init;
++	mmc->f_min = min_clk;
++	mmc->f_max = max_clk;
++
++	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34 | MMC_VDD_165_195;
++
++	if (host->caps)
++		mmc->host_caps = host->caps;
++	else
++		mmc->host_caps = 0;
++
++	if (host->buswidth == 8) {
++		mmc->host_caps |= MMC_MODE_8BIT;
++		mmc->host_caps &= ~MMC_MODE_4BIT;
++	} else {
++		mmc->host_caps |= MMC_MODE_4BIT;
++		mmc->host_caps &= ~MMC_MODE_8BIT;
++	}
++	mmc->host_caps |= MMC_MODE_HS | MMC_MODE_HS_52MHz | MMC_MODE_HC;
++
++	err = mmc_register(mmc);
++
++	return err;
++}
+diff --git a/drivers/mmc/exynos_dw_mmc.c b/drivers/mmc/exynos_dw_mmc.c
+new file mode 100644
+index 0000000..2faab33
+--- /dev/null
++++ b/drivers/mmc/exynos_dw_mmc.c
+@@ -0,0 +1,63 @@
++/*
++ * (C) Copyright 2012 SAMSUNG Electronics
++ * Jaehoon Chung <jh80.chung@samsung.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,  MA 02111-1307 USA
++ *
++ */
++
++#include <common.h>
++#include <malloc.h>
++#include <dwmmc.h>
++#include <asm/arch/dwmmc.h>
++#include <asm/arch/clk.h>
++
++static char *EXYNOS_NAME = "EXYNOS DWMMC";
++
++static void exynos_dwmci_clksel(struct dwmci_host *host)
++{
++	u32 val;
++	val = DWMCI_SET_SAMPLE_CLK(DWMCI_SHIFT_0) |
++		DWMCI_SET_DRV_CLK(DWMCI_SHIFT_0) | DWMCI_SET_DIV_RATIO(3);
++
++	dwmci_writel(host, DWMCI_CLKSEL, val);
++}
++
++int exynos_dwmci_init(u32 regbase, int bus_width, int index)
++{
++	struct dwmci_host *host = NULL;
++	host = (struct dwmci_host *)malloc(sizeof(struct dwmci_host));
++	if (!host) {
++		printf("dwmci_host malloc fail!\n");
++		return 1;
++	}
++
++	/* MPLL = 800MHz
++	 * FSYS DIVS = 0, 2
++	 * CLK_SEL  = 4  800/2/4 = 100MHz
++	 * Set the sclk_mmc such that it generates 100Mhz output
++	 */
++	set_mmc_clk(index, 1);
++	host->name = EXYNOS_NAME;
++	host->ioaddr = (void *)regbase;
++	host->buswidth = bus_width;
++	host->clksel = exynos_dwmci_clksel;
++	host->dev_index = index;
++	host->mmc_clk = get_mmc_clk;
++
++	add_dwmci(host, 52000000, 400000, index);
++
++	return 0;
++}
+diff --git a/drivers/serial/serial_s5p.c b/drivers/serial/serial_s5p.c
+index 6819bb0..54aa60b 100644
+--- a/drivers/serial/serial_s5p.c
++++ b/drivers/serial/serial_s5p.c
+@@ -30,6 +30,10 @@
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
++#define RX_FIFO_COUNT_MASK	0xff
++#define RX_FIFO_FULL_MASK	(1 << 8)
++#define TX_FIFO_FULL_MASK	(1 << 24)
++
+ static inline struct s5p_uart *s5p_get_base_uart(int dev_index)
+ {
+ 	u32 offset = dev_index * sizeof(struct s5p_uart);
+@@ -87,8 +91,8 @@ int serial_init_dev(const int dev_index)
+ {
+ 	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+ 
+-	/* reset and enable FIFOs, set triggers to the maximum */
+-	writel(0, &uart->ufcon);
++	/* enable FIFOs */
++	writel(0x1, &uart->ufcon);
+ 	writel(0, &uart->umcon);
+ 	/* 8N1 */
+ 	writel(0x3, &uart->ulcon);
+@@ -130,7 +134,8 @@ int serial_getc_dev(const int dev_index)
+ 	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+ 
+ 	/* wait for character to arrive */
+-	while (!(readl(&uart->utrstat) & 0x1)) {
++	while (!(readl(&uart->ufstat) & (RX_FIFO_COUNT_MASK |
++					 RX_FIFO_FULL_MASK))) {
+ 		if (serial_err_check(dev_index, 0))
+ 			return 0;
+ 	}
+@@ -146,7 +151,7 @@ void serial_putc_dev(const char c, const int dev_index)
+ 	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+ 
+ 	/* wait for room in the tx FIFO */
+-	while (!(readl(&uart->utrstat) & 0x2)) {
++	while ((readl(&uart->ufstat) & TX_FIFO_FULL_MASK)) {
+ 		if (serial_err_check(dev_index, 1))
+ 			return;
+ 	}
+diff --git a/drivers/usb/host/ehci-exynos.c b/drivers/usb/host/ehci-exynos.c
+index a71b397..1717b01 100644
+--- a/drivers/usb/host/ehci-exynos.c
++++ b/drivers/usb/host/ehci-exynos.c
+@@ -26,12 +26,15 @@
+ #include <asm/arch/ehci.h>
+ #include <asm/arch/system.h>
+ #include <asm/arch/power.h>
++#include <asm/arch/gpio.h>
+ #include "ehci.h"
+ #include "ehci-core.h"
+ 
+ /* Setup the EHCI host controller. */
+ static void setup_usb_phy(struct exynos_usb_phy *usb)
+ {
++	u32 hsic_ctrl;
++
+ 	set_usbhost_mode(USB20_PHY_CFG_HOST_LINK_EN);
+ 
+ 	set_usbhost_phy_ctrl(POWER_USB_HOST_PHY_CTRL_EN);
+@@ -58,6 +61,33 @@ static void setup_usb_phy(struct exynos_usb_phy *usb)
+ 			HOST_CTRL0_UTMISWRST);
+ 	udelay(20);
+ 
++	/* HSIC phy reset */
++	clrbits_le32(&usb->hsicphyctrl1,
++			HSIC_CTRL_FORCESUSPEND |
++			HSIC_CTRL_FORCESLEEP |
++			HSIC_CTRL_SIDDQ);
++
++	clrbits_le32(&usb->hsicphyctrl2,
++			HSIC_CTRL_FORCESUSPEND |
++			HSIC_CTRL_FORCESLEEP |
++			HSIC_CTRL_SIDDQ);
++
++	hsic_ctrl = (((HSIC_CTRL_REFCLKDIV_12 & HSIC_CTRL_REFCLKDIV_MASK)
++				<< HSIC_CTRL_REFCLKDIV_SHIFT)
++			| ((HSIC_CTRL_REFCLKSEL & HSIC_CTRL_REFCLKSEL_MASK)
++				<< HSIC_CTRL_REFCLKSEL_SHIFT)
++			| HSIC_CTRL_PHYSWRST);
++
++	setbits_le32(&usb->hsicphyctrl1, hsic_ctrl);
++	setbits_le32(&usb->hsicphyctrl2, hsic_ctrl);
++
++	udelay(10);
++
++	clrbits_le32(&usb->hsicphyctrl1, HSIC_CTRL_PHYSWRST);
++	clrbits_le32(&usb->hsicphyctrl2, HSIC_CTRL_PHYSWRST);
++
++	udelay(80);
++
+ 	/* EHCI Ctrl setting */
+ 	setbits_le32(&usb->ehcictrl,
+ 			EHCICTRL_ENAINCRXALIGN |
+@@ -80,6 +110,7 @@ static void reset_usb_phy(struct exynos_usb_phy *usb)
+ 	set_usbhost_phy_ctrl(POWER_USB_HOST_PHY_CTRL_DISABLE);
+ }
+ 
++struct exynos5_gpio_part1 *gpio;
+ /*
+  * EHCI-initialization
+  * Create the appropriate control structures to manage
+@@ -88,10 +119,17 @@ static void reset_usb_phy(struct exynos_usb_phy *usb)
+ int ehci_hcd_init(void)
+ {
+ 	struct exynos_usb_phy *usb;
+-
++	gpio = (struct exynos5_gpio_part1 *) EXYNOS5_GPIO_PART1_BASE;
+ 	usb = (struct exynos_usb_phy *)samsung_get_base_usb_phy();
++
++	s5p_gpio_direction_output(&gpio->x3, 5, 0);
++	s5p_gpio_direction_output(&gpio->d1, 7, 0);
++
+ 	setup_usb_phy(usb);
+ 
++	s5p_gpio_direction_output(&gpio->x3, 5, 1);
++	s5p_gpio_direction_output(&gpio->d1, 7, 1);
++
+ 	hccr = (struct ehci_hccr *)samsung_get_base_usb_ehci();
+ 	hcor = (struct ehci_hcor *)((uint32_t) hccr
+ 				+ HC_LENGTH(ehci_readl(&hccr->cr_capbase)));
+diff --git a/include/configs/arndale5250.h b/include/configs/arndale5250.h
+new file mode 100644
+index 0000000..d131fe8
+--- /dev/null
++++ b/include/configs/arndale5250.h
+@@ -0,0 +1,224 @@
++/*
++ * Copyright (C) 2011 Samsung Electronics
++ *
++ * Configuration settings for the SAMSUNG SMDK5250 (EXYNOS5250) board.
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#ifndef __CONFIG_H
++#define __CONFIG_H
++
++/* High Level Configuration Options */
++#define CONFIG_SAMSUNG			/* in a SAMSUNG core */
++#define CONFIG_S5P			/* S5P Family */
++#define CONFIG_EXYNOS5			/* which is in a Exynos5 Family */
++#define CONFIG_SMDK5250			/* which is in a SMDK5250 */
++
++#include <asm/arch/cpu.h>		/* get chip and board defs */
++
++#define CONFIG_ARCH_CPU_INIT
++#define CONFIG_DISPLAY_CPUINFO
++#define CONFIG_DISPLAY_BOARDINFO
++
++/* Keep L2 Cache Disabled */
++#define CONFIG_SYS_DCACHE_OFF
++
++#define CONFIG_SYS_SDRAM_BASE		0x40000000
++#define CONFIG_SYS_TEXT_BASE		0x43E00000
++
++/* input clock of PLL: SMDK5250 has 24MHz input clock */
++#define CONFIG_SYS_CLK_FREQ		24000000
++#define CONFIG_ARM_CLK_FREQ		1000 /* in MHz*/
++#define CONFIG_BUS_CLK_FREQ		800 /* in MHz*/
++
++#define CONFIG_SETUP_MEMORY_TAGS
++#define CONFIG_CMDLINE_TAG
++#define CONFIG_INITRD_TAG
++#define CONFIG_CMDLINE_EDITING
++
++/* MACH_TYPE_SMDK5250 macro will be removed once added to mach-types */
++#define MACH_TYPE_SMDK5250		3774
++#define CONFIG_MACH_TYPE		MACH_TYPE_SMDK5250
++
++/* Power Down Modes */
++#define S5P_CHECK_SLEEP			0x00000BAD
++#define S5P_CHECK_DIDLE			0xBAD00000
++#define S5P_CHECK_LPA			0xABAD0000
++
++/* Offset for inform registers */
++#define INFORM0_OFFSET			0x800
++#define INFORM1_OFFSET			0x804
++
++/* Size of malloc() pool */
++#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (1 << 20))
++
++/* select serial console configuration */
++#define CONFIG_SERIAL_MULTI
++#define CONFIG_SERIAL2			/* use SERIAL 3 */
++#define CONFIG_BAUDRATE			115200
++#define EXYNOS5_DEFAULT_UART_OFFSET	0x010000
++
++#define TZPC_BASE_OFFSET		0x10000
++
++/* SD/MMC configuration */
++#define CONFIG_GENERIC_MMC
++#define CONFIG_MMC
++#define CONFIG_DWMMC
++#define CONFIG_EXYNOS_DWMMC
++
++#define CONFIG_BOARD_EARLY_INIT_F
++
++/* PWM */
++#define CONFIG_PWM
++
++/* allow to overwrite serial and ethaddr */
++#define CONFIG_ENV_OVERWRITE
++
++/* Command definition*/
++#include <config_cmd_default.h>
++
++#define CONFIG_CMD_PING
++#define CONFIG_CMD_ELF
++#define CONFIG_CMD_MMC
++#define CONFIG_CMD_EXT2
++#define CONFIG_CMD_FAT
++#define CONFIG_CMD_NET
++#define CONFIG_SUPPORT_RAW_INITRD
++
++#define CONFIG_BOOTDELAY		3
++#define CONFIG_ZERO_BOOTDELAY_CHECK
++
++/* USB */
++#define CONFIG_CMD_USB
++#define CONFIG_USB_EHCI
++#define CONFIG_USB_EHCI_EXYNOS
++#define CONFIG_USB_STORAGE
++#define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS	3
++
++/* MMC SPL */
++#define CONFIG_SPL
++#define COPY_BL2_FNPTR_ADDR	0x02020030
++
++/* specific .lds file */
++#define CONFIG_SPL_LDSCRIPT	"board/samsung/smdk5250/smdk5250-uboot-spl.lds"
++#define CONFIG_SPL_TEXT_BASE	0x02023400
++#define CONFIG_SPL_MAX_SIZE	(14 * 1024)
++
++#define CONFIG_BOOTCOMMAND	"mmc read 40007000 451 2000; bootm 40007000"
++/* Miscellaneous configurable options */
++#define CONFIG_SYS_LONGHELP		/* undef to save memory */
++#define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser	*/
++#define CONFIG_SYS_PROMPT		"ARNDALE5250 # "
++#define CONFIG_SYS_CBSIZE		256	/* Console I/O Buffer Size */
++#define CONFIG_SYS_PBSIZE		384	/* Print Buffer Size */
++#define CONFIG_SYS_MAXARGS		16	/* max number of command args */
++#define CONFIG_DEFAULT_CONSOLE		"console=ttySAC2,115200n8\0"
++/* Boot Argument Buffer Size */
++#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
++/* memtest works on */
++#define CONFIG_SYS_MEMTEST_START	CONFIG_SYS_SDRAM_BASE
++#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_SDRAM_BASE + 0x5E00000)
++#define CONFIG_SYS_LOAD_ADDR		(CONFIG_SYS_SDRAM_BASE + 0x3E00000)
++
++#define CONFIG_SYS_HZ			1000
++
++#define CONFIG_RD_LVL
++
++#define CONFIG_NR_DRAM_BANKS	8
++#define SDRAM_BANK_SIZE		(256UL << 20UL)	/* 256 MB */
++#define PHYS_SDRAM_1		CONFIG_SYS_SDRAM_BASE
++#define PHYS_SDRAM_1_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_2		(CONFIG_SYS_SDRAM_BASE + SDRAM_BANK_SIZE)
++#define PHYS_SDRAM_2_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_3		(CONFIG_SYS_SDRAM_BASE + (2 * SDRAM_BANK_SIZE))
++#define PHYS_SDRAM_3_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_4		(CONFIG_SYS_SDRAM_BASE + (3 * SDRAM_BANK_SIZE))
++#define PHYS_SDRAM_4_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_5		(CONFIG_SYS_SDRAM_BASE + (4 * SDRAM_BANK_SIZE))
++#define PHYS_SDRAM_5_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_6		(CONFIG_SYS_SDRAM_BASE + (5 * SDRAM_BANK_SIZE))
++#define PHYS_SDRAM_6_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_7		(CONFIG_SYS_SDRAM_BASE + (6 * SDRAM_BANK_SIZE))
++#define PHYS_SDRAM_7_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_8		(CONFIG_SYS_SDRAM_BASE + (7 * SDRAM_BANK_SIZE))
++#define PHYS_SDRAM_8_SIZE	SDRAM_BANK_SIZE
++
++#define CONFIG_SYS_MONITOR_BASE	0x00000000
++
++/* FLASH and environment organization */
++#define CONFIG_SYS_NO_FLASH
++#undef CONFIG_CMD_IMLS
++#define CONFIG_IDENT_STRING		" for ARNDALE5250"
++
++#define CONFIG_ENV_IS_IN_MMC
++#define CONFIG_SYS_MMC_ENV_DEV		0
++
++#define CONFIG_SECURE_BL1_ONLY
++
++/* Secure FW size configuration */
++#ifdef	CONFIG_SECURE_BL1_ONLY
++#define	CONFIG_SEC_FW_SIZE		(8 << 10)	/* 8KB */
++#else
++#define	CONFIG_SEC_FW_SIZE		0
++#endif
++
++/* Configuration of BL1, BL2, ENV Blocks on mmc */
++#define CONFIG_RES_BLOCK_SIZE	(512)
++#define CONFIG_BL1_SIZE		(16 << 10) /*16 K reserved for BL1*/
++#define	CONFIG_BL2_SIZE		(512UL << 10UL)	/* 512 KB */
++#define CONFIG_ENV_SIZE		(16 << 10)	/* 16 KB */
++
++#define CONFIG_BL1_OFFSET	(CONFIG_RES_BLOCK_SIZE + CONFIG_SEC_FW_SIZE)
++#define CONFIG_BL2_OFFSET	(CONFIG_BL1_OFFSET + CONFIG_BL1_SIZE)
++#define CONFIG_ENV_OFFSET	(CONFIG_BL2_OFFSET + CONFIG_BL2_SIZE)
++
++/* U-boot copy size from boot Media to DRAM.*/
++#define BL2_START_OFFSET	(CONFIG_BL2_OFFSET/512)
++#define BL2_SIZE_BLOC_COUNT	(CONFIG_BL2_SIZE/512)
++#define CONFIG_DOS_PARTITION
++
++#define CONFIG_IRAM_STACK	0x02050000
++
++#define CONFIG_SYS_INIT_SP_ADDR	(CONFIG_SYS_LOAD_ADDR - 0x1000000)
++
++/* I2C */
++#define CONFIG_SYS_I2C_INIT_BOARD
++#define CONFIG_HARD_I2C
++#define CONFIG_CMD_I2C
++#define CONFIG_SYS_I2C_SPEED	100000		/* 100 Kbps */
++#define CONFIG_DRIVER_S3C24X0_I2C
++#define CONFIG_I2C_MULTI_BUS
++#define CONFIG_MAX_I2C_NUM	8
++#define CONFIG_SYS_I2C_SLAVE    0x0
++
++/* Ethernet Controllor Driver */
++#ifdef CONFIG_CMD_NET
++#define CONFIG_USB_HOST_ETHER
++#define CONFIG_USB_ETHER_ASIX
++#endif /*CONFIG_CMD_NET*/
++
++#define CONFIG_CMD_DHCP
++#define CONFIG_CMD_PXE
++#define CONFIG_MENU
++
++/* Enable devicetree support */
++#define CONFIG_OF_LIBFDT
++
++#endif	/* __CONFIG_H */
+diff --git a/include/configs/s5pc210_universal.h b/include/configs/s5pc210_universal.h
+index 7727624..46f2663 100644
+--- a/include/configs/s5pc210_universal.h
++++ b/include/configs/s5pc210_universal.h
+@@ -56,6 +56,8 @@
+ #define CONFIG_INITRD_TAG
+ #define CONFIG_REVISION_TAG
+ #define CONFIG_CMDLINE_EDITING
++#define CONFIG_SKIP_LOWLEVEL_INIT
++#define CONFIG_BOARD_EARLY_INIT_F
+ 
+ /* Size of malloc() pool */
+ #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (1 << 20))
+diff --git a/include/configs/smdk5250.h b/include/configs/smdk5250.h
+index 47369aa..3a522f9 100644
+--- a/include/configs/smdk5250.h
++++ b/include/configs/smdk5250.h
+@@ -45,6 +45,8 @@
+ 
+ /* input clock of PLL: SMDK5250 has 24MHz input clock */
+ #define CONFIG_SYS_CLK_FREQ		24000000
++#define CONFIG_ARM_CLK_FREQ            1700 /* in MHz*/
++#define CONFIG_BUS_CLK_FREQ            800 /* in MHz*/
+ 
+ #define CONFIG_SETUP_MEMORY_TAGS
+ #define CONFIG_CMDLINE_TAG
+@@ -213,6 +215,12 @@
+ #define CONFIG_ENV_SROM_BANK		1
+ #endif /*CONFIG_CMD_NET*/
+ 
++/* Enable PXE Support */
++#ifdef CONFIG_CMD_NET
++#define CONFIG_CMD_PXE
++#define CONFIG_MENU
++#endif
++
+ /* Enable devicetree support */
+ #define CONFIG_OF_LIBFDT
+ 
+diff --git a/include/configs/trats.h b/include/configs/trats.h
+index b3b5a3d..151019c 100644
+--- a/include/configs/trats.h
++++ b/include/configs/trats.h
+@@ -190,12 +190,17 @@
+ 
+ #define CONFIG_SYS_HZ			1000
+ 
+-/* TRATS has 2 banks of DRAM */
+-#define CONFIG_NR_DRAM_BANKS	2
+-#define PHYS_SDRAM_1		CONFIG_SYS_SDRAM_BASE	/* LDDDR2 DMC 0 */
+-#define PHYS_SDRAM_1_SIZE	(512 << 20)		/* 512 MB in CS 0 */
+-#define PHYS_SDRAM_2		0x50000000		/* LPDDR2 DMC 1 */
+-#define PHYS_SDRAM_2_SIZE	(512 << 20)		/* 512 MB in CS 0 */
++/* TRATS has 4 banks of DRAM */
++#define CONFIG_NR_DRAM_BANKS	4
++#define SDRAM_BANK_SIZE		(256UL << 20UL)	/* 256 MB */
++#define PHYS_SDRAM_1		CONFIG_SYS_SDRAM_BASE
++#define PHYS_SDRAM_1_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_2		(CONFIG_SYS_SDRAM_BASE + SDRAM_BANK_SIZE)
++#define PHYS_SDRAM_2_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_3		(CONFIG_SYS_SDRAM_BASE + (2 * SDRAM_BANK_SIZE))
++#define PHYS_SDRAM_3_SIZE	SDRAM_BANK_SIZE
++#define PHYS_SDRAM_4		(CONFIG_SYS_SDRAM_BASE + (3 * SDRAM_BANK_SIZE))
++#define PHYS_SDRAM_4_SIZE	SDRAM_BANK_SIZE
+ 
+ #define CONFIG_SYS_MEM_TOP_HIDE		(1 << 20)	/* ram console */
+ 
+diff --git a/include/dwmmc.h b/include/dwmmc.h
+new file mode 100644
+index 0000000..9648586
+--- /dev/null
++++ b/include/dwmmc.h
+@@ -0,0 +1,186 @@
++/*
++ * (C) Copyright 2012 SAMSUNG Electronics
++ * Jaehoon Chung <jh80.chung@samsung.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,  MA 02111-1307 USA
++ *
++ */
++
++#ifndef __DWMMC_HW_H
++#define __DWMMC_HW_H
++
++#include <asm/io.h>
++#include <mmc.h>
++
++#define DWMCI_CTRL		0x000
++#define	DWMCI_PWREN		0x004
++#define DWMCI_CLKDIV		0x008
++#define DWMCI_CLKSRC		0x00C
++#define DWMCI_CLKENA		0x010
++#define DWMCI_TMOUT		0x014
++#define DWMCI_CTYPE		0x018
++#define DWMCI_BLKSIZ		0x01C
++#define DWMCI_BYTCNT		0x020
++#define DWMCI_INTMASK		0x024
++#define DWMCI_CMDARG		0x028
++#define DWMCI_CMD		0x02C
++#define DWMCI_RESP0		0x030
++#define DWMCI_RESP1		0x034
++#define DWMCI_RESP2		0x038
++#define DWMCI_RESP3		0x03C
++#define DWMCI_MINTSTS		0x040
++#define DWMCI_RINTSTS		0x044
++#define DWMCI_STATUS		0x048
++#define DWMCI_FIFOTH		0x04C
++#define DWMCI_CDETECT		0x050
++#define DWMCI_WRTPRT		0x054
++#define DWMCI_GPIO		0x058
++#define DWMCI_TCMCNT		0x05C
++#define DWMCI_TBBCNT		0x060
++#define DWMCI_DEBNCE		0x064
++#define DWMCI_USRID		0x068
++#define DWMCI_VERID		0x06C
++#define DWMCI_HCON		0x070
++#define DWMCI_UHS_REG		0x074
++#define DWMCI_BMOD		0x080
++#define DWMCI_PLDMND		0x084
++#define DWMCI_DBADDR		0x088
++#define DWMCI_IDSTS		0x08C
++#define DWMCI_IDINTEN		0x090
++#define DWMCI_DSCADDR		0x094
++#define DWMCI_BUFADDR		0x098
++#define DWMCI_DATA		0x200
++
++/* Interrupt Mask register */
++#define DWMCI_INTMSK_ALL	0xffffffff
++#define DWMCI_INTMSK_RE		(1 << 1)
++#define DWMCI_INTMSK_CDONE	(1 << 2)
++#define DWMCI_INTMSK_DTO	(1 << 3)
++#define DWMCI_INTMSK_TXDR	(1 << 4)
++#define DWMCI_INTMSK_RXDR	(1 << 5)
++#define DWMCI_INTMSK_DCRC	(1 << 7)
++#define DWMCI_INTMSK_RTO	(1 << 8)
++#define DWMCI_INTMSK_DRTO	(1 << 9)
++#define DWMCI_INTMSK_HTO	(1 << 10)
++#define DWMCI_INTMSK_FRUN	(1 << 11)
++#define DWMCI_INTMSK_HLE	(1 << 12)
++#define DWMCI_INTMSK_SBE	(1 << 13)
++#define DWMCI_INTMSK_ACD	(1 << 14)
++#define DWMCI_INTMSK_EBE	(1 << 15)
++
++/* Raw interrupt Regsiter */
++#define DWMCI_DATA_ERR	(DWMCI_INTMSK_EBE | DWMCI_INTMSK_SBE | DWMCI_INTMSK_HLE |\
++			DWMCI_INTMSK_FRUN | DWMCI_INTMSK_EBE | DWMCI_INTMSK_DCRC)
++#define DWMCI_DATA_TOUT	(DWMCI_INTMSK_HTO | DWMCI_INTMSK_DRTO)
++/* CTRL register */
++#define DWMCI_CTRL_RESET	(1 << 0)
++#define DWMCI_CTRL_FIFO_RESET	(1 << 1)
++#define DWMCI_CTRL_DMA_RESET	(1 << 2)
++#define DWMCI_DMA_EN		(1 << 5)
++#define DWMCI_CTRL_SEND_AS_CCSD	(1 << 10)
++#define DWMCI_IDMAC_EN		(1 << 25)
++#define DWMCI_RESET_ALL		(DWMCI_CTRL_RESET | DWMCI_CTRL_FIFO_RESET |\
++				DWMCI_CTRL_DMA_RESET)
++
++/* CMD register */
++#define DWMCI_CMD_RESP_EXP	(1 << 6)
++#define DWMCI_CMD_RESP_LENGTH	(1 << 7)
++#define DWMCI_CMD_CHECK_CRC	(1 << 8)
++#define DWMCI_CMD_DATA_EXP	(1 << 9)
++#define DWMCI_CMD_RW		(1 << 10)
++#define DWMCI_CMD_SEND_STOP	(1 << 12)
++#define DWMCI_CMD_ABORT_STOP	(1 << 14)
++#define DWMCI_CMD_PRV_DAT_WAIT	(1 << 13)
++#define DWMCI_CMD_UPD_CLK	(1 << 21)
++#define DWMCI_CMD_USE_HOLD_REG	(1 << 29)
++#define DWMCI_CMD_START		(1 << 31)
++
++/* CLKENA register */
++#define DWMCI_CLKEN_ENABLE	(1 << 0)
++#define DWMCI_CLKEN_LOW_PWR	(1 << 16)
++
++/* Card-type registe */
++#define DWMCI_CTYPE_1BIT	0
++#define DWMCI_CTYPE_4BIT	(1 << 0)
++#define DWMCI_CTYPE_8BIT	(1 << 16)
++
++/* Status Register */
++#define DWMCI_BUSY		(1 << 9)
++
++#define DWMCI_IDMAC_OWN		(1 << 31)
++#define DWMCI_IDMAC_CH		(1 << 4)
++#define DWMCI_IDMAC_FS		(1 << 3)
++#define DWMCI_IDMAC_LD		(1 << 2)
++
++/*  Bus Mode Register */
++#define DWMCI_BMOD_IDMAC_RESET	(1 << 0)
++#define DWMCI_BMOD_IDMAC_FB	(1 << 1)
++#define DWMCI_BMOD_IDMAC_EN	(1 << 7)
++
++struct dwmci_host {
++	char *name;
++	void *ioaddr;
++	unsigned int quirks;
++	unsigned int caps;
++	unsigned int version;
++	unsigned int clock;
++	unsigned int bus_hz;
++	int dev_index;
++	int buswidth;
++	u32 fifoth_val;
++	struct mmc *mmc;
++
++	void (*clksel)(struct dwmci_host *host);
++	unsigned int (*mmc_clk)(int dev_index);
++};
++
++struct dwmci_idmac {
++	u32 des0;
++	u32 des1;
++	u32 des2;
++	u32 des3;
++};
++
++static inline void dwmci_writel(struct dwmci_host *host, int reg, u32 val)
++{
++	writel(val, host->ioaddr + reg);
++}
++
++static inline void dwmci_writew(struct dwmci_host *host, int reg, u16 val)
++{
++	writew(val, host->ioaddr + reg);
++}
++
++static inline void dwmci_writeb(struct dwmci_host *host, int reg, u8 val)
++{
++	writeb(val, host->ioaddr + reg);
++}
++static inline u32 dwmci_readl(struct dwmci_host *host, int reg)
++{
++	return readl(host->ioaddr + reg);
++}
++
++static inline u16 dwmci_readw(struct dwmci_host *host, int reg)
++{
++	return readw(host->ioaddr + reg);
++}
++
++static inline u8 dwmci_readb(struct dwmci_host *host, int reg)
++{
++	return readb(host->ioaddr + reg);
++}
++
++int add_dwmci(struct dwmci_host *host, u32 max_clk, u32 min_clk, int index);
++#endif	/* __DWMMC_HW_H */
+-- 
+1.7.10.4
+

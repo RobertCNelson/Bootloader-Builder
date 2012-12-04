@@ -309,6 +309,10 @@ build_u_boot () {
 			RELEASE_VER="-r1"
 			git am "${DIR}/patches/v2012.10/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
 		fi
+
+		if [ "x${BOARD}" == "xarndale5250" ] ; then
+			git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
+		fi
 	fi
 
 	if [ "${v2012_10_rc1}" ] ; then
@@ -465,6 +469,18 @@ build_uboot_latest () {
 	fi
 	#unset v2013_01
 	unset v2013_01_rc2
+}
+
+arndale5250 () {
+	cleanup
+	armv7hf_toolchain
+
+	BOARD="arndale5250"
+	UBOOT_CONFIG="arndale5250_config"
+
+	build_uboot_stable
+#	build_uboot_testing
+	#build_uboot_latest
 }
 
 at91sam9x5ek () {
