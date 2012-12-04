@@ -333,7 +333,7 @@ build_u_boot () {
 	fi
 
 	if [ "${odroidx_patch}" ] ; then
-		git am "${DIR}/patches/v2012.10/0001-Exynos-Add-minimal-support-for-ODROID-X.patch"
+		git am "${DIR}/patches/v2013.01-rc2/0001-MegaPatch-odroid-support-diff-of-https-github.com-ha.patch"
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
