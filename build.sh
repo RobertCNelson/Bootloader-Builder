@@ -227,7 +227,8 @@ halt_patching_uboot () {
 file_save () {
 	cp -v ./${filename_search} ${DIR}/${filename_id}
 	md5sum=$(md5sum ${DIR}/${filename_id} | awk '{print $1}')
-	if [ -f ${DIR}/${filename_id}_* ] ; then
+	check=$(ls ${DIR}/${filename_id}_* | head -n 1)
+	if [ "x${check}" != "x" ] ; then
 		rm -rf ${DIR}/${filename_id}_* || true
 	fi
 	touch ${DIR}/${filename_id}_${md5sum}
