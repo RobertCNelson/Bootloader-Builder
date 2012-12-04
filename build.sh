@@ -193,7 +193,7 @@ halt_patching_uboot () {
 	pwd
 	echo "-----------------------------"
 	echo "make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}"
-	echo "make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET}"
+	echo "make ARCH=arm CROSS_COMPILE=${CC} ${BUILDTARGET}"
 	echo "-----------------------------"
 	exit
 }
