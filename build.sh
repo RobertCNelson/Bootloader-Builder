@@ -224,6 +224,16 @@ halt_patching_uboot () {
 	exit
 }
 
+file_save () {
+	cp -v ./${filename_search} ${DIR}/${filename_id}
+	md5sum=$(md5sum ${DIR}/${filename_id} | awk '{print $1}')
+	if [ -f ${DIR}/${filename_id}_* ] ; then
+		rm -rf ${DIR}/${filename_id}_* || true
+	fi
+	touch ${DIR}/${filename_id}_${md5sum}
+	echo "${BOARD}_${MIRROR}/${filename_id}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+}
+
 build_u_boot () {
 	project="u-boot"
 	git_generic
@@ -375,42 +385,29 @@ build_u_boot () {
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
-			cp -v u-boot.imx ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx
-			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx | awk '{print $1}')
-			if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_* ] ; then
-				rm -rf ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_* || true
-			fi
-			touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_${md5sum}
-			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			filename_search="u-boot.imx"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.imx"
+			file_save
 			UBOOT_DONE=1
 		fi
 
 		#SPL based targets, need MLO and u-boot.img from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] ; then
-			cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${uboot_filename}
-			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${uboot_filename} | awk '{print $1}')
-			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${uboot_filename}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
-			if [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
-				cp -v u-boot.img ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img
-				md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img | awk '{print $1}')
-				if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_* ] ; then
-					rm -rf ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_* || true
-				fi
-				touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_${md5sum}
-				echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.img_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
-			fi
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
+			filename_search="MLO"
+			filename_id="deploy/${BOARD}/MLO-${uboot_filename}"
+			file_save
+
+			filename_search="u-boot.img"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
+			file_save
 			UBOOT_DONE=1
 		fi
 
 		#Just u-boot.bin
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
-			cp -v u-boot.bin ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin
-			md5sum=$(md5sum ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin | awk '{print $1}')
-			if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_* ] ; then
-				rm -rf ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_* || true
-			fi
-			touch ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_${md5sum}
-			echo "${BOARD}_${MIRROR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+			filename_search="u-boot.bin"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.bin"
+			file_save
 			UBOOT_DONE=1
 		fi
 	else
