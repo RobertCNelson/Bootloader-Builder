@@ -314,6 +314,11 @@ build_u_boot () {
 		if [ "x${BOARD}" == "xarndale5250" ] ; then
 			git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 		fi
+
+		if [ "x${BOARD}" == "xbeagleboard" ] ; then
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2012.10/0001-WIP-ARM-OMAP-Beagle-add-LSR-COM6L-Adapter-Board-dete.patch"
+		fi
 	fi
 
 	if [ "${v2012_10_rc1}" ] ; then

@@ -1,0 +1,38 @@
+From 3f1c2f92095bc077067d6ee55ed1e277aabd447d Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Thu, 6 Dec 2012 19:51:43 -0600
+Subject: [PATCH] WIP: ARM: OMAP: Beagle: add LSR  COM6L Adapter Board
+ detection
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/beagle/beagle.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
+index 8f69470..bfc223f 100644
+--- a/board/ti/beagle/beagle.c
++++ b/board/ti/beagle/beagle.c
+@@ -68,6 +68,7 @@
+ #define BBTOYS_ULCD			0x04000B00
+ #define BCT_BRETTL3			0x01000F00
+ #define BCT_BRETTL4			0x02000F00
++#define LSR_COM6L_ADPT			0x01001300
+ #define BEAGLE_NO_EEPROM		0xffffffff
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+@@ -424,6 +425,11 @@ int misc_init_r(void)
+ 	case BCT_BRETTL4:
+ 		printf("Recognized bct electronic GmbH brettl4 board\n");
+ 		break;
++	case LSR_COM6L_ADPT:
++		printf("Recognized LSR COM6L Adapter Board\n");
++		MUX_BBTOYS_WIFI()
++		setenv("buddy", "lsr-com6l-adpt");
++		break;;
+ 	case BEAGLE_NO_EEPROM:
+ 		printf("No EEPROM on expansion board\n");
+ 		setenv("buddy", "none");
+-- 
+1.7.10.4
+
