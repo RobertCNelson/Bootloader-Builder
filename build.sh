@@ -216,6 +216,22 @@ build_omap_xloader () {
 	git_cleanup
 }
 
+
+build_barebox () {
+	project="barebox"
+	git_generic
+
+	make ARCH=arm distclean
+
+	make ARCH=arm CROSS_COMPILE=${CC} ${BAREBOX_CONFIG}
+	echo "Building ${project}: ${BOARD}"
+	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
+
+	exit
+
+	git_cleanup
+}
+
 halt_patching_uboot () {
 	pwd
 	echo "-----------------------------"
@@ -584,6 +600,16 @@ pandaboard () {
 	build_uboot_latest
 }
 
+imx233_olinuxino () {
+	cleanup
+	armv7_toolchain
+
+	BOARD="imx233-olinuxino"
+	BAREBOX_CONFIG="imx233-olinuxino_defconfig"
+	GIT_SHA="v2012.12.1"
+	build_barebox
+}
+
 mx51evk () {
 	cleanup
 	armv7_toolchain
@@ -674,6 +700,7 @@ at91sam9x5ek
 beagleboard
 beaglebone
 igep00x0
+#imx233_olinuxino
 mx51evk
 mx53loco
 mx6qsabrelite
