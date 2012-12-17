@@ -32,10 +32,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2012.10"
-TESTING="v2013.01-rc1"
+TESTING="v2013.01-rc2"
 
-#LATEST_GIT="66dc452bfe13b0e276adddf3997b9c5abc00115d"
-LATEST_GIT="d41b3cc16fd97da23900f79e8fefdeedeebde8f6"
+#LATEST_GIT="d41b3cc16fd97da23900f79e8fefdeedeebde8f6"
+#v2013.01-rc2
+#LATEST_GIT="ebbf0d20aa85f623c49b7ed3349ebfea450c152d"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -247,18 +248,19 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_01_rc2}" ] ; then
-		#bootz:
-		git am "${DIR}/patches/v2013.01-rc2/0001-enable-bootz-support.patch"
+		#enable u-boot features...
+		git am "${DIR}/patches/v2013.01-rc2/0001-enable-bootz-and-generic-load-features.patch"
 
 		#TI:
-		git am "${DIR}/patches/v2013.01-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		git am "${DIR}/patches/v2013.01-rc1/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
+		git am "${DIR}/patches/v2013.01-rc2/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+		#Should not be needed with v3.8.x
+		git am "${DIR}/patches/v2013.01-rc2/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
 
 		#Freescale:
-		git am "${DIR}/patches/v2013.01-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+		git am "${DIR}/patches/v2013.01-rc2/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
 
 		#Atmel:
-		git am "${DIR}/patches/v2013.01-rc2/0001-at91-enable-bootz-and-uEnv.txt-support.patch"
+		git am "${DIR}/patches/v2013.01-rc2/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
 	fi
 
 	if [ "${v2013_01_rc1}" ] ; then
@@ -456,14 +458,14 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
-	v2013_01_rc1=1
+	v2013_01_rc2=1
 	#v2013_01=1
 	if [ "${TESTING}" ] ; then
 		GIT_SHA=${TESTING}
 		build_u_boot
 	fi
 	#unset v2013_01
-	unset v2013_01_rc1
+	unset v2013_01_rc2
 }
 
 build_uboot_latest () {
@@ -666,9 +668,9 @@ rpib () {
 	build_uboot_latest
 }
 
+am3517crane
 arndale5250
 at91sam9x5ek
-am3517crane
 beagleboard
 beaglebone
 igep00x0

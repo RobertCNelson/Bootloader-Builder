@@ -1,0 +1,238 @@
+From 60c0cfaeea03f625f13e30084ff19d0f703dd25c Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Mon, 17 Dec 2012 10:17:52 -0600
+Subject: [PATCH] enable bootz and generic load features
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/am335x_evm.h       |    5 +++++
+ include/configs/am3517_crane.h     |    5 +++++
+ include/configs/at91sam9x5ek.h     |    8 +++++++-
+ include/configs/igep00x0.h         |    5 +++++
+ include/configs/mx51evk.h          |    6 ++++++
+ include/configs/mx53loco.h         |    5 +++++
+ include/configs/mx6qarm2.h         |    6 ++++++
+ include/configs/mx6qsabre_common.h |    5 +++++
+ include/configs/mx6qsabrelite.h    |    2 ++
+ include/configs/omap3_beagle.h     |    5 +++++
+ include/configs/omap4_common.h     |    5 +++++
+ include/configs/rpi_b.h            |    8 +++++++-
+ 12 files changed, 63 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
+index ab9549b..21fac58 100644
+--- a/include/configs/am335x_evm.h
++++ b/include/configs/am335x_evm.h
+@@ -142,8 +142,13 @@
+ #define CONFIG_OMAP_HSMMC
+ #define CONFIG_CMD_MMC
+ #define CONFIG_DOS_PARTITION
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
+ #define CONFIG_CMD_FAT
+ #define CONFIG_CMD_EXT2
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ 
+ #define CONFIG_SPI
+ #define CONFIG_OMAP3_SPI
+diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
+index e1ad1e5..68772ba 100644
+--- a/include/configs/am3517_crane.h
++++ b/include/configs/am3517_crane.h
+@@ -143,6 +143,11 @@
+ 
+ #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+ #define CONFIG_CMD_MMC		/* MMC support			*/
++/* #define CONFIG_FS_FAT */
++/* #define CONFIG_FS_EXT4 */
++/* #define CONFIG_CMD_FS_GENERIC */			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_CMD_NAND		/* NAND support			*/
+ #define CONFIG_CMD_DHCP
+ #undef CONFIG_CMD_PING
+diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
+index 1317582..7f5f6ec 100644
+--- a/include/configs/at91sam9x5ek.h
++++ b/include/configs/at91sam9x5ek.h
+@@ -142,7 +142,13 @@
+ /* MMC */
+ #ifdef CONFIG_CMD_MMC
+ #define CONFIG_MMC
+-#define CONFIG_CMD_FAT
++/* #define CONFIG_FS_FAT */
++/* #define CONFIG_FS_EXT4 */
++#define CONFIG_CMD_EXT2		/* EXT2 Support */
++#define CONFIG_CMD_FAT			/* FAT support */
++/* #define CONFIG_CMD_FS_GENERIC */			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_GENERIC_ATMEL_MCI
+ #define CONFIG_DOS_PARTITION
+diff --git a/include/configs/igep00x0.h b/include/configs/igep00x0.h
+index be7937d..cdafbcf 100644
+--- a/include/configs/igep00x0.h
++++ b/include/configs/igep00x0.h
+@@ -102,10 +102,15 @@
+ #include <config_cmd_default.h>
+ 
+ #define CONFIG_CMD_CACHE
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
+ #define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+ #define CONFIG_CMD_FAT		/* FAT support			*/
+ #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+ #define CONFIG_CMD_MMC		/* MMC support			*/
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #ifdef CONFIG_BOOT_ONENAND
+ #define CONFIG_CMD_ONENAND	/* ONENAND support		*/
+ #endif
+diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
+index f00cec2..38819de 100644
+--- a/include/configs/mx51evk.h
++++ b/include/configs/mx51evk.h
+@@ -89,8 +89,14 @@
+ #define CONFIG_MMC
+ 
+ #define CONFIG_CMD_MMC
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_CMD_FAT
++#define CONFIG_CMD_EXT2
+ #define CONFIG_DOS_PARTITION
+ 
+ /*
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index a110176..39ca542 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -52,6 +52,11 @@
+ 
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_CMD_FAT
+ #define CONFIG_CMD_EXT2
+diff --git a/include/configs/mx6qarm2.h b/include/configs/mx6qarm2.h
+index 28a3deb..319a269 100644
+--- a/include/configs/mx6qarm2.h
++++ b/include/configs/mx6qarm2.h
+@@ -49,9 +49,15 @@
+ 
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_BOUNCE_BUFFER
+ #define CONFIG_CMD_FAT
++#define CONFIG_CMD_EXT2
+ #define CONFIG_DOS_PARTITION
+ 
+ #define CONFIG_CMD_PING
+diff --git a/include/configs/mx6qsabre_common.h b/include/configs/mx6qsabre_common.h
+index a5c93d0..3effefc 100644
+--- a/include/configs/mx6qsabre_common.h
++++ b/include/configs/mx6qsabre_common.h
+@@ -44,6 +44,11 @@
+ 
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_BOUNCE_BUFFER
+ #define CONFIG_CMD_EXT2
+diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
+index a28d5a5..949b513 100644
+--- a/include/configs/mx6qsabrelite.h
++++ b/include/configs/mx6qsabrelite.h
+@@ -71,6 +71,8 @@
+ 
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
++#define CONFIG_CMD_BOOTZ		/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_BOUNCE_BUFFER
+ #define CONFIG_CMD_EXT2
+diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
+index 12d65f2..facf7af 100644
+--- a/include/configs/omap3_beagle.h
++++ b/include/configs/omap3_beagle.h
+@@ -147,8 +147,13 @@
+ #define CONFIG_CMD_ASKENV
+ 
+ #define CONFIG_CMD_CACHE
++/* #define CONFIG_FS_FAT */
++/* #define CONFIG_FS_EXT4 */
+ #define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+ #define CONFIG_CMD_FAT		/* FAT support			*/
++/* #define CONFIG_CMD_FS_GENERIC */			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
+ #define CONFIG_CMD_MTDPARTS	/* Enable MTD parts commands */
+ #define CONFIG_MTD_DEVICE	/* needed for mtdparts commands */
+diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
+index a32369a..7bd0c65 100644
+--- a/include/configs/omap4_common.h
++++ b/include/configs/omap4_common.h
+@@ -124,10 +124,15 @@
+ #include <config_cmd_default.h>
+ 
+ /* Enabled commands */
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
+ #define CONFIG_CMD_EXT2		/* EXT2 Support                 */
+ #define CONFIG_CMD_FAT		/* FAT support                  */
+ #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+ #define CONFIG_CMD_MMC		/* MMC support                  */
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ 
+ /* Disabled commands */
+ #undef CONFIG_CMD_NET
+diff --git a/include/configs/rpi_b.h b/include/configs/rpi_b.h
+index cf62e45..c1c01fb 100644
+--- a/include/configs/rpi_b.h
++++ b/include/configs/rpi_b.h
+@@ -86,7 +86,13 @@
+ 
+ /* Commands */
+ #include <config_cmd_default.h>
+-#define CONFIG_CMD_BOOTZ
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
++#define CONFIG_CMD_FAT
++#define CONFIG_CMD_EXT2
+ #define CONFIG_CMD_GPIO
+ /* Some things don't make sense on this HW or yet */
+ #undef CONFIG_CMD_FPGA
+-- 
+1.7.10.4
+

@@ -1,0 +1,25 @@
+From 8b0e2e689d854861afb4a7e2bad25a452392402f Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Thu, 8 Nov 2012 19:06:10 -0600
+Subject: [PATCH 3/3] panda: temp: enable pads and clocks for kernel
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/omap4_common.h |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
+index 368a304..c9e44b8 100644
+--- a/include/configs/omap4_common.h
++++ b/include/configs/omap4_common.h
+@@ -283,4 +283,7 @@
+ 
+ #define CONFIG_SYS_THUMB_BUILD
+ 
++#define CONFIG_SYS_ENABLE_PADS_ALL
++#define CONFIG_SYS_CLOCKS_ENABLE_ALL
++
+ #endif /* __CONFIG_OMAP4_COMMON_H */
+-- 
+1.7.10.4
+
