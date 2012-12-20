@@ -1,0 +1,31 @@
+From 58ff26ff6695547c4b570067bbf5f2b451902365 Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Date: Tue, 11 Dec 2012 14:36:58 -0200
+Subject: [PATCH 3/3] mx53loco: Fix PMIC name
+
+commit c73368150 (pmic: Extend PMIC framework to support multiple instances
+of PMIC devices) has incorrectly passed the PMIC name under the FSL PMIC case.
+
+Fix that by passing "FSL_PMIC" as the parameter of pmic_get.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ board/freescale/mx53loco/mx53loco.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/freescale/mx53loco/mx53loco.c b/board/freescale/mx53loco/mx53loco.c
+index 81c511c..2c8cb7a 100644
+--- a/board/freescale/mx53loco/mx53loco.c
++++ b/board/freescale/mx53loco/mx53loco.c
+@@ -374,7 +374,7 @@ static int power_init(void)
+ 		if (retval)
+ 			return retval;
+ 
+-		p = pmic_get("DIALOG_PMIC");
++		p = pmic_get("FSL_PMIC");
+ 		if (!p)
+ 			return -ENODEV;
+ 
+-- 
+1.7.10.4
+

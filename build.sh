@@ -275,6 +275,11 @@ build_u_boot () {
 		#Freescale:
 		git am "${DIR}/patches/v2013.01-rc2/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
 
+		if [ "x${BOARD}" == "xmx53loco" ] ; then
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2013.01-rc2/0003-mx53loco-Fix-PMIC-name.patch"
+		fi
+
 		#Atmel:
 		git am "${DIR}/patches/v2013.01-rc2/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
 	fi
