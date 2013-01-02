@@ -34,9 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.10"
 TESTING="v2013.01-rc2"
 
-#v2013.01-rc2
-#LATEST_GIT="ebbf0d20aa85f623c49b7ed3349ebfea450c152d"
-LATEST_GIT="e3c52f2b8779469c843eb79282396f1a5ca3fef5"
+#LATEST_GIT="e3c52f2b8779469c843eb79282396f1a5ca3fef5"
+LATEST_GIT="f8cfcf1b1c7543d5dd103359376a3319301143bc"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -264,6 +263,14 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_01_rc2}" ] ; then
+		if [ "x${BOARD}" == "xmx53loco" ] ; then
+			RELEASE_VER="-r2"
+			git am "${DIR}/patches/v2013.01-rc2/0001-Revert-imximage-make-set_imx_hdr_v1-v2-easier-to-rea.patch"
+			git am "${DIR}/patches/v2013.01-rc2/0002-Revert-imximage-change-parameters-to-set_imx_hdr.patch"
+			git am "${DIR}/patches/v2013.01-rc2/0003-Revert-imximage-delay-setting-of-image-size.patch"
+			git am "${DIR}/patches/v2013.01-rc2/0004-Revert-imximage-fix-size-of-image-to-load.patch"
+		fi
+
 		#enable u-boot features...
 		git am "${DIR}/patches/v2013.01-rc2/0001-enable-bootz-and-generic-load-features.patch"
 
@@ -276,8 +283,8 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.01-rc2/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
 
 		if [ "x${BOARD}" == "xmx53loco" ] ; then
-			RELEASE_VER="-r1"
 			git am "${DIR}/patches/v2013.01-rc2/0003-mx53loco-Fix-PMIC-name.patch"
+			git am "${DIR}/patches/v2013.01-rc2/0004-mx53loco-Call-PMIC-related-functions-from-board_late.patch"
 		fi
 
 		#Atmel:
@@ -635,7 +642,7 @@ mx53loco () {
 	UBOOT_CONFIG="mx53loco_config"
 
 	build_uboot_stable
-	armv7hf_toolchain
+	#armv7hf_toolchain
 	build_uboot_testing
 	build_uboot_latest
 }
