@@ -1,0 +1,46 @@
+From 9766a393ddb0bf9e72091ed28b6a32262398abc3 Mon Sep 17 00:00:00 2001
+From: Troy Kisky <troy.kisky@boundarydevices.com>
+Date: Tue, 27 Nov 2012 18:31:33 -0700
+Subject: [PATCH 5/5] imximage: mx53 needs transfer length a multiple of 512
+
+The mx53 ROM will truncate the length at a multiple of 512.
+Transferring too much is not a problem, so round up.
+
+Problem reported by Stefano Babic.
+
+Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
+---
+ tools/imximage.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/tools/imximage.c b/tools/imximage.c
+index 63f88b6..7e54e97 100644
+--- a/tools/imximage.c
++++ b/tools/imximage.c
+@@ -494,6 +494,8 @@ static void imximage_print_header(const void *ptr)
+ 	}
+ }
+ 
++#define ALIGN(a, b)	(((a) + (b) - 1) & ~((b) - 1))
++
+ static void imximage_set_header(void *ptr, struct stat *sbuf, int ifd,
+ 				struct mkimage_params *params)
+ {
+@@ -515,7 +517,13 @@ static void imximage_set_header(void *ptr, struct stat *sbuf, int ifd,
+ 
+ 	/* Set the imx header */
+ 	(*set_imx_hdr)(imxhdr, dcd_len, params->ep, imxhdr->flash_offset);
+-	*header_size_ptr = sbuf->st_size + imxhdr->flash_offset;
++	/*
++	 * ROM bug alert
++	 * mx53 only loads 512 byte multiples.
++	 * The remaining fraction of a block bytes would
++	 * not be loaded.
++	 */
++	*header_size_ptr = ALIGN(sbuf->st_size + imxhdr->flash_offset, 512);
+ }
+ 
+ int imximage_check_params(struct mkimage_params *params)
+-- 
+1.7.10.4
+

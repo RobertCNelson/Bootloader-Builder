@@ -263,14 +263,6 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_01_rc2}" ] ; then
-		if [ "x${BOARD}" == "xmx53loco" ] ; then
-			RELEASE_VER="-r2"
-			git am "${DIR}/patches/v2013.01-rc2/0001-Revert-imximage-make-set_imx_hdr_v1-v2-easier-to-rea.patch"
-			git am "${DIR}/patches/v2013.01-rc2/0002-Revert-imximage-change-parameters-to-set_imx_hdr.patch"
-			git am "${DIR}/patches/v2013.01-rc2/0003-Revert-imximage-delay-setting-of-image-size.patch"
-			git am "${DIR}/patches/v2013.01-rc2/0004-Revert-imximage-fix-size-of-image-to-load.patch"
-		fi
-
 		#enable u-boot features...
 		git am "${DIR}/patches/v2013.01-rc2/0001-enable-bootz-and-generic-load-features.patch"
 
@@ -283,8 +275,10 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.01-rc2/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
 
 		if [ "x${BOARD}" == "xmx53loco" ] ; then
+			RELEASE_VER="-r3"
 			git am "${DIR}/patches/v2013.01-rc2/0003-mx53loco-Fix-PMIC-name.patch"
 			git am "${DIR}/patches/v2013.01-rc2/0004-mx53loco-Call-PMIC-related-functions-from-board_late.patch"
+			git am "${DIR}/patches/v2013.01-rc2/0005-imximage-mx53-needs-transfer-length-a-multiple-of-51.patch"
 		fi
 
 		#Atmel:
