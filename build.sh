@@ -34,8 +34,8 @@ SYST=$(uname -n)
 STABLE="v2012.10"
 TESTING="v2013.01-rc2"
 
-#LATEST_GIT="e3c52f2b8779469c843eb79282396f1a5ca3fef5"
-LATEST_GIT="f8cfcf1b1c7543d5dd103359376a3319301143bc"
+#LATEST_GIT="f8cfcf1b1c7543d5dd103359376a3319301143bc"
+LATEST_GIT="91c038f087d7f643c85609897af3710d5f8b42a9"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -260,6 +260,22 @@ build_u_boot () {
 
 	if [ "${mno_unaligned_access}" ] ; then
 		git am "${DIR}/patches/v2012.10/0001-Revert-Revert-arm-armv7-add-compile-option-mno-unali.patch"
+	fi
+
+	if [ "${v2013_01_rc3}" ] ; then
+		#enable u-boot features...
+		git am "${DIR}/patches/v2013.01-rc3/0001-enable-bootz-and-generic-load-features.patch"
+
+		#TI:
+		git am "${DIR}/patches/v2013.01-rc3/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+		#Should not be needed with v3.8.x
+		git am "${DIR}/patches/v2013.01-rc3/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
+
+		#Freescale:
+		git am "${DIR}/patches/v2013.01-rc3/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+
+		#Atmel:
+		git am "${DIR}/patches/v2013.01-rc3/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
 	fi
 
 	if [ "${v2013_01_rc2}" ] ; then
@@ -491,14 +507,14 @@ build_uboot_testing () {
 }
 
 build_uboot_latest () {
-	v2013_01_rc2=1
+	v2013_01_rc3=1
 	#v2013_01=1
 	if [ "${LATEST_GIT}" ] ; then
 		GIT_SHA=${LATEST_GIT}
 		build_u_boot
 	fi
 	#unset v2013_01
-	unset v2013_01_rc2
+	unset v2013_01_rc3
 }
 
 arndale5250 () {

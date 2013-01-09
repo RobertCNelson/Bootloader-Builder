@@ -1,0 +1,276 @@
+From c9ef70007c6d6c69d39bdd573b8845984e53acdd Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 9 Jan 2013 08:40:44 -0600
+Subject: [PATCH 2/2] ti convert to uEnv.txt n fixes
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/beagle/beagle.c       |   39 +++++++++++++++++++++++++++++++++++----
+ include/configs/am3517_crane.h |   40 ++++++++++++++++++++++++----------------
+ include/configs/omap3_beagle.h |   16 ++++++++--------
+ include/configs/omap4_common.h |   33 ++++++++++++++++++++-------------
+ 4 files changed, 87 insertions(+), 41 deletions(-)
+
+diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
+index b829a79..6f45645 100644
+--- a/board/ti/beagle/beagle.c
++++ b/board/ti/beagle/beagle.c
+@@ -70,8 +70,10 @@
+ #define BBTOYS_WIFI			0x01000B00
+ #define BBTOYS_VGA			0x02000B00
+ #define BBTOYS_LCD			0x03000B00
++#define BBTOYS_ULCD			0x04000B00
+ #define BCT_BRETTL3			0x01000F00
+ #define BCT_BRETTL4			0x02000F00
++#define LSR_COM6L_ADPT			0x01001300
+ #define BEAGLE_NO_EEPROM		0xffffffff
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+@@ -213,18 +215,18 @@ void get_board_mem_timings(struct board_sdrc_timings *timings)
+  *		bus 1 for the availability of an AT24C01B serial EEPROM.
+  *		returns the device_vendor field from the EEPROM
+  */
+-static unsigned int get_expansion_id(void)
++static unsigned int get_expansion_id(int eeprom_address)
+ {
+ 	i2c_set_bus_num(EXPANSION_EEPROM_I2C_BUS);
+ 
+ 	/* return BEAGLE_NO_EEPROM if eeprom doesn't respond */
+-	if (i2c_probe(EXPANSION_EEPROM_I2C_ADDRESS) == 1) {
++	if (i2c_probe(eeprom_address) == 1) {
+ 		i2c_set_bus_num(TWL4030_I2C_BUS);
+ 		return BEAGLE_NO_EEPROM;
+ 	}
+ 
+ 	/* read configuration data */
+-	i2c_read(EXPANSION_EEPROM_I2C_ADDRESS, 0, 1, (u8 *)&expansion_config,
++	i2c_read(eeprom_address, 0, 1, (u8 *)&expansion_config,
+ 		 sizeof(expansion_config));
+ 
+ 	i2c_set_bus_num(TWL4030_I2C_BUS);
+@@ -389,7 +391,7 @@ int misc_init_r(void)
+ 					TWL4030_PM_RECEIVER_DEV_GRP_P1);
+ 	}
+ 
+-	switch (get_expansion_id()) {
++	switch (get_expansion_id(EXPANSION_EEPROM_I2C_ADDRESS)) {
+ 	case TINCANTOOLS_ZIPPY:
+ 		printf("Recognized Tincantools Zippy board (rev %d %s)\n",
+ 			expansion_config.revision,
+@@ -454,6 +456,11 @@ int misc_init_r(void)
+ 	case BCT_BRETTL4:
+ 		printf("Recognized bct electronic GmbH brettl4 board\n");
+ 		break;
++	case LSR_COM6L_ADPT:
++		printf("Recognized LSR COM6L Adapter Board\n");
++		MUX_BBTOYS_WIFI()
++		setenv("buddy", "lsr-com6l-adpt");
++		break;
+ 	case BEAGLE_NO_EEPROM:
+ 		printf("No EEPROM on expansion board\n");
+ 		setenv("buddy", "none");
+@@ -467,6 +474,30 @@ int misc_init_r(void)
+ 	if (expansion_config.content == 1)
+ 		setenv(expansion_config.env_var, expansion_config.env_setting);
+ 
++	/* Scan 0x51 as well for loop-thru boards */
++	switch (get_expansion_id(EXPANSION_EEPROM_I2C_ADDRESS + 1)) {
++	case BBTOYS_ULCD:
++		printf("Recognized BeagleBoardToys uLCD-lite board\n");
++		setenv("buddy2", "bbtoys-ulcd");
++		setenv("defaultdisplay", "dvi");
++		setenv("dvimode", "800x480MR-16@60");
++		setenv("lcd1", "i2c mw 40 00 00; i2c mw 40 04 80; i2c mw 40 0d 05");
++		setenv("uenvcmd", "i2c dev 1 ; run lcd1; i2c dev 0");
++		setenv("kmsmode", "video=DVI-D-1:800x480");
++		break;
++	case BEAGLE_NO_EEPROM:
++		printf("No EEPROM on expansion board\n");
++		setenv("buddy2", "none");
++		break;
++	default:
++		printf("Unrecognized expansion board: %x\n",
++			expansion_config.device_vendor);
++		setenv("buddy2", "unknown");
++	}
++
++	if (expansion_config.content == 1)
++		setenv(expansion_config.env_var, expansion_config.env_setting);
++
+ 	twl4030_power_init();
+ 	switch (get_board_revision()) {
+ 	case REVISION_XM_A:
+diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
+index 80a9ec2..87df4e1 100644
+--- a/include/configs/am3517_crane.h
++++ b/include/configs/am3517_crane.h
+@@ -192,18 +192,21 @@
+ #define CONFIG_BOOTFILE		"uImage"
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"loadaddr=0x82000000\0" \
+-	"console=ttyS2,115200n8\0" \
++	"loadaddr=0x80200000\0" \
++	"console=ttyO2,115200n8\0" \
+ 	"mmcdev=0\0" \
++	"mmcroot=/dev/mmcblk0p2 rw\0" \
++	"mmcrootfstype=ext3 rootwait\0" \
+ 	"mmcargs=setenv bootargs console=${console} " \
+-		"root=/dev/mmcblk0p2 rw " \
+-		"rootfstype=ext3 rootwait\0" \
++		"root=${mmcroot} " \
++		"rootfstype=${mmcrootfstype}\0" \
+ 	"nandargs=setenv bootargs console=${console} " \
+ 		"root=/dev/mtdblock4 rw " \
+ 		"rootfstype=jffs2\0" \
+-	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
+-	"bootscript=echo Running bootscript from mmc ...; " \
+-		"source ${loadaddr}\0" \
++	"bootenv=uEnv.txt\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t $loadaddr $filesize\0" \
+ 	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+@@ -215,15 +218,20 @@
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
+-		"if run loadbootscript; then " \
+-			"run bootscript; " \
+-		"else " \
+-			"if run loaduimage; then " \
+-				"run mmcboot; " \
+-			"else run nandboot; " \
+-			"fi; " \
+-		"fi; " \
+-	"else run nandboot; fi"
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if test -n $uenvcmd; then " \
++			"echo Running uenvcmd ...;" \
++			"run uenvcmd;" \
++		"fi;" \
++		"if run loaduimage; then " \
++			"run mmcboot;" \
++		"fi;" \
++	"fi;" \
++	"run nandboot;" \
+ 
+ #define CONFIG_AUTO_COMPLETE	1
+ /*
+diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
+index f767845..bf190ff 100644
+--- a/include/configs/omap3_beagle.h
++++ b/include/configs/omap3_beagle.h
+@@ -228,10 +228,10 @@
+ 	"console=ttyO2,115200n8\0" \
+ 	"mpurate=auto\0" \
+ 	"buddy=none\0" \
++	"buddy2=none\0" \
+ 	"optargs=\0" \
+ 	"camera=none\0" \
+-	"vram=12M\0" \
+-	"dvimode=640x480MR-16@60\0" \
++	"dvimode=1280x720MR-16@60\0" \
+ 	"defaultdisplay=dvi\0" \
+ 	"mmcdev=0\0" \
+ 	"mmcroot=/dev/mmcblk0p2 rw\0" \
+@@ -244,9 +244,9 @@
+ 		"${optargs} " \
+ 		"mpurate=${mpurate} " \
+ 		"buddy=${buddy} "\
++		"buddy2=${buddy2} "\
+ 		"camera=${camera} "\
+-		"vram=${vram} " \
+-		"omapfb.mode=dvi:${dvimode} " \
++		"omapfb.mode=${defaultdisplay}:${dvimode} " \
+ 		"omapdss.def_disp=${defaultdisplay} " \
+ 		"root=${mmcroot} " \
+ 		"rootfstype=${mmcrootfstype}\0" \
+@@ -254,9 +254,9 @@
+ 		"${optargs} " \
+ 		"mpurate=${mpurate} " \
+ 		"buddy=${buddy} "\
++		"buddy2=${buddy2} "\
+ 		"camera=${camera} "\
+-		"vram=${vram} " \
+-		"omapfb.mode=dvi:${dvimode} " \
++		"omapfb.mode=${defaultdisplay}:${dvimode} " \
+ 		"omapdss.def_disp=${defaultdisplay} " \
+ 		"root=${nandroot} " \
+ 		"rootfstype=${nandrootfstype}\0" \
+@@ -268,8 +268,8 @@
+ 		"${optargs} " \
+ 		"mpurate=${mpurate} " \
+ 		"buddy=${buddy} "\
+-		"vram=${vram} " \
+-		"omapfb.mode=dvi:${dvimode} " \
++		"buddy2=${buddy2} "\
++		"omapfb.mode=${defaultdisplay}:${dvimode} " \
+ 		"omapdss.def_disp=${defaultdisplay} " \
+ 		"root=${ramroot} " \
+ 		"rootfstype=${ramrootfstype}\0" \
+diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
+index 7bd0c65..368a304 100644
+--- a/include/configs/omap4_common.h
++++ b/include/configs/omap4_common.h
+@@ -153,31 +153,38 @@
+ 	"console=ttyO2,115200n8\0" \
+ 	"fdt_high=0xffffffff\0" \
+ 	"usbtty=cdc_acm\0" \
+-	"vram=16M\0" \
++	"dvimode=1280x720MR-16@60\0" \
++	"defaultdisplay=dvi\0" \
+ 	"mmcdev=0\0" \
+ 	"mmcroot=/dev/mmcblk0p2 rw\0" \
+ 	"mmcrootfstype=ext3 rootwait\0" \
+ 	"mmcargs=setenv bootargs console=${console} " \
+-		"vram=${vram} " \
++		"omapfb.mode=${defaultdisplay}:${dvimode} " \
+ 		"root=${mmcroot} " \
+ 		"rootfstype=${mmcrootfstype}\0" \
+-	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
+-	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
+-		"source ${loadaddr}\0" \
++	"bootenv=uEnv.txt\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t $loadaddr $filesize\0" \
+ 	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
+-	"mmcboot=echo Booting from mmc${mmcdev} ...; " \
++	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+ 		"bootm ${loadaddr}\0" \
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
+-		"if run loadbootscript; then " \
+-			"run bootscript; " \
+-		"else " \
+-			"if run loaduimage; then " \
+-				"run mmcboot; " \
+-			"fi; " \
+-		"fi; " \
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if test -n $uenvcmd; then " \
++			"echo Running uenvcmd ...;" \
++			"run uenvcmd;" \
++		"fi;" \
++		"if run loaduimage; then " \
++			"run mmcboot;" \
++		"fi;" \
+ 	"fi"
+ 
+ #define CONFIG_AUTO_COMPLETE		1
+-- 
+1.7.10.4
+
