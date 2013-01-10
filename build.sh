@@ -215,22 +215,6 @@ build_omap_xloader () {
 	git_cleanup
 }
 
-
-build_barebox () {
-	project="barebox"
-	git_generic
-
-	make ARCH=arm distclean
-
-	make ARCH=arm CROSS_COMPILE=${CC} ${BAREBOX_CONFIG}
-	echo "Building ${project}: ${BOARD}"
-	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}"
-
-	exit
-
-	git_cleanup
-}
-
 halt_patching_uboot () {
 	pwd
 	echo "-----------------------------"
@@ -394,6 +378,10 @@ build_u_boot () {
 
 	if [ "${odroidx_patch}" ] ; then
 		git am "${DIR}/patches/v2013.01-rc2/0001-MegaPatch-odroid-support-diff-of-https-github.com-ha.patch"
+	fi
+
+	if [ "x${BOARD}" == "ximx233-olinuxino" ] ; then
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-rc2-222-g642ef40
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
@@ -627,9 +615,9 @@ imx233_olinuxino () {
 	armv7_toolchain
 
 	BOARD="imx233-olinuxino"
-	BAREBOX_CONFIG="imx233-olinuxino_defconfig"
-	GIT_SHA="v2012.12.1"
-	build_barebox
+	UBOOT_CONFIG="mx23_olinuxino_config"
+	GIT_SHA="642ef40bdc95bef829ae3aadc217f829c4c298c4"
+	build_u_boot
 }
 
 mx51evk () {
@@ -723,7 +711,7 @@ at91sam9x5ek
 beagleboard
 beaglebone
 igep00x0
-#imx233_olinuxino
+imx233_olinuxino
 mx51evk
 mx53loco
 mx6qsabrelite
