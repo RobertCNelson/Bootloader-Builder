@@ -32,10 +32,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 STABLE="v2012.10"
-TESTING="v2013.01-rc2"
+TESTING="v2013.01-rc3"
 
-#LATEST_GIT="91c038f087d7f643c85609897af3710d5f8b42a9"
-LATEST_GIT="642ef40bdc95bef829ae3aadc217f829c4c298c4"
+#LATEST_GIT="642ef40bdc95bef829ae3aadc217f829c4c298c4"
+#TESTING="v2013.01-rc3"
+#LATEST_GIT="6fb4d74e59750b43f00d460c569e8a30c67c5bb0"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -484,14 +485,14 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
-	v2013_01_rc2=1
+	v2013_01_rc3=1
 	#v2013_01=1
 	if [ "${TESTING}" ] ; then
 		GIT_SHA=${TESTING}
 		build_u_boot
 	fi
 	#unset v2013_01
-	unset v2013_01_rc2
+	unset v2013_01_rc3
 }
 
 build_uboot_latest () {
