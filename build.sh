@@ -31,8 +31,8 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2012.10"
-TESTING="v2013.01-rc3"
+STABLE="v2013.01"
+#TESTING="v2013.01-rc3"
 
 #LATEST_GIT="642ef40bdc95bef829ae3aadc217f829c4c298c4"
 #TESTING="v2013.01-rc3"
@@ -247,6 +247,22 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.10/0001-Revert-Revert-arm-armv7-add-compile-option-mno-unali.patch"
 	fi
 
+	if [ "${v2013_01}" ] ; then
+		#enable u-boot features...
+		git am "${DIR}/patches/v2013.01/0001-enable-bootz-and-generic-load-features.patch"
+
+		#TI:
+		git am "${DIR}/patches/v2013.01/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+		#Should not be needed with v3.8.x
+		git am "${DIR}/patches/v2013.01/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
+
+		#Freescale:
+		git am "${DIR}/patches/v2013.01/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+
+		#Atmel:
+		git am "${DIR}/patches/v2013.01/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
+	fi
+
 	if [ "${v2013_01_rc3}" ] ; then
 		#enable u-boot features...
 		git am "${DIR}/patches/v2013.01-rc3/0001-enable-bootz-and-generic-load-features.patch"
@@ -371,6 +387,10 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.04/0004-panda-set-dtb_file-based-on-core.patch"
 	fi
 
+	if [ "x${BOARD}" == "xarndale5250" ] ; then
+		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
+	fi
+
 	unset BUILDTARGET
 	if [ "${mx6qsabrelite_patch}" ] ; then
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git mx6qsabrelite_v2011.12_linaro_lt_imx6
@@ -476,34 +496,38 @@ cleanup () {
 }
 
 build_uboot_stable () {
-	v2012_10=1
+	v2013_01=1
 	if [ "${STABLE}" ] ; then
 		GIT_SHA=${STABLE}
 		build_u_boot
 	fi
-	unset v2012_10
+	unset v2013_01
 }
 
 build_uboot_testing () {
-	v2013_01_rc3=1
-	#v2013_01=1
+#	v2013_04_rc1=1
+#	v2013_04_rc2=1
+#	v2013_04_rc3=1
 	if [ "${TESTING}" ] ; then
 		GIT_SHA=${TESTING}
 		build_u_boot
 	fi
-	#unset v2013_01
-	unset v2013_01_rc3
+#	unset v2013_04_rc1
+#	unset v2013_04_rc2
+#	unset v2013_04_rc3
 }
 
 build_uboot_latest () {
-	v2013_01_rc3=1
-	#v2013_01=1
+#	v2013_04_rc1=1
+#	v2013_04_rc2=1
+#	v2013_04_rc3=1
 	if [ "${LATEST_GIT}" ] ; then
 		GIT_SHA=${LATEST_GIT}
 		build_u_boot
 	fi
-	#unset v2013_01
-	unset v2013_01_rc3
+#	unset v2013_04_rc1
+#	unset v2013_04_rc2
+#	unset v2013_04_rc3
 }
 
 arndale5250 () {
@@ -513,9 +537,12 @@ arndale5250 () {
 	BOARD="arndale5250"
 	UBOOT_CONFIG="arndale5250_config"
 
-	build_uboot_stable
+	GIT_SHA="v2012.10"
+	build_u_boot
+
+#	build_uboot_stable
 #	build_uboot_testing
-	#build_uboot_latest
+#	build_uboot_latest
 }
 
 at91sam9x5ek () {
@@ -641,7 +668,6 @@ mx53loco () {
 	UBOOT_CONFIG="mx53loco_config"
 
 	build_uboot_stable
-	#armv7hf_toolchain
 	build_uboot_testing
 	build_uboot_latest
 }
