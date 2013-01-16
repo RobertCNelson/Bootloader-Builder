@@ -1,17 +1,17 @@
-From e10892489abdeb61b681dd00777815ec96597072 Mon Sep 17 00:00:00 2001
+From fe872c9c15d83a2329b9e065f10ce9b247c51fd3 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 16 Jan 2013 09:39:31 -0600
+Date: Wed, 16 Jan 2013 11:33:41 -0600
 Subject: [PATCH 2/2] imx convert to uEnv.txt n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx51evk.h       |   20 +++++++++++---------
- include/configs/mx53loco.h      |   17 +++++++++++------
- include/configs/mx6qsabrelite.h |   20 +++++++++++++++-----
- 3 files changed, 37 insertions(+), 20 deletions(-)
+ include/configs/mx51evk.h       |   21 ++++++++++++---------
+ include/configs/mx53loco.h      |   18 ++++++++++++------
+ include/configs/mx6qsabrelite.h |   21 ++++++++++++++++-----
+ 3 files changed, 40 insertions(+), 20 deletions(-)
 
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index becfca2..b889254 100644
+index becfca2..30b84b0 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
 @@ -158,20 +158,21 @@
@@ -44,18 +44,19 @@ index becfca2..b889254 100644
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
  		"bootm\0" \
-@@ -185,7 +186,8 @@
+@@ -185,7 +186,9 @@
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
  		"if run loadbootscript; then " \
 -			"run bootscript; " \
-+			"echo Loaded environment from ${bootenv};" \
-+			"run importbootenv;" \
++			"echo Loaded environment from ${bootenv}; " \
++			"run importbootenv; " \
++			"run loaduimage; " \
  		"else " \
  			"if run loaduimage; then " \
  				"run mmcboot; " \
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index 4a27d52..08ed699 100644
+index 4a27d52..d667cd3 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
 @@ -123,21 +123,25 @@
@@ -89,18 +90,19 @@ index 4a27d52..08ed699 100644
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-@@ -182,7 +186,8 @@
+@@ -182,7 +186,9 @@
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
  		"if run loadbootscript; then " \
 -			"run bootscript; " \
-+			"echo Loaded environment from ${bootenv};" \
-+			"run importbootenv;" \
++			"echo Loaded environment from ${bootenv}; " \
++			"run importbootenv; " \
++			"run loaduimage; " \
  		"else " \
  			"if run loaduimage; then " \
  				"run mmcboot; " \
 diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
-index 4b3db1b..4d14cae 100644
+index 4b3db1b..ed815c8 100644
 --- a/include/configs/mx6qsabrelite.h
 +++ b/include/configs/mx6qsabrelite.h
 @@ -164,19 +164,24 @@
@@ -133,25 +135,21 @@ index 4b3db1b..4d14cae 100644
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-@@ -220,6 +225,10 @@
+@@ -220,8 +225,14 @@
  #define CONFIG_BOOTCOMMAND \
  	   "mmc dev ${mmcdev};" \
  	   "mmc dev ${mmcdev}; if mmc rescan; then " \
 +		   "if run loadbootenv; then " \
-+			   "echo Loaded environment from ${bootenv};" \
-+			   "run importbootenv;" \
++			   "echo Loaded environment from ${bootenv}; " \
++			   "run importbootenv; " \
++			   "run loaduimage; " \
 +		   "else " \
  		   "if run loadbootscript; then " \
  			   "run bootscript; " \
++			   "run loaduimage; " \
  		   "else " \
-@@ -227,6 +236,7 @@
+ 			   "if run loaduimage; then " \
  				   "run mmcboot; " \
- 			   "else run netboot; " \
- 			   "fi; " \
-+			   "fi; " \
- 		   "fi; " \
- 	   "else run netboot; fi"
- 
 -- 
 1.7.10.4
 
