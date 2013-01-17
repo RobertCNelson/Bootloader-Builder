@@ -1,14 +1,14 @@
-From 7bb8098d2692a0f3952e8f637604bd9ad2748608 Mon Sep 17 00:00:00 2001
+From e3223d8800147b6823b3d01f5f6d383ad58e3485 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 17 Jan 2013 09:32:08 -0600
+Date: Thu, 17 Jan 2013 09:57:17 -0600
 Subject: [PATCH 2/2] imx convert to uEnv.txt n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  include/configs/mx51evk.h       |   21 ++++++++++++---------
  include/configs/mx53loco.h      |   18 ++++++++++++------
- include/configs/mx6qsabrelite.h |   22 +++++++++++++++++-----
- 3 files changed, 41 insertions(+), 20 deletions(-)
+ include/configs/mx6qsabrelite.h |   16 +++++++++++-----
+ 3 files changed, 35 insertions(+), 20 deletions(-)
 
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
 index becfca2..30b84b0 100644
@@ -102,10 +102,10 @@ index 4a27d52..d667cd3 100644
  			"if run loaduimage; then " \
  				"run mmcboot; " \
 diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
-index 4b3db1b..dd9d7b0 100644
+index 4b3db1b..d2a2d00 100644
 --- a/include/configs/mx6qsabrelite.h
 +++ b/include/configs/mx6qsabrelite.h
-@@ -158,25 +158,31 @@
+@@ -158,23 +158,27 @@
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"script=boot.scr\0" \
@@ -128,35 +128,34 @@ index 4b3db1b..dd9d7b0 100644
  		"root=${mmcroot}\0" \
  	"loadbootscript=" \
 -		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
-+		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootenv};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
--	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
-+	"loadbootenv=" \
-+		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootenv};\0" \
 +	"importbootenv=echo Importing environment from mmc ...; " \
 +		"env import -t ${loadaddr} ${filesize}\0" \
-+	"loaduimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
-+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+ 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
- 		"run mmcargs; " \
- 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-@@ -220,8 +226,14 @@
- #define CONFIG_BOOTCOMMAND \
+@@ -221,7 +225,9 @@
  	   "mmc dev ${mmcdev};" \
  	   "mmc dev ${mmcdev}; if mmc rescan; then " \
-+		   "if run loadbootenv; then " \
+ 		   "if run loadbootscript; then " \
+-			   "run bootscript; " \
 +			   "echo Loaded environment from ${bootenv}; " \
 +			   "run importbootenv; " \
-+			   "run loaduimage; " \
-+		   "else " \
- 		   "if run loadbootscript; then " \
- 			   "run bootscript; " \
 +			   "run loaduimage; " \
  		   "else " \
  			   "if run loaduimage; then " \
  				   "run mmcboot; " \
+@@ -237,7 +243,7 @@
+ #define CONFIG_SYS_HUSH_PARSER
+ #define CONFIG_SYS_PROMPT	       "MX6QSABRELITE U-Boot > "
+ #define CONFIG_AUTO_COMPLETE
+-#define CONFIG_SYS_CBSIZE	       256
++#define CONFIG_SYS_CBSIZE		512	/* Console I/O Buffer Size */
+ 
+ /* Print Buffer Size */
+ #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
 -- 
 1.7.10.4
 
