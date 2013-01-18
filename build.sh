@@ -368,25 +368,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.10/0005-i.MX-shut-down-video-before-launch-of-O-S.patch"
 	fi
 
-	if [ "${enable_zImage_support}" ] ; then
-		if [ "${v2012_04}" ] ; then
-			git am "${DIR}/patches/v2012.04/0001-enable-bootz-support-for-ti-omap-targets.patch"
-		fi
-	fi
-
-	if [ "${enable_uenv_support}" ] ; then
-		if [ "${v2012_04}" ] ; then
-			git am "${DIR}/patches/v2012.04/0001-panda-convert-to-uEnv.txt-bootscript.patch"
-		fi
-	fi
-
-	if [ "${panda_fixes}" ] ; then
-		RELEASE_VER="-r1"
-		git am "${DIR}/patches/v2012.04/0003-panda-let-the-bootloader-set-the-intial-screen-resol.patch"
-		RELEASE_VER="-r2"
-		git am "${DIR}/patches/v2012.04/0004-panda-set-dtb_file-based-on-core.patch"
-	fi
-
 	if [ "x${BOARD}" == "xarndale5250" ] ; then
 		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 	fi
@@ -621,17 +602,6 @@ pandaboard () {
 
 	BOARD="pandaboard"
 	UBOOT_CONFIG="omap4_panda_config"
-
-	v2012_04=1
-	enable_zImage_support=1
-	enable_uenv_support=1
-	panda_fixes=1
-	GIT_SHA="v2012.04.01"
-	build_u_boot
-	unset panda_fixes
-	unset enable_uenv_support
-	unset enable_zImage_support
-	unset v2012_04
 
 	build_uboot_stable
 	build_uboot_testing
