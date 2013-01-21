@@ -1,6 +1,6 @@
-From da562bce8ae858cb8ecf5654c6ab71bab638a4fc Mon Sep 17 00:00:00 2001
+From 71f56690cde0a69c48db6659e70de45ff2da6073 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 17 Jan 2013 10:18:16 -0600
+Date: Mon, 21 Jan 2013 15:01:18 -0600
 Subject: [PATCH 2/2] imx convert to uEnv.txt n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -102,10 +102,10 @@ index 4a27d52..d667cd3 100644
  			"if run loaduimage; then " \
  				"run mmcboot; " \
 diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
-index 4b3db1b..a9fa725 100644
+index 4b3db1b..2d3452e 100644
 --- a/include/configs/mx6qsabrelite.h
 +++ b/include/configs/mx6qsabrelite.h
-@@ -164,15 +164,16 @@
+@@ -164,18 +164,19 @@
  	"initrd_high=0xffffffff\0" \
  	"fdt_file=imx6q-sabrelite.dtb\0" \
  	"fdt_addr=0x11000000\0" \
@@ -120,19 +120,14 @@ index 4b3db1b..a9fa725 100644
  		"root=${mmcroot}\0" \
  	"loadbootscript=" \
 -		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
-+		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
- 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
-@@ -237,7 +238,7 @@
- #define CONFIG_SYS_HUSH_PARSER
- #define CONFIG_SYS_PROMPT	       "MX6QSABRELITE U-Boot > "
- #define CONFIG_AUTO_COMPLETE
--#define CONFIG_SYS_CBSIZE	       256
-+#define CONFIG_SYS_CBSIZE	       512
- 
- /* Print Buffer Size */
- #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
+-	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
++	"loaduimage=ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+ 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
 -- 
 1.7.10.4
 
