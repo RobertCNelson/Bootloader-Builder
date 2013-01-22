@@ -275,29 +275,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.01-rc3/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
 	fi
 
-	if [ "${v2013_01_rc2}" ] ; then
-		#enable u-boot features...
-		git am "${DIR}/patches/v2013.01-rc2/0001-enable-bootz-and-generic-load-features.patch"
-
-		#TI:
-		git am "${DIR}/patches/v2013.01-rc2/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		#Should not be needed with v3.8.x
-		git am "${DIR}/patches/v2013.01-rc2/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
-
-		#Freescale:
-		git am "${DIR}/patches/v2013.01-rc2/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
-
-		if [ "x${BOARD}" == "xmx53loco" ] ; then
-			RELEASE_VER="-r3"
-			git am "${DIR}/patches/v2013.01-rc2/0003-mx53loco-Fix-PMIC-name.patch"
-			git am "${DIR}/patches/v2013.01-rc2/0004-mx53loco-Call-PMIC-related-functions-from-board_late.patch"
-			git am "${DIR}/patches/v2013.01-rc2/0005-imximage-mx53-needs-transfer-length-a-multiple-of-51.patch"
-		fi
-
-		#Atmel:
-		git am "${DIR}/patches/v2013.01-rc2/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
-	fi
-
 	if [ "x${BOARD}" == "xarndale5250" ] ; then
 		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 	fi
@@ -306,10 +283,6 @@ build_u_boot () {
 	if [ "${mx6qsabrelite_patch}" ] ; then
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git mx6qsabrelite_v2011.12_linaro_lt_imx6
 		BUILDTARGET="u-boot.imx"
-	fi
-
-	if [ "${odroidx_patch}" ] ; then
-		git am "${DIR}/patches/v2013.01-rc2/0001-MegaPatch-odroid-support-diff-of-https-github.com-ha.patch"
 	fi
 
 	if [ "x${BOARD}" == "ximx233-olinuxino" ] ; then
