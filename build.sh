@@ -34,9 +34,9 @@ SYST=$(uname -n)
 STABLE="v2013.01"
 #TESTING="v2013.01-rc3"
 
-#LATEST_GIT="642ef40bdc95bef829ae3aadc217f829c4c298c4"
 #TESTING="v2013.01-rc3"
 #LATEST_GIT="6fb4d74e59750b43f00d460c569e8a30c67c5bb0"
+LATEST_GIT="54b08efcf2f4ff532ce99c53f341a59c193331a5"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -243,6 +243,22 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
 
+	if [ "${v2013_04_rc1}" ] ; then
+		#enable u-boot features...
+		git am "${DIR}/patches/v2013.04-rc1/0001-enable-bootz-and-generic-load-features.patch"
+
+		#TI:
+		git am "${DIR}/patches/v2013.04-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+		#Should not be needed with v3.8.x
+		git am "${DIR}/patches/v2013.04-rc1/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
+
+		#Freescale:
+		git am "${DIR}/patches/v2013.04-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+
+		#Atmel:
+		git am "${DIR}/patches/v2013.04-rc1/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
+	fi
+
 	if [ "${v2013_01}" ] ; then
 		#enable u-boot features...
 		git am "${DIR}/patches/v2013.01/0001-enable-bootz-and-generic-load-features.patch"
@@ -386,14 +402,14 @@ build_uboot_testing () {
 }
 
 build_uboot_latest () {
-#	v2013_04_rc1=1
+	v2013_04_rc1=1
 #	v2013_04_rc2=1
 #	v2013_04_rc3=1
 	if [ "${LATEST_GIT}" ] ; then
 		GIT_SHA=${LATEST_GIT}
 		build_u_boot
 	fi
-#	unset v2013_04_rc1
+	unset v2013_04_rc1
 #	unset v2013_04_rc2
 #	unset v2013_04_rc3
 }
