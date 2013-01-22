@@ -298,27 +298,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.01-rc2/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
 	fi
 
-	if [ "${v2013_01_rc1}" ] ; then
-		#bootz:
-		git am "${DIR}/patches/v2013.01-rc1/0001-enable-bootz-support.patch"
-
-		#TI:
-		git am "${DIR}/patches/v2013.01-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		git am "${DIR}/patches/v2013.01-rc1/0004-am335x-add-mux-config-for-DDR3-version-of-beaglebone.patch"
-
-		#Freescale:
-		git am "${DIR}/patches/v2013.01-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
-
-		#Atmel:
-		git am "${DIR}/patches/v2013.01-rc1/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
-
-		#TI: v2012.04 functionality
-		if [ "x${BOARD}" == "xpandaboard" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2013.01-rc1/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
-		fi
-	fi
-
 	if [ "x${BOARD}" == "xarndale5250" ] ; then
 		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 	fi
