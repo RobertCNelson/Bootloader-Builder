@@ -243,10 +243,6 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
 
-	if [ "${mno_unaligned_access}" ] ; then
-		git am "${DIR}/patches/v2012.10/0001-Revert-Revert-arm-armv7-add-compile-option-mno-unali.patch"
-	fi
-
 	if [ "${v2013_01}" ] ; then
 		#enable u-boot features...
 		git am "${DIR}/patches/v2013.01/0001-enable-bootz-and-generic-load-features.patch"
@@ -321,51 +317,6 @@ build_u_boot () {
 			RELEASE_VER="-r1"
 			git am "${DIR}/patches/v2013.01-rc1/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
 		fi
-	fi
-
-	if [ "${v2012_10}" ] ; then
-		#bootz:
-		git am "${DIR}/patches/v2012.10/0001-enable-bootz-support.patch"
-		#uEnv.txt
-		git am "${DIR}/patches/v2012.10/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		git am "${DIR}/patches/v2012.10/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
-
-		#Atmel:
-		git am "${DIR}/patches/v2012.10/0001-mmc-at91-add-multi-block-read-write-support.patch"
-		git am "${DIR}/patches/v2012.10/0002-ARM-at91sam9x5-enable-MCI0-support-for-9x5ek-board.patch"
-		git am "${DIR}/patches/v2012.10/0003-at91-enable-bootz-and-uEnv.txt-support.patch"
-
-		#Freescale: mx6qsabresd
-		git am "${DIR}/patches/v2012.10/0001-mx6q-Factor-out-common-DDR3-init-code.patch"
-		git am "${DIR}/patches/v2012.10/0002-mx6-Add-basic-support-for-mx6qsabresd-board.patch"
-
-		#TI: DDR3 Bone:
-		git am "${DIR}/patches/v2012.10/0002-am33xx-Enable-DDR3-for-DDR3-version-of-beaglebone.patch"
-		if [ "x${BOARD}" == "xbeaglebone" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2012.10/0003-am335x-add-mux-config-for-DDR3-version-of-beaglebone.patch"
-		fi
-
-		#TI: v2012.04 functionality
-		if [ "x${BOARD}" == "xpandaboard" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2012.10/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
-		fi
-
-		if [ "x${BOARD}" == "xarndale5250" ] ; then
-			git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
-		fi
-
-		if [ "x${BOARD}" == "xbeagleboard" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2012.10/0001-WIP-ARM-OMAP-Beagle-add-LSR-COM6L-Adapter-Board-dete.patch"
-		fi
-	fi
-
-	if [ "${v2012_10_rc1}" ] ; then
-		#Freescale: build fix: 
-		git am "${DIR}/patches/v2012.10/0004-i.MX-mxc_ipuv3_fb-add-ipuv3_fb_shutdown-routine-to-s.patch"
-		git am "${DIR}/patches/v2012.10/0005-i.MX-shut-down-video-before-launch-of-O-S.patch"
 	fi
 
 	if [ "x${BOARD}" == "xarndale5250" ] ; then
