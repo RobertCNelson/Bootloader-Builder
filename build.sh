@@ -259,22 +259,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.01/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
 	fi
 
-	if [ "${v2013_01_rc3}" ] ; then
-		#enable u-boot features...
-		git am "${DIR}/patches/v2013.01-rc3/0001-enable-bootz-and-generic-load-features.patch"
-
-		#TI:
-		git am "${DIR}/patches/v2013.01-rc3/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		#Should not be needed with v3.8.x
-		git am "${DIR}/patches/v2013.01-rc3/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
-
-		#Freescale:
-		git am "${DIR}/patches/v2013.01-rc3/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
-
-		#Atmel:
-		git am "${DIR}/patches/v2013.01-rc3/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
-	fi
-
 	if [ "x${BOARD}" == "xarndale5250" ] ; then
 		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 	fi
