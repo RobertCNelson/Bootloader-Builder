@@ -285,8 +285,8 @@ build_u_boot () {
 		BUILDTARGET="u-boot.imx"
 	fi
 
-	if [ "x${BOARD}" == "ximx233-olinuxino" ] ; then
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-rc2-222-g642ef40
+	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
@@ -414,6 +414,18 @@ build_uboot_latest () {
 #	unset v2013_04_rc3
 }
 
+am3517crane () {
+	cleanup
+	armv7_toolchain
+
+	BOARD="am3517crane"
+	UBOOT_CONFIG="am3517_crane_config"
+
+	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
+}
+
 arndale5250 () {
 	cleanup
 	armv7hf_toolchain
@@ -487,38 +499,18 @@ igep00x0 () {
 	build_uboot_latest
 }
 
-am3517crane () {
+mx23olinuxino () {
 	cleanup
 	armv7_toolchain
 
-	BOARD="am3517crane"
-	UBOOT_CONFIG="am3517_crane_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
-}
-
-pandaboard () {
-	cleanup
-	armv7_toolchain
-
-	BOARD="pandaboard"
-	UBOOT_CONFIG="omap4_panda_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
-}
-
-imx233_olinuxino () {
-	cleanup
-	armv7_toolchain
-
-	BOARD="imx233-olinuxino"
+	BOARD="mx23olinuxino"
 	UBOOT_CONFIG="mx23_olinuxino_config"
-	GIT_SHA="642ef40bdc95bef829ae3aadc217f829c4c298c4"
+	GIT_SHA="v2013.01"
 	build_u_boot
+
+#	build_uboot_stable
+#	build_uboot_testing
+#	build_uboot_latest
 }
 
 mx51evk () {
@@ -593,6 +585,18 @@ odroidx () {
 	unset odroidx_patch
 }
 
+pandaboard () {
+	cleanup
+	armv7_toolchain
+
+	BOARD="pandaboard"
+	UBOOT_CONFIG="omap4_panda_config"
+
+	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
+}
+
 rpib () {
 	cleanup
 	armv7_toolchain
@@ -611,7 +615,7 @@ at91sam9x5ek
 beagleboard
 beaglebone
 igep00x0
-imx233_olinuxino
+mx23olinuxino
 mx51evk
 mx53loco
 mx6qsabrelite
