@@ -286,7 +286,8 @@ build_u_boot () {
 	fi
 
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01
+		RELEASE_VER="-r1"
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-r1
 		BUILDTARGET="u-boot.sb"
 	fi
 
