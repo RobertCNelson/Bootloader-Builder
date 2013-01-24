@@ -287,6 +287,7 @@ build_u_boot () {
 
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01
+		git am "${DIR}/patches/v2013.01/0001-mxs-mxsboot-Add-support-for-SD-card-generation-for-i.patch"
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
