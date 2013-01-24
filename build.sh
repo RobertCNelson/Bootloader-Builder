@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2010-2012 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2010-2013 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -287,7 +287,7 @@ build_u_boot () {
 
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01
-		git am "${DIR}/patches/v2013.01/0001-mxs-mxsboot-Add-support-for-SD-card-generation-for-i.patch"
+		BUILDTARGET="u-boot.sb"
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
@@ -306,6 +306,10 @@ build_u_boot () {
 
 	unset pre_built
 	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx ] ; then
+		pre_built=1
+	fi
+
+	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.sb ] ; then
 		pre_built=1
 	fi
 
@@ -331,6 +335,14 @@ build_u_boot () {
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
 			filename_search="u-boot.imx"
 			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.imx"
+			file_save
+			UBOOT_DONE=1
+		fi
+
+		#Freescale mx23 targets just need u-boot.sb from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.sb ] ; then
+			filename_search="u-boot.sb"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.sb"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -502,16 +514,23 @@ igep00x0 () {
 
 mx23olinuxino () {
 	cleanup
-	armv7_toolchain
+	if [ $(which elftosb) ] ; then
+		armv7_toolchain
 
-	BOARD="mx23olinuxino"
-	UBOOT_CONFIG="mx23_olinuxino_config"
-	GIT_SHA="v2013.01"
-	build_u_boot
+		BOARD="mx23olinuxino"
+		UBOOT_CONFIG="mx23_olinuxino_config"
+		GIT_SHA="v2013.01"
+		build_u_boot
 
-#	build_uboot_stable
-#	build_uboot_testing
-#	build_uboot_latest
+#		build_uboot_stable
+#		build_uboot_testing
+#		build_uboot_latest
+	else
+		echo "-----------------------------"
+		echo "Skipping Binary Build of [mx23_olinuxino]: as elftosb is not installed."
+		echo "See: http://eewiki.net/display/linuxonarm/iMX233-OLinuXino#iMX233-OLinuXino-elftosb"
+		echo "-----------------------------"
+	fi
 }
 
 mx51evk () {
