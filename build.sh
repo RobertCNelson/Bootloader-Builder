@@ -288,6 +288,8 @@ build_u_boot () {
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		RELEASE_VER="-r1"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-r1
+		RELEASE_VER="-r2"
+		git am "${DIR}/patches/v2013.01/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
 		BUILDTARGET="u-boot.sb"
 	fi
 
