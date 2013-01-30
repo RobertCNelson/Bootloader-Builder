@@ -9,12 +9,12 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index 4658aea..2a309b6 100644
+index 42de557..01ab01b 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
-@@ -58,6 +58,12 @@
- #define	CONFIG_CMD_GPIO
- #define	CONFIG_CMD_MMC
+@@ -62,6 +62,12 @@
+ #define	CONFIG_CMD_NET
+ #define	CONFIG_CMD_USB
  
 +#define CONFIG_FS_FAT
 +#define CONFIG_FS_EXT4
@@ -25,7 +25,7 @@ index 4658aea..2a309b6 100644
  /*
   * Memory configurations
   */
-@@ -162,6 +168,7 @@
+@@ -193,6 +199,7 @@
  		"fi ; "	\
  		"fi\0" \
  	"script=boot.scr\0"	\
@@ -33,7 +33,7 @@ index 4658aea..2a309b6 100644
  	"uimage=uImage\0" \
  	"console=ttyAMA0\0" \
  	"fdt_file=imx23-olinuxino.dtb\0" \
-@@ -173,7 +180,9 @@
+@@ -205,7 +212,9 @@
  	"mmcargs=setenv bootargs console=${console},${baudrate} " \
  		"root=${mmcroot}\0" \
  	"loadbootscript="  \
@@ -44,7 +44,7 @@ index 4658aea..2a309b6 100644
  	"bootscript=echo Running bootscript from mmc ...; "	\
  		"source\0" \
  	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
-@@ -197,7 +206,9 @@
+@@ -254,7 +263,9 @@
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
  		"if run loadbootscript; then " \
