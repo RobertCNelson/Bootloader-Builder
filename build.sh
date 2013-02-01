@@ -31,7 +31,7 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2013.01"
+STABLE="v2013.01.01"
 #TESTING="v2013.01-rc3"
 
 #LATEST_GIT="88ba6d530d5f30cc2cc3c91bbe4d28e60e96aca5"
