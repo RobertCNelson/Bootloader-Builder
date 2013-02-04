@@ -1,0 +1,36 @@
+From 1877c9f38fe6b45351b28468d454d710a676344f Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Mon, 4 Feb 2013 10:49:37 -0600
+Subject: [PATCH 2/2] bone: use dtb_file variable for device tree file
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/am335x/board.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
+index ed4229e..337ea56 100644
+--- a/board/ti/am335x/board.c
++++ b/board/ti/am335x/board.c
+@@ -337,6 +337,18 @@ int board_late_init(void)
+ 	strncpy(safe_string, (char *)header.version, sizeof(header.version));
+ 	safe_string[sizeof(header.version)] = 0;
+ 	setenv("board_rev", safe_string);
++
++	if (board_is_bone()) {
++		setenv("dtb_file", "am335x-bone.dtb");
++	}
++
++	if (board_is_bone_lt()) {
++		setenv("dtb_file", "am335x-bonelt.dtb");
++	}
++
++	if (board_is_evm_sk()) {
++		setenv("dtb_file", "am335x-evmsk.dtb");
++	}
+ #endif
+ 
+ 	return 0;
+-- 
+1.7.10.4
+

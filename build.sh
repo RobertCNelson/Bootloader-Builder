@@ -34,8 +34,8 @@ SYST=$(uname -n)
 STABLE="v2013.01.01"
 #TESTING="v2013.01-rc3"
 
-#LATEST_GIT="88ba6d530d5f30cc2cc3c91bbe4d28e60e96aca5"
-LATEST_GIT="6ad77d88e57f6ab815ec7e85c5ac329054318c73"
+#LATEST_GIT="6ad77d88e57f6ab815ec7e85c5ac329054318c73"
+LATEST_GIT="2d795c9621de274cb0cb8cf4af5941293f89c3be"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -247,10 +247,14 @@ build_u_boot () {
 		#enable u-boot features...
 		git am "${DIR}/patches/v2013.04-rc1/0001-enable-bootz-and-generic-load-features.patch"
 
+		#TI: Bone:
+		git am "${DIR}/patches/v2013.04-rc1/0002-bone-use-dtb_file-variable-for-device-tree-file.patch"
+
 		#TI:
 		git am "${DIR}/patches/v2013.04-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
 		#Should not be needed with v3.8.x
 		git am "${DIR}/patches/v2013.04-rc1/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
+		git am "${DIR}/patches/v2013.04-rc1/0003-beagle-at24-retry-with-16bit-addressing.patch"
 
 		#Freescale:
 		git am "${DIR}/patches/v2013.04-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
