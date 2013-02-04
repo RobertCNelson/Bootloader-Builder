@@ -273,6 +273,11 @@ build_u_boot () {
 			git am "${DIR}/patches/v2013.01/0003-beagle-at24-retry-with-16bit-addressing.patch"
 		fi
 
+		if [ "x${BOARD}" == "xbeaglebone" ] ; then
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2013.01/0002-bone-use-dtb_file-variable-for-device-tree-file.patch"
+		fi
+
 		#Freescale:
 		git am "${DIR}/patches/v2013.01/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
 
