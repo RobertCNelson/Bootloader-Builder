@@ -285,6 +285,11 @@ build_u_boot () {
 		#Freescale:
 		git am "${DIR}/patches/v2013.01/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
 
+		if [ "x${BOARD}" == "xmx6qsabresd" ] ; then
+			RELEASE_VER="-r1"
+			git am "${DIR}/patches/v2013.01/0003-imx-mx6qsabre_common-uEnv.txt.patch"
+		fi
+
 		#Atmel:
 		git am "${DIR}/patches/v2013.01/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
 	fi
