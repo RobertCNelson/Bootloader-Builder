@@ -306,6 +306,11 @@ build_u_boot () {
 		BUILDTARGET="u-boot.sb"
 	fi
 
+	if [ "x${BOARD}" == "xwandboard" ] ; then
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2009.08_wandboard-sdk-20130125
+		BUILDTARGET="u-boot.bin"
+	fi
+
 	if [ -f "${DIR}/stop.after.patch" ] ; then
 		echo "-----------------------------"
 		pwd
@@ -645,6 +650,21 @@ rpib () {
 	build_uboot_latest
 }
 
+wandboard () {
+	cleanup
+	armv7hf_toolchain
+
+	BOARD="wandboard"
+	UBOOT_CONFIG="wandboard_config"
+
+	GIT_SHA="v2009.08"
+	build_u_boot
+
+#	build_uboot_stable
+#	build_uboot_testing
+#	build_uboot_latest
+}
+
 am3517crane
 arndale5250
 at91sam9x5ek
@@ -659,4 +679,5 @@ mx6qsabresd
 odroidx
 pandaboard
 rpib
-
+wandboard
+#
