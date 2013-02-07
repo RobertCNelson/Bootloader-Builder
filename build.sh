@@ -288,6 +288,8 @@ build_u_boot () {
 		if [ "x${BOARD}" == "xmx6qsabresd" ] ; then
 			RELEASE_VER="-r1"
 			git am "${DIR}/patches/v2013.01/0003-imx-mx6qsabre_common-uEnv.txt.patch"
+			RELEASE_VER="-r2"
+			git am "${DIR}/patches/v2013.01/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
 		fi
 
 		#Atmel:
