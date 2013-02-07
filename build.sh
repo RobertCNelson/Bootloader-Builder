@@ -34,8 +34,8 @@ SYST=$(uname -n)
 STABLE="v2013.01.01"
 #TESTING="v2013.01-rc3"
 
-#LATEST_GIT="2d795c9621de274cb0cb8cf4af5941293f89c3be"
-LATEST_GIT="6e787b7234f7298d487d91dfb40c3146bf194a3e"
+#LATEST_GIT="6e787b7234f7298d487d91dfb40c3146bf194a3e"
+LATEST_GIT="d62ef5619c9249772247d6af3b8e65207ae0c871"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -258,6 +258,7 @@ build_u_boot () {
 
 		#Freescale:
 		git am "${DIR}/patches/v2013.04-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc1/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/v2013.04-rc1/0002-at91-convert-to-uEnv.txt-n-fixes.patch"

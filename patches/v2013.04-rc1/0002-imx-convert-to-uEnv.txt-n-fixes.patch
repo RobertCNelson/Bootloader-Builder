@@ -5,10 +5,11 @@ Subject: [PATCH 2/2] imx convert to uEnv.txt n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx51evk.h       |   21 ++++++++++++---------
- include/configs/mx53loco.h      |   18 ++++++++++++------
- include/configs/mx6qsabrelite.h |    7 ++++---
- 3 files changed, 28 insertions(+), 18 deletions(-)
+ include/configs/mx51evk.h          |   21 ++++++++++++---------
+ include/configs/mx53loco.h         |   18 ++++++++++++------
+ include/configs/mx6qsabre_common.h |    9 +++++++--
+ include/configs/mx6qsabrelite.h    |    7 ++++---
+ 4 files changed, 35 insertions(+), 20 deletions(-)
 
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
 index becfca2..30b84b0 100644
@@ -95,6 +96,40 @@ index 4a27d52..d667cd3 100644
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
  		"if run loadbootscript; then " \
 -			"run bootscript; " \
++			"echo Loaded environment from ${bootenv}; " \
++			"run importbootenv; " \
++			"run loaduimage; " \
+ 		"else " \
+ 			"if run loaduimage; then " \
+ 				"run mmcboot; " \
+diff --git a/include/configs/mx6qsabre_common.h b/include/configs/mx6qsabre_common.h
+index 25f555f..63668e9 100644
+--- a/include/configs/mx6qsabre_common.h
++++ b/include/configs/mx6qsabre_common.h
+@@ -87,6 +87,7 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"script=boot.scr\0" \
++	"bootenv=uEnv.txt\0" \
+ 	"uimage=uImage\0" \
+ 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
+ 	"fdt_addr=0x11000000\0" \
+@@ -101,7 +102,9 @@
+ 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+ 		"root=${mmcroot}\0" \
+ 	"loadbootscript=" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootenv};\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t ${loadaddr} ${filesize}\0" \
+ 	"bootscript=echo Running bootscript from mmc ...; " \
+ 		"source\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+@@ -150,7 +153,9 @@
+ 	"mmc dev ${mmcdev};" \
+ 	"if mmc rescan ${mmcdev}; then " \
+ 		"if run loadbootscript; then " \
+-		"run bootscript; " \
 +			"echo Loaded environment from ${bootenv}; " \
 +			"run importbootenv; " \
 +			"run loaduimage; " \
