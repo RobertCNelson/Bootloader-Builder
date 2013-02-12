@@ -704,11 +704,11 @@ sama5d3xek () {
 	at91bootstrap_config="at91sama5d3xeksd_uboot_defconfig"
 	build_at91bootstrap
 
-	armv7_toolchain
-	barebox_config="sama5d3xek_defconfig"
-	build_barebox_stable
-	build_barebox_testing
-	build_barebox_latest
+#	armv7_toolchain
+#	barebox_config="sama5d3xek_defconfig"
+#	build_barebox_stable
+#	build_barebox_testing
+#	build_barebox_latest
 }
 
 wandboard () {
