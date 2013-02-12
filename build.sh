@@ -193,30 +193,6 @@ build_at91bootstrap () {
 	git_cleanup
 }
 
-build_omap_xloader () {
-	project="x-loader"
-	git_generic
-	RELEASE_VER="-r0"
-
-	make ARCH=arm distclean
-
-	XGIT_VERSION=$(git rev-parse --short HEAD)
-	XGIT_MON=$(git show HEAD | grep Date: | awk '{print $3}')
-	XGIT_DAY=$(git show HEAD | grep Date: | awk '{print $4}')
-
-	make ARCH=arm distclean &> /dev/null
-	make ARCH=arm CROSS_COMPILE=${CC} ${XLOAD_CONFIG}
-	echo "Building ${project}: ${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}"
-	make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ift > /dev/null
-
-	mkdir -p ${DIR}/deploy/${BOARD}
-	cp -v MLO ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}
-	md5sum=$(md5sum ${DIR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION} | awk '{print $1}')
-	echo "${BOARD}_${MIRROR}/deploy/${BOARD}/MLO-${BOARD}-${XGIT_MON}-${XGIT_DAY}-${XGIT_VERSION}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
-
-	git_cleanup
-}
-
 halt_patching_uboot () {
 	pwd
 	echo "-----------------------------"
@@ -585,9 +561,6 @@ igep00x0 () {
 	armv7_toolchain
 
 	BOARD="igep00x0"
-
-	XLOAD_CONFIG="igep00x0_config"
-	build_omap_xloader
 
 	UBOOT_CONFIG="igep0020_config"
 
