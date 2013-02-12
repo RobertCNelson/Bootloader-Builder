@@ -175,24 +175,6 @@ git_cleanup () {
 	echo "-----------------------------"
 }
 
-build_at91bootstrap () {
-	project="at91bootstrap"
-	git_generic
-	RELEASE_VER="-r0"
-
-	make CROSS_COMPILE=${CC} clean &> /dev/null
-	make CROSS_COMPILE=${CC} ${AT91BOOTSTRAP_CONFIG}_defconfig
-	echo "Building ${project}: ${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin"
-	make CROSS_COMPILE=${CC} > /dev/null
-
-	mkdir -p ${DIR}/deploy/${BOARD}/
-	cp -v binaries/*.bin ${DIR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin
-	md5sum=$(md5sum ${DIR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin | awk '{print $1}')
-	echo "${BOARD}_${MIRROR}/deploy/${BOARD}/${AT91BOOTSTRAP_CONFIG}${RELEASE_VER}.bin_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
-
-	git_cleanup
-}
-
 halt_patching_uboot () {
 	pwd
 	echo "-----------------------------"
@@ -211,6 +193,29 @@ file_save () {
 	fi
 	touch ${DIR}/${filename_id}_${md5sum}
 	echo "${BOARD}_${MIRROR}/${filename_id}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+}
+
+build_at91bootstrap () {
+	project="at91bootstrap"
+	git_generic
+	RELEASE_VER="-r0"
+
+	at91bootstrap_version=$(git rev-parse --short HEAD)
+
+	make CROSS_COMPILE=${CC} clean &> /dev/null
+	make CROSS_COMPILE=${CC} ${at91bootstrap_config}
+	echo "Building ${project}: ${at91bootstrap_config}-${at91bootstrap_version}${RELEASE_VER}.bin"
+	make CROSS_COMPILE=${CC} > /dev/null
+
+	mkdir -p ${DIR}/deploy/${BOARD}/
+
+	if [ -f ${DIR}/build/${project}/binaries/*.bin ] ; then
+		filename_search="binaries/*.bin"
+		filename_id="deploy/${BOARD}/${at91bootstrap_config}-${at91bootstrap_version}${RELEASE_VER}.bin"
+		file_save
+	fi
+
+	git_cleanup
 }
 
 build_u_boot () {
@@ -514,16 +519,19 @@ at91sam9x5ek () {
 	armv5_embedded_toolchain
 
 	BOARD="at91sam9x5ek"
+
+	at91bootstrap_config="at91sam9x5sduboot_defconfig"
 	GIT_SHA="8e099c3a47f11c03b1ebe5cbc8d7406063b55262"
-	AT91BOOTSTRAP_CONFIG="at91sam9x5sduboot"
 	build_at91bootstrap
 
-	UBOOT_CONFIG="at91sam9x5ek_nandflash_config"
+	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
+	GIT_SHA="05329e30f2579b1ce2c9c733417eac2f8e6b324b"
+	build_at91bootstrap
+
+	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
 
 	build_uboot_stable
 	build_uboot_testing
-
-	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
 	build_uboot_latest
 
 	barebox_config="at91sam9x5ek_defconfig"
@@ -688,10 +696,15 @@ rpib () {
 
 sama5d3xek () {
 	cleanup
-	armv7_toolchain
+	armv5_embedded_toolchain
 
 	BOARD="sama5d3xek"
 
+	GIT_SHA="05329e30f2579b1ce2c9c733417eac2f8e6b324b"
+	at91bootstrap_config="at91sama5d3xeksd_uboot_defconfig"
+	build_at91bootstrap
+
+	armv7_toolchain
 	barebox_config="sama5d3xek_defconfig"
 	build_barebox_stable
 	build_barebox_testing
