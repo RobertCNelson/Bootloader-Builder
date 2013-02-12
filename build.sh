@@ -20,9 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-unset STABLE
-unset TESTING
-
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
 
@@ -31,11 +28,16 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-STABLE="v2013.01.01"
-#TESTING="v2013.01-rc3"
+uboot_stable="v2013.01.01"
+#uboot_testing="v2013.01-rc3"
 
-#LATEST_GIT="d62ef5619c9249772247d6af3b8e65207ae0c871"
-LATEST_GIT="58864ddc7276ca7403ddbb716da5853638f37519"
+#uboot_latest="d62ef5619c9249772247d6af3b8e65207ae0c871"
+uboot_latest="58864ddc7276ca7403ddbb716da5853638f37519"
+
+barebox_stable="v2013.02.0"
+#barebox_testing="v2013.02.0"
+
+barebox_latest="c0ba0a64ae16bc9f722187acb0769bb48d674c5d"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -417,14 +419,41 @@ build_u_boot () {
 	git_cleanup
 }
 
+build_barebox () {
+	project="barebox"
+	git_generic
+	RELEASE_VER="-r0"
+
+	make ARCH=arm CROSS_COMPILE=${CC} distclean 2> /dev/null
+	barebox_version=$(git describe)
+
+	barebox_filename="${BOARD}-${barebox_version}${RELEASE_VER}"
+
+	mkdir -p ${DIR}/deploy/${BOARD}
+
+	unset BUILDTARGET
+
+	make ARCH=arm CROSS_COMPILE=${CC} ${barebox_config}
+	echo "Building ${project}: ${barebox_filename}"
+	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
+
+	if [ -f ${DIR}/build/${project}/barebox-flash-image ] ; then
+		filename_search="barebox-flash-image"
+		filename_id="deploy/${BOARD}/zbarebox-${barebox_filename}.bin"
+		file_save
+	fi
+
+	git_cleanup
+}
+
 cleanup () {
 	unset GIT_SHA
 }
 
 build_uboot_stable () {
 	v2013_01=1
-	if [ "${STABLE}" ] ; then
-		GIT_SHA=${STABLE}
+	if [ "${uboot_stable}" ] ; then
+		GIT_SHA=${uboot_stable}
 		build_u_boot
 	fi
 	unset v2013_01
@@ -434,8 +463,8 @@ build_uboot_testing () {
 #	v2013_04_rc1=1
 #	v2013_04_rc2=1
 #	v2013_04_rc3=1
-	if [ "${TESTING}" ] ; then
-		GIT_SHA=${TESTING}
+	if [ "${uboot_testing}" ] ; then
+		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
 #	unset v2013_04_rc1
@@ -447,13 +476,34 @@ build_uboot_latest () {
 	v2013_04_rc1=1
 #	v2013_04_rc2=1
 #	v2013_04_rc3=1
-	if [ "${LATEST_GIT}" ] ; then
-		GIT_SHA=${LATEST_GIT}
+	if [ "${uboot_latest}" ] ; then
+		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
 	unset v2013_04_rc1
 #	unset v2013_04_rc2
 #	unset v2013_04_rc3
+}
+
+build_barebox_stable () {
+	if [ "${barebox_stable}" ] ; then
+		GIT_SHA=${barebox_stable}
+		build_barebox
+	fi
+}
+
+build_barebox_testing () {
+	if [ "${barebox_stable}" ] ; then
+		GIT_SHA=${barebox_testing}
+		build_barebox
+	fi
+}
+
+build_barebox_latest () {
+	if [ "${barebox_stable}" ] ; then
+		GIT_SHA=${barebox_latest}
+		build_barebox
+	fi
 }
 
 am3517crane () {
@@ -499,6 +549,11 @@ at91sam9x5ek () {
 
 	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
 	build_uboot_latest
+
+	barebox_config="at91sam9x5ek_defconfig"
+	build_barebox_stable
+	build_barebox_testing
+	build_barebox_latest
 }
 
 beagleboard () {
@@ -658,6 +713,18 @@ rpib () {
 	build_uboot_latest
 }
 
+sama5d3xek () {
+	cleanup
+	armv7_toolchain
+
+	BOARD="sama5d3xek"
+
+	barebox_config="sama5d3xek_defconfig"
+	build_barebox_stable
+	build_barebox_testing
+	build_barebox_latest
+}
+
 wandboard () {
 	cleanup
 	armv7hf_toolchain
@@ -687,5 +754,6 @@ mx6qsabresd
 odroidx
 pandaboard
 rpib
+sama5d3xek
 wandboard
 #
