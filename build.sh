@@ -31,8 +31,8 @@ SYST=$(uname -n)
 uboot_stable="v2013.01.01"
 #uboot_testing="v2013.01-rc3"
 
-#uboot_latest="d62ef5619c9249772247d6af3b8e65207ae0c871"
-uboot_latest="58864ddc7276ca7403ddbb716da5853638f37519"
+#uboot_latest="58864ddc7276ca7403ddbb716da5853638f37519"
+uboot_latest="9c748e02d99476e6a08d55eadfd8776edffe1e2e"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -245,6 +245,9 @@ build_u_boot () {
 
 		#Atmel:
 		git am "${DIR}/patches/v2013.04-rc1/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
+
+		#Freescale: i.mx23
+		git am "${DIR}/patches/v2013.04-rc1/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
 	fi
 
 	if [ "${v2013_01}" ] ; then
@@ -290,16 +293,19 @@ build_u_boot () {
 		BUILDTARGET="u-boot.imx"
 	fi
 
-	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
+	if [ ! "${v2013_04_rc1}" ] && [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		RELEASE_VER="-r3"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-r2
 		git am "${DIR}/patches/v2013.01/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
-		BUILDTARGET="u-boot.sb"
 	fi
 
 	if [ "x${BOARD}" == "xwandboard" ] ; then
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2009.08_wandboard-sdk-20130125
 		BUILDTARGET="u-boot.bin"
+	fi
+
+	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
+		BUILDTARGET="u-boot.sb"
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
@@ -589,7 +595,7 @@ mx23olinuxino () {
 
 #		build_uboot_stable
 #		build_uboot_testing
-#		build_uboot_latest
+		build_uboot_latest
 	else
 		echo "-----------------------------"
 		echo "Skipping Binary Build of [mx23_olinuxino]: as elftosb is not installed."

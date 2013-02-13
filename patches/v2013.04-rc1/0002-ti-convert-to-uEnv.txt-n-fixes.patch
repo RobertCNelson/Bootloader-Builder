@@ -8,8 +8,8 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/beagle/beagle.c       |   39 +++++++++++++++++++++++++++++++++++----
  include/configs/am3517_crane.h |   40 ++++++++++++++++++++++++----------------
  include/configs/omap3_beagle.h |   16 ++++++++--------
- include/configs/omap4_common.h |   33 ++++++++++++++++++++-------------
- 4 files changed, 87 insertions(+), 41 deletions(-)
+ include/configs/omap4_common.h |    5 +++--
+ 4 files changed, 70 insertions(+), 30 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index b829a79..6f45645 100644
@@ -101,10 +101,10 @@ index b829a79..6f45645 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_A:
 diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
-index 80a9ec2..87df4e1 100644
+index c5bed6a..3967d69 100644
 --- a/include/configs/am3517_crane.h
 +++ b/include/configs/am3517_crane.h
-@@ -192,18 +192,21 @@
+@@ -190,18 +190,21 @@
  #define CONFIG_BOOTFILE		"uImage"
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -133,7 +133,7 @@ index 80a9ec2..87df4e1 100644
  	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
-@@ -215,15 +218,20 @@
+@@ -213,15 +216,20 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
@@ -164,10 +164,10 @@ index 80a9ec2..87df4e1 100644
  #define CONFIG_AUTO_COMPLETE	1
  /*
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index f767845..bf190ff 100644
+index 6b8a00b..439c403 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
-@@ -228,10 +228,10 @@
+@@ -226,10 +226,10 @@
  	"console=ttyO2,115200n8\0" \
  	"mpurate=auto\0" \
  	"buddy=none\0" \
@@ -180,7 +180,7 @@ index f767845..bf190ff 100644
  	"defaultdisplay=dvi\0" \
  	"mmcdev=0\0" \
  	"mmcroot=/dev/mmcblk0p2 rw\0" \
-@@ -244,9 +244,9 @@
+@@ -242,9 +242,9 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
@@ -192,7 +192,7 @@ index f767845..bf190ff 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${mmcroot} " \
  		"rootfstype=${mmcrootfstype}\0" \
-@@ -254,9 +254,9 @@
+@@ -252,9 +252,9 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
@@ -204,7 +204,7 @@ index f767845..bf190ff 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${nandroot} " \
  		"rootfstype=${nandrootfstype}\0" \
-@@ -268,8 +268,8 @@
+@@ -266,8 +266,8 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
@@ -216,10 +216,10 @@ index f767845..bf190ff 100644
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
 diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
-index 7bd0c65..3d0ff61 100644
+index 5e480fd..09647ac 100644
 --- a/include/configs/omap4_common.h
 +++ b/include/configs/omap4_common.h
-@@ -153,31 +153,38 @@
+@@ -151,12 +151,13 @@
  	"console=ttyO2,115200n8\0" \
  	"fdt_high=0xffffffff\0" \
  	"usbtty=cdc_acm\0" \
@@ -234,43 +234,7 @@ index 7bd0c65..3d0ff61 100644
 +		"omapfb.mode=${defaultdisplay}:${dvimode} " \
  		"root=${mmcroot} " \
  		"rootfstype=${mmcrootfstype}\0" \
--	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
--	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
--		"source ${loadaddr}\0" \
-+	"bootenv=uEnv.txt\0" \
-+	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
-+	"importbootenv=echo Importing environment from mmc ...; " \
-+		"env import -t $loadaddr $filesize\0" \
- 	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
--	"mmcboot=echo Booting from mmc${mmcdev} ...; " \
-+	"mmcboot=echo Booting from mmc ...; " \
- 		"run mmcargs; " \
- 		"bootm ${loadaddr}\0" \
- 
- #define CONFIG_BOOTCOMMAND \
- 	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"if run loadbootscript; then " \
--			"run bootscript; " \
--		"else " \
--			"if run loaduimage; then " \
--				"run mmcboot; " \
--			"fi; " \
--		"fi; " \
-+		"echo SD/MMC found on device ${mmcdev};" \
-+		"if run loadbootenv; then " \
-+			"echo Loaded environment from ${bootenv};" \
-+			"run importbootenv;" \
-+		"fi;" \
-+		"if test -n $uenvcmd; then " \
-+			"echo Running uenvcmd ...;" \
-+			"run uenvcmd;" \
-+		"fi;" \
-+		"if run loaduimage; then " \
-+			"run mmcboot;" \
-+		"fi;" \
- 	"fi"
- 
- #define CONFIG_AUTO_COMPLETE		1
+ 	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
 -- 
 1.7.10.4
 
