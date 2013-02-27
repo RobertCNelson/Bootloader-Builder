@@ -32,12 +32,12 @@ uboot_stable="v2013.01.01"
 #uboot_testing="v2013.01-rc3"
 
 #uboot_latest="58864ddc7276ca7403ddbb716da5853638f37519"
-uboot_latest="9c748e02d99476e6a08d55eadfd8776edffe1e2e"
+uboot_latest="47104c37de076e2be35ae1b3d144614f4d24a766"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
 
-barebox_latest="c0ba0a64ae16bc9f722187acb0769bb48d674c5d"
+barebox_latest="8c82b1b2021591a8c3537958c7fa60816c584d8a"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
