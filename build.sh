@@ -300,7 +300,8 @@ build_u_boot () {
 	fi
 
 	if [ "x${BOARD}" == "xwandboard" ] ; then
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2009.08_wandboard-sdk-20130125
+		RELEASE_VER="-r1"
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2009.08_wandboard-sdk-20130208
 		BUILDTARGET="u-boot.bin"
 	fi
 
