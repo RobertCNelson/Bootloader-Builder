@@ -31,8 +31,8 @@ SYST=$(uname -n)
 uboot_stable="v2013.01.01"
 #uboot_testing="v2013.01-rc3"
 
-#uboot_latest="58864ddc7276ca7403ddbb716da5853638f37519"
-uboot_latest="47104c37de076e2be35ae1b3d144614f4d24a766"
+#uboot_latest="47104c37de076e2be35ae1b3d144614f4d24a766"
+uboot_latest="a1eac57a2001ecf86a46f520cd85ef8e9c8b3687"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -307,6 +307,14 @@ build_u_boot () {
 
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
+	fi
+
+	if [ "x${BOARD}" == "xsama5d3xek" ] ; then
+		RELEASE_VER="-r0"
+		git am "${DIR}/patches/v2013.04-rc1/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc1/0002-NET-macb-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc1/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc1/0004-ARM-atmel-add-sama5d3xek-support.patch"
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
@@ -710,6 +718,12 @@ sama5d3xek () {
 	GIT_SHA="05329e30f2579b1ce2c9c733417eac2f8e6b324b"
 	at91bootstrap_config="at91sama5d3xeksd_uboot_defconfig"
 	build_at91bootstrap
+
+	UBOOT_CONFIG="sama5d3xek_sdcard_config"
+
+#	build_uboot_stable
+#	build_uboot_testing
+	build_uboot_latest
 
 #	armv7_toolchain
 #	barebox_config="sama5d3xek_defconfig"
