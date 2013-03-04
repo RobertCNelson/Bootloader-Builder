@@ -31,13 +31,14 @@ SYST=$(uname -n)
 uboot_stable="v2013.01.01"
 #uboot_testing="v2013.01-rc3"
 
-#uboot_latest="47104c37de076e2be35ae1b3d144614f4d24a766"
-uboot_latest="a1eac57a2001ecf86a46f520cd85ef8e9c8b3687"
+#uboot_latest="a1eac57a2001ecf86a46f520cd85ef8e9c8b3687"
+uboot_latest="c259188b203d95e4a854e7e29b9e4472cc982f65"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
 
-barebox_latest="8c82b1b2021591a8c3537958c7fa60816c584d8a"
+#barebox_latest="8c82b1b2021591a8c3537958c7fa60816c584d8a"
+barebox_latest="94e71b843f6456abacc2fe76a5c375a461fabdf7"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
