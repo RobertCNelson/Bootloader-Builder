@@ -280,6 +280,15 @@ build_u_boot () {
 
 		#Freescale: i.mx23
 		git am "${DIR}/patches/v2013.04-rc1/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
+
+		if [ "x${BOARD}" == "xsama5d3xek" ] ; then
+			RELEASE_VER="-r1"
+			#Atmel: sama5d3
+			git am "${DIR}/patches/v2013.04-rc1/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+			git am "${DIR}/patches/v2013.04-rc1/0002-NET-macb-support-sama5d3x-devices.patch"
+			git am "${DIR}/patches/v2013.04-rc1/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+			git am "${DIR}/patches/v2013.04-rc1/0004-ARM-atmel-add-sama5d3xek-support.patch"
+		fi
 	fi
 
 	if [ "${v2013_01}" ] ; then
