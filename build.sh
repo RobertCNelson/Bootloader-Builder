@@ -29,10 +29,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 uboot_stable="v2013.01.01"
-#uboot_testing="v2013.01-rc3"
+uboot_testing="v2013.04-rc1"
 
-#uboot_latest="a1eac57a2001ecf86a46f520cd85ef8e9c8b3687"
-uboot_latest="c259188b203d95e4a854e7e29b9e4472cc982f65"
+#uboot_latest="c259188b203d95e4a854e7e29b9e4472cc982f65"
+#uboot_testing="v2013.04-rc1"
+#uboot_latest="2536850d7cd90bdb75bf3ff86838f913392b68db"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -227,6 +228,36 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
 
+	if [ "${v2013_04_rc2}" ] ; then
+		#enable u-boot features...
+		git am "${DIR}/patches/v2013.04-rc2/0001-enable-bootz-and-generic-load-features.patch"
+
+		#TI: Bone:
+		git am "${DIR}/patches/v2013.04-rc2/0002-bone-use-dtb_file-variable-for-device-tree-file.patch"
+
+		#TI:
+		git am "${DIR}/patches/v2013.04-rc2/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
+		#Should not be needed with v3.8.x
+		git am "${DIR}/patches/v2013.04-rc2/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0003-beagle-at24-retry-with-16bit-addressing.patch"
+
+		#Freescale:
+		git am "${DIR}/patches/v2013.04-rc2/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
+
+		#Atmel:
+		git am "${DIR}/patches/v2013.04-rc2/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
+
+		#Freescale: i.mx23
+		git am "${DIR}/patches/v2013.04-rc2/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
+
+		#Atmel: sama5d3
+		git am "${DIR}/patches/v2013.04-rc2/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0002-NET-macb-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0004-ARM-atmel-add-sama5d3xek-support.patch"
+	fi
+
 	if [ "${v2013_04_rc1}" ] ; then
 		#enable u-boot features...
 		git am "${DIR}/patches/v2013.04-rc1/0001-enable-bootz-and-generic-load-features.patch"
@@ -294,7 +325,7 @@ build_u_boot () {
 		BUILDTARGET="u-boot.imx"
 	fi
 
-	if [ ! "${v2013_04_rc1}" ] && [ "x${BOARD}" == "xmx23olinuxino" ] ; then
+	if [ ! "${v2013_04_rc2}" ] && [ ! "${v2013_04_rc1}" ] && [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		RELEASE_VER="-r3"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-r2
 		git am "${DIR}/patches/v2013.01/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
@@ -308,14 +339,6 @@ build_u_boot () {
 
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
-	fi
-
-	if [ "x${BOARD}" == "xsama5d3xek" ] ; then
-		RELEASE_VER="-r0"
-		git am "${DIR}/patches/v2013.04-rc1/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc1/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc1/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc1/0004-ARM-atmel-add-sama5d3xek-support.patch"
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
@@ -457,28 +480,28 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
-#	v2013_04_rc1=1
+	v2013_04_rc1=1
 #	v2013_04_rc2=1
 #	v2013_04_rc3=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
-#	unset v2013_04_rc1
+	unset v2013_04_rc1
 #	unset v2013_04_rc2
 #	unset v2013_04_rc3
 }
 
 build_uboot_latest () {
-	v2013_04_rc1=1
-#	v2013_04_rc2=1
+#	v2013_04_rc1=1
+	v2013_04_rc2=1
 #	v2013_04_rc3=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
-	unset v2013_04_rc1
-#	unset v2013_04_rc2
+#	unset v2013_04_rc1
+	unset v2013_04_rc2
 #	unset v2013_04_rc3
 }
 
@@ -604,7 +627,7 @@ mx23olinuxino () {
 		build_u_boot
 
 #		build_uboot_stable
-#		build_uboot_testing
+		build_uboot_testing
 		build_uboot_latest
 	else
 		echo "-----------------------------"
@@ -723,7 +746,7 @@ sama5d3xek () {
 	UBOOT_CONFIG="sama5d3xek_sdcard_config"
 
 #	build_uboot_stable
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 
 #	armv7_toolchain

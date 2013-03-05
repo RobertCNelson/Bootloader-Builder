@@ -1,0 +1,70 @@
+From 28e141548e724d939b35066c889849eb1aa2e341 Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Date: Thu, 7 Feb 2013 12:28:25 -0200
+Subject: [PATCH 4/4] mx6: Disable Power Down Bit of watchdog
+
+On a mx6qsabresd revision C board with rev1.2 mx6q, the system gets resetted and it is not able
+to reach the Linux prompt.
+
+Clearing the PDE - Power Down Enable bit fixes the problem.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ arch/arm/cpu/armv7/mx6/soc.c             |   17 ++++++++++++++++-
+ arch/arm/include/asm/arch-mx6/imx-regs.h |    8 ++++++++
+ 2 files changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/cpu/armv7/mx6/soc.c b/arch/arm/cpu/armv7/mx6/soc.c
+index a8aad5d..410b8ca 100644
+--- a/arch/arm/cpu/armv7/mx6/soc.c
++++ b/arch/arm/cpu/armv7/mx6/soc.c
+@@ -121,12 +121,27 @@ void set_vddsoc(u32 mv)
+ 	writel(reg, &anatop->reg_core);
+ }
+ 
++static void imx_set_wdog_powerdown(int enable)
++{
++	struct wdog_regs *wdog1 = (struct wdog_regs *)WDOG1_BASE_ADDR;
++	struct wdog_regs *wdog2 = (struct wdog_regs *)WDOG2_BASE_ADDR;
++
++	/* Set or Clear PDE - Power Down Enable bit */
++	if (!enable) {
++		writew(0x0, &wdog1->wmcr);
++		writew(0x0, &wdog2->wmcr);
++	} else {
++		writew(0x1, &wdog1->wmcr);
++		writew(0x1, &wdog2->wmcr);
++	}
++}
++
+ int arch_cpu_init(void)
+ {
+ 	init_aips();
+ 
+ 	set_vddsoc(1200);	/* Set VDDSOC to 1.2V */
+-
++	imx_set_wdog_powerdown(0); /* Disable PDE bit of WMCR register */
+ 	return 0;
+ }
+ 
+diff --git a/arch/arm/include/asm/arch-mx6/imx-regs.h b/arch/arm/include/asm/arch-mx6/imx-regs.h
+index 3eb0081..eaa7439 100644
+--- a/arch/arm/include/asm/arch-mx6/imx-regs.h
++++ b/arch/arm/include/asm/arch-mx6/imx-regs.h
+@@ -601,5 +601,13 @@ struct iomuxc_base_regs {
+ 	u32     daisy[104];     /* 0x7b0..94c */
+ };
+ 
++struct wdog_regs {
++	u16	wcr;	/* Control */
++	u16	wsr;	/* Service */
++	u16	wrsr;	/* Reset Status */
++	u16	wicr;	/* Interrupt Control */
++	u16	wmcr;	/* Miscellaneous Control */
++};
++
+ #endif /* __ASSEMBLER__*/
+ #endif /* __ASM_ARCH_MX6_IMX_REGS_H__ */
+-- 
+1.7.10.4
+

@@ -1,0 +1,60 @@
+From 243639e500aa50229cb6a4b6859089e4fcd0c832 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Thu, 24 Jan 2013 14:48:18 -0600
+Subject: [PATCH] mx23_olinuxino: load uEnv.txt from /boot/ in 2nd partition
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/mx23_olinuxino.h |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
+index 7983c5d..3d513cd 100644
+--- a/include/configs/mx23_olinuxino.h
++++ b/include/configs/mx23_olinuxino.h
+@@ -58,6 +58,12 @@
+ #define	CONFIG_CMD_GPIO
+ #define	CONFIG_CMD_MMC
+ 
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
++
+ /*
+  * Memory configurations
+  */
+@@ -162,6 +168,7 @@
+ 		"fi ; "	\
+ 		"fi\0" \
+ 	"script=boot.scr\0"	\
++	"bootenv=uEnv.txt\0" \
+ 	"uimage=uImage\0" \
+ 	"console=ttyAMA0\0" \
+ 	"fdt_file=imx23-olinuxino.dtb\0" \
+@@ -173,7 +180,9 @@
+ 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+ 		"root=${mmcroot}\0" \
+ 	"loadbootscript="  \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} /boot/${bootenv};\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t ${loadaddr} ${filesize}\0" \
+ 	"bootscript=echo Running bootscript from mmc ...; "	\
+ 		"source\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+@@ -197,7 +206,9 @@
+ #define CONFIG_BOOTCOMMAND \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
+ 		"if run loadbootscript; then " \
+-			"run bootscript; " \
++			"echo Loaded environment from ${bootenv}; " \
++			"run importbootenv; " \
++			"run loaduimage; " \
+ 		"else " \
+ 			"if run loaduimage; then " \
+ 				"run mmcboot; " \
+-- 
+1.7.10.4
+

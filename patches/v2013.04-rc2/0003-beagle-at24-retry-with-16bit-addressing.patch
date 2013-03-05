@@ -1,0 +1,30 @@
+From d771ec5c72f49f6c66bc39c5ccf0cb2380f64a12 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 1 Feb 2013 11:37:18 -0600
+Subject: [PATCH 3/3] beagle: at24: retry with 16bit addressing
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/beagle/beagle.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
+index 6f45645..6e93718 100644
+--- a/board/ti/beagle/beagle.c
++++ b/board/ti/beagle/beagle.c
+@@ -229,6 +229,12 @@ static unsigned int get_expansion_id(int eeprom_address)
+ 	i2c_read(eeprom_address, 0, 1, (u8 *)&expansion_config,
+ 		 sizeof(expansion_config));
+ 
++	if ((expansion_config.device_vendor == 0xFFFFFF00) || (expansion_config.device_vendor == 0xFFFFFFFF)) {
++		/* retry read as eeprom might use 16bit addressing */
++		i2c_read(eeprom_address, 0, 2, (u8 *)&expansion_config,
++			 sizeof(expansion_config));
++	}
++
+ 	i2c_set_bus_num(TWL4030_I2C_BUS);
+ 
+ 	return expansion_config.device_vendor;
+-- 
+1.7.10.4
+
