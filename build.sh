@@ -31,9 +31,8 @@ SYST=$(uname -n)
 uboot_stable="v2013.01.01"
 uboot_testing="v2013.04-rc1"
 
-#uboot_testing="v2013.04-rc1"
-#uboot_latest="2536850d7cd90bdb75bf3ff86838f913392b68db"
-uboot_latest="a2681707b2478abef34b8c403e7ab52daae9c331"
+#uboot_latest="a2681707b2478abef34b8c403e7ab52daae9c331"
+uboot_latest="68149e94053d18b54a63c9a44c87f178f59a169e"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
