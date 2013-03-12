@@ -31,9 +31,9 @@ SYST=$(uname -n)
 uboot_stable="v2013.01.01"
 uboot_testing="v2013.04-rc1"
 
-#uboot_latest="c259188b203d95e4a854e7e29b9e4472cc982f65"
 #uboot_testing="v2013.04-rc1"
 #uboot_latest="2536850d7cd90bdb75bf3ff86838f913392b68db"
+uboot_latest="a2681707b2478abef34b8c403e7ab52daae9c331"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -282,7 +282,7 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04-rc1/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
 
 		if [ "x${BOARD}" == "xsama5d3xek" ] ; then
-			RELEASE_VER="-r1"
+			RELEASE_VER="-r2"
 			#Atmel: sama5d3
 			git am "${DIR}/patches/v2013.04-rc1/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
 			git am "${DIR}/patches/v2013.04-rc1/0002-NET-macb-support-sama5d3x-devices.patch"

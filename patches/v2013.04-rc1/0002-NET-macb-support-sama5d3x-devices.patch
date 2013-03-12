@@ -1,6 +1,6 @@
-From 7e102ba399b434557dc1a5e1d0ef6b9d470e9861 Mon Sep 17 00:00:00 2001
+From 6a4ad6fea3ad516f1417875beec1349943239775 Mon Sep 17 00:00:00 2001
 From: Bo Shen <voice.shen@atmel.com>
-Date: Thu, 28 Feb 2013 15:00:45 +0800
+Date: Tue, 12 Mar 2013 14:15:30 +0800
 Subject: [PATCH 2/4] NET: macb: support sama5d3x devices
 
 Add macb support for sama5d3x devices
