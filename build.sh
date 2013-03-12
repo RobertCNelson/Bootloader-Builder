@@ -256,6 +256,7 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04-rc2/0002-NET-macb-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0004-ARM-atmel-add-sama5d3xek-support.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0005-sama5-enable-bootz-and-uEnv.txt-support.patch"
 	fi
 
 	if [ "${v2013_04_rc1}" ] ; then
@@ -282,12 +283,13 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04-rc1/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
 
 		if [ "x${BOARD}" == "xsama5d3xek" ] ; then
-			RELEASE_VER="-r2"
+			RELEASE_VER="-r3"
 			#Atmel: sama5d3
 			git am "${DIR}/patches/v2013.04-rc1/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
 			git am "${DIR}/patches/v2013.04-rc1/0002-NET-macb-support-sama5d3x-devices.patch"
 			git am "${DIR}/patches/v2013.04-rc1/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
 			git am "${DIR}/patches/v2013.04-rc1/0004-ARM-atmel-add-sama5d3xek-support.patch"
+			git am "${DIR}/patches/v2013.04-rc1/0005-sama5-enable-bootz-and-uEnv.txt-support.patch"
 		fi
 	fi
 
