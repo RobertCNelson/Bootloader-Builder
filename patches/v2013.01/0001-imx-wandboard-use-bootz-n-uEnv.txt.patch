@@ -1,0 +1,99 @@
+From b0d768a23ea32f76014610810b381d01640dfafc Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 13 Mar 2013 12:24:00 -0500
+Subject: [PATCH] imx: wandboard: use bootz n uEnv.txt
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/wandboard.h |   31 ++++++++++++++++++-------------
+ 1 file changed, 18 insertions(+), 13 deletions(-)
+
+diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
+index e14fe6e..0e75168 100644
+--- a/include/configs/wandboard.h
++++ b/include/configs/wandboard.h
+@@ -59,6 +59,10 @@
+ #define CONFIG_SYS_FSL_USDHC_NUM	2
+ 
+ #define CONFIG_MMC
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_CMD_MMC
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_BOUNCE_BUFFER
+@@ -82,39 +86,40 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"script=boot.scr\0" \
+-	"uimage=uImage\0" \
++	"bootenv=uEnv.txt\0" \
++	"uimage=zImage\0" \
+ 	"console=ttymxc0\0" \
+ 	"fdt_high=0xffffffff\0" \
+ 	"initrd_high=0xffffffff\0" \
+ 	"fdt_file=imx6dl-wandboard.dtb\0" \
+ 	"fdt_addr=0x11000000\0" \
+-	"boot_fdt=try\0" \
++	"boot_fdt=no\0" \
+ 	"ip_dyn=yes\0" \
+ 	"mmcdev=0\0" \
+-	"mmcpart=2\0" \
+-	"mmcroot=/dev/mmcblk0p3 rootwait rw\0" \
++	"mmcpart=1\0" \
++	"mmcroot=/dev/mmcblk0p2 rootwait ro\0" \
+ 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+ 		"root=${mmcroot}\0" \
+ 	"loadbootscript=" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 	"bootscript=echo Running bootscript from mmc ...; " \
+ 		"source\0" \
+-	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
++	"loaduimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
++	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+ 			"if run loadfdt; then " \
+-				"bootm ${loadaddr} - ${fdt_addr}; " \
++				"bootz ${loadaddr} - ${fdt_addr}; " \
+ 			"else " \
+ 				"if test ${boot_fdt} = try; then " \
+-					"bootm; " \
++					"bootz; " \
+ 				"else " \
+ 					"echo WARN: Cannot load the DT; " \
+ 				"fi; " \
+ 			"fi; " \
+ 		"else " \
+-			"bootm; " \
++			"bootz; " \
+ 		"fi;\0" \
+ 	"netargs=setenv bootargs console=${console},${baudrate} " \
+ 		"root=/dev/nfs " \
+@@ -129,16 +134,16 @@
+ 		"${get_cmd} ${uimage}; " \
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+ 			"if ${get_cmd} ${fdt_addr} ${fdt_file}; then " \
+-				"bootm ${loadaddr} - ${fdt_addr}; " \
++				"bootz ${loadaddr} - ${fdt_addr}; " \
+ 			"else " \
+ 				"if test ${boot_fdt} = try; then " \
+-					"bootm; " \
++					"bootz; " \
+ 				"else " \
+ 					"echo WARN: Cannot load the DT; " \
+ 				"fi; " \
+ 			"fi; " \
+ 		"else " \
+-			"bootm; " \
++			"bootz; " \
+ 		"fi;\0"
+ 
+ #define CONFIG_BOOTCOMMAND \
+-- 
+1.7.10.4
+
