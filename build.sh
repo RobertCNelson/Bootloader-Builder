@@ -347,6 +347,14 @@ build_u_boot () {
 		BUILDTARGET="u-boot.bin"
 	fi
 
+	if [ "x${BOARD}" == "xwandboard_dl" ] ; then
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
+	fi
+
+	if [ "x${BOARD}" == "xwandboard_solo" ] ; then
+		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
+	fi
+
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
 	fi
@@ -774,6 +782,16 @@ wandboard () {
 	UBOOT_CONFIG="wandboard_config"
 
 	GIT_SHA="v2009.08"
+	build_u_boot
+
+	BOARD="wandboard_dl"
+	UBOOT_CONFIG="wandboard_dl_config"
+	GIT_SHA="v2013.01.01"
+	build_u_boot
+
+	BOARD="wandboard_solo"
+	UBOOT_CONFIG="wandboard_solo_config"
+	GIT_SHA="v2013.01.01"
 	build_u_boot
 
 #	build_uboot_stable
