@@ -281,6 +281,11 @@ build_u_boot () {
 		#Freescale: i.mx23
 		git am "${DIR}/patches/v2013.04-rc1/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
 
+		if [ "x${BOARD}" == "xbeaglebone" ] ; then
+			RELEASE_VER="-r1"
+			#(bonelt -> boneblack rename)
+		fi
+
 		if [ "x${BOARD}" == "xsama5d3xek" ] ; then
 			RELEASE_VER="-r3"
 			#Atmel: sama5d3
@@ -309,6 +314,8 @@ build_u_boot () {
 		if [ "x${BOARD}" == "xbeaglebone" ] ; then
 			RELEASE_VER="-r1"
 			git am "${DIR}/patches/v2013.01/0002-bone-use-dtb_file-variable-for-device-tree-file.patch"
+			RELEASE_VER="-r2"
+			#(bonelt -> boneblack rename)
 		fi
 
 		#Freescale:

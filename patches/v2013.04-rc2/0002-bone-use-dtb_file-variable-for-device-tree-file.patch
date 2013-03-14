@@ -22,7 +22,7 @@ index ed4229e..337ea56 100644
 +	}
 +
 +	if (board_is_bone_lt()) {
-+		setenv("dtb_file", "am335x-bonelt.dtb");
++		setenv("dtb_file", "am335x-boneblack.dtb");
 +	}
 +
 +	if (board_is_evm_sk()) {
