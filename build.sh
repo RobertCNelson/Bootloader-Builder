@@ -354,13 +354,13 @@ build_u_boot () {
 		BUILDTARGET="u-boot.bin"
 	fi
 
-	if [ "x${BOARD}" == "xwandboard_dl" ] ; then
+	if [ "x${BOARD}" == "xwandboard-dl" ] ; then
 		RELEASE_VER="-r1"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
 		git am "${DIR}/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
 	fi
 
-	if [ "x${BOARD}" == "xwandboard_solo" ] ; then
+	if [ "x${BOARD}" == "xwandboard-solo" ] ; then
 		RELEASE_VER="-r1"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
 		git am "${DIR}/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
@@ -795,12 +795,12 @@ wandboard () {
 	GIT_SHA="v2009.08"
 	build_u_boot
 
-	BOARD="wandboard_dl"
+	BOARD="wandboard-dl"
 	UBOOT_CONFIG="wandboard_dl_config"
 	GIT_SHA="v2013.01.01"
 	build_u_boot
 
-	BOARD="wandboard_solo"
+	BOARD="wandboard-solo"
 	UBOOT_CONFIG="wandboard_solo_config"
 	GIT_SHA="v2013.01.01"
 	build_u_boot
