@@ -357,13 +357,13 @@ build_u_boot () {
 	if [ "x${BOARD}" == "xwandboard_dl" ] ; then
 		RELEASE_VER="-r1"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
-		git am "${DIR}/patches/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
+		git am "${DIR}/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
 	fi
 
 	if [ "x${BOARD}" == "xwandboard_solo" ] ; then
 		RELEASE_VER="-r1"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
-		git am "${DIR}/patches/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
+		git am "${DIR}/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
 	fi
 
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
