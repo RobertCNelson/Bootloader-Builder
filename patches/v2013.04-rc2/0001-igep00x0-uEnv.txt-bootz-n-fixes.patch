@@ -1,0 +1,33 @@
+From 2b0186b4a3005fe41517d8bd4acc030291573cbb Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 15 Mar 2013 10:15:40 -0500
+Subject: [PATCH] igep00x0: uEnv.txt, bootz, n fixes
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/igep00x0.h |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/include/configs/igep00x0.h b/include/configs/igep00x0.h
+index 0e7f924..26fd122 100644
+--- a/include/configs/igep00x0.h
++++ b/include/configs/igep00x0.h
+@@ -108,10 +108,15 @@
+ #include <config_cmd_default.h>
+ 
+ #define CONFIG_CMD_CACHE
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
+ #define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+ #define CONFIG_CMD_FAT		/* FAT support			*/
+ #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
+ #define CONFIG_CMD_MMC		/* MMC support			*/
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #ifdef CONFIG_BOOT_ONENAND
+ #define CONFIG_CMD_ONENAND	/* ONENAND support		*/
+ #endif
+-- 
+1.7.10.4
+

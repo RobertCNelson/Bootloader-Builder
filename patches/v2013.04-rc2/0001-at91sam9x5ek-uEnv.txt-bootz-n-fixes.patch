@@ -1,15 +1,15 @@
-From 3a5692bd7ce174056c51a686c5ffda49122a86b4 Mon Sep 17 00:00:00 2001
+From bfb9c467c98313b04ddc69e11e27abedb6ea6617 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 16 Jan 2013 09:45:21 -0600
-Subject: [PATCH 2/2] at91 convert to uEnv.txt n fixes
+Date: Fri, 15 Mar 2013 10:15:16 -0500
+Subject: [PATCH] at91sam9x5ek: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/at91sam9x5ek.h |   55 +++++++++++++++++++++++-----------------
- 1 file changed, 32 insertions(+), 23 deletions(-)
+ include/configs/at91sam9x5ek.h |   61 +++++++++++++++++++++++++---------------
+ 1 file changed, 38 insertions(+), 23 deletions(-)
 
 diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
-index 34ea1bf..eeeabc0 100644
+index 6fac5ac..eeeabc0 100644
 --- a/include/configs/at91sam9x5ek.h
 +++ b/include/configs/at91sam9x5ek.h
 @@ -66,7 +66,7 @@
@@ -21,7 +21,20 @@ index 34ea1bf..eeeabc0 100644
  
  /*
   * BOOTP options
-@@ -198,9 +198,6 @@
+@@ -150,6 +150,12 @@
+ /* MMC */
+ #ifdef CONFIG_CMD_MMC
+ #define CONFIG_MMC
++/* #define CONFIG_FS_FAT */
++/* #define CONFIG_FS_EXT4 */
++#define CONFIG_CMD_EXT2		/* EXT2 Support */
++/* #define CONFIG_CMD_FS_GENERIC */			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_GENERIC_ATMEL_MCI
+ #endif
+@@ -192,9 +198,6 @@
  #define CONFIG_ENV_OFFSET		0xc0000
  #define CONFIG_ENV_OFFSET_REDUND	0x100000
  #define CONFIG_ENV_SIZE		0x20000		/* 1 sector = 128 kB */
@@ -31,7 +44,7 @@ index 34ea1bf..eeeabc0 100644
  #elif defined(CONFIG_SYS_USE_SPIFLASH)
  /* bootstrap + u-boot + env + linux in spi flash */
  #define CONFIG_ENV_IS_IN_SPI_FLASH
-@@ -208,9 +205,6 @@
+@@ -202,9 +205,6 @@
  #define CONFIG_ENV_SIZE		0x3000
  #define CONFIG_ENV_SECT_SIZE	0x1000
  #define CONFIG_ENV_SPI_MAX_HZ	30000000
@@ -41,7 +54,7 @@ index 34ea1bf..eeeabc0 100644
  #elif defined(CONFIG_SYS_USE_DATAFLASH)
  /* bootstrap + u-boot + env + linux in data flash */
  #define CONFIG_ENV_IS_IN_SPI_FLASH
-@@ -218,9 +212,6 @@
+@@ -212,9 +212,6 @@
  #define CONFIG_ENV_SIZE		0x4200
  #define CONFIG_ENV_SECT_SIZE	0x210
  #define CONFIG_ENV_SPI_MAX_HZ	30000000
@@ -51,7 +64,7 @@ index 34ea1bf..eeeabc0 100644
  #else /* CONFIG_SYS_USE_MMC */
  /* bootstrap + u-boot + env + linux in mmc */
  #define CONFIG_ENV_IS_IN_MMC
-@@ -230,19 +221,37 @@
+@@ -224,19 +221,37 @@
  #define CONFIG_SYS_MMC_ENV_DEV	0
  #endif
  

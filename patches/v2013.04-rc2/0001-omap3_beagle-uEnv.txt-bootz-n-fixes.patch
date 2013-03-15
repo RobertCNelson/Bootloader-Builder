@@ -1,18 +1,16 @@
-From bb8344a95cdb0bc93c5b4519d3f17eb7175007fd Mon Sep 17 00:00:00 2001
+From 70ff943fad6491fb81b12a97761d8be7dc5e6d02 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 16 Jan 2013 09:16:35 -0600
-Subject: [PATCH 2/2] ti convert to uEnv.txt n fixes
+Date: Fri, 15 Mar 2013 10:14:10 -0500
+Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/beagle/beagle.c       |   39 +++++++++++++++++++++++++++++++++++----
- include/configs/am3517_crane.h |   40 ++++++++++++++++++++++++----------------
- include/configs/omap3_beagle.h |   16 ++++++++--------
- include/configs/omap4_common.h |    5 +++--
- 4 files changed, 70 insertions(+), 30 deletions(-)
+ board/ti/beagle/beagle.c       |   45 ++++++++++++++++++++++++++++++++++++----
+ include/configs/omap3_beagle.h |   21 ++++++++++++-------
+ 2 files changed, 54 insertions(+), 12 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
-index b829a79..6f45645 100644
+index b829a79..6e93718 100644
 --- a/board/ti/beagle/beagle.c
 +++ b/board/ti/beagle/beagle.c
 @@ -70,8 +70,10 @@
@@ -26,7 +24,7 @@ index b829a79..6f45645 100644
  #define BEAGLE_NO_EEPROM		0xffffffff
  
  DECLARE_GLOBAL_DATA_PTR;
-@@ -213,18 +215,18 @@ void get_board_mem_timings(struct board_sdrc_timings *timings)
+@@ -213,20 +215,26 @@ void get_board_mem_timings(struct board_sdrc_timings *timings)
   *		bus 1 for the availability of an AT24C01B serial EEPROM.
   *		returns the device_vendor field from the EEPROM
   */
@@ -47,8 +45,16 @@ index b829a79..6f45645 100644
 +	i2c_read(eeprom_address, 0, 1, (u8 *)&expansion_config,
  		 sizeof(expansion_config));
  
++	if ((expansion_config.device_vendor == 0xFFFFFF00) || (expansion_config.device_vendor == 0xFFFFFFFF)) {
++		/* retry read as eeprom might use 16bit addressing */
++		i2c_read(eeprom_address, 0, 2, (u8 *)&expansion_config,
++			 sizeof(expansion_config));
++	}
++
  	i2c_set_bus_num(TWL4030_I2C_BUS);
-@@ -389,7 +391,7 @@ int misc_init_r(void)
+ 
+ 	return expansion_config.device_vendor;
+@@ -389,7 +397,7 @@ int misc_init_r(void)
  					TWL4030_PM_RECEIVER_DEV_GRP_P1);
  	}
  
@@ -57,7 +63,7 @@ index b829a79..6f45645 100644
  	case TINCANTOOLS_ZIPPY:
  		printf("Recognized Tincantools Zippy board (rev %d %s)\n",
  			expansion_config.revision,
-@@ -454,6 +456,11 @@ int misc_init_r(void)
+@@ -454,6 +462,11 @@ int misc_init_r(void)
  	case BCT_BRETTL4:
  		printf("Recognized bct electronic GmbH brettl4 board\n");
  		break;
@@ -69,7 +75,7 @@ index b829a79..6f45645 100644
  	case BEAGLE_NO_EEPROM:
  		printf("No EEPROM on expansion board\n");
  		setenv("buddy", "none");
-@@ -467,6 +474,30 @@ int misc_init_r(void)
+@@ -467,6 +480,30 @@ int misc_init_r(void)
  	if (expansion_config.content == 1)
  		setenv(expansion_config.env_var, expansion_config.env_setting);
  
@@ -100,74 +106,25 @@ index b829a79..6f45645 100644
  	twl4030_power_init();
  	switch (get_board_revision()) {
  	case REVISION_XM_A:
-diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
-index c5bed6a..3967d69 100644
---- a/include/configs/am3517_crane.h
-+++ b/include/configs/am3517_crane.h
-@@ -190,18 +190,21 @@
- #define CONFIG_BOOTFILE		"uImage"
- 
- #define CONFIG_EXTRA_ENV_SETTINGS \
--	"loadaddr=0x82000000\0" \
--	"console=ttyS2,115200n8\0" \
-+	"loadaddr=0x80200000\0" \
-+	"console=ttyO2,115200n8\0" \
- 	"mmcdev=0\0" \
-+	"mmcroot=/dev/mmcblk0p2 rw\0" \
-+	"mmcrootfstype=ext3 rootwait\0" \
- 	"mmcargs=setenv bootargs console=${console} " \
--		"root=/dev/mmcblk0p2 rw " \
--		"rootfstype=ext3 rootwait\0" \
-+		"root=${mmcroot} " \
-+		"rootfstype=${mmcrootfstype}\0" \
- 	"nandargs=setenv bootargs console=${console} " \
- 		"root=/dev/mtdblock4 rw " \
- 		"rootfstype=jffs2\0" \
--	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
--	"bootscript=echo Running bootscript from mmc ...; " \
--		"source ${loadaddr}\0" \
-+	"bootenv=uEnv.txt\0" \
-+	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
-+	"importbootenv=echo Importing environment from mmc ...; " \
-+		"env import -t $loadaddr $filesize\0" \
- 	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
- 	"mmcboot=echo Booting from mmc ...; " \
- 		"run mmcargs; " \
-@@ -213,15 +216,20 @@
- 
- #define CONFIG_BOOTCOMMAND \
- 	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"if run loadbootscript; then " \
--			"run bootscript; " \
--		"else " \
--			"if run loaduimage; then " \
--				"run mmcboot; " \
--			"else run nandboot; " \
--			"fi; " \
--		"fi; " \
--	"else run nandboot; fi"
-+		"echo SD/MMC found on device ${mmcdev};" \
-+		"if run loadbootenv; then " \
-+			"echo Loaded environment from ${bootenv};" \
-+			"run importbootenv;" \
-+		"fi;" \
-+		"if test -n $uenvcmd; then " \
-+			"echo Running uenvcmd ...;" \
-+			"run uenvcmd;" \
-+		"fi;" \
-+		"if run loaduimage; then " \
-+			"run mmcboot;" \
-+		"fi;" \
-+	"fi;" \
-+	"run nandboot;" \
- 
- #define CONFIG_AUTO_COMPLETE	1
- /*
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 6b8a00b..439c403 100644
+index 59255c4..439c403 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
-@@ -226,10 +226,10 @@
+@@ -147,8 +147,13 @@
+ #define CONFIG_CMD_ASKENV
+ 
+ #define CONFIG_CMD_CACHE
++/* #define CONFIG_FS_FAT */
++/* #define CONFIG_FS_EXT4 */
+ #define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+ #define CONFIG_CMD_FAT		/* FAT support			*/
++/* #define CONFIG_CMD_FS_GENERIC */			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
+ #define CONFIG_CMD_MTDPARTS	/* Enable MTD parts commands */
+ #define CONFIG_MTD_DEVICE	/* needed for mtdparts commands */
+@@ -221,10 +226,10 @@
  	"console=ttyO2,115200n8\0" \
  	"mpurate=auto\0" \
  	"buddy=none\0" \
@@ -180,7 +137,7 @@ index 6b8a00b..439c403 100644
  	"defaultdisplay=dvi\0" \
  	"mmcdev=0\0" \
  	"mmcroot=/dev/mmcblk0p2 rw\0" \
-@@ -242,9 +242,9 @@
+@@ -237,9 +242,9 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
@@ -192,7 +149,7 @@ index 6b8a00b..439c403 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${mmcroot} " \
  		"rootfstype=${mmcrootfstype}\0" \
-@@ -252,9 +252,9 @@
+@@ -247,9 +252,9 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
@@ -204,7 +161,7 @@ index 6b8a00b..439c403 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${nandroot} " \
  		"rootfstype=${nandrootfstype}\0" \
-@@ -266,8 +266,8 @@
+@@ -261,8 +266,8 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
@@ -215,26 +172,6 @@ index 6b8a00b..439c403 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
-diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
-index 5e480fd..09647ac 100644
---- a/include/configs/omap4_common.h
-+++ b/include/configs/omap4_common.h
-@@ -151,12 +151,13 @@
- 	"console=ttyO2,115200n8\0" \
- 	"fdt_high=0xffffffff\0" \
- 	"usbtty=cdc_acm\0" \
--	"vram=16M\0" \
-+	"defaultdisplay=dvi\0" \
-+	"dvimode=1280x720MR-16@60\0" \
- 	"mmcdev=0\0" \
- 	"mmcroot=/dev/mmcblk0p2 rw\0" \
- 	"mmcrootfstype=ext3 rootwait\0" \
- 	"mmcargs=setenv bootargs console=${console} " \
--		"vram=${vram} " \
-+		"omapfb.mode=${defaultdisplay}:${dvimode} " \
- 		"root=${mmcroot} " \
- 		"rootfstype=${mmcrootfstype}\0" \
- 	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
 -- 
 1.7.10.4
 

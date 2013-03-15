@@ -1,7 +1,7 @@
-From d3d195b7a63333890a105d4721bdc2188cc76a0b Mon Sep 17 00:00:00 2001
+From 18db6d25d451b8d4ec0a3021cf70bde9242433c7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 12 Mar 2013 11:11:12 -0500
-Subject: [PATCH 5/5] sama5: enable bootz and uEnv.txt support
+Date: Fri, 15 Mar 2013 10:56:06 -0500
+Subject: [PATCH] sama5d3xek: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---

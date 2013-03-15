@@ -228,34 +228,28 @@ build_u_boot () {
 	UGIT_VERSION=$(git describe)
 
 	if [ "${v2013_04_rc2}" ] ; then
-		#enable u-boot features...
-		git am "${DIR}/patches/v2013.04-rc2/0001-enable-bootz-and-generic-load-features.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-am3517_crane-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-igep00x0-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-rpi_b-uEnv.txt-bootz-n-fixes.patch"
 
-		#TI: Bone:
-		git am "${DIR}/patches/v2013.04-rc2/0002-bone-use-dtb_file-variable-for-device-tree-file.patch"
-
-		#TI:
-		git am "${DIR}/patches/v2013.04-rc2/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		#Should not be needed with v3.8.x
-		git am "${DIR}/patches/v2013.04-rc2/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0003-beagle-at24-retry-with-16bit-addressing.patch"
-
-		#Freescale:
-		git am "${DIR}/patches/v2013.04-rc2/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
-
-		#Atmel:
-		git am "${DIR}/patches/v2013.04-rc2/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
-
-		#Freescale: i.mx23
-		git am "${DIR}/patches/v2013.04-rc2/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
+		git am "${DIR}/patches/v2013.04-rc2/board/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
 
 		#Atmel: sama5d3
-		git am "${DIR}/patches/v2013.04-rc2/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0004-ARM-atmel-add-sama5d3xek-support.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0005-sama5-enable-bootz-and-uEnv.txt-support.patch"
+		git am "${DIR}/patches/v2013.04-rc2/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc2/board/0002-NET-macb-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc2/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc2/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
+
+		git am "${DIR}/patches/v2013.04-rc2/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	if [ "${v2013_04_rc1}" ] ; then

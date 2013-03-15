@@ -1,0 +1,59 @@
+From c99113f2c2fc3a269c2f490288420deaa0771a39 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 15 Mar 2013 10:20:35 -0500
+Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ include/configs/mx6qsabre_common.h |   14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/mx6qsabre_common.h b/include/configs/mx6qsabre_common.h
+index d76357c..3cdbe88 100644
+--- a/include/configs/mx6qsabre_common.h
++++ b/include/configs/mx6qsabre_common.h
+@@ -44,6 +44,11 @@
+ 
+ #define CONFIG_MMC
+ #define CONFIG_CMD_MMC
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_BOUNCE_BUFFER
+ #define CONFIG_CMD_EXT2
+@@ -82,6 +87,7 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"script=boot.scr\0" \
++	"bootenv=uEnv.txt\0" \
+ 	"uimage=uImage\0" \
+ 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
+ 	"fdt_addr=0x11000000\0" \
+@@ -96,7 +102,9 @@
+ 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+ 		"root=${mmcroot}\0" \
+ 	"loadbootscript=" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootenv};\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t ${loadaddr} ${filesize}\0" \
+ 	"bootscript=echo Running bootscript from mmc ...; " \
+ 		"source\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+@@ -145,7 +153,9 @@
+ 	"mmc dev ${mmcdev};" \
+ 	"if mmc rescan ${mmcdev}; then " \
+ 		"if run loadbootscript; then " \
+-		"run bootscript; " \
++			"echo Loaded environment from ${bootenv}; " \
++			"run importbootenv; " \
++			"run loaduimage; " \
+ 		"else " \
+ 			"if run loaduimage; then " \
+ 				"run mmcboot; " \
+-- 
+1.7.10.4
+
