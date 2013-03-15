@@ -24,11 +24,11 @@ loaduimage -> loadzimage
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/at91sam9x5ek.h |   58 ++++++++++++++++++++++++++++++++--------
- 1 file changed, 47 insertions(+), 11 deletions(-)
+ include/configs/at91sam9x5ek.h |   57 ++++++++++++++++++++++++++++++++--------
+ 1 file changed, 46 insertions(+), 11 deletions(-)
 
 diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
-index 6fac5ac..a8703c7 100644
+index 6fac5ac..46cce0e 100644
 --- a/include/configs/at91sam9x5ek.h
 +++ b/include/configs/at91sam9x5ek.h
 @@ -150,6 +150,16 @@
@@ -48,7 +48,7 @@ index 6fac5ac..a8703c7 100644
  #define CONFIG_GENERIC_MMC
  #define CONFIG_GENERIC_ATMEL_MCI
  #endif
-@@ -225,17 +235,43 @@
+@@ -225,17 +235,42 @@
  #endif
  
  #ifdef CONFIG_SYS_USE_MMC
@@ -65,10 +65,10 @@ index 6fac5ac..a8703c7 100644
 -				"rootfstype=ubifs ubi.mtd=1 root=ubi0:rootfs"
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	"bootenv=uEnv.txt\0" \
-+	"loadaddr=0x22000000\0" \
 +	"bootfile=zImage\0" \
-+	"dtbaddr=0x27FF0000\0" \
-+	"dtbfile=at91sam9g25ek.dtb\0" \
++	"loadaddr=0x22000000\0" \
++	"dtb_addr=0x27FF0000\0" \
++	"dtb_file=at91sam9g25ek.dtb\0" \
 +	"console=ttyS0,115200n8\0" \
 +	"optargs=\0" \
 +	"mmcdev=0\0" \
@@ -81,18 +81,17 @@ index 6fac5ac..a8703c7 100644
 +		"rootfstype=${mmcrootfstype}\0" \
 +	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootenv}\0" \
 +	"importbootenv=echo Importing environment from mmc ...; " \
-+		"env import -t $loadaddr $filesize\0" \
++		"env import -t ${loadaddr} ${filesize}\0" \
 +	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootfile}\0" \
-+	"loaddtb=load mmc ${mmcdev}:${mmcpart} ${dtbaddr} /dtbs/${dtbfile}\0" \
++	"loaddtb=load mmc ${mmcdev}:${mmcpart} ${dtb_addr} /dtbs/${dtb_file}\0" \
 +	"mmcboot=echo Booting from mmc ...; " \
 +		"run mmcargs; " \
-+		"bootz ${loadaddr} - ${dtbaddr}\0"
++		"bootz ${loadaddr} - ${dtb_addr}\0"
 +
 +#define CONFIG_BOOTCOMMAND \
 +	"if mmc rescan ${mmcdev}; then " \
 +		"echo SD/MMC found on device ${mmcdev};" \
 +		"if run loadbootenv; then " \
-+			"echo Loaded environment from ${bootenv};" \
 +			"run importbootenv;" \
 +		"fi;" \
 +		"if run loadzimage; then " \
