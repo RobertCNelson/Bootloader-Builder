@@ -79,7 +79,7 @@ index 6fac5ac..70c46cf 100644
 +	"importbootenv=echo Importing environment from mmc ...; " \
 +		"env import -t ${loadaddr} ${filesize}\0" \
 +	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootfile}\0" \
-+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdtaddr} ${bootdir}/${fdtfile}
++	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
 +	"mmcboot=echo Booting from mmc ...; " \
 +		"run mmcargs; " \
 +		"bootz ${loadaddr} - ${fdtaddr}\0"
