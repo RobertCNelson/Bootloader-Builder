@@ -4,7 +4,6 @@ Date: Fri, 15 Mar 2013 10:15:16 -0500
 Subject: [PATCH] at91sam9x5ek: uEnv.txt, bootz, n fixes
 
 Defaults:
-
 #define CONFIG_BOOTDELAY	3
 
 #define CONFIG_CMD_FAT		/* FAT: File System support */
