@@ -3,50 +3,77 @@ From: Robert Nelson <robertcnelson@gmail.com>
 Date: Fri, 15 Mar 2013 10:12:53 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
+Defaults:
+#define CONFIG_BOOTDELAY	1
+
+#define CONFIG_CMD_FAT
+#define CONFIG_CMD_EXT2
+#define CONFIG_CMD_EXT4
+#define CONFIG_CMD_FS_GENERIC
+
+/* bootz: zImage/initrd.img support */
+#define CONFIG_CMD_BOOTZ
+#define CONFIG_SUPPORT_RAW_INITRD
+
+fatload -> load
+bootm -> bootz
+loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}
+
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c      |   12 ++++++++++++
- include/configs/am335x_evm.h |    5 +++++
- 2 files changed, 17 insertions(+)
+ board/ti/am335x/board.c      |   15 +++++++++++++++
+ include/configs/am335x_evm.h |    8 +++++++-
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 48e6896..de7d543 100644
+index 48e6896..a1683fc 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -383,6 +383,18 @@ int board_late_init(void)
+@@ -383,6 +383,21 @@ int board_late_init(void)
  	strncpy(safe_string, (char *)header.version, sizeof(header.version));
  	safe_string[sizeof(header.version)] = 0;
  	setenv("board_rev", safe_string);
 +
 +	if (board_is_bone()) {
 +		setenv("dtb_file", "am335x-bone.dtb");
++		setenv("fdtfile", "am335x-bone.dtb");
 +	}
 +
 +	if (board_is_bone_lt()) {
 +		setenv("dtb_file", "am335x-boneblack.dtb");
++		setenv("fdtfile", "am335x-boneblack.dtb");
 +	}
 +
 +	if (board_is_evm_sk()) {
 +		setenv("dtb_file", "am335x-evmsk.dtb");
++		setenv("fdtfile", "am335x-evmsk.dtb");
 +	}
  #endif
  
  	return 0;
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 33ee2c4..4bf6877 100644
+index 33ee2c4..2ce6079 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -143,8 +143,13 @@
- #define CONFIG_OMAP_HSMMC
- #define CONFIG_CMD_MMC
+@@ -68,7 +68,7 @@
+ 		"root=${mmcroot} " \
+ 		"rootfstype=${mmcrootfstype}\0" \
+ 	"bootenv=uEnv.txt\0" \
+-	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"loadbootenv=load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
+ 	"importbootenv=echo Importing environment from mmc ...; " \
+ 		"env import -t $loadaddr $filesize\0" \
+ 	"ramargs=setenv bootargs console=${console} " \
+@@ -145,6 +145,12 @@
  #define CONFIG_DOS_PARTITION
-+#define CONFIG_FS_FAT
-+#define CONFIG_FS_EXT4
  #define CONFIG_CMD_FAT
  #define CONFIG_CMD_EXT2
-+#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
-+#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
-+#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
++#define CONFIG_CMD_EXT4
++#define CONFIG_CMD_FS_GENERIC
++
++/* bootz: zImage/initrd.img support */
++#define CONFIG_CMD_BOOTZ
++#define CONFIG_SUPPORT_RAW_INITRD
  
  #define CONFIG_SPI
  #define CONFIG_OMAP3_SPI

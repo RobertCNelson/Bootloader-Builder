@@ -3,28 +3,54 @@ From: Robert Nelson <robertcnelson@gmail.com>
 Date: Fri, 15 Mar 2013 10:14:49 -0500
 Subject: [PATCH] am3517_crane: uEnv.txt, bootz, n fixes
 
+Defaults:
+#define CONFIG_BOOTDELAY	1
+
+#define CONFIG_CMD_FAT
+#define CONFIG_CMD_EXT2
+#define CONFIG_CMD_EXT4
+#define CONFIG_CMD_FS_GENERIC
+
+/* bootz: zImage/initrd.img support */
+#define CONFIG_CMD_BOOTZ
+#define CONFIG_SUPPORT_RAW_INITRD
+
+fatload -> load
+bootm -> bootz
+loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}
+
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am3517_crane.h |   45 ++++++++++++++++++++++++++--------------
- 1 file changed, 29 insertions(+), 16 deletions(-)
+ include/configs/am3517_crane.h |   50 +++++++++++++++++++++++++---------------
+ 1 file changed, 31 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/am3517_crane.h b/include/configs/am3517_crane.h
-index bf9d63e..3967d69 100644
+index bf9d63e..f5edcc9 100644
 --- a/include/configs/am3517_crane.h
 +++ b/include/configs/am3517_crane.h
-@@ -143,6 +143,11 @@
+@@ -143,6 +143,15 @@
  
  #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
  #define CONFIG_CMD_MMC		/* MMC support			*/
-+/* #define CONFIG_FS_FAT */
-+/* #define CONFIG_FS_EXT4 */
-+/* #define CONFIG_CMD_FS_GENERIC */			/* Generic load commands */
-+#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
-+#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
++#define CONFIG_CMD_FAT
++#define CONFIG_CMD_EXT2
++#define CONFIG_CMD_EXT4
++#define CONFIG_CMD_FS_GENERIC
++
++/* bootz: zImage/initrd.img support */
++#define CONFIG_CMD_BOOTZ
++#define CONFIG_SUPPORT_RAW_INITRD
++
  #define CONFIG_CMD_NAND		/* NAND support			*/
  #define CONFIG_CMD_DHCP
  #undef CONFIG_CMD_PING
-@@ -185,18 +190,21 @@
+@@ -180,43 +189,46 @@
+ #define CONFIG_JFFS2_PART_SIZE		0xf980000	/* sz of jffs2 part */
+ 
+ /* Environment information */
+-#define CONFIG_BOOTDELAY	10
++#define CONFIG_BOOTDELAY	1
+ 
  #define CONFIG_BOOTFILE		"uImage"
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -33,8 +59,8 @@ index bf9d63e..3967d69 100644
 +	"loadaddr=0x80200000\0" \
 +	"console=ttyO2,115200n8\0" \
  	"mmcdev=0\0" \
-+	"mmcroot=/dev/mmcblk0p2 rw\0" \
-+	"mmcrootfstype=ext3 rootwait\0" \
++	"mmcroot=/dev/mmcblk0p2 ro\0" \
++	"mmcrootfstype=ext4 rootwait\0" \
  	"mmcargs=setenv bootargs console=${console} " \
 -		"root=/dev/mmcblk0p2 rw " \
 -		"rootfstype=ext3 rootwait\0" \
@@ -46,14 +72,20 @@ index bf9d63e..3967d69 100644
 -	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
 -	"bootscript=echo Running bootscript from mmc ...; " \
 -		"source ${loadaddr}\0" \
+-	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
 +	"bootenv=uEnv.txt\0" \
-+	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"loadbootenv=load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 +	"importbootenv=echo Importing environment from mmc ...; " \
 +		"env import -t $loadaddr $filesize\0" \
- 	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
++	"loaduimage=load mmc ${mmcdev} ${loadaddr} zImage\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
-@@ -208,15 +216,20 @@
+ 		"bootm ${loadaddr}\0" \
+ 	"nandboot=echo Booting from nand ...; " \
+ 		"run nandargs; " \
+ 		"nand read ${loadaddr} 280000 400000; " \
+-		"bootm ${loadaddr}\0" \
++		"bootz ${loadaddr}\0" \
  
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
@@ -71,15 +103,10 @@ index bf9d63e..3967d69 100644
 +			"echo Loaded environment from ${bootenv};" \
 +			"run importbootenv;" \
 +		"fi;" \
-+		"if test -n $uenvcmd; then " \
-+			"echo Running uenvcmd ...;" \
-+			"run uenvcmd;" \
-+		"fi;" \
 +		"if run loaduimage; then " \
 +			"run mmcboot;" \
 +		"fi;" \
-+	"fi;" \
-+	"run nandboot;" \
++	"fi; "
  
  #define CONFIG_AUTO_COMPLETE	1
  /*
