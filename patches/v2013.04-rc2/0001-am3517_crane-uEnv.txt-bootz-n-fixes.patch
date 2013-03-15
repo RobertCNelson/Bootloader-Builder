@@ -19,6 +19,13 @@ fatload -> load
 bootm -> bootz
 loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}
 
+v2: Disable: CONFIG_CMD_FS_GENERIC
+Building u-boot: am3517crane-v2013.04-rc1-41-g68149e9-r0
+cmd_jffs2.o:(.u_boot_list.cmd.ls+0x0): multiple definition of `_u_boot_list_cmd_ls'
+cmd_fs.o:(.u_boot_list.cmd.ls+0x0): first defined here
+make[1]: *** [libcommon.o] Error 1
+make: *** [common/libcommon.o] Error 2
+
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  include/configs/am3517_crane.h |   50 +++++++++++++++++++++++++---------------
@@ -35,7 +42,7 @@ index bf9d63e..f5edcc9 100644
 +#define CONFIG_CMD_FAT
 +#define CONFIG_CMD_EXT2
 +#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
++/* #define CONFIG_CMD_FS_GENERIC */
 +
 +/* bootz: zImage/initrd.img support */
 +#define CONFIG_CMD_BOOTZ
@@ -74,10 +81,10 @@ index bf9d63e..f5edcc9 100644
 -		"source ${loadaddr}\0" \
 -	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
 +	"bootenv=uEnv.txt\0" \
-+	"loadbootenv=load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 +	"importbootenv=echo Importing environment from mmc ...; " \
 +		"env import -t $loadaddr $filesize\0" \
-+	"loaduimage=load mmc ${mmcdev} ${loadaddr} zImage\0" \
++	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} zImage\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
  		"bootm ${loadaddr}\0" \
