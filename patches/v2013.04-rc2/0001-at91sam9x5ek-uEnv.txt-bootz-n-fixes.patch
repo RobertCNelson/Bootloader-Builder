@@ -3,72 +3,55 @@ From: Robert Nelson <robertcnelson@gmail.com>
 Date: Fri, 15 Mar 2013 10:15:16 -0500
 Subject: [PATCH] at91sam9x5ek: uEnv.txt, bootz, n fixes
 
+Defaults:
+
+#define CONFIG_BOOTDELAY	3
+
+#define CONFIG_CMD_FAT		/* FAT: File System support */
+#define CONFIG_CMD_EXT2		/* EXT2: File System support */
+
+/* enable: Generic File System Load Commands */
+#define CONFIG_FS_FAT
+#define CONFIG_FS_EXT4
+#define CONFIG_CMD_FS_GENERIC
+
+#define CONFIG_CMD_BOOTZ		/* bootz: enable zImage support */
+#define CONFIG_SUPPORT_RAW_INITRD	/* bootz: enable raw initrd support */
+
+fatload -> load
+bootm -> bootz
+loaduimage -> loadzimage
+
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/at91sam9x5ek.h |   61 +++++++++++++++++++++++++---------------
- 1 file changed, 38 insertions(+), 23 deletions(-)
+ include/configs/at91sam9x5ek.h |   58 ++++++++++++++++++++++++++++++++--------
+ 1 file changed, 47 insertions(+), 11 deletions(-)
 
 diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
-index 6fac5ac..eeeabc0 100644
+index 6fac5ac..a8703c7 100644
 --- a/include/configs/at91sam9x5ek.h
 +++ b/include/configs/at91sam9x5ek.h
-@@ -66,7 +66,7 @@
- #define CONFIG_ATMEL_LCD_RGB565
- #define CONFIG_SYS_CONSOLE_IS_IN_ENV
- 
--#define CONFIG_BOOTDELAY	3
-+#define CONFIG_BOOTDELAY	1
- 
- /*
-  * BOOTP options
-@@ -150,6 +150,12 @@
+@@ -150,6 +150,16 @@
  /* MMC */
  #ifdef CONFIG_CMD_MMC
  #define CONFIG_MMC
-+/* #define CONFIG_FS_FAT */
-+/* #define CONFIG_FS_EXT4 */
-+#define CONFIG_CMD_EXT2		/* EXT2 Support */
-+/* #define CONFIG_CMD_FS_GENERIC */			/* Generic load commands */
-+#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
-+#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
++#define CONFIG_CMD_FAT		/* FAT: File System support */
++#define CONFIG_CMD_EXT2		/* EXT2: File System support */
++
++/* enable: Generic File System Load Commands */
++#define CONFIG_FS_FAT
++#define CONFIG_FS_EXT4
++#define CONFIG_CMD_FS_GENERIC
++
++#define CONFIG_CMD_BOOTZ		/* bootz: enable zImage support */
++#define CONFIG_SUPPORT_RAW_INITRD	/* bootz: enable raw initrd support */
  #define CONFIG_GENERIC_MMC
  #define CONFIG_GENERIC_ATMEL_MCI
  #endif
-@@ -192,9 +198,6 @@
- #define CONFIG_ENV_OFFSET		0xc0000
- #define CONFIG_ENV_OFFSET_REDUND	0x100000
- #define CONFIG_ENV_SIZE		0x20000		/* 1 sector = 128 kB */
--#define CONFIG_BOOTCOMMAND	"nand read " \
--				"0x22000000 0x200000 0x300000; " \
--				"bootm 0x22000000"
- #elif defined(CONFIG_SYS_USE_SPIFLASH)
- /* bootstrap + u-boot + env + linux in spi flash */
- #define CONFIG_ENV_IS_IN_SPI_FLASH
-@@ -202,9 +205,6 @@
- #define CONFIG_ENV_SIZE		0x3000
- #define CONFIG_ENV_SECT_SIZE	0x1000
- #define CONFIG_ENV_SPI_MAX_HZ	30000000
--#define CONFIG_BOOTCOMMAND	"sf probe 0; " \
--				"sf read 0x22000000 0x100000 0x300000; " \
--				"bootm 0x22000000"
- #elif defined(CONFIG_SYS_USE_DATAFLASH)
- /* bootstrap + u-boot + env + linux in data flash */
- #define CONFIG_ENV_IS_IN_SPI_FLASH
-@@ -212,9 +212,6 @@
- #define CONFIG_ENV_SIZE		0x4200
- #define CONFIG_ENV_SECT_SIZE	0x210
- #define CONFIG_ENV_SPI_MAX_HZ	30000000
--#define CONFIG_BOOTCOMMAND	"sf probe 0; " \
--				"sf read 0x22000000 0x84000 0x294000; " \
--				"bootm 0x22000000"
- #else /* CONFIG_SYS_USE_MMC */
- /* bootstrap + u-boot + env + linux in mmc */
- #define CONFIG_ENV_IS_IN_MMC
-@@ -224,19 +221,37 @@
- #define CONFIG_SYS_MMC_ENV_DEV	0
+@@ -225,17 +235,43 @@
  #endif
  
--#ifdef CONFIG_SYS_USE_MMC
+ #ifdef CONFIG_SYS_USE_MMC
 -#define CONFIG_BOOTARGS		"mem=128M console=ttyS0,115200 " \
 -				"mtdparts=atmel_nand:" \
 -				"8M(bootstrap/uboot/kernel)ro,-(rootfs) " \
@@ -80,26 +63,30 @@ index 6fac5ac..eeeabc0 100644
 -				"8M(bootstrap/uboot/kernel)ro,-(rootfs) " \
 -				"root=/dev/mtdblock1 rw " \
 -				"rootfstype=ubifs ubi.mtd=1 root=ubi0:rootfs"
--#endif
 +#define CONFIG_EXTRA_ENV_SETTINGS \
++	"bootenv=uEnv.txt\0" \
 +	"loadaddr=0x22000000\0" \
++	"bootfile=zImage\0" \
++	"dtbaddr=0x27FF0000\0" \
++	"dtbfile=at91sam9g25ek.dtb\0" \
 +	"console=ttyS0,115200n8\0" \
 +	"optargs=\0" \
 +	"mmcdev=0\0" \
++	"mmcpart=1\0" \
 +	"mmcroot=/dev/mmcblk0p2 ro\0" \
 +	"mmcrootfstype=ext4 rootwait\0" \
 +	"mmcargs=setenv bootargs console=${console} " \
 +		"${optargs} " \
 +		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype}\0" \
-+	"bootenv=uEnv.txt\0" \
-+	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootenv}\0" \
 +	"importbootenv=echo Importing environment from mmc ...; " \
 +		"env import -t $loadaddr $filesize\0" \
-+	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} ${bootfile}\0" \
++	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootfile}\0" \
++	"loaddtb=load mmc ${mmcdev}:${mmcpart} ${dtbaddr} /dtbs/${dtbfile}\0" \
 +	"mmcboot=echo Booting from mmc ...; " \
 +		"run mmcargs; " \
-+		"bootm ${loadaddr}\0" \
++		"bootz ${loadaddr} - ${dtbaddr}\0"
 +
 +#define CONFIG_BOOTCOMMAND \
 +	"if mmc rescan ${mmcdev}; then " \
@@ -108,13 +95,14 @@ index 6fac5ac..eeeabc0 100644
 +			"echo Loaded environment from ${bootenv};" \
 +			"run importbootenv;" \
 +		"fi;" \
-+		"if run loaduimage; then " \
++		"if run loadzimage; then " \
++			"run loaddtb;" \
 +			"run mmcboot;" \
 +		"fi;" \
-+	"fi;" \
++	"fi;"
+ #endif
  
  #define CONFIG_BAUDRATE		115200
- 
 -- 
 1.7.10.4
 
