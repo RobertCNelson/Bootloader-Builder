@@ -229,9 +229,7 @@ build_u_boot () {
 
 	if [ "${v2013_04_rc2}" ] ; then
 		git am "${DIR}/patches/v2013.04-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-am3517_crane-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-igep00x0-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
@@ -239,7 +237,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04-rc2/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-rpi_b-uEnv.txt-bootz-n-fixes.patch"
 
 		git am "${DIR}/patches/v2013.04-rc2/board/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
 
@@ -549,18 +546,6 @@ build_barebox_latest () {
 	fi
 }
 
-am3517crane () {
-	cleanup
-	armv7_toolchain
-
-	BOARD="am3517crane"
-	UBOOT_CONFIG="am3517_crane_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
-}
-
 arndale5250 () {
 	cleanup
 	armv7hf_toolchain
@@ -620,19 +605,6 @@ beaglebone () {
 
 	BOARD="beaglebone"
 	UBOOT_CONFIG="am335x_evm_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
-}
-
-igep00x0 () {
-	cleanup
-	armv7_toolchain
-
-	BOARD="igep00x0"
-
-	UBOOT_CONFIG="igep0020_config"
 
 	build_uboot_stable
 	build_uboot_testing
@@ -744,18 +716,6 @@ pandaboard () {
 	build_uboot_latest
 }
 
-rpib () {
-	cleanup
-	armv7_toolchain
-
-	BOARD="rpib"
-	UBOOT_CONFIG="rpi_b_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
-}
-
 sama5d3xek () {
 	cleanup
 	armv5_embedded_toolchain
@@ -804,12 +764,10 @@ wandboard () {
 #	build_uboot_latest
 }
 
-am3517crane
 arndale5250
 at91sam9x5ek
 beagleboard
 beaglebone
-igep00x0
 mx23olinuxino
 mx51evk
 mx53loco
@@ -817,7 +775,6 @@ mx6qsabrelite
 mx6qsabresd
 odroidx
 pandaboard
-rpib
 sama5d3xek
 wandboard
 #
