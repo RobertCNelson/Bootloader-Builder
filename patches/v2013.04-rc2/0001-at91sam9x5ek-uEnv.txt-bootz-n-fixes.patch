@@ -25,10 +25,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 45 insertions(+), 11 deletions(-)
 
 diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
-index 6fac5ac..70c46cf 100644
+index ee6e3fc..0d9f3ed 100644
 --- a/include/configs/at91sam9x5ek.h
 +++ b/include/configs/at91sam9x5ek.h
-@@ -152,6 +152,14 @@
+@@ -153,6 +153,14 @@
  #define CONFIG_MMC
  #define CONFIG_GENERIC_MMC
  #define CONFIG_GENERIC_ATMEL_MCI
@@ -43,7 +43,7 @@ index 6fac5ac..70c46cf 100644
  #endif
  
  /* FAT */
-@@ -225,17 +233,43 @@
+@@ -226,18 +234,43 @@
  #endif
  
  #ifdef CONFIG_SYS_USE_MMC
@@ -53,11 +53,12 @@ index 6fac5ac..70c46cf 100644
 -				"root=/dev/mmcblk0p2 " \
 -				"rw rootfstype=ext4 rootwait"
 -#else
--#define CONFIG_BOOTARGS		"mem=128M console=ttyS0,115200 " \
--				"mtdparts=atmel_nand:" \
--				"8M(bootstrap/uboot/kernel)ro,-(rootfs) " \
--				"root=/dev/mtdblock1 rw " \
--				"rootfstype=ubifs ubi.mtd=1 root=ubi0:rootfs"
+-#define CONFIG_BOOTARGS							\
+-	"console=ttyS0,115200 earlyprintk "				\
+-	"mtdparts=atmel_nand:256k(bootstrap)ro,512k(uboot)ro,"		\
+-	"256k(env),256k(env_redundant),256k(spare),"			\
+-	"512k(dtb),6M(kernel)ro,-(rootfs) "				\
+-	"rootfstype=ubifs ubi.mtd=7 root=ubi0:rootfs rw"
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	"bootenv=uEnv.txt\0" \
 +	"bootfile=zImage\0" \

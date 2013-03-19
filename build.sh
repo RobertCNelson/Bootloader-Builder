@@ -31,8 +31,8 @@ SYST=$(uname -n)
 uboot_stable="v2013.01.01"
 uboot_testing="v2013.04-rc1"
 
-#uboot_latest="68149e94053d18b54a63c9a44c87f178f59a169e"
-uboot_latest="b5bec88434adb52413f1bc33fa63d7642cb8fd35"
+#uboot_latest="b5bec88434adb52413f1bc33fa63d7642cb8fd35"
+uboot_latest="0ce033d2582129243aca10d3072a221386bbba44"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -238,8 +238,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04-rc2/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 
-		git am "${DIR}/patches/v2013.04-rc2/board/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
-
 		#Atmel: sama5d3
 		git am "${DIR}/patches/v2013.04-rc2/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.04-rc2/board/0002-NET-macb-support-sama5d3x-devices.patch"
@@ -247,6 +245,10 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04-rc2/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
 
 		git am "${DIR}/patches/v2013.04-rc2/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+
+		#WandBoard
+		git am "${DIR}/patches/v2013.04-rc2/board/0001-Add-initial-support-for-Wandboard-dual-lite-and-solo.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	if [ "${v2013_04_rc1}" ] ; then
@@ -339,19 +341,19 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.01/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
 	fi
 
-	if [ "x${BOARD}" == "xwandboard" ] ; then
+	if [ ! "${v2013_04_rc2}" ] && [ "x${BOARD}" == "xwandboard" ] ; then
 		RELEASE_VER="-r1"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2009.08_wandboard-sdk-20130208
 		BUILDTARGET="u-boot.bin"
 	fi
 
-	if [ "x${BOARD}" == "xwandboard-dl" ] ; then
+	if [ ! "${v2013_04_rc2}" ] && [ "x${BOARD}" == "xwandboard-dl" ] ; then
 		RELEASE_VER="-r1"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
 		git am "${DIR}/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
 	fi
 
-	if [ "x${BOARD}" == "xwandboard-solo" ] ; then
+	if [ ! "${v2013_04_rc2}" ] && [ "x${BOARD}" == "xwandboard-solo" ] ; then
 		RELEASE_VER="-r1"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
 		git am "${DIR}/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
@@ -581,10 +583,10 @@ at91sam9x5ek () {
 	build_uboot_testing
 	build_uboot_latest
 
-	barebox_config="at91sam9x5ek_defconfig"
-	build_barebox_stable
-	build_barebox_testing
-	build_barebox_latest
+	#barebox_config="at91sam9x5ek_defconfig"
+	#build_barebox_stable
+	#build_barebox_testing
+	#build_barebox_latest
 }
 
 beagleboard () {
@@ -759,9 +761,19 @@ wandboard () {
 	GIT_SHA="v2013.01.01"
 	build_u_boot
 
+	BOARD="wandboard-dl"
+	UBOOT_CONFIG="wandboard_dl_config"
+
 #	build_uboot_stable
 #	build_uboot_testing
-#	build_uboot_latest
+	build_uboot_latest
+
+	BOARD="wandboard-solo"
+	UBOOT_CONFIG="wandboard_solo_config"
+
+#	build_uboot_stable
+#	build_uboot_testing
+	build_uboot_latest
 }
 
 arndale5250

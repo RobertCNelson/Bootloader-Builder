@@ -21,16 +21,16 @@ loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx23_olinuxino.h |   49 +++++++++++++++++++-------------------
- 1 file changed, 24 insertions(+), 25 deletions(-)
+ include/configs/mx23_olinuxino.h |   44 ++++++++++++++++++--------------------
+ 1 file changed, 21 insertions(+), 23 deletions(-)
 
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index 7983c5d..f118028 100644
+index 03893d7..f7e2555 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
-@@ -58,6 +58,15 @@
- #define	CONFIG_CMD_GPIO
- #define	CONFIG_CMD_MMC
+@@ -64,6 +64,15 @@
+ #define	CONFIG_CMD_NET
+ #define	CONFIG_CMD_USB
  
 +#define CONFIG_CMD_FAT
 +#define CONFIG_CMD_EXT2
@@ -44,20 +44,7 @@ index 7983c5d..f118028 100644
  /*
   * Memory configurations
   */
-@@ -162,49 +171,39 @@
- 		"fi ; "	\
- 		"fi\0" \
- 	"script=boot.scr\0"	\
-+	"bootenv=uEnv.txt\0" \
- 	"uimage=uImage\0" \
- 	"console=ttyAMA0\0" \
- 	"fdt_file=imx23-olinuxino.dtb\0" \
- 	"fdt_addr=0x41000000\0" \
--	"boot_fdt=try\0" \
-+	"bootdir=/dtbs\0" \
- 	"mmcdev=0\0" \
- 	"mmcpart=2\0" \
- 	"mmcroot=/dev/mmcblk0p3 rw rootwait\0" \
+@@ -207,26 +216,16 @@
  	"mmcargs=setenv bootargs console=${console},${baudrate} " \
  		"root=${mmcroot}\0" \
  	"loadbootscript="  \
@@ -70,7 +57,7 @@ index 7983c5d..f118028 100644
 -	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 +	"loaduimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
-+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${bootdir}/${fdt_file}\0" \
++	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} /dtbs/${fdt_file}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
 -		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
@@ -85,9 +72,12 @@ index 7983c5d..f118028 100644
 -			"fi; " \
 -		"else " \
 -			"bootm; " \
--		"fi;\0"
-+		"bootz ${loadaddr} - ${fdt_addr};\0"
- 
+-		"fi;\0" \
++		"bootz ${loadaddr} - ${fdt_addr};\0" \
+ 	"netargs=setenv bootargs console=${console_mainline},${baudrate} " \
+ 		"root=/dev/nfs " \
+ 		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
+@@ -256,13 +255,12 @@
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
  		"if run loadbootscript; then " \
@@ -95,17 +85,15 @@ index 7983c5d..f118028 100644
 -		"else " \
 -			"if run loaduimage; then " \
 -				"run mmcboot; " \
--			"else " \
--				"echo ERR: Fail to boot from MMC; " \
+-			"else run netboot; " \
 -			"fi; " \
-+			"echo Loaded environment from ${bootenv}; " \
++			"echo Loaded environment from uEnv.txt; " \
 +			"run importbootenv; " \
 +		"fi; " \
 +		"if run loaduimage; then " \
-+			"run loadfdt; " \
-+			"run mmcboot; " \
++			"run loadfdt; run mmcboot; " \
  		"fi; " \
--	"else exit; fi"
+-	"else run netboot; fi"
 +	"fi;"
  
  #endif /* __MX23_OLINUXINO_CONFIG_H__ */
