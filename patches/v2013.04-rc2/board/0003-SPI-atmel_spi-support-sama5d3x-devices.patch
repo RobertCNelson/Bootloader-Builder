@@ -11,11 +11,11 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/spi/atmel_spi.c b/drivers/spi/atmel_spi.c
-index ce7d460..5e97225 100644
+index f4b1bad..9ea32f2 100644
 --- a/drivers/spi/atmel_spi.c
 +++ b/drivers/spi/atmel_spi.c
-@@ -92,7 +92,8 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
- 	as->slave.cs = cs;
+@@ -90,7 +90,8 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
+ 
  	as->regs = regs;
  	as->mr = ATMEL_SPI_MR_MSTR | ATMEL_SPI_MR_MODFDIS
 -#if defined(CONFIG_AT91SAM9X5) || defined(CONFIG_AT91SAM9M10G45)
