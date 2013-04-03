@@ -29,10 +29,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 uboot_stable="v2013.01.01"
-uboot_testing="v2013.04-rc1"
+uboot_testing="v2013.04-rc2"
 
-#uboot_latest="8b906a9f0b3fd0d4421e08c4fa62f61a01289611"
-uboot_latest="b2da80384ed197ea17c1d910813e3c105a9c656c"
+#uboot_latest="b2da80384ed197ea17c1d910813e3c105a9c656c"
+#v2013.04-rc2
+#uboot_latest="c8142633e169665b246352918df5b76fd243bb71"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -502,29 +503,29 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
-	v2013_04_rc1=1
-#	v2013_04_rc2=1
+#	v2013_04_rc1=1
+	v2013_04_rc2=1
 #	v2013_04_rc3=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
-	unset v2013_04_rc1
-#	unset v2013_04_rc2
+#	unset v2013_04_rc1
+	unset v2013_04_rc2
 #	unset v2013_04_rc3
 }
 
 build_uboot_latest () {
 #	v2013_04_rc1=1
-	v2013_04_rc2=1
-#	v2013_04_rc3=1
+#	v2013_04_rc2=1
+	v2013_04_rc3=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
 #	unset v2013_04_rc1
-	unset v2013_04_rc2
-#	unset v2013_04_rc3
+#	unset v2013_04_rc2
+	unset v2013_04_rc3
 }
 
 build_barebox_stable () {
@@ -765,14 +766,14 @@ wandboard () {
 	UBOOT_CONFIG="wandboard_dl_config"
 
 #	build_uboot_stable
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 
 	BOARD="wandboard-solo"
 	UBOOT_CONFIG="wandboard_solo_config"
 
 #	build_uboot_stable
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 }
 
