@@ -25,7 +25,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 21 insertions(+), 23 deletions(-)
 
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index 03893d7..f7e2555 100644
+index 03893d7..0079daf 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
 @@ -64,6 +64,15 @@
@@ -49,15 +49,15 @@ index 03893d7..f7e2555 100644
  		"root=${mmcroot}\0" \
  	"loadbootscript="  \
 -		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
-+		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} /boot/${bootenv};\0" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} /boot/uEnv.txt ;\0" \
 +	"importbootenv=echo Importing environment from mmc ...; " \
 +		"env import -t ${loadaddr} ${filesize}\0" \
  	"bootscript=echo Running bootscript from mmc ...; "	\
  		"source\0" \
 -	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
-+	"loaduimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
-+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} /dtbs/${fdt_file}\0" \
++	"loaduimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} /boot/zImage\0" \
++	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} /boot/dtbs/${fdt_file}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
 -		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
