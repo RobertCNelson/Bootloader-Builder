@@ -22,14 +22,14 @@ loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c      |   15 +++++++++++++++
- include/configs/am335x_evm.h |    5 ++++-
- 2 files changed, 19 insertions(+), 1 deletion(-)
+ include/configs/am335x_evm.h |    1 +
+ 2 files changed, 16 insertions(+)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index f4b972b..e9006ae 100644
+index 12620bb..8199ee1 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -383,6 +383,21 @@ int board_late_init(void)
+@@ -422,6 +422,21 @@ int board_late_init(void)
  	strncpy(safe_string, (char *)header.version, sizeof(header.version));
  	safe_string[sizeof(header.version)] = 0;
  	setenv("board_rev", safe_string);
@@ -52,10 +52,10 @@ index f4b972b..e9006ae 100644
  
  	return 0;
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 9eada95..1dc70b7 100644
+index b7c443c..92f85ec 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -36,6 +36,7 @@
+@@ -35,6 +35,7 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -63,24 +63,6 @@ index 9eada95..1dc70b7 100644
  #define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs */
  #define CONFIG_SETUP_MEMORY_TAGS
  #define CONFIG_INITRD_TAG
-@@ -96,7 +97,7 @@
- 		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
- 		"ip=dhcp\0" \
- 	"bootenv=uEnv.txt\0" \
--	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
-+	"loadbootenv=load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
- 	"importbootenv=echo Importing environment from mmc ...; " \
- 		"env import -t $loadaddr $filesize\0" \
- 	"ramargs=setenv bootargs console=${console} " \
-@@ -192,6 +193,8 @@
- #define CONFIG_DOS_PARTITION
- #define CONFIG_CMD_FAT
- #define CONFIG_CMD_EXT2
-+#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
- 
- #define CONFIG_SPI
- #define CONFIG_OMAP3_SPI
 -- 
 1.7.10.4
 

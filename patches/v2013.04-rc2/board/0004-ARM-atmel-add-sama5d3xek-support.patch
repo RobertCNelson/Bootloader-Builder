@@ -45,16 +45,16 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  create mode 100644 include/configs/sama5d3xek.h
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index d031c3a..e948121 100644
+index 1614b91..1ca46f3 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -909,6 +909,7 @@ Matt Sealey <matt@genesi-usa.com>
+@@ -913,6 +913,7 @@ Matt Sealey <matt@genesi-usa.com>
  
  Bo Shen <voice.shen@atmel.com>
  	at91sam9x5ek		ARM926EJS (AT91SAM9G15,G25,G35,X25,X35 SoC)
 +	sama5d3xek		ARMV7 (SAMA5D31, D33, D34, D35 SoC)
  
- Michal Simek <monstr@monstr.eu>
+ Rajeshwari Shinde <rajeshwari.s@samsung.com>
  
 diff --git a/arch/arm/cpu/armv7/at91/Makefile b/arch/arm/cpu/armv7/at91/Makefile
 new file mode 100644
@@ -1491,12 +1491,12 @@ index 0000000..41659e9
 +}
 +#endif /* CONFIG_ATMEL_SPI */
 diff --git a/boards.cfg b/boards.cfg
-index ee68fdd..34c77af 100644
+index 5fc70be..e588c40 100644
 --- a/boards.cfg
 +++ b/boards.cfg
-@@ -242,6 +242,9 @@ am335x_evm_uart4             arm         armv7       am335x              ti
- am335x_evm_uart5             arm         armv7       am335x              ti             am33xx      am335x_evm:SERIAL6,CONS_INDEX=6
+@@ -243,6 +243,9 @@ am335x_evm_uart5             arm         armv7       am335x              ti
  am335x_evm_usbspl            arm         armv7       am335x              ti             am33xx      am335x_evm:SERIAL1,CONS_INDEX=1,SPL_USBETH_SUPPORT
+ ti814x_evm                   arm         armv7       ti814x              ti             am33xx
  pcm051                       arm         armv7       pcm051              phytec         am33xx      pcm051
 +sama5d3xek_nandflash         arm         armv7       sama5d3xek          atmel          at91        sama5d3xek:SAMA5D3,SYS_USE_NANDFLASH
 +sama5d3xek_sdcard            arm         armv7       sama5d3xek          atmel          at91        sama5d3xek:SAMA5D3,SYS_USE_MMC
