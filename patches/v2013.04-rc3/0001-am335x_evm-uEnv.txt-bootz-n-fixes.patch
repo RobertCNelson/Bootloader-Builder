@@ -1,0 +1,68 @@
+From 5c9cbc5c8b21e5f1d47788755c0a554439b03e03 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 15 Mar 2013 10:12:53 -0500
+Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
+
+Defaults:
+#define CONFIG_BOOTDELAY	1
+
+#define CONFIG_CMD_FAT
+#define CONFIG_CMD_EXT2
+#define CONFIG_CMD_EXT4
+#define CONFIG_CMD_FS_GENERIC
+
+/* bootz: zImage/initrd.img support */
+#define CONFIG_CMD_BOOTZ
+#define CONFIG_SUPPORT_RAW_INITRD
+
+fatload -> load
+bootm -> bootz
+loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/am335x/board.c      |   15 +++++++++++++++
+ include/configs/am335x_evm.h |    1 +
+ 2 files changed, 16 insertions(+)
+
+diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
+index 12620bb..8199ee1 100644
+--- a/board/ti/am335x/board.c
++++ b/board/ti/am335x/board.c
+@@ -422,6 +422,21 @@ int board_late_init(void)
+ 	strncpy(safe_string, (char *)header.version, sizeof(header.version));
+ 	safe_string[sizeof(header.version)] = 0;
+ 	setenv("board_rev", safe_string);
++
++	if (board_is_bone()) {
++		setenv("dtb_file", "am335x-bone.dtb");
++		setenv("fdtfile", "am335x-bone.dtb");
++	}
++
++	if (board_is_bone_lt()) {
++		setenv("dtb_file", "am335x-boneblack.dtb");
++		setenv("fdtfile", "am335x-boneblack.dtb");
++	}
++
++	if (board_is_evm_sk()) {
++		setenv("dtb_file", "am335x-evmsk.dtb");
++		setenv("fdtfile", "am335x-evmsk.dtb");
++	}
+ #endif
+ 
+ 	return 0;
+diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
+index b7c443c..92f85ec 100644
+--- a/include/configs/am335x_evm.h
++++ b/include/configs/am335x_evm.h
+@@ -35,6 +35,7 @@
+ 
+ #define CONFIG_OF_LIBFDT
+ #define CONFIG_CMD_BOOTZ
++#define CONFIG_SUPPORT_RAW_INITRD
+ #define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs */
+ #define CONFIG_SETUP_MEMORY_TAGS
+ #define CONFIG_INITRD_TAG
+-- 
+1.7.10.4
+

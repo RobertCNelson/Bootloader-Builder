@@ -228,6 +228,30 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
 
+	if [ "${v2013_04_rc3}" ] ; then
+		git am "${DIR}/patches/v2013.04-rc3/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+
+		#Atmel: sama5d3
+		git am "${DIR}/patches/v2013.04-rc3/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc3/board/0002-NET-macb-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc3/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04-rc3/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
+
+		git am "${DIR}/patches/v2013.04-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+
+		#WandBoard
+		git am "${DIR}/patches/v2013.04-rc3/board/0001-Add-initial-support-for-Wandboard-dual-lite-and-solo.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+	fi
+
 	if [ "${v2013_04_rc2}" ] ; then
 		git am "${DIR}/patches/v2013.04-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -250,45 +274,6 @@ build_u_boot () {
 		#WandBoard
 		git am "${DIR}/patches/v2013.04-rc2/board/0001-Add-initial-support-for-Wandboard-dual-lite-and-solo.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	if [ "${v2013_04_rc1}" ] ; then
-		#enable u-boot features...
-		git am "${DIR}/patches/v2013.04-rc1/0001-enable-bootz-and-generic-load-features.patch"
-
-		#TI: Bone:
-		git am "${DIR}/patches/v2013.04-rc1/0002-bone-use-dtb_file-variable-for-device-tree-file.patch"
-
-		#TI:
-		git am "${DIR}/patches/v2013.04-rc1/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		#Should not be needed with v3.8.x
-		git am "${DIR}/patches/v2013.04-rc1/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
-		git am "${DIR}/patches/v2013.04-rc1/0003-beagle-at24-retry-with-16bit-addressing.patch"
-
-		#Freescale:
-		git am "${DIR}/patches/v2013.04-rc1/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc1/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
-
-		#Atmel:
-		git am "${DIR}/patches/v2013.04-rc1/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
-
-		#Freescale: i.mx23
-		git am "${DIR}/patches/v2013.04-rc1/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
-
-		if [ "x${BOARD}" == "xbeaglebone" ] ; then
-			RELEASE_VER="-r1"
-			#(bonelt -> boneblack rename)
-		fi
-
-		if [ "x${BOARD}" == "xsama5d3xek" ] ; then
-			RELEASE_VER="-r3"
-			#Atmel: sama5d3
-			git am "${DIR}/patches/v2013.04-rc1/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
-			git am "${DIR}/patches/v2013.04-rc1/0002-NET-macb-support-sama5d3x-devices.patch"
-			git am "${DIR}/patches/v2013.04-rc1/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-			git am "${DIR}/patches/v2013.04-rc1/0004-ARM-atmel-add-sama5d3xek-support.patch"
-			git am "${DIR}/patches/v2013.04-rc1/0005-sama5-enable-bootz-and-uEnv.txt-support.patch"
-		fi
 	fi
 
 	if [ "${v2013_01}" ] ; then
@@ -340,24 +325,6 @@ build_u_boot () {
 		RELEASE_VER="-r4"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-r1
 		git am "${DIR}/patches/v2013.01/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
-	fi
-
-	if [ ! "${v2013_04_rc2}" ] && [ "x${BOARD}" == "xwandboard" ] ; then
-		RELEASE_VER="-r1"
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2009.08_wandboard-sdk-20130208
-		BUILDTARGET="u-boot.bin"
-	fi
-
-	if [ ! "${v2013_04_rc2}" ] && [ "x${BOARD}" == "xwandboard-dl" ] ; then
-		RELEASE_VER="-r1"
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
-		git am "${DIR}/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
-	fi
-
-	if [ ! "${v2013_04_rc2}" ] && [ "x${BOARD}" == "xwandboard-solo" ] ; then
-		RELEASE_VER="-r1"
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git v2013.01_wandboard
-		git am "${DIR}/patches/v2013.01/0001-imx-wandboard-use-bootz-n-uEnv.txt.patch"
 	fi
 
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
@@ -583,11 +550,6 @@ at91sam9x5ek () {
 	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
-
-	#barebox_config="at91sam9x5ek_defconfig"
-	#build_barebox_stable
-	#build_barebox_testing
-	#build_barebox_latest
 }
 
 beagleboard () {
@@ -734,33 +696,11 @@ sama5d3xek () {
 #	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
-
-#	armv7_toolchain
-#	barebox_config="sama5d3xek_defconfig"
-#	build_barebox_stable
-#	build_barebox_testing
-#	build_barebox_latest
 }
 
 wandboard () {
 	cleanup
 	armv7hf_toolchain
-
-	BOARD="wandboard"
-	UBOOT_CONFIG="wandboard_config"
-
-	GIT_SHA="v2009.08"
-	build_u_boot
-
-	BOARD="wandboard-dl"
-	UBOOT_CONFIG="wandboard_dl_config"
-	GIT_SHA="v2013.01.01"
-	build_u_boot
-
-	BOARD="wandboard-solo"
-	UBOOT_CONFIG="wandboard_solo_config"
-	GIT_SHA="v2013.01.01"
-	build_u_boot
 
 	BOARD="wandboard-dl"
 	UBOOT_CONFIG="wandboard_dl_config"
