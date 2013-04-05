@@ -557,7 +557,7 @@ at91sam9x5ek () {
 
 	BOARD="at91sam9x5ek"
 
-	at91bootstrap_config="at91sam9g20eksd_uboot_defconfig"
+	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
 	GIT_SHA="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
 	build_at91bootstrap
 
