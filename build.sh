@@ -230,6 +230,7 @@ build_u_boot () {
 
 	if [ "${v2013_04_rc3}" ] ; then
 		git am "${DIR}/patches/v2013.04-rc3/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
@@ -254,6 +255,7 @@ build_u_boot () {
 
 	if [ "${v2013_04_rc2}" ] ; then
 		git am "${DIR}/patches/v2013.04-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
@@ -531,6 +533,24 @@ arndale5250 () {
 #	build_uboot_latest
 }
 
+at91sam9g20ek () {
+	cleanup
+	armv5_embedded_toolchain
+
+	BOARD="at91sam9g20ek"
+
+	at91bootstrap_config="at91sam9g20eksd_uboot_defconfig"
+	GIT_SHA="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
+	build_at91bootstrap
+
+	UBOOT_CONFIG="at91sam9g20ek_2mmc_nandflash_config"
+
+#	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
+}
+
+
 at91sam9x5ek () {
 	cleanup
 	armv5_embedded_toolchain
@@ -718,6 +738,7 @@ wandboard () {
 }
 
 arndale5250
+at91sam9g20ek
 at91sam9x5ek
 beagleboard
 beaglebone
