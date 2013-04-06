@@ -3,32 +3,53 @@ From: Robert Nelson <robertcnelson@gmail.com>
 Date: Fri, 15 Mar 2013 10:16:52 -0500
 Subject: [PATCH] omap4_common: uEnv.txt, bootz, n fixes
 
+Defaults:
+#define CONFIG_BOOTDELAY	1
+
+#define CONFIG_CMD_FAT
+#define CONFIG_CMD_EXT2
+#define CONFIG_CMD_EXT4
+#define CONFIG_CMD_FS_GENERIC
+
+/* bootz: zImage/initrd.img support */
+#define CONFIG_CMD_BOOTZ
+#define CONFIG_SUPPORT_RAW_INITRD
+
+fatload -> load
+bootm -> bootz
+
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/omap4_common.h |   14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ include/configs/omap4_common.h |   25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
 diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
-index 180cb24..7ce48a7 100644
+index 6ae6a0f..43e054d 100644
 --- a/include/configs/omap4_common.h
 +++ b/include/configs/omap4_common.h
-@@ -122,10 +122,15 @@
- #include <config_cmd_default.h>
- 
+@@ -124,6 +124,12 @@
  /* Enabled commands */
-+#define CONFIG_FS_FAT
-+#define CONFIG_FS_EXT4
  #define CONFIG_CMD_EXT2		/* EXT2 Support                 */
  #define CONFIG_CMD_FAT		/* FAT support                  */
++#define CONFIG_CMD_EXT4
++#define CONFIG_CMD_FS_GENERIC
++
++/* bootz: zImage/initrd.img support */
++#define CONFIG_CMD_BOOTZ
++#define CONFIG_SUPPORT_RAW_INITRD
  #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
  #define CONFIG_CMD_MMC		/* MMC support                  */
-+#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
-+#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
-+#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
  
- /* Disabled commands */
- #undef CONFIG_CMD_NET
-@@ -146,12 +151,13 @@
+@@ -137,7 +143,7 @@
+  * Environment setup
+  */
+ 
+-#define CONFIG_BOOTDELAY	3
++#define CONFIG_BOOTDELAY	1
+ 
+ #define CONFIG_ENV_OVERWRITE
+ 
+@@ -146,24 +152,25 @@
  	"console=ttyO2,115200n8\0" \
  	"fdt_high=0xffffffff\0" \
  	"usbtty=cdc_acm\0" \
@@ -43,8 +64,24 @@ index 180cb24..7ce48a7 100644
 +		"omapfb.mode=${defaultdisplay}:${dvimode} " \
  		"root=${mmcroot} " \
  		"rootfstype=${mmcrootfstype}\0" \
- 	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
-@@ -280,4 +286,8 @@
+-	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
++	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
+ 	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
+ 		"source ${loadaddr}\0" \
+-	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} uEnv.txt\0" \
++	"loadbootenv=load mmc ${mmcdev} ${loadaddr} uEnv.txt\0" \
+ 	"importbootenv=echo Importing environment from mmc${mmcdev} ...; " \
+ 		"env import -t ${loadaddr} ${filesize}\0" \
+-	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
++	"loaduimage=load mmc ${mmcdev} ${loadaddr} zImage\0" \
+ 	"mmcboot=echo Booting from mmc${mmcdev} ...; " \
+ 		"run mmcargs; " \
+-		"bootm ${loadaddr}\0" \
++		"bootz ${loadaddr}\0" \
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
+@@ -280,4 +287,8 @@
  
  #define CONFIG_SYS_THUMB_BUILD
  
