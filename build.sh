@@ -328,7 +328,7 @@ build_u_boot () {
 		BUILDTARGET="u-boot.imx"
 	fi
 
-	if [ ! "${v2013_04_rc2}" ] && [ ! "${v2013_04_rc1}" ] && [ "x${BOARD}" == "xmx23olinuxino" ] ; then
+	if [ ! "${v2013_04_rc3}" ] && [ ! "${v2013_04_rc2}" ] && [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		RELEASE_VER="-r4"
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-r1
 		git am "${DIR}/patches/v2013.01/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
