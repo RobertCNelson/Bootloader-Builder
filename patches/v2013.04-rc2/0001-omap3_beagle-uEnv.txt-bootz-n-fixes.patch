@@ -22,8 +22,8 @@ loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/beagle/beagle.c       |   35 ++++++++++++++++++++++++++++++-----
- include/configs/omap3_beagle.h |   23 +++++++++++++++--------
- 2 files changed, 45 insertions(+), 13 deletions(-)
+ include/configs/omap3_beagle.h |   35 +++++++++++++++++++++--------------
+ 2 files changed, 51 insertions(+), 19 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index 3d9b6dd..e4c6990 100644
@@ -108,7 +108,7 @@ index 3d9b6dd..e4c6990 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_A:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 48ce4c0..a60635c 100644
+index 48ce4c0..7c7e6ed 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -150,6 +150,13 @@
@@ -125,6 +125,15 @@ index 48ce4c0..a60635c 100644
  #define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
  #define CONFIG_CMD_MTDPARTS	/* Enable MTD parts commands */
  #define CONFIG_MTD_DEVICE	/* needed for mtdparts commands */
+@@ -212,7 +219,7 @@
+ 							/* partition */
+ 
+ /* Environment information */
+-#define CONFIG_BOOTDELAY		3
++#define CONFIG_BOOTDELAY		1
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"loadaddr=0x80200000\0" \
 @@ -222,10 +229,10 @@
  	"console=ttyO2,115200n8\0" \
  	"mpurate=auto\0" \
@@ -162,7 +171,7 @@ index 48ce4c0..a60635c 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${nandroot} " \
  		"rootfstype=${nandrootfstype}\0" \
-@@ -262,8 +269,8 @@
+@@ -262,24 +269,24 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
@@ -173,6 +182,27 @@ index 48ce4c0..a60635c 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
+ 	"loadramdisk=fatload mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
+-	"loaduimagefat=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
+-	"loaduimage=ext2load mmc ${mmcdev}:2 ${loadaddr} /boot/uImage\0" \
++	"loaduimagefat=fatload mmc ${mmcdev} ${loadaddr} zImage\0" \
++	"loaduimage=ext2load mmc ${mmcdev}:2 ${loadaddr} /boot/zImage\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+-		"bootm ${loadaddr}\0" \
++		"bootz ${loadaddr}\0" \
+ 	"nandboot=echo Booting from nand ...; " \
+ 		"run nandargs; " \
+ 		"nand read ${loadaddr} 280000 400000; " \
+-		"bootm ${loadaddr}\0" \
++		"bootz ${loadaddr}\0" \
+ 	"ramboot=echo Booting from ramdisk ...; " \
+ 		"run ramargs; " \
+-		"bootm ${loadaddr}\0" \
++		"bootz ${loadaddr}\0" \
+ 	"userbutton=if gpio input 173; then run userbutton_xm; " \
+ 		"else run userbutton_nonxm; fi;\0" \
+ 	"userbutton_xm=gpio input 4;\0" \
 -- 
 1.7.10.4
 

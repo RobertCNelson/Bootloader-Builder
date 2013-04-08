@@ -4,45 +4,30 @@ Date: Fri, 15 Mar 2013 10:16:03 -0500
 Subject: [PATCH] mx51evk: uEnv.txt, bootz, n fixes
 
 Defaults:
-#define CONFIG_BOOTDELAY	1
+#define CONFIG_BOOTDELAY	3
 
-#define CONFIG_CMD_FAT
-#define CONFIG_CMD_EXT2
-#define CONFIG_CMD_EXT4
+#define CONFIG_CMD_FAT		/* FAT: File System support */
+#define CONFIG_CMD_EXT2		/* EXT2: File System support */
+
+/* enable: Generic File System Load Commands */
+#define CONFIG_FS_FAT
+#define CONFIG_FS_EXT4
 #define CONFIG_CMD_FS_GENERIC
 
-/* bootz: zImage/initrd.img support */
-#define CONFIG_CMD_BOOTZ
-#define CONFIG_SUPPORT_RAW_INITRD
+#define CONFIG_CMD_BOOTZ		/* bootz: enable zImage support */
+#define CONFIG_SUPPORT_RAW_INITRD	/* bootz: enable raw initrd support */
 
 fatload -> load
 bootm -> bootz
-
-#define CONFIG_BOOTCOMMAND \
-	"mmc dev ${mmcdev};" \
-	"if mmc rescan; then " \
-		"echo SD/MMC found on device ${mmcdev};" \
-		"if run loadbootenv; then " \
-			"echo Loaded environment from uEnv.txt;" \
-			"run importbootenv;" \
-		"fi;" \
-		"if test -n $uenvcmd; then " \
-			"echo Running uenvcmd ...;" \
-			"run uenvcmd;" \
-		"fi;" \
-		"if run loadzimage; then " \
-			"run loadfdt;" \
-			"run mmcboot;" \
-		"fi;" \
-	"fi;"
+loaduimage -> loadzimage
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx51evk.h |   58 +++++++++++++++++++++++++++++++++------------
- 1 file changed, 43 insertions(+), 15 deletions(-)
+ include/configs/mx51evk.h |   54 ++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 39 insertions(+), 15 deletions(-)
 
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index cb3d938..a54040d 100644
+index cb3d938..30c7737 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
 @@ -89,6 +89,17 @@
@@ -63,13 +48,25 @@ index cb3d938..a54040d 100644
  /*
   * Eth Configs
   */
-@@ -154,13 +165,24 @@
+@@ -145,22 +156,35 @@
+ 
+ #define CONFIG_CMD_DATE
+ 
+-#define CONFIG_BOOTDELAY	1
++#define CONFIG_BOOTDELAY	3
+ 
+ #define CONFIG_ETHPRIME		"FEC0"
+ 
+ #define CONFIG_LOADADDR		0x90800000	/* loadaddr env var */
+ 
  #define CONFIG_EXTRA_ENV_SETTINGS \
++	"bootenv=uEnv.txt\0" \
++	"bootfile=zImage\0" \
  	"script=boot.scr\0" \
  	"uimage=uImage\0" \
 +	"loadaddr=0x90800000\0" \
 +	"dtb_addr=0x91FF0000\0" \
-+	"dtb_file=/dtbs/imx51-babbage.dtb\0" \
++	"dtb_file=imx51-babbage.dtb\0" \
 +	"console=ttymxc0,115200n8\0" \
 +	"optargs=\0" \
  	"mmcdev=0\0" \
@@ -84,15 +81,15 @@ index cb3d938..a54040d 100644
 +		"${optargs} " \
  		"root=${mmcroot} " \
  		"rootfstype=${mmcrootfstype}\0" \
-+	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt\0" \
++	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootenv}\0" \
 +	"importbootenv=echo Importing environment from mmc ...; " \
 +		"env import -t ${loadaddr} ${filesize}\0" \
-+	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
-+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${dtb_addr} ${dtb_file}\0" \
++	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootfile}\0" \
++	"loaddtb=load mmc ${mmcdev}:${mmcpart} ${dtb_addr} /dtbs/${dtb_file}\0" \
  	"loadbootscript=" \
  		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
-@@ -168,7 +190,7 @@
+@@ -168,7 +192,7 @@
  	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
@@ -101,11 +98,10 @@ index cb3d938..a54040d 100644
  	"netargs=setenv bootargs console=ttymxc0,${baudrate} " \
  		"root=/dev/nfs " \
  		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
-@@ -177,16 +199,22 @@
- 		"dhcp ${uimage}; bootm\0" \
+@@ -178,15 +202,15 @@
  
  #define CONFIG_BOOTCOMMAND \
--	"mmc dev ${mmcdev}; if mmc rescan; then " \
+ 	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"if run loadbootscript; then " \
 -			"run bootscript; " \
 -		"else " \
@@ -115,19 +111,12 @@ index cb3d938..a54040d 100644
 -			"fi; " \
 -		"fi; " \
 -	"else run netboot; fi"
-+	"mmc dev ${mmcdev};" \
-+	"if mmc rescan; then " \
 +		"echo SD/MMC found on device ${mmcdev};" \
 +		"if run loadbootenv; then " \
-+			"echo Loaded environment from uEnv.txt;" \
 +			"run importbootenv;" \
 +		"fi;" \
-+		"if test -n $uenvcmd; then " \
-+			"echo Running uenvcmd ...;" \
-+			"run uenvcmd;" \
-+		"fi;" \
 +		"if run loadzimage; then " \
-+			"run loadfdt;" \
++			"run loaddtb;" \
 +			"run mmcboot;" \
 +		"fi;" \
 +	"fi;"
