@@ -65,25 +65,27 @@ WGET="wget -c --directory-prefix=${DIR}/dl/"
 
 armv5_embedded_toolchain () {
 	#https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q1-update/+download/gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2
-	armv5_ver="gcc-arm-none-eabi-4_7-2013q1"
-	armv5_date="20130313"
-	ARMV5_GCC_EMBEDDED="${armv5_ver}-${armv5_date}-linux.tar.bz2"
-	if [ ! -f ${DIR}/dl/${armv5_date} ] ; then
+
+	version="4.7/4.7-2013-q1-update"
+	filename="gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2"
+	directory="gcc-arm-none-eabi-4_7-2013q1"
+	datestamp="20130313-gcc-arm-embedded"
+	if [ ! -f ${DIR}/dl/${datestamp} ] ; then
 		echo "Installing gcc-arm-embedded toolchain"
 		echo "-----------------------------"
-		${WGET} https://launchpad.net/gcc-arm-embedded/4.6/4.6-2012-q4-update/+download/${ARMV5_GCC_EMBEDDED}
-		touch ${DIR}/dl/${armv5_date}
-		if [ -d ${DIR}/dl/${armv5_ver} ] ; then
-			rm -rf ${DIR}/dl/${armv5_ver} || true
+		${WGET} https://launchpad.net/gcc-arm-embedded/${version}/+download/${filename}
+		touch ${DIR}/dl/${datestamp}
+		if [ -d ${DIR}/dl/${directory} ] ; then
+			rm -rf ${DIR}/dl/${directory} || true
 		fi
-		tar xjf ${DIR}/dl/${ARMV5_GCC_EMBEDDED} -C ${DIR}/dl/
+		tar xjf ${DIR}/dl/${filename} -C ${DIR}/dl/
 	fi
 
 	if [ "x${ARCH}" == "xarmv7l" ] ; then
 		#using native gcc
 		CC=
 	else
-		CC="${DIR}/dl/${armv5_ver}/bin/arm-none-eabi-"
+		CC="${DIR}/dl/${directory}/bin/arm-none-eabi-"
 	fi
 }
 
