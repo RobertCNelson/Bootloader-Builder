@@ -64,10 +64,10 @@ fi
 WGET="wget -c --directory-prefix=${DIR}/dl/"
 
 armv5_embedded_toolchain () {
-	#https://launchpad.net/gcc-arm-embedded/4.6/4.6-2012-q4-update/+download/gcc-arm-none-eabi-4_6-2012q4-20121016.tar.bz2
-	armv5_ver="gcc-arm-none-eabi-4_6-2012q4"
-	armv5_date="20121016"
-	ARMV5_GCC_EMBEDDED="${armv5_ver}-${armv5_date}.tar.bz2"
+	#https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q1-update/+download/gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2
+	armv5_ver="gcc-arm-none-eabi-4_7-2013q1"
+	armv5_date="20130313"
+	ARMV5_GCC_EMBEDDED="${armv5_ver}-${armv5_date}-linux.tar.bz2"
 	if [ ! -f ${DIR}/dl/${armv5_date} ] ; then
 		echo "Installing gcc-arm-embedded toolchain"
 		echo "-----------------------------"
