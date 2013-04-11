@@ -28,11 +28,14 @@ CCACHE=ccache
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
+stable_at91bootstrap_sha="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
+latest_at91bootstrap_sha="da3fe69da4f3be7b8e1a41af0679c11e53819238"
+
 uboot_stable="v2013.01.01"
 uboot_testing="v2013.04-rc2"
 
-#uboot_latest="bc5fd908d976cfd898e8cbb591e7220ddc8a684a"
-uboot_latest="f140b5863b258120f5412ea86733f70c87837ee9"
+#uboot_latest="f140b5863b258120f5412ea86733f70c87837ee9"
+uboot_latest="fac150e83f403933e9ffc9d01f858c4a6313874e"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -63,17 +66,11 @@ fi
 
 WGET="wget -c --directory-prefix=${DIR}/dl/"
 
-armv5_embedded_toolchain () {
-	#https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q1-update/+download/gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2
-
-	version="4.7/4.7-2013-q1-update"
-	filename="gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2"
-	directory="gcc-arm-none-eabi-4_7-2013q1"
-	datestamp="20130313-gcc-arm-embedded"
+dl_gcc_generic () {
 	if [ ! -f ${DIR}/dl/${datestamp} ] ; then
-		echo "Installing gcc-arm-embedded toolchain"
+		echo "Installing: ${toolchain_name}"
 		echo "-----------------------------"
-		${WGET} https://launchpad.net/gcc-arm-embedded/${version}/+download/${filename}
+		${WGET} ${site}/${version}/+download/${filename}
 		touch ${DIR}/dl/${datestamp}
 		if [ -d ${DIR}/dl/${directory} ] ; then
 			rm -rf ${DIR}/dl/${directory} || true
@@ -85,60 +82,55 @@ armv5_embedded_toolchain () {
 		#using native gcc
 		CC=
 	else
-		CC="${DIR}/dl/${directory}/bin/arm-none-eabi-"
+		CC="${DIR}/dl/${directory}/${binary}"
 	fi
+}
+
+armv5_embedded_toolchain () {
+	#https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q1-update/+download/gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2
+
+	toolchain_name="gcc-arm-embedded toolchain"
+	site="https://launchpad.net/gcc-arm-embedded"
+	version="4.7/4.7-2013-q1-update"
+	filename="gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2"
+	directory="gcc-arm-none-eabi-4_7-2013q1"
+	datestamp="20130313-gcc-arm-embedded"
+
+	binary="bin/arm-none-eabi-"
+
+	dl_gcc_generic
 }
 
 armv7_toolchain () {
 	#https://launchpad.net/linaro-toolchain-binaries/+download
 	#https://launchpad.net/linaro-toolchain-binaries/trunk/2012.04/+download/gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux.tar.bz2
 
-	armv7_ver="2012.04"
-	armv7_date="20120426"
-	ARMV7_GCC="gcc-linaro-arm-linux-gnueabi-${armv7_ver}-${armv7_date}_linux.tar.bz2"
-	if [ ! -f ${DIR}/dl/${armv7_date} ] ; then
-		echo "Installing gcc-arm toolchain"
-		echo "-----------------------------"
-		${WGET} https://launchpad.net/linaro-toolchain-binaries/trunk/${armv7_ver}/+download/${ARMV7_GCC}
-		touch ${DIR}/dl/${armv7_date}
-		if [ -d ${DIR}/dl/${armv7_ver} ] ; then
-			rm -rf ${DIR}/dl/${armv7_ver} || true
-		fi
-		tar xjf ${DIR}/dl/${ARMV7_GCC} -C ${DIR}/dl/
-	fi
+	toolchain_name="gcc-arm toolchain"
+	site="https://launchpad.net/linaro-toolchain-binaries/trunk"
+	version="2012.04"
+	filename="gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux.tar.bz2"
+	directory="gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux"
+	datestamp="20120426-gcc-linaro-arm-linux-gnueabi"
 
-	if [ "x${ARCH}" == "xarmv7l" ] ; then
-		#using native gcc
-		CC=
-	else
-		CC="${DIR}/dl/gcc-linaro-arm-linux-gnueabi-${armv7_ver}-${armv7_date}_linux/bin/arm-linux-gnueabi-"
-	fi
+	binary="bin/arm-linux-gnueabi-"
+
+	dl_gcc_generic
 }
 
 armv7hf_toolchain () {
 	#https://launchpad.net/linaro-toolchain-binaries/+download
 	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.03/+download/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux.tar.bz2
 
-	armv7hf_ver="2013.03"
-	armv7hf_date="20130313"
-	armv7hf_gcc="gcc-linaro-arm-linux-gnueabihf-4.7-${armv7hf_ver}-${armv7hf_date}_linux.tar.bz2"
-	if [ ! -f ${DIR}/dl/${armv7hf_date} ] ; then
-		echo "Installing gcc-arm toolchain"
-		echo "-----------------------------"
-		${WGET} https://launchpad.net/linaro-toolchain-binaries/trunk/${armv7hf_ver}/+download/${armv7hf_gcc}
-		touch ${DIR}/dl/${armv7hf_date}
-		if [ -d ${DIR}/dl/${armv7hf_ver} ] ; then
-			rm -rf ${DIR}/dl/${armv7hf_ver} || true
-		fi
-		tar xjf ${DIR}/dl/${armv7hf_gcc} -C ${DIR}/dl/
-	fi
+	toolchain_name="gcc-arm toolchain"
+	site="https://launchpad.net/linaro-toolchain-binaries/trunk"
+	version="2013.03"
+	filename="gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux.tar.bz2"
+	directory="gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux"
+	datestamp="20130313-gcc-linaro-arm-linux-gnueabihf"
 
-	if [ "x${ARCH}" == "xarmv7l" ] ; then
-		#using native gcc
-		CC=
-	else
-		CC="${DIR}/dl/gcc-linaro-arm-linux-gnueabihf-4.7-${armv7hf_ver}-${armv7hf_date}_linux/bin/arm-linux-gnueabihf-"
-	fi
+	binary="bin/arm-linux-gnueabihf-"
+
+	dl_gcc_generic
 }
 
 git_generic () {
@@ -327,12 +319,6 @@ build_u_boot () {
 	if [ "${mx6qsabrelite_patch}" ] ; then
 		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git mx6qsabrelite_v2011.12_linaro_lt_imx6
 		BUILDTARGET="u-boot.imx"
-	fi
-
-	if [ ! "${v2013_04_rc3}" ] && [ ! "${v2013_04_rc2}" ] && [ "x${BOARD}" == "xmx23olinuxino" ] ; then
-		RELEASE_VER="-r4"
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot-boards.git imx233-v2013.01-r1
-		git am "${DIR}/patches/v2013.01/0001-mx23_olinuxino-load-uEnv.txt-from-boot-in-2nd-partit.patch"
 	fi
 
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
@@ -546,7 +532,7 @@ at91sam9g20ek () {
 	BOARD="at91sam9g20ek"
 
 	at91bootstrap_config="at91sam9g20eksd_uboot_defconfig"
-	GIT_SHA="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
+	GIT_SHA="${stable_at91bootstrap_sha}"
 	build_at91bootstrap
 
 	UBOOT_CONFIG="at91sam9g20ek_2mmc_nandflash_config"
@@ -564,7 +550,7 @@ at91sam9x5ek () {
 	BOARD="at91sam9x5ek"
 
 	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
-	GIT_SHA="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
+	GIT_SHA="${stable_at91bootstrap_sha}"
 	build_at91bootstrap
 
 	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
@@ -605,8 +591,6 @@ mx23olinuxino () {
 
 		BOARD="mx23olinuxino"
 		UBOOT_CONFIG="mx23_olinuxino_config"
-		GIT_SHA="v2013.01"
-		build_u_boot
 
 #		build_uboot_stable
 		build_uboot_testing
@@ -709,8 +693,8 @@ sama5d3xek () {
 
 	BOARD="sama5d3xek"
 
-	GIT_SHA="05329e30f2579b1ce2c9c733417eac2f8e6b324b"
 	at91bootstrap_config="at91sama5d3xeksd_uboot_defconfig"
+	GIT_SHA="${stable_at91bootstrap_sha}"
 	build_at91bootstrap
 
 	UBOOT_CONFIG="sama5d3xek_sdcard_config"
