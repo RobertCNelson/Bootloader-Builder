@@ -197,18 +197,19 @@ build_at91bootstrap () {
 	git_generic
 	RELEASE_VER="-r0"
 
-	at91bootstrap_version=$(git rev-parse --short HEAD)
+	at91bootstrap_version=$(cat Makefile | grep 'VERSION :=' | awk '{print $3}')
+	at91bootstrap_sha=$(git rev-parse --short HEAD)
 
 	make CROSS_COMPILE=${CC} clean &> /dev/null
-	make CROSS_COMPILE=${CC} ${at91bootstrap_config}
-	echo "Building ${project}: ${BOARD}-${at91bootstrap_version}${RELEASE_VER}.bin"
+	make CROSS_COMPILE=${CC} ${at91bootstrap_config} > /dev/null
+	echo "Building ${project}: ${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
 	make CROSS_COMPILE=${CC} > /dev/null
 
 	mkdir -p ${DIR}/deploy/${BOARD}/
 
 	if [ -f ${DIR}/build/${project}/binaries/*.bin ] ; then
 		filename_search="binaries/*.bin"
-		filename_id="deploy/${BOARD}/${BOARD}-${at91bootstrap_version}${RELEASE_VER}.bin"
+		filename_id="deploy/${BOARD}/${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
 		file_save
 	fi
 
