@@ -29,7 +29,9 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 stable_at91bootstrap_sha="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
-latest_at91bootstrap_sha="da3fe69da4f3be7b8e1a41af0679c11e53819238"
+
+#latest_at91bootstrap_sha="da3fe69da4f3be7b8e1a41af0679c11e53819238"
+latest_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
 uboot_stable="v2013.01.01"
 uboot_testing="v2013.04-rc2"
@@ -535,6 +537,9 @@ at91sam9g20ek () {
 	GIT_SHA="${stable_at91bootstrap_sha}"
 	build_at91bootstrap
 
+	GIT_SHA="${latest_at91bootstrap_sha}"
+	build_at91bootstrap
+
 	UBOOT_CONFIG="at91sam9g20ek_2mmc_nandflash_config"
 
 #	build_uboot_stable
@@ -551,6 +556,9 @@ at91sam9x5ek () {
 
 	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
 	GIT_SHA="${stable_at91bootstrap_sha}"
+	build_at91bootstrap
+
+	GIT_SHA="${latest_at91bootstrap_sha}"
 	build_at91bootstrap
 
 	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
@@ -695,6 +703,9 @@ sama5d3xek () {
 
 	at91bootstrap_config="at91sama5d3xeksd_uboot_defconfig"
 	GIT_SHA="${stable_at91bootstrap_sha}"
+	build_at91bootstrap
+
+	GIT_SHA="${latest_at91bootstrap_sha}"
 	build_at91bootstrap
 
 	UBOOT_CONFIG="sama5d3xek_sdcard_config"
