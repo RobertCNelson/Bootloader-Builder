@@ -23,8 +23,6 @@
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
 
-CCACHE=ccache
-
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
@@ -366,7 +364,7 @@ build_u_boot () {
 	if [ ! "${pre_built}" ] ; then
 		make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 		echo "Building ${project}: ${uboot_filename}"
-		time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
+		time make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET} > /dev/null
 
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
@@ -442,7 +440,7 @@ build_barebox () {
 
 	make ARCH=arm CROSS_COMPILE=${CC} ${barebox_config}
 	echo "Building ${project}: ${barebox_filename}"
-	time make ARCH=arm CROSS_COMPILE="${CCACHE} ${CC}" ${BUILDTARGET} > /dev/null
+	time make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET} > /dev/null
 
 	if [ -f ${DIR}/build/${project}/barebox-flash-image ] ; then
 		filename_search="barebox-flash-image"
