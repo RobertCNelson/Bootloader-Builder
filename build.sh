@@ -253,6 +253,10 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_04_rc2}" ] ; then
+
+	#Need these for a new image...
+	RELEASE_VER="-r1"
+
 		git am "${DIR}/patches/v2013.04-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
