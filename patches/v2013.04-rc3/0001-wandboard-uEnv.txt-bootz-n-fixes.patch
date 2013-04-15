@@ -38,11 +38,11 @@ bootm -> bootz
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/wandboard.h |   81 +++++++++++++++----------------------------
- 1 file changed, 28 insertions(+), 53 deletions(-)
+ include/configs/wandboard.h |   80 +++++++++++++++----------------------------
+ 1 file changed, 28 insertions(+), 52 deletions(-)
 
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
-index c4fb704..aac0b8d 100644
+index 120e3f6..f64826f 100644
 --- a/include/configs/wandboard.h
 +++ b/include/configs/wandboard.h
 @@ -47,7 +47,7 @@
@@ -54,7 +54,7 @@ index c4fb704..aac0b8d 100644
  
  #define CONFIG_SYS_MEMTEST_START	0x10000000
  #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 500 * SZ_1M)
-@@ -66,6 +66,8 @@
+@@ -65,6 +65,8 @@
  #define CONFIG_BOUNCE_BUFFER
  #define CONFIG_CMD_EXT2
  #define CONFIG_CMD_FAT
@@ -63,7 +63,7 @@ index c4fb704..aac0b8d 100644
  #define CONFIG_DOS_PARTITION
  
  /* Ethernet Configuration */
-@@ -99,68 +101,39 @@
+@@ -98,67 +100,39 @@
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
  	"mmcdev=0\0" \
@@ -126,7 +126,6 @@ index c4fb704..aac0b8d 100644
 +		"bootz ${loadaddr};\0"
  
  #define CONFIG_BOOTCOMMAND \
--	   "mmc dev ${mmcdev};" \
 -	   "mmc dev ${mmcdev}; if mmc rescan; then " \
 -		   "if run loadbootscript; then " \
 -			   "run bootscript; " \
@@ -155,7 +154,7 @@ index c4fb704..aac0b8d 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP
-@@ -202,7 +175,9 @@
+@@ -200,7 +174,9 @@
  #define CONFIG_SYS_MMC_ENV_DEV		0
  
  #define CONFIG_OF_LIBFDT

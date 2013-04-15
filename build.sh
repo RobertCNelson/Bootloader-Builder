@@ -239,6 +239,7 @@ build_u_boot () {
 		#Board File Only:
 		git am "${DIR}/patches/v2013.04/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
 		git am "${DIR}/patches/v2013.04/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
@@ -246,14 +247,9 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.04/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
 		git am "${DIR}/patches/v2013.04/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-
-		#WandBoard: Board File Only:
-		git am "${DIR}/patches/v2013.04/board/0001-Add-initial-support-for-Wandboard-dual-lite-and-solo.patch"
-		git am "${DIR}/patches/v2013.04/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	if [ "${v2013_04_rc3}" ] ; then
-
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.04-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -269,6 +265,7 @@ build_u_boot () {
 		#Board File Only:
 		git am "${DIR}/patches/v2013.04-rc3/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04-rc3/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04-rc3/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
 		git am "${DIR}/patches/v2013.04-rc3/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
@@ -276,10 +273,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04-rc3/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.04-rc3/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
 		git am "${DIR}/patches/v2013.04-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-
-		#WandBoard: Board File Only:
-		git am "${DIR}/patches/v2013.04-rc3/board/0001-Add-initial-support-for-Wandboard-dual-lite-and-solo.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	if [ "${v2013_04_rc2}" ] ; then

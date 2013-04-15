@@ -38,16 +38,16 @@ bootm -> bootz
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx23_olinuxino.h |   69 +++++++++++++++++++++-----------------
- 1 file changed, 38 insertions(+), 31 deletions(-)
+ include/configs/mx23_olinuxino.h |   65 +++++++++++++++++++++-----------------
+ 1 file changed, 36 insertions(+), 29 deletions(-)
 
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index 03893d7..208fdf1 100644
+index 38ad7f4..2ea39fd 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
 @@ -64,6 +64,15 @@
- #define	CONFIG_CMD_NET
- #define	CONFIG_CMD_USB
+ #define CONFIG_CMD_NET
+ #define CONFIG_CMD_USB
  
 +#define CONFIG_CMD_FAT
 +#define CONFIG_CMD_EXT2
@@ -63,13 +63,13 @@ index 03893d7..208fdf1 100644
   */
 @@ -164,7 +173,7 @@
   */
- #define	CONFIG_CMDLINE_TAG
- #define	CONFIG_SETUP_MEMORY_TAGS
--#define	CONFIG_BOOTDELAY	3
-+#define	CONFIG_BOOTDELAY	1
- #define	CONFIG_BOOTFILE		"uImage"
- #define	CONFIG_LOADADDR		0x42000000
- #define	CONFIG_SYS_LOAD_ADDR	CONFIG_LOADADDR
+ #define CONFIG_CMDLINE_TAG
+ #define CONFIG_SETUP_MEMORY_TAGS
+-#define CONFIG_BOOTDELAY	3
++#define CONFIG_BOOTDELAY	1
+ #define CONFIG_BOOTFILE		"uImage"
+ #define CONFIG_LOADADDR		0x42000000
+ #define CONFIG_SYS_LOAD_ADDR	CONFIG_LOADADDR
 @@ -197,36 +206,28 @@
  	"script=boot.scr\0"	\
  	"uimage=uImage\0" \
@@ -96,10 +96,8 @@ index 03893d7..208fdf1 100644
 +		"env import -t ${loadaddr} ${filesize}\0" \
  	"bootscript=echo Running bootscript from mmc ...; "	\
  		"source\0" \
--	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
--	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
-+	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} /boot/zImage\0" \
-+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+ 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+ 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
 -		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
@@ -116,7 +114,7 @@ index 03893d7..208fdf1 100644
 -			"bootm; " \
 -		"fi;\0" \
 +		"bootz ${loadaddr} - ${fdt_addr};\0" \
- 	"netargs=setenv bootargs console=${console_mainline},${baudrate} " \
+ 	"netargs=setenv bootargs console=${console},${baudrate} " \
  		"root=/dev/nfs " \
  		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
 @@ -254,15 +255,21 @@

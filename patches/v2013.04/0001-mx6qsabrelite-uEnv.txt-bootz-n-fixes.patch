@@ -38,11 +38,11 @@ bootm -> bootz
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx6qsabrelite.h |   82 ++++++++++++++-------------------------
- 1 file changed, 30 insertions(+), 52 deletions(-)
+ include/configs/mx6qsabrelite.h |   81 +++++++++++++++------------------------
+ 1 file changed, 30 insertions(+), 51 deletions(-)
 
 diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
-index 5dc8255..a73d286 100644
+index 6d4b837..f0fe54a 100644
 --- a/include/configs/mx6qsabrelite.h
 +++ b/include/configs/mx6qsabrelite.h
 @@ -79,6 +79,12 @@
@@ -58,7 +58,7 @@ index 5dc8255..a73d286 100644
  #define CONFIG_DOS_PARTITION
  
  #define CONFIG_CMD_SATA
-@@ -160,73 +166,45 @@
+@@ -160,72 +166,45 @@
  	"console=ttymxc1\0" \
  	"fdt_high=0xffffffff\0" \
  	"initrd_high=0xffffffff\0" \
@@ -126,7 +126,6 @@ index 5dc8255..a73d286 100644
 +		"bootz ${loadaddr} - ${fdt_addr};\0"
  
  #define CONFIG_BOOTCOMMAND \
--	   "mmc dev ${mmcdev};" \
 -	   "mmc dev ${mmcdev}; if mmc rescan; then " \
 -		   "if run loadbootscript; then " \
 -			   "run bootscript; " \
@@ -154,8 +153,8 @@ index 5dc8255..a73d286 100644
 +		"fi;" \
 +	"fi;"
  
- #define CONFIG_ARP_TIMEOUT     200UL
- 
+ /* Miscellaneous configurable options */
+ #define CONFIG_SYS_LONGHELP
 -- 
 1.7.10.4
 

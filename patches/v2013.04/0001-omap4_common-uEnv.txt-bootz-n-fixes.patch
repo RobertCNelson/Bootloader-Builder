@@ -20,11 +20,11 @@ bootm -> bootz
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/omap4_common.h |   31 ++++++++++++++++++++++---------
- 1 file changed, 22 insertions(+), 9 deletions(-)
+ include/configs/omap4_common.h |   34 +++++++++++++++++++++++++++-------
+ 1 file changed, 27 insertions(+), 7 deletions(-)
 
 diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
-index 6ae6a0f..1aefacb 100644
+index 1fd3097..e361267 100644
 --- a/include/configs/omap4_common.h
 +++ b/include/configs/omap4_common.h
 @@ -124,6 +124,12 @@
@@ -46,12 +46,12 @@ index 6ae6a0f..1aefacb 100644
  
 -#define CONFIG_BOOTDELAY	3
 +#define CONFIG_BOOTDELAY	1
- 
- #define CONFIG_ENV_OVERWRITE
- 
-@@ -146,24 +152,27 @@
- 	"console=ttyO2,115200n8\0" \
- 	"fdt_high=0xffffffff\0" \
+ #define CONFIG_ENV_VARS_UBOOT_CONFIG
+ #define CONFIG_CMD_FS_GENERIC
+ #define CONFIG_CMD_EXT2
+@@ -154,24 +160,31 @@
+ 	"bootdir=/boot\0" \
+ 	"bootfile=zImage\0" \
  	"usbtty=cdc_acm\0" \
 -	"vram=16M\0" \
 +	"defaultdisplay=dvi\0" \
@@ -76,16 +76,28 @@ index 6ae6a0f..1aefacb 100644
 +	"loadbootenv=load mmc ${mmcdev} ${loadaddr} uEnv.txt\0" \
  	"importbootenv=echo Importing environment from mmc${mmcdev} ...; " \
  		"env import -t ${loadaddr} ${filesize}\0" \
--	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
+ 	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 +	"loaduimage=load mmc ${mmcdev} ${loadaddr} zImage\0" \
  	"mmcboot=echo Booting from mmc${mmcdev} ...; " \
  		"run mmcargs; " \
--		"bootm ${loadaddr}\0" \
+ 		"bootz ${loadaddr} - ${fdtaddr}\0" \
++	"mmc_classic_boot=echo Booting from mmc${mmcdev} ...; " \
++		"run mmcargs; " \
 +		"bootz ${loadaddr}\0" \
- 
- #define CONFIG_BOOTCOMMAND \
- 	"mmc dev ${mmcdev}; if mmc rescan; then " \
-@@ -280,4 +289,8 @@
+ 	"findfdt="\
+ 		"if test $board_name = sdp4430; then " \
+ 			"setenv fdtfile omap4-sdp.dtb; fi; " \
+@@ -193,6 +206,9 @@
+ 				"echo Running uenvcmd ...;" \
+ 				"run uenvcmd;" \
+ 			"fi;" \
++			"if run loaduimage; then " \
++				"run mmc_classic_boot; " \
++			"fi; " \
+ 		"fi;" \
+ 		"if run loadimage; then " \
+ 			"run loadfdt;" \
+@@ -296,4 +312,8 @@
  
  #define CONFIG_SYS_THUMB_BUILD
  
