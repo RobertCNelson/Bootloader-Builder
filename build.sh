@@ -31,11 +31,12 @@ stable_at91bootstrap_sha="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
 #latest_at91bootstrap_sha="da3fe69da4f3be7b8e1a41af0679c11e53819238"
 latest_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
-uboot_stable="v2013.01.01"
-uboot_testing="v2013.04-rc2"
+uboot_stable="v2013.04-rc2"
+uboot_testing="v2013.04-rc3"
 
-#uboot_latest="fac150e83f403933e9ffc9d01f858c4a6313874e"
-uboot_latest="785881f775252940185e10fbb2d5299c9ffa6bce"
+#uboot_latest="785881f775252940185e10fbb2d5299c9ffa6bce"
+#uboot_testing="v2013.04-rc3"
+#uboot_latest="cba6494f24d711ba63afb22b1ee691a41fee121c"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -221,6 +222,35 @@ build_u_boot () {
 
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
+
+	if [ "${v2013_04}" ] ; then
+		#Device Tree Only:
+		git am "${DIR}/patches/v2013.04/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+
+		#Device Tree/Board File:
+		git am "${DIR}/patches/v2013.04/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+
+		#Board File Only:
+		git am "${DIR}/patches/v2013.04/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.04/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+
+		#Atmel: sama5d3: Device Tree Only:
+		git am "${DIR}/patches/v2013.04/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04/board/0002-NET-macb-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.04/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
+		git am "${DIR}/patches/v2013.04/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+
+		#WandBoard: Board File Only:
+		git am "${DIR}/patches/v2013.04/board/0001-Add-initial-support-for-Wandboard-dual-lite-and-solo.patch"
+		git am "${DIR}/patches/v2013.04/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+	fi
 
 	if [ "${v2013_04_rc3}" ] ; then
 
@@ -460,38 +490,42 @@ cleanup () {
 }
 
 build_uboot_stable () {
-	v2013_01=1
+	v2013_04_rc2=1
+#	v2013_04=1
 	if [ "${uboot_stable}" ] ; then
 		GIT_SHA=${uboot_stable}
 		build_u_boot
 	fi
-	unset v2013_01
+	unset v2013_04_rc2
+#	unset v2013_04
 }
 
 build_uboot_testing () {
 #	v2013_04_rc1=1
-	v2013_04_rc2=1
-#	v2013_04_rc3=1
+#	v2013_04_rc2=1
+	v2013_04_rc3=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
 #	unset v2013_04_rc1
-	unset v2013_04_rc2
-#	unset v2013_04_rc3
+#	unset v2013_04_rc2
+	unset v2013_04_rc3
 }
 
 build_uboot_latest () {
 #	v2013_04_rc1=1
 #	v2013_04_rc2=1
-	v2013_04_rc3=1
+#	v2013_04_rc3=1
+	v2013_04=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
 #	unset v2013_04_rc1
 #	unset v2013_04_rc2
-	unset v2013_04_rc3
+#	unset v2013_04_rc3
+	unset v2013_04
 }
 
 build_barebox_stable () {
@@ -545,7 +579,7 @@ at91sam9g20ek () {
 
 	UBOOT_CONFIG="at91sam9g20ek_2mmc_nandflash_config"
 
-#	build_uboot_stable
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -603,7 +637,7 @@ mx23olinuxino () {
 		BOARD="mx23olinuxino"
 		UBOOT_CONFIG="mx23_olinuxino_config"
 
-#		build_uboot_stable
+		build_uboot_stable
 		build_uboot_testing
 		build_uboot_latest
 	else
@@ -713,7 +747,7 @@ sama5d3xek () {
 
 	UBOOT_CONFIG="sama5d3xek_sdcard_config"
 
-#	build_uboot_stable
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -725,14 +759,14 @@ wandboard () {
 	BOARD="wandboard-dl"
 	UBOOT_CONFIG="wandboard_dl_config"
 
-#	build_uboot_stable
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 
 	BOARD="wandboard-solo"
 	UBOOT_CONFIG="wandboard_solo_config"
 
-#	build_uboot_stable
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
