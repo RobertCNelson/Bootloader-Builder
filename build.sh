@@ -34,9 +34,9 @@ latest_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 uboot_stable="v2013.04-rc2"
 uboot_testing="v2013.04-rc3"
 
-#uboot_latest="785881f775252940185e10fbb2d5299c9ffa6bce"
 #uboot_testing="v2013.04-rc3"
 #uboot_latest="cba6494f24d711ba63afb22b1ee691a41fee121c"
+uboot_latest="314dd4fecc87175f6e79eb977966fb60b33c543c"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
