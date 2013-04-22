@@ -31,11 +31,12 @@ stable_at91bootstrap_sha="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
 #latest_at91bootstrap_sha="da3fe69da4f3be7b8e1a41af0679c11e53819238"
 latest_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
-uboot_stable="v2013.04-rc2"
-uboot_testing="v2013.04-rc3"
+uboot_stable="v2013.04"
+#uboot_testing="v2013.04-rc3"
 
-#uboot_latest="314dd4fecc87175f6e79eb977966fb60b33c543c"
-uboot_latest="669dfc2ed8d853d6bcdcafa1de6aca22929465e5"
+#uboot_latest="669dfc2ed8d853d6bcdcafa1de6aca22929465e5"
+#uboot_stable="v2013.04"
+#uboot_latest="d10f68ae47b67acab8b110b5c605dde4197a1820"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -48,8 +49,7 @@ unset GIT_NOEDIT
 LC_ALL=C git help pull | grep -m 1 -e "--no-edit" &>/dev/null && GIT_NOEDIT=1
 
 if [ "${GIT_NOEDIT}" ] ; then
-	echo "Detected git 1.7.10 or later, this script will pull via [git pull --no-edit]"
-	GIT_OPTS+="--no-edit"
+	GIT_OPTS="--no-edit"
 fi
 
 mkdir -p ${DIR}/git/
@@ -248,94 +248,30 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
-	if [ "${v2013_04_rc3}" ] ; then
+	if [ "${v2013_07_rc1}" ] ; then
 		#Device Tree Only:
-		git am "${DIR}/patches/v2013.04-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
 
 		#Device Tree/Board File:
-		git am "${DIR}/patches/v2013.04-rc3/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 
 		#Board File Only:
-		git am "${DIR}/patches/v2013.04-rc3/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/v2013.04-rc3/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc3/board/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc3/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc3/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
-		git am "${DIR}/patches/v2013.04-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	if [ "${v2013_04_rc2}" ] ; then
-
-	#Need these for a new image...
-	RELEASE_VER="-r1"
-
-		git am "${DIR}/patches/v2013.04-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d3
-		git am "${DIR}/patches/v2013.04-rc2/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc2/board/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc2/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04-rc2/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
-
-		git am "${DIR}/patches/v2013.04-rc2/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-
-		#WandBoard
-		git am "${DIR}/patches/v2013.04-rc2/board/0001-Add-initial-support-for-Wandboard-dual-lite-and-solo.patch"
-		git am "${DIR}/patches/v2013.04-rc2/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	if [ "${v2013_01}" ] ; then
-		#enable u-boot features...
-		git am "${DIR}/patches/v2013.01/0001-enable-bootz-and-generic-load-features.patch"
-
-		#TI:
-		git am "${DIR}/patches/v2013.01/0002-ti-convert-to-uEnv.txt-n-fixes.patch"
-		#Should not be needed with v3.8.x
-		git am "${DIR}/patches/v2013.01/0003-panda-temp-enable-pads-and-clocks-for-kernel.patch"
-
-		if [ "x${BOARD}" == "xbeagleboard" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2013.01/0003-beagle-at24-retry-with-16bit-addressing.patch"
-		fi
-
-		if [ "x${BOARD}" == "xbeaglebone" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2013.01/0002-bone-use-dtb_file-variable-for-device-tree-file.patch"
-			RELEASE_VER="-r2"
-			#(bonelt -> boneblack rename)
-		fi
-
-		#Freescale:
-		git am "${DIR}/patches/v2013.01/0002-imx-convert-to-uEnv.txt-n-fixes.patch"
-
-		if [ "x${BOARD}" == "xmx6qsabresd" ] ; then
-			RELEASE_VER="-r1"
-			git am "${DIR}/patches/v2013.01/0003-imx-mx6qsabre_common-uEnv.txt.patch"
-			RELEASE_VER="-r2"
-			git am "${DIR}/patches/v2013.01/0004-mx6-Disable-Power-Down-Bit-of-watchdog.patch"
-		fi
-
-		#Atmel:
-		git am "${DIR}/patches/v2013.01/0002-at91-convert-to-uEnv.txt-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc1/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.07-rc1/board/0002-NET-macb-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.07-rc1/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.07-rc1/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
+		git am "${DIR}/patches/v2013.07-rc1/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	if [ "x${BOARD}" == "xarndale5250" ] ; then
@@ -443,7 +379,7 @@ build_u_boot () {
 	else
 		echo "-----------------------------"
 		echo "Skipping Binary Build: as [${uboot_filename}] was previously built."
-		echo "Override skipping with [touch force_rebuild] to force rebuild"
+		echo "To override skipping(and force rebuild): [touch force_rebuild]"
 		echo "-----------------------------"
 	fi
 
@@ -482,42 +418,42 @@ cleanup () {
 }
 
 build_uboot_stable () {
-	v2013_04_rc2=1
-#	v2013_04=1
+	v2013_04=1
 	if [ "${uboot_stable}" ] ; then
 		GIT_SHA=${uboot_stable}
 		build_u_boot
 	fi
-	unset v2013_04_rc2
-#	unset v2013_04
+	unset v2013_04
 }
 
 build_uboot_testing () {
-#	v2013_04_rc1=1
-#	v2013_04_rc2=1
-	v2013_04_rc3=1
+#	v2013_07_rc1=1
+#	v2013_07_rc2=1
+#	v2013_07_rc3=1
+#	v2013_07=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
-#	unset v2013_04_rc1
-#	unset v2013_04_rc2
-	unset v2013_04_rc3
+#	unset v2013_07_rc1
+#	unset v2013_07_rc2
+#	unset v2013_07_rc3
+#	unset v2013_07
 }
 
 build_uboot_latest () {
-#	v2013_04_rc1=1
-#	v2013_04_rc2=1
-#	v2013_04_rc3=1
-	v2013_04=1
+	v2013_07_rc1=1
+#	v2013_07_rc2=1
+#	v2013_07_rc3=1
+#	v2013_07=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
-#	unset v2013_04_rc1
-#	unset v2013_04_rc2
-#	unset v2013_04_rc3
-	unset v2013_04
+	unset v2013_07_rc1
+#	unset v2013_07_rc2
+#	unset v2013_07_rc3
+#	unset v2013_07
 }
 
 build_barebox_stable () {
@@ -576,7 +512,6 @@ at91sam9g20ek () {
 	build_uboot_latest
 }
 
-
 at91sam9x5ek () {
 	cleanup
 	armv5_embedded_toolchain
@@ -599,7 +534,7 @@ at91sam9x5ek () {
 
 beagleboard () {
 	cleanup
-	armv7_toolchain
+	armv7hf_toolchain
 
 	BOARD="beagleboard"
 	UBOOT_CONFIG="omap3_beagle_config"
@@ -611,7 +546,7 @@ beagleboard () {
 
 beaglebone () {
 	cleanup
-	armv7_toolchain
+	armv7hf_toolchain
 
 	BOARD="beaglebone"
 	UBOOT_CONFIG="am335x_evm_config"
@@ -642,7 +577,7 @@ mx23olinuxino () {
 
 mx51evk () {
 	cleanup
-	armv7_toolchain
+	armv7hf_toolchain
 
 	BOARD="mx51evk"
 	UBOOT_CONFIG="mx51evk_config"
@@ -654,7 +589,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	armv7_toolchain
+	armv7hf_toolchain
 
 	BOARD="mx53loco"
 	UBOOT_CONFIG="mx53loco_config"
@@ -666,7 +601,7 @@ mx53loco () {
 
 mx6qsabrelite () {
 	cleanup
-	armv7_toolchain
+	armv7hf_toolchain
 
 	BOARD="mx6qsabrelite"
 	UBOOT_CONFIG="mx6qsabrelite_config"
@@ -683,7 +618,7 @@ mx6qsabrelite () {
 
 mx6qsabresd () {
 	cleanup
-	armv7_toolchain
+	armv7hf_toolchain
 
 	BOARD="mx6qsabresd"
 	UBOOT_CONFIG="mx6qsabresd_config"
@@ -695,7 +630,7 @@ mx6qsabresd () {
 
 odroidx () {
 	cleanup
-	armv7_toolchain
+	armv7hf_toolchain
 
 	BOARD="odroidx"
 	UBOOT_CONFIG="odroidx_config"
@@ -714,7 +649,7 @@ odroidx () {
 
 pandaboard () {
 	cleanup
-	armv7_toolchain
+	armv7hf_toolchain
 
 	BOARD="pandaboard"
 	UBOOT_CONFIG="omap4_panda_config"
