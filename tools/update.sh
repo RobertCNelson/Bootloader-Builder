@@ -106,6 +106,10 @@ process_latest () {
 dl_latest
 process_latest
 
+if [ -f ${DIR}/${file} ] ; then
+	rm -rf ${DIR}/${file} || true
+fi
+
 echo "Report: verfied files: ${md5sum_match}"
 echo "Report: corrupted files: ${md5sum_off}"
 echo "Report: files downloaded: ${file_dl}"
