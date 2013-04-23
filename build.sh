@@ -225,7 +225,8 @@ build_u_boot () {
 	if [ "${v2013_04}" ] ; then
 		#r1: mx51evk: improve old imx-bsp boot:
 		#r2: bone black: boot off eMMc
-		RELEASE_VER="-r2"
+		#r3: need mmcdev/mmcpart
+		RELEASE_VER="-r3"
 
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.04/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
