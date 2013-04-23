@@ -226,7 +226,8 @@ build_u_boot () {
 		#r1: mx51evk: improve old imx-bsp boot:
 		#r2: bone black: boot off eMMc
 		#r3: need mmcdev/mmcpart
-		RELEASE_VER="-r3"
+		#r4: bbb: sync with angstrom changes. (gpio/lcdc/boot order)
+		RELEASE_VER="-r4"
 
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.04/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
