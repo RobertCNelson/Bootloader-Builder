@@ -26,10 +26,10 @@ TEMPDIR=$(mktemp -d)
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-stable_at91bootstrap_sha="0dd2f2bcdadfeb710678df0f6908f87d2f11ef41"
+stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
 #latest_at91bootstrap_sha="da3fe69da4f3be7b8e1a41af0679c11e53819238"
-latest_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
+#latest_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
 uboot_stable="v2013.04"
 #uboot_testing="v2013.04-rc3"
@@ -509,8 +509,10 @@ at91sam9g20ek () {
 	GIT_SHA="${stable_at91bootstrap_sha}"
 	build_at91bootstrap
 
-	GIT_SHA="${latest_at91bootstrap_sha}"
-	build_at91bootstrap
+	if [ "${latest_at91bootstrap_sha}" ] ; then
+		GIT_SHA="${latest_at91bootstrap_sha}"
+		build_at91bootstrap
+	fi
 
 	UBOOT_CONFIG="at91sam9g20ek_2mmc_nandflash_config"
 
@@ -529,8 +531,10 @@ at91sam9x5ek () {
 	GIT_SHA="${stable_at91bootstrap_sha}"
 	build_at91bootstrap
 
-	GIT_SHA="${latest_at91bootstrap_sha}"
-	build_at91bootstrap
+	if [ "${latest_at91bootstrap_sha}" ] ; then
+		GIT_SHA="${latest_at91bootstrap_sha}"
+		build_at91bootstrap
+	fi
 
 	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
 
@@ -671,8 +675,10 @@ sama5d3xek () {
 	GIT_SHA="${stable_at91bootstrap_sha}"
 	build_at91bootstrap
 
-	GIT_SHA="${latest_at91bootstrap_sha}"
-	build_at91bootstrap
+	if [ "${latest_at91bootstrap_sha}" ] ; then
+		GIT_SHA="${latest_at91bootstrap_sha}"
+		build_at91bootstrap
+	fi
 
 	UBOOT_CONFIG="sama5d3xek_sdcard_config"
 
