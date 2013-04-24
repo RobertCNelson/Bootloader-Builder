@@ -227,22 +227,12 @@ build_u_boot () {
 		#r2: bone black: boot off eMMc
 		#r3: need mmcdev/mmcpart
 		#r4: bbb: sync with angstrom changes. (gpio/lcdc/boot order)
+		#r5: mx6qsabrelite boots of both sd cards now
 		RELEASE_VER="-r4"
 
 		if [ "x${BOARD}" = "xmx6qsabrelite" ] ; then
-			RELEASE_VER="-r4.1"
 			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx6qsabrelite
 			git am "${DIR}/patches/v2013.04/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
-
-			#microSD
-			#setenv mmcdev 0
-			#SD
-			#setenv mmcdev 1
-			#mmc dev ${mmcdev}
-			#ext2load mmc ${mmcdev}:1 0x10800000 u-boot.imx
-			#sf probe
-			#sf erase 0 0x40000
-			#sf write 0x10800000 0x400 ${filesize}
 		fi
 
 		#Device Tree Only:

@@ -48,11 +48,11 @@ bootm -> bootz
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx6qsabrelite.h |   65 +++++++++++++++++++++++++++++----------
- 1 file changed, 49 insertions(+), 16 deletions(-)
+ include/configs/mx6qsabrelite.h |   67 +++++++++++++++++++++++++++++----------
+ 1 file changed, 51 insertions(+), 16 deletions(-)
 
 diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
-index b814418..5b7876f 100644
+index b814418..ac00f30 100644
 --- a/include/configs/mx6qsabrelite.h
 +++ b/include/configs/mx6qsabrelite.h
 @@ -84,6 +84,12 @@
@@ -111,7 +111,7 @@ index b814418..5b7876f 100644
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
  				"bootm ${loadaddr} - ${fdt_addr}; " \
-@@ -221,16 +240,30 @@
+@@ -221,16 +240,32 @@
  		"fi;\0"
  
  #define CONFIG_BOOTCOMMAND \
@@ -130,6 +130,7 @@ index b814418..5b7876f 100644
 +		"setenv ethaddr 00:19:b8:01:00:00; " \
 +	"fi; " \
 +	"mmc dev 0; if mmc rescan ; then " \
++		"setenv mmcdev 0; " \
 +		"echo SD/MMC found on device ${mmcdev}; " \
 +		"if run loadbootenv; then " \
 +			"run importbootenv; " \
@@ -140,6 +141,7 @@ index b814418..5b7876f 100644
 +		"fi; " \
 +	"fi;" \
 +	"mmc dev 1; if mmc rescan ; then " \
++		"setenv mmcdev 1; " \
 +		"echo SD/MMC found on device ${mmcdev}; " \
 +		"if run loadbootenv; then " \
 +			"run importbootenv; " \
