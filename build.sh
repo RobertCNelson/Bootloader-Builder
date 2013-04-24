@@ -228,7 +228,7 @@ build_u_boot () {
 		#r3: need mmcdev/mmcpart
 		#r4: bbb: sync with angstrom changes. (gpio/lcdc/boot order)
 		#r5: mx6qsabrelite boots of both sd cards now
-		RELEASE_VER="-r4"
+		RELEASE_VER="-r5"
 
 		if [ "x${BOARD}" = "xmx6qsabrelite" ] ; then
 			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx6qsabrelite
