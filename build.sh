@@ -290,6 +290,7 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 	fi
 
+	unset BUILDTARGET
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
 	fi
