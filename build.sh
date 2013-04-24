@@ -229,6 +229,22 @@ build_u_boot () {
 		#r4: bbb: sync with angstrom changes. (gpio/lcdc/boot order)
 		RELEASE_VER="-r4"
 
+		if [ "x${BOARD}" = "xmx6qsabrelite" ] ; then
+			RELEASE_VER="-r4.1"
+			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx6qsabrelite
+			git am "${DIR}/patches/v2013.04/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+
+			#microSD
+			#setenv mmcdev 0
+			#SD
+			#setenv mmcdev 1
+			#mmc dev ${mmcdev}
+			#ext2load mmc ${mmcdev}:1 0x10800000 u-boot.imx
+			#sf probe
+			#sf erase 0 0x40000
+			#sf write 0x10800000 0x400 ${filesize}
+		fi
+
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.04/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -236,7 +252,7 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+#		git am "${DIR}/patches/v2013.04/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
 
 		#Device Tree/Board File:
 		git am "${DIR}/patches/v2013.04/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
