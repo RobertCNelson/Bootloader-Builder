@@ -290,12 +290,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 	fi
 
-	unset BUILDTARGET
-	if [ "${mx6qsabrelite_patch}" ] ; then
-		git pull ${GIT_OPTS} git://github.com/RobertCNelson/u-boot.git mx6qsabrelite_v2011.12_linaro_lt_imx6
-		BUILDTARGET="u-boot.imx"
-	fi
-
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
 	fi
@@ -617,11 +611,6 @@ mx6qsabrelite () {
 
 	BOARD="mx6qsabrelite"
 	UBOOT_CONFIG="mx6qsabrelite_config"
-
-	mx6qsabrelite_patch=1
-	GIT_SHA="v2011.12"
-	build_u_boot
-	unset mx6qsabrelite_patch
 
 	build_uboot_stable
 	build_uboot_testing
