@@ -239,6 +239,8 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/v2013.04/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+
+		git am "${DIR}/patches/v2013.04/board/0001-mx23-Put-back-RAM-voltage-level-to-its-original-valu.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
@@ -266,6 +268,8 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+
+		git am "${DIR}/patches/v2013.07-rc1/board/0001-mx23-Put-back-RAM-voltage-level-to-its-original-valu.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
