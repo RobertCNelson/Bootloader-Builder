@@ -229,7 +229,8 @@ build_u_boot () {
 		#r4: bbb: sync with angstrom changes. (gpio/lcdc/boot order)
 		#r5: mx6qsabrelite boots of both sd cards now
 		#r6: beaglexm: add musb/lcdcmd
-		RELEASE_VER="-r6"
+		#r7: bone: ignore sd card if no uEnv.txt is present (booting off eMMC with data on microSD)
+		RELEASE_VER="-r7"
 
 		if [ "x${BOARD}" = "xmx6qsabrelite" ] ; then
 			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx6qsabrelite
