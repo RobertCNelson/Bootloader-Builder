@@ -34,9 +34,8 @@ stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 uboot_stable="v2013.04"
 #uboot_testing="v2013.04-rc3"
 
-#uboot_stable="v2013.04"
-#uboot_latest="d10f68ae47b67acab8b110b5c605dde4197a1820"
-uboot_latest="500bccf84408ad71674b714cd9db3480736ad8e1"
+#uboot_latest="500bccf84408ad71674b714cd9db3480736ad8e1"
+uboot_latest="63216de13488e8bc81afb53d0f5177142ee34ceb"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -266,6 +265,8 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_07_rc1}" ] ; then
+
+		git revert --no-edit d196bd880347373237d73e0d115b4d51c68cf2ad
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
