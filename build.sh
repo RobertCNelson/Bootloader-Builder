@@ -230,7 +230,8 @@ build_u_boot () {
 		#r6: beaglexm: add musb/lcdcmd
 		#r7: bone: ignore sd card if no uEnv.txt is present (booting off eMMC with data on microSD)
 		#r8: mx23: pull in voltage changes...
-		RELEASE_VER="-r8"
+		#r9: sama5 actually load zImage
+		RELEASE_VER="-r9"
 
 		if [ "x${BOARD}" = "xmx6qsabrelite" ] ; then
 			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx6qsabrelite
