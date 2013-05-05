@@ -229,20 +229,27 @@ build_u_boot () {
 		#r5: mx6qsabrelite boots of both sd cards now
 		#r6: beaglexm: add musb/lcdcmd
 		#r7: bone: ignore sd card if no uEnv.txt is present (booting off eMMC with data on microSD)
-		RELEASE_VER="-r7"
+		#r8: mx23: pull in voltage changes...
+		RELEASE_VER="-r8"
 
 		if [ "x${BOARD}" = "xmx6qsabrelite" ] ; then
 			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx6qsabrelite
 			git am "${DIR}/patches/v2013.04/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
 		fi
 
+		unset only_patch
+		if [ "x${BOARD}" = "xmx23olinuxino" ] ; then
+			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx23
+			git am "${DIR}/patches/v2013.04/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			only_patch=1
+		fi
+
+		if [ ! "${only_patch}" ] ; then
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.04/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/v2013.04/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 
-		git am "${DIR}/patches/v2013.04/board/0001-mx23-Put-back-RAM-voltage-level-to-its-original-valu.patch"
-		git am "${DIR}/patches/v2013.04/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
@@ -262,6 +269,7 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.04/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
 		git am "${DIR}/patches/v2013.04/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		fi
 	fi
 
 	if [ "${v2013_07_rc1}" ] ; then
