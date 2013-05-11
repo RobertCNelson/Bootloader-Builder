@@ -26,6 +26,8 @@ TEMPDIR=$(mktemp -d)
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
+NUMJOBS='2'                     # Number of jobs for make to run in parallel.
+
 stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
 #latest_at91bootstrap_sha="da3fe69da4f3be7b8e1a41af0679c11e53819238"
@@ -45,7 +47,7 @@ barebox_latest="94e71b843f6456abacc2fe76a5c375a461fabdf7"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
-LC_ALL=C git help pull | grep -m 1 -e "--no-edit" &>/dev/null && GIT_NOEDIT=1
+( LC_ALL=C git help pull | grep -m 1 -e "--no-edit" ) &>/dev/null && GIT_NOEDIT=1
 
 if [ "${GIT_NOEDIT}" ] ; then
 	GIT_OPTS="--no-edit"
@@ -119,13 +121,14 @@ armv7_toolchain () {
 armv7hf_toolchain () {
 	#https://launchpad.net/linaro-toolchain-binaries/+download
 	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.03/+download/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux.tar.bz2
+        #https://launchpad.net/linaro-toolchain-binaries/trunk/2013.04/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux.tar.bz2
 
 	toolchain_name="gcc-arm toolchain"
 	site="https://launchpad.net/linaro-toolchain-binaries/trunk"
-	version="2013.03"
-	filename="gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux.tar.bz2"
-	directory="gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux"
-	datestamp="20130313-gcc-linaro-arm-linux-gnueabihf"
+	version="2013.04"
+	filename="gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux.tar.bz2"
+	directory="gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux"
+	datestamp="20130417-gcc-linaro-arm-linux-gnueabihf"
 
 	binary="bin/arm-linux-gnueabihf-"
 
@@ -181,7 +184,7 @@ halt_patching_uboot () {
 file_save () {
 	cp -v ./${filename_search} ${DIR}/${filename_id}
 	md5sum=$(md5sum ${DIR}/${filename_id} | awk '{print $1}')
-	check=$(ls ${DIR}/${filename_id}_* | head -n 1)
+	check=$(ls ${DIR}/${filename_id}_* 2>/dev/null | head -n 1)
 	if [ "x${check}" != "x" ] ; then
 		rm -rf ${DIR}/${filename_id}_* || true
 	fi
@@ -200,7 +203,7 @@ build_at91bootstrap () {
 	make CROSS_COMPILE=${CC} clean &> /dev/null
 	make CROSS_COMPILE=${CC} ${at91bootstrap_config} > /dev/null
 	echo "Building ${project}: ${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
-	make CROSS_COMPILE=${CC} > /dev/null
+	make CROSS_COMPILE=${CC} -j${NUMJOBS} > /dev/null
 
 	mkdir -p ${DIR}/deploy/${BOARD}/
 
@@ -351,7 +354,7 @@ build_u_boot () {
 	if [ ! "${pre_built}" ] ; then
 		make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 		echo "Building ${project}: ${uboot_filename}"
-		time make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET} > /dev/null
+		time make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET} > /dev/null
 
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
@@ -371,7 +374,7 @@ build_u_boot () {
 		fi
 
 		#SPL based targets, need MLO and u-boot.img from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then 
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then
 			filename_search="MLO"
 			filename_id="deploy/${BOARD}/MLO-${uboot_filename}"
 			file_save
@@ -427,7 +430,7 @@ build_barebox () {
 
 	make ARCH=arm CROSS_COMPILE=${CC} ${barebox_config}
 	echo "Building ${project}: ${barebox_filename}"
-	time make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET} > /dev/null
+	time make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET} > /dev/null
 
 	if [ -f ${DIR}/build/${project}/barebox-flash-image ] ; then
 		filename_search="barebox-flash-image"
@@ -685,7 +688,7 @@ pandaboard () {
 
 sama5d3xek () {
 	cleanup
-	armv5_embedded_toolchain
+	armv7hf_toolchain
 
 	BOARD="sama5d3xek"
 
