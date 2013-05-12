@@ -72,11 +72,11 @@ dl_gcc_generic () {
 		echo "Installing: ${toolchain_name}"
 		echo "-----------------------------"
 		${WGET} ${site}/${version}/+download/${filename}
-		touch ${DIR}/dl/${datestamp}
 		if [ -d ${DIR}/dl/${directory} ] ; then
 			rm -rf ${DIR}/dl/${directory} || true
 		fi
-		tar xjf ${DIR}/dl/${filename} -C ${DIR}/dl/
+		tar ${untar} ${DIR}/dl/${filename} -C ${DIR}/dl/
+		touch ${DIR}/dl/${datestamp}
 	fi
 
 	if [ "x${ARCH}" == "xarmv7l" ] ; then
@@ -96,6 +96,7 @@ armv5_embedded_toolchain () {
 	filename="gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2"
 	directory="gcc-arm-none-eabi-4_7-2013q1"
 	datestamp="20130313-gcc-arm-embedded"
+	untar="-xjf"
 
 	binary="bin/arm-none-eabi-"
 
@@ -112,6 +113,7 @@ armv7_toolchain () {
 	filename="gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux.tar.bz2"
 	directory="gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux"
 	datestamp="20120426-gcc-linaro-arm-linux-gnueabi"
+	untar="-xjf"
 
 	binary="bin/arm-linux-gnueabi-"
 
@@ -120,15 +122,15 @@ armv7_toolchain () {
 
 armv7hf_toolchain () {
 	#https://launchpad.net/linaro-toolchain-binaries/+download
-	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.03/+download/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux.tar.bz2
-        #https://launchpad.net/linaro-toolchain-binaries/trunk/2013.04/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux.tar.bz2
+	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.04/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux.tar.xz
 
 	toolchain_name="gcc-arm toolchain"
 	site="https://launchpad.net/linaro-toolchain-binaries/trunk"
 	version="2013.04"
-	filename="gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux.tar.bz2"
+	filename="gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux.tar.xz"
 	directory="gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux"
 	datestamp="20130417-gcc-linaro-arm-linux-gnueabihf"
+	untar="-xJf"
 
 	binary="bin/arm-linux-gnueabihf-"
 
