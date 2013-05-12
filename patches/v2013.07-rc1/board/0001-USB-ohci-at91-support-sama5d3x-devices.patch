@@ -11,7 +11,7 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  1 file changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/usb/host/ohci-at91.c b/drivers/usb/host/ohci-at91.c
-index efd711d..086cd0f 100644
+index aa5cf57..2060a3e 100644
 --- a/drivers/usb/host/ohci-at91.c
 +++ b/drivers/usb/host/ohci-at91.c
 @@ -42,7 +42,7 @@ int usb_cpu_init(void)
@@ -33,7 +33,7 @@ index efd711d..086cd0f 100644
  	writel(1 << ATMEL_ID_UHP, &pmc->pcer);
 +#endif
 +
- #ifdef CONFIG_AT91SAM9261
+ #if defined(CONFIG_AT91SAM9261) || defined(CONFIG_AT91SAM9G10)
  	writel(ATMEL_PMC_UHP | AT91_PMC_HCK0, &pmc->scer);
  #else
 @@ -69,7 +74,12 @@ int usb_cpu_stop(void)
@@ -46,7 +46,7 @@ index efd711d..086cd0f 100644
  	writel(1 << ATMEL_ID_UHP, &pmc->pcdr);
 +#endif
 +
- #ifdef CONFIG_AT91SAM9261
+ #if defined(CONFIG_AT91SAM9261) || defined(CONFIG_AT91SAM9G10)
  	writel(ATMEL_PMC_UHP | AT91_PMC_HCK0, &pmc->scdr);
  #else
 @@ -83,7 +93,7 @@ int usb_cpu_stop(void)
