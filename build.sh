@@ -36,8 +36,8 @@ stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 uboot_stable="v2013.04"
 #uboot_testing="v2013.04-rc3"
 
-#uboot_latest="bbd0f7e3ba66d288a2f146f1c7797801e04598ae"
-uboot_latest="48e0b2bd2b6ecc80cd25181ca2fb9c0eaffef320"
+#uboot_latest="48e0b2bd2b6ecc80cd25181ca2fb9c0eaffef320"
+uboot_latest="a71d45d706a5b51c348160163b6c159632273fed"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
