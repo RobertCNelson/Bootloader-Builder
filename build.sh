@@ -26,18 +26,19 @@ TEMPDIR=$(mktemp -d)
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-NUMJOBS='2'                     # Number of jobs for make to run in parallel.
+# Number of jobs for make to run in parallel.
+NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
 stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
-#latest_at91bootstrap_sha="da3fe69da4f3be7b8e1a41af0679c11e53819238"
 #latest_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
+latest_at91bootstrap_sha="078b283db336b8f6471e6f960163714b65763c3e"
 
 uboot_stable="v2013.04"
 #uboot_testing="v2013.04-rc3"
 
-#uboot_latest="48e0b2bd2b6ecc80cd25181ca2fb9c0eaffef320"
-uboot_latest="a71d45d706a5b51c348160163b6c159632273fed"
+#uboot_latest="a71d45d706a5b51c348160163b6c159632273fed"
+uboot_latest="d6639d10dbfa42dc888f8917012550b632a88959"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -281,13 +282,13 @@ build_u_boot () {
 
 	if [ "${v2013_07_rc1}" ] ; then
 
-		git revert --no-edit d196bd880347373237d73e0d115b4d51c68cf2ad
+#		git revert --no-edit d196bd880347373237d73e0d115b4d51c68cf2ad
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 
-		git am "${DIR}/patches/v2013.07-rc1/board/0001-mx23-Put-back-RAM-voltage-level-to-its-original-valu.patch"
+#		git am "${DIR}/patches/v2013.07-rc1/board/0001-mx23-Put-back-RAM-voltage-level-to-its-original-valu.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
@@ -303,10 +304,10 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc1/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc1/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+#		git am "${DIR}/patches/v2013.07-rc1/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.07-rc1/board/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.07-rc1/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.07-rc1/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
+#		git am "${DIR}/patches/v2013.07-rc1/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+#		git am "${DIR}/patches/v2013.07-rc1/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
@@ -707,6 +708,8 @@ sama5d3xek () {
 	UBOOT_CONFIG="sama5d3xek_sdcard_config"
 
 	build_uboot_stable
+
+	UBOOT_CONFIG="sama5d3xek_mmc_config"
 	build_uboot_testing
 	build_uboot_latest
 }

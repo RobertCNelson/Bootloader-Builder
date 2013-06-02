@@ -52,7 +52,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 37 insertions(+), 15 deletions(-)
 
 diff --git a/include/configs/mx6qsabre_common.h b/include/configs/mx6qsabre_common.h
-index f5f115f..06fcae8 100644
+index 7298a76..b69f555 100644
 --- a/include/configs/mx6qsabre_common.h
 +++ b/include/configs/mx6qsabre_common.h
 @@ -48,6 +48,11 @@
@@ -67,7 +67,7 @@ index f5f115f..06fcae8 100644
  #define CONFIG_GENERIC_MMC
  #define CONFIG_BOUNCE_BUFFER
  #define CONFIG_CMD_EXT2
-@@ -92,22 +97,35 @@
+@@ -93,12 +98,13 @@
  	"fdt_addr=0x11000000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
@@ -80,6 +80,13 @@ index f5f115f..06fcae8 100644
  	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
  	"mmcpart=" __stringify(CONFIG_SYS_MMC_ENV_PART) "\0" \
 -	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
+ 	"update_sd_firmware=" \
+ 		"if test ${ip_dyn} = yes; then " \
+ 			"setenv get_cmd dhcp; " \
+@@ -112,16 +118,28 @@
+ 				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
+ 			"fi; "	\
+ 		"fi\0" \
 -	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 -		"root=${mmcroot}\0" \
 +	"mmcroot=/dev/mmcblk0p2 ro\0" \
@@ -109,7 +116,7 @@ index f5f115f..06fcae8 100644
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
  				"bootm ${loadaddr} - ${fdt_addr}; " \
-@@ -149,15 +167,19 @@
+@@ -163,15 +181,19 @@
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev};" \
  	"if mmc rescan; then " \

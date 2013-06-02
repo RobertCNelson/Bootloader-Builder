@@ -48,14 +48,14 @@ bootm -> bootz
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx51evk.h |   60 +++++++++++++++++++++++++++++++++------------
- 1 file changed, 45 insertions(+), 15 deletions(-)
+ include/configs/mx51evk.h |   58 +++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 45 insertions(+), 13 deletions(-)
 
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index cb3d938..0015454 100644
+index 13d1839..d535581 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
-@@ -89,6 +89,14 @@
+@@ -92,6 +92,14 @@
  #define CONFIG_CMD_FAT
  #define CONFIG_DOS_PARTITION
  
@@ -70,32 +70,35 @@ index cb3d938..0015454 100644
  /*
   * Eth Configs
   */
-@@ -152,15 +160,30 @@
- #define CONFIG_LOADADDR		0x90800000	/* loadaddr env var */
+@@ -155,17 +163,34 @@
+ #define CONFIG_LOADADDR		0x92000000	/* loadaddr env var */
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
 +	"initrd_high=0xffffffff\0" \
 +	"fdt_high=0xffffffff\0" \
  	"script=boot.scr\0" \
  	"uimage=uImage\0" \
-+	"loadaddr=0x90800000\0" \
-+	"dtb_addr=0x91FF0000\0" \
+ 	"fdt_file=imx51-babbage.dtb\0" \
+ 	"fdt_addr=0x91000000\0" \
 +	"dtb_file=imx51-babbage.dtb\0" \
++	"dtb_addr=0x91000000\0" \
+ 	"boot_fdt=try\0" \
+ 	"ip_dyn=yes\0" \
++	"loadaddr=0x90800000\0" \
 +	"console=ttymxc0,115200n8\0" \
 +	"optargs=\0" \
 +	"video=\0" \
  	"mmcdev=0\0" \
 -	"mmcpart=2\0" \
--	"mmcroot=/dev/mmcblk0p3 rw\0" \
--	"mmcrootfstype=ext3 rootwait\0" \
+-	"mmcroot=/dev/mmcblk0p3 rootwait rw\0" \
 -	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
+-		"root=${mmcroot}\0" \
 +	"mmcpart=1\0" \
 +	"mmcroot=/dev/mmcblk0p2 ro\0" \
 +	"mmcrootfstype=ext4 rootwait\0" \
 +	"mmcargs=setenv bootargs console=${console} " \
 +		"${optargs} " \
- 		"root=${mmcroot} " \
--		"rootfstype=${mmcrootfstype}\0" \
++		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype} " \
 +		"video=${video}\0" \
 +	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt\0" \
@@ -106,19 +109,17 @@ index cb3d938..0015454 100644
  	"loadbootscript=" \
  		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
-@@ -168,7 +191,10 @@
- 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+@@ -174,6 +199,9 @@
+ 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
--		"bootm\0" \
 +		"bootz ${loadaddr} - ${dtb_addr}\0 " \
-+	"mmc_classic_boot=echo Booting from mmc ...; " \
++	"default_mmcboot=echo Booting from mmc ...; " \
 +		"run mmcargs; " \
-+		"bootz ${loadaddr}\0" \
- 	"netargs=setenv bootargs console=ttymxc0,${baudrate} " \
- 		"root=/dev/nfs " \
- 		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
-@@ -178,15 +204,19 @@
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+ 			"if run loadfdt; then " \
+ 				"bootm ${loadaddr} - ${fdt_addr}; " \
+@@ -215,15 +243,19 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
