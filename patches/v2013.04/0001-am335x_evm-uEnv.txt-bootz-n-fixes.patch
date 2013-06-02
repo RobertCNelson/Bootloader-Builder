@@ -81,7 +81,7 @@ index d1e2fd3..3a93db1 100644
  
  /**
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index ef00306..385d8ad 100644
+index ef00306..3124a5a 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -35,6 +35,7 @@
@@ -177,12 +177,12 @@ index ef00306..385d8ad 100644
 +			"run importbootenv; " \
 +		"fi; " \
 +		"gpio set 55; " \
-+		"echo is uenvcmd defined?; " \
 +		"if test -n $uenvcmd; then " \
 +			"gpio set 56; " \
 +			"echo Running uenvcmd ...; " \
 +			"run uenvcmd;" \
 +		"fi; " \
++		"echo; echo uenvcmd was not defined in uEnv.txt ...; echo trying eMMC (BeagleBone Black) ...; echo;" \
 +	"fi;" \
 +	"mmc dev 1; if mmc rescan ; then " \
 +		"gpio set 54; " \
@@ -195,7 +195,6 @@ index ef00306..385d8ad 100644
 +			"run importbootenv; " \
 +		"fi; " \
 +		"gpio set 55; " \
-+		"echo is uenvcmd defined?; " \
  		"if test -n $uenvcmd; then " \
 -			"echo Running uenvcmd ...;" \
 +			"gpio set 56; " \
@@ -209,6 +208,7 @@ index ef00306..385d8ad 100644
 -	"else " \
 -		"run nandboot;" \
 +		"fi; " \
++		"echo; echo uenvcmd was not defined in uEnv.txt ...; echo halting ...; echo;" \
  	"fi;" \
  
  /* Clock Defines */
