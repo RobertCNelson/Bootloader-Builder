@@ -35,10 +35,10 @@ stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 latest_at91bootstrap_sha="078b283db336b8f6471e6f960163714b65763c3e"
 
 uboot_stable="v2013.04"
-#uboot_testing="v2013.04-rc3"
+uboot_testing="v2013.07-rc1"
 
-#uboot_latest="a71d45d706a5b51c348160163b6c159632273fed"
-uboot_latest="d6639d10dbfa42dc888f8917012550b632a88959"
+#uboot_latest="d6639d10dbfa42dc888f8917012550b632a88959"
+uboot_latest="dfdb3d37dd0fa8bdabdf7b5ffb597af470e74621"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -123,14 +123,14 @@ armv7_toolchain () {
 
 armv7hf_toolchain () {
 	#https://launchpad.net/linaro-toolchain-binaries/+download
-	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.04/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux.tar.xz
+	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.05/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.05_linux.tar.xz
 
 	toolchain_name="gcc-arm toolchain"
 	site="https://launchpad.net/linaro-toolchain-binaries/trunk"
-	version="2013.04"
-	filename="gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux.tar.xz"
-	directory="gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux"
-	datestamp="20130417-gcc-linaro-arm-linux-gnueabihf"
+	version="2013.05"
+	filename="gcc-linaro-arm-linux-gnueabihf-4.8-2013.05_linux.tar.xz"
+	directory="gcc-linaro-arm-linux-gnueabihf-4.8-2013.05_linux"
+	datestamp="2013.05-gcc-linaro-arm-linux-gnueabihf"
 	untar="-xJf"
 
 	binary="bin/arm-linux-gnueabihf-"
@@ -281,14 +281,11 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_07_rc1}" ] ; then
-
-#		git revert --no-edit d196bd880347373237d73e0d115b4d51c68cf2ad
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 
-#		git am "${DIR}/patches/v2013.07-rc1/board/0001-mx23-Put-back-RAM-voltage-level-to-its-original-valu.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
@@ -304,11 +301,33 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc1/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
-#		git am "${DIR}/patches/v2013.07-rc1/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.07-rc1/board/0002-NET-macb-support-sama5d3x-devices.patch"
-#		git am "${DIR}/patches/v2013.07-rc1/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-#		git am "${DIR}/patches/v2013.07-rc1/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+	fi
+
+	if [ "${v2013_07_rc2}" ] ; then
+		#Device Tree Only:
+		git am "${DIR}/patches/v2013.07-rc2/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc2/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
+		git am "${DIR}/patches/v2013.07-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+
+		git am "${DIR}/patches/v2013.07-rc2/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc2/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc2/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc2/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc2/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+
+		#Device Tree/Board File:
+		git am "${DIR}/patches/v2013.07-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+
+		#Board File Only:
+		git am "${DIR}/patches/v2013.07-rc2/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc2/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc2/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+
+		#Atmel: sama5d3: Device Tree Only:
+		git am "${DIR}/patches/v2013.07-rc2/board/0002-NET-macb-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/v2013.07-rc2/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	if [ "x${BOARD}" == "xarndale5250" ] ; then
@@ -459,7 +478,7 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
-#	v2013_07_rc1=1
+	v2013_07_rc1=1
 #	v2013_07_rc2=1
 #	v2013_07_rc3=1
 #	v2013_07=1
@@ -467,23 +486,23 @@ build_uboot_testing () {
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
-#	unset v2013_07_rc1
+	unset v2013_07_rc1
 #	unset v2013_07_rc2
 #	unset v2013_07_rc3
 #	unset v2013_07
 }
 
 build_uboot_latest () {
-	v2013_07_rc1=1
-#	v2013_07_rc2=1
+#	v2013_07_rc1=1
+	v2013_07_rc2=1
 #	v2013_07_rc3=1
 #	v2013_07=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
-	unset v2013_07_rc1
-#	unset v2013_07_rc2
+#	unset v2013_07_rc1
+	unset v2013_07_rc2
 #	unset v2013_07_rc3
 #	unset v2013_07
 }
@@ -714,6 +733,18 @@ sama5d3xek () {
 	build_uboot_latest
 }
 
+vf610twr () {
+	cleanup
+	armv7hf_toolchain
+
+	BOARD="vf610twr"
+	UBOOT_CONFIG="vf610twr_config"
+
+#	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
+}
+
 wandboard () {
 	cleanup
 	armv7hf_toolchain
@@ -746,5 +777,6 @@ mx6qsabresd
 odroidx
 pandaboard
 sama5d3xek
+vf610twr
 wandboard
 #
