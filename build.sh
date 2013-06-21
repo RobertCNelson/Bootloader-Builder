@@ -31,14 +31,15 @@ NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
 stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
-#latest_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
-latest_at91bootstrap_sha="078b283db336b8f6471e6f960163714b65763c3e"
+#latest_at91bootstrap_sha="078b283db336b8f6471e6f960163714b65763c3e"
+#v3.5.4
+latest_at91bootstrap_sha="bd45f35f9e205310f89bc6dd8233b40d3cf1d3ca"
 
 uboot_stable="v2013.04"
 uboot_testing="v2013.07-rc1"
 
-#uboot_latest="d6639d10dbfa42dc888f8917012550b632a88959"
-uboot_latest="dfdb3d37dd0fa8bdabdf7b5ffb597af470e74621"
+#uboot_latest="dfdb3d37dd0fa8bdabdf7b5ffb597af470e74621"
+uboot_latest="7315cfd9e1922ee1c3c5f016e5a3b16199122172"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -238,7 +239,8 @@ build_u_boot () {
 		#r8: mx23: pull in voltage changes...
 		#r9: sama5 actually load zImage
 		#r10: bone: add a little note about uenvcmd...
-		RELEASE_VER="-r10"
+		#r11: wandboard: quad support...
+		RELEASE_VER="-r11"
 
 		if [ "x${BOARD}" = "xmx6qsabrelite" ] ; then
 			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx6qsabrelite
@@ -750,6 +752,13 @@ vf610twr () {
 wandboard () {
 	cleanup
 	armv7hf_toolchain
+
+	BOARD="wandboard-quad"
+	UBOOT_CONFIG="wandboard_quad_config"
+
+	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
 
 	BOARD="wandboard-dl"
 	UBOOT_CONFIG="wandboard_dl_config"
