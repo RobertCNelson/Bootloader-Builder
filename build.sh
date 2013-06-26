@@ -31,15 +31,15 @@ NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
 stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
-#latest_at91bootstrap_sha="078b283db336b8f6471e6f960163714b65763c3e"
 #v3.5.4
-latest_at91bootstrap_sha="bd45f35f9e205310f89bc6dd8233b40d3cf1d3ca"
+#latest_at91bootstrap_sha="bd45f35f9e205310f89bc6dd8233b40d3cf1d3ca"
+latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
 
 uboot_stable="v2013.04"
 uboot_testing="v2013.07-rc1"
 
-#uboot_latest="dfdb3d37dd0fa8bdabdf7b5ffb597af470e74621"
-uboot_latest="7315cfd9e1922ee1c3c5f016e5a3b16199122172"
+#uboot_latest="7315cfd9e1922ee1c3c5f016e5a3b16199122172"
+uboot_latest="ca85eb8c4271509aaac1ccb26ae3eb1a7827b4e6"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -332,7 +332,7 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc2/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc2/board/0002-NET-macb-support-sama5d3x-devices.patch"
+		#git am "${DIR}/patches/v2013.07-rc2/board/0002-NET-macb-support-sama5d3x-devices.patch"
 		git am "${DIR}/patches/v2013.07-rc2/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
