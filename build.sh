@@ -38,8 +38,8 @@ latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
 uboot_stable="v2013.04"
 uboot_testing="v2013.07-rc1"
 
-#uboot_latest="7315cfd9e1922ee1c3c5f016e5a3b16199122172"
-uboot_latest="ca85eb8c4271509aaac1ccb26ae3eb1a7827b4e6"
+#uboot_latest="ca85eb8c4271509aaac1ccb26ae3eb1a7827b4e6"
+uboot_latest="e31dc61e7dc89ce900426828c936208a6638cf8c"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
