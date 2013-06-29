@@ -36,10 +36,11 @@ stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
 
 uboot_stable="v2013.04"
-uboot_testing="v2013.07-rc1"
+uboot_testing="v2013.07-rc2"
 
-#uboot_latest="ca85eb8c4271509aaac1ccb26ae3eb1a7827b4e6"
-uboot_latest="e31dc61e7dc89ce900426828c936208a6638cf8c"
+#uboot_latest="e31dc61e7dc89ce900426828c936208a6638cf8c"
+#v2013.07-rc2
+#uboot_latest="e6bf18dba2a21bebf2c421b1c2e188225f6485a1"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -336,6 +337,31 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc2/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
+	if [ "${v2013_07_rc3}" ] ; then
+		#Device Tree Only:
+		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+
+		git revert --no-edit 9aee34ecabef065cfec76ce736bedfb1fcf77b03
+		git am "${DIR}/patches/v2013.07-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+
+		#Device Tree/Board File:
+		git am "${DIR}/patches/v2013.07-rc3/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+
+		#Board File Only:
+		git am "${DIR}/patches/v2013.07-rc3/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+
+		#Atmel: sama5d3: Device Tree Only:
+		git am "${DIR}/patches/v2013.07-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+	fi
+
 	if [ "x${BOARD}" == "xarndale5250" ] ; then
 		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 	fi
@@ -484,32 +510,32 @@ build_uboot_stable () {
 }
 
 build_uboot_testing () {
-	v2013_07_rc1=1
-#	v2013_07_rc2=1
+#	v2013_07_rc1=1
+	v2013_07_rc2=1
 #	v2013_07_rc3=1
 #	v2013_07=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
-	unset v2013_07_rc1
-#	unset v2013_07_rc2
+#	unset v2013_07_rc1
+	unset v2013_07_rc2
 #	unset v2013_07_rc3
 #	unset v2013_07
 }
 
 build_uboot_latest () {
 #	v2013_07_rc1=1
-	v2013_07_rc2=1
-#	v2013_07_rc3=1
+#	v2013_07_rc2=1
+	v2013_07_rc3=1
 #	v2013_07=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
 #	unset v2013_07_rc1
-	unset v2013_07_rc2
-#	unset v2013_07_rc3
+#	unset v2013_07_rc2
+	unset v2013_07_rc3
 #	unset v2013_07
 }
 
