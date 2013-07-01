@@ -312,6 +312,8 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_07_rc2}" ] ; then
+		git am "${DIR}/patches/v2013.07-rc2/0001-cmd_bootm.c-Correct-check-return-for-unsupported-sub.patch"
+
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.07-rc2/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc2/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -338,6 +340,7 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_07_rc3}" ] ; then
+		git am "${DIR}/patches/v2013.07-rc3/0001-cmd_bootm.c-Correct-check-return-for-unsupported-sub.patch"
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc3/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"

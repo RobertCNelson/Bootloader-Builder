@@ -1,0 +1,47 @@
+From 9d995dd99c89724675f0d18cefacee30fe776b2b Mon Sep 17 00:00:00 2001
+From: Tom Rini <trini@ti.com>
+Date: Mon, 1 Jul 2013 09:09:23 -0400
+Subject: [PATCH] cmd_bootm.c: Correct check/return for unsupported
+ sub-command
+
+With the do_bootm_states re-organization, we have the call to any
+potential sub-commands in a single spot.  If one fails, we can then stop
+right there and return to the caller.  Prior to these calls we have
+already ensured that ret is zero so we will not be returning this error
+for some other case.
+
+Signed-off-by: Tom Rini <trini@ti.com>
+---
+ common/cmd_bootm.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/common/cmd_bootm.c b/common/cmd_bootm.c
+index 02a5013..a36e019 100644
+--- a/common/cmd_bootm.c
++++ b/common/cmd_bootm.c
+@@ -669,6 +669,13 @@ static int do_bootm_states(cmd_tbl_t *cmdtp, int flag, int argc,
+ 	if (!ret && (states & BOOTM_STATE_OS_PREP))
+ 		ret = boot_fn(BOOTM_STATE_OS_PREP, argc, argv, images);
+ 
++	/* Check for unsupported subcommand. */
++	if (ret) {
++		puts("subcommand not supported\n");
++		return ret;
++	}
++
++
+ #ifdef CONFIG_TRACE
+ 	/* Pretend to run the OS, then run a user command */
+ 	if (!ret && (states & BOOTM_STATE_OS_FAKE_GO)) {
+@@ -699,8 +706,6 @@ err:
+ 		bootstage_error(BOOTSTAGE_ID_DECOMP_UNIMPL);
+ 	else if (ret == BOOTM_ERR_RESET)
+ 		do_reset(cmdtp, flag, argc, argv);
+-	else
+-		puts("subcommand not supported\n");
+ 
+ 	return ret;
+ }
+-- 
+1.7.10.4
+

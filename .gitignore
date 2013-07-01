@@ -5,4 +5,4 @@ Bootstrap*
 build
 *.host
 stop.after.patch
-
+force_rebuild
