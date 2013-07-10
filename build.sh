@@ -38,9 +38,9 @@ latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
 uboot_stable="v2013.04"
 uboot_testing="v2013.07-rc2"
 
-#uboot_latest="e31dc61e7dc89ce900426828c936208a6638cf8c"
 #v2013.07-rc2
 #uboot_latest="e6bf18dba2a21bebf2c421b1c2e188225f6485a1"
+uboot_latest="225fd8c5d4556547896a5d32ee092a258f3df638"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -339,7 +339,6 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_07_rc3}" ] ; then
-		git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.07-rc2_fix-bootz
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc3/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -731,6 +730,18 @@ odroidx () {
 	unset odroidx_patch
 }
 
+omap5_uevm () {
+	cleanup
+	armv7hf_toolchain
+
+	BOARD="omap5uevm"
+	UBOOT_CONFIG="omap5_uevm_config"
+
+#	build_uboot_stable
+#	build_uboot_testing
+	build_uboot_latest
+}
+
 pandaboard () {
 	cleanup
 	armv7hf_toolchain
@@ -816,6 +827,7 @@ mx53loco
 mx6qsabrelite
 mx6qsabresd
 odroidx
+omap5_uevm
 pandaboard
 sama5d3xek
 vf610twr
