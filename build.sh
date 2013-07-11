@@ -91,14 +91,16 @@ dl_gcc_generic () {
 }
 
 armv5_embedded_toolchain () {
-	#https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q1-update/+download/gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2
+	#https://launchpad.net/gcc-arm-embedded/+download
+	#https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q2-update/+download/gcc-arm-none-eabi-4_7-2013q2-20130614-linux.tar.bz2
 
-	toolchain_name="gcc-arm-embedded toolchain"
+	toolchain_name="gcc-arm-none-eabi"
 	site="https://launchpad.net/gcc-arm-embedded"
-	version="4.7/4.7-2013-q1-update"
-	filename="gcc-arm-none-eabi-4_7-2013q1-20130313-linux.tar.bz2"
-	directory="gcc-arm-none-eabi-4_7-2013q1"
-	datestamp="20130313-gcc-arm-embedded"
+	version="4.7/4.7-2013-q2-update"
+	version_date="20130614"
+	directory="${toolchain_name}-4_7-2013q2"
+	filename="${directory}-${version_date}-linux.tar.bz2"
+	datestamp="${version_date}-${toolchain_name}"
 	untar="tar -xjf"
 
 	binary="bin/arm-none-eabi-"
