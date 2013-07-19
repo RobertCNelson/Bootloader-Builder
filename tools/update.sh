@@ -95,10 +95,10 @@ verify_file () {
 process_latest () {
 	while read line
 	do
-		board=$(echo ${line} | awk -F'_' '{ print $1 }')
-		http_file=$(echo ${line} | awk -F'_' '{ print $2 }')
+		board=$(echo ${line} | awk -F':' '{ print $1 }')
+		http_file=$(echo ${line} | awk -F':' '{ print $2 }')
 		file=$(echo ${http_file} | awk -F'/' '{ print $(NF) }')
-		md5sum=$(echo ${line} | awk -F'_' '{ print $3 }')
+		md5sum=$(echo ${line} | awk -F':' '{ print $3 }')
 		verify_file
 	done < "${file}"
 }

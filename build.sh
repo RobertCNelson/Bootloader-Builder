@@ -193,12 +193,12 @@ halt_patching_uboot () {
 file_save () {
 	cp -v ./${filename_search} ${DIR}/${filename_id}
 	md5sum=$(md5sum ${DIR}/${filename_id} | awk '{print $1}')
-	check=$(ls ${DIR}/${filename_id}_* 2>/dev/null | head -n 1)
+	check=$(ls "${DIR}/${filename_id}:*" 2>/dev/null | head -n 1)
 	if [ "x${check}" != "x" ] ; then
-		rm -rf ${DIR}/${filename_id}_* || true
+		rm -rf "${DIR}/${filename_id}:*" || true
 	fi
 	touch ${DIR}/${filename_id}_${md5sum}
-	echo "${BOARD}_${MIRROR}/${filename_id}_${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+	echo "${BOARD}_${MIRROR}/${filename_id}:${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 }
 
 build_at91bootstrap () {
