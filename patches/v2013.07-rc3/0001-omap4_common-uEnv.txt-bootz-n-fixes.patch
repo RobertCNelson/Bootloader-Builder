@@ -48,26 +48,11 @@ bootm -> bootz
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- arch/arm/cpu/armv7/omap-common/emif-common.c |    3 ++
- include/configs/omap4_common.h               |   40 ++++++++++++++++++++------
- 2 files changed, 35 insertions(+), 8 deletions(-)
+ include/configs/omap4_common.h |   42 ++++++++++++++++++++++++++++++++--------
+ 1 file changed, 34 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/cpu/armv7/omap-common/emif-common.c b/arch/arm/cpu/armv7/omap-common/emif-common.c
-index 652e5a7..9ede3f5 100644
---- a/arch/arm/cpu/armv7/omap-common/emif-common.c
-+++ b/arch/arm/cpu/armv7/omap-common/emif-common.c
-@@ -1200,6 +1200,9 @@ void dmm_init(u32 base)
- 	/* TRAP for invalid TILER mappings in section 0 */
- 	lis_map_regs_calculated.dmm_lisa_map_0 = DMM_LISA_MAP_0_INVAL_ADDR_TRAP;
- 
-+	if (omap_revision() >= OMAP4460_ES1_0)
-+		lis_map_regs_calculated.is_ma_present = 1;
-+
- 	lisa_map_regs = &lis_map_regs_calculated;
- #endif
- 	struct dmm_lisa_map_regs *hw_lisa_map_regs =
 diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
-index 2fa4382..7ddb983 100644
+index 2fa4382..578c044 100644
 --- a/include/configs/omap4_common.h
 +++ b/include/configs/omap4_common.h
 @@ -124,6 +124,12 @@
@@ -131,17 +116,23 @@ index 2fa4382..7ddb983 100644
  	"findfdt="\
  		"if test $board_name = sdp4430; then " \
  			"setenv fdtfile omap4-sdp.dtb; fi; " \
-@@ -200,6 +216,9 @@
+@@ -196,10 +212,15 @@
+ 			"if run loadbootenv; then " \
+ 				"run importbootenv; " \
+ 			"fi;" \
++			"echo Checking if uenvcmd is set ...;" \
+ 			"if test -n ${uenvcmd}; then " \
  				"echo Running uenvcmd ...;" \
  				"run uenvcmd;" \
  			"fi;" \
++			"echo Running default loaduimage ...;" \
 +			"if run loaduimage; then " \
 +				"run mmc_classic_boot; " \
 +			"fi; " \
  		"fi;" \
  		"if run loadimage; then " \
  			"run loadfdt;" \
-@@ -219,7 +238,7 @@
+@@ -219,7 +240,7 @@
  /* Print Buffer Size */
  #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
  					sizeof(CONFIG_SYS_PROMPT) + 16)
@@ -150,7 +141,7 @@ index 2fa4382..7ddb983 100644
  /* Boot Argument Buffer Size */
  #define CONFIG_SYS_BARGSIZE		(CONFIG_SYS_CBSIZE)
  
-@@ -255,7 +274,8 @@
+@@ -255,7 +276,8 @@
  #define CONFIG_SYS_CACHELINE_SIZE	32
  
  /* Defines for SDRAM init */
@@ -160,7 +151,7 @@ index 2fa4382..7ddb983 100644
  
  #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
  #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
-@@ -303,4 +323,8 @@
+@@ -303,4 +325,8 @@
  
  #define CONFIG_SYS_THUMB_BUILD
  

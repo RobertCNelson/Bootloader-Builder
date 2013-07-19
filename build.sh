@@ -38,9 +38,8 @@ latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
 uboot_stable="v2013.04"
 uboot_testing="v2013.07-rc2"
 
-#v2013.07-rc2
-#uboot_latest="e6bf18dba2a21bebf2c421b1c2e188225f6485a1"
-uboot_latest="225fd8c5d4556547896a5d32ee092a258f3df638"
+#uboot_latest="225fd8c5d4556547896a5d32ee092a258f3df638"
+uboot_latest="576aacdb915242dc60977049528b546fbe6135cc"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -193,12 +192,12 @@ halt_patching_uboot () {
 file_save () {
 	cp -v ./${filename_search} ${DIR}/${filename_id}
 	md5sum=$(md5sum ${DIR}/${filename_id} | awk '{print $1}')
-	check=$(ls "${DIR}/${filename_id}:*" 2>/dev/null | head -n 1)
+	check=$(ls "${DIR}/${filename_id}#*" 2>/dev/null | head -n 1)
 	if [ "x${check}" != "x" ] ; then
-		rm -rf "${DIR}/${filename_id}:*" || true
+		rm -rf "${DIR}/${filename_id}#*" || true
 	fi
 	touch ${DIR}/${filename_id}_${md5sum}
-	echo "${BOARD}_${MIRROR}/${filename_id}:${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+	echo "${BOARD}#${MIRROR}/${filename_id}#${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 }
 
 build_at91bootstrap () {
@@ -247,11 +246,6 @@ build_u_boot () {
 		#r11: wandboard: quad support...
 		RELEASE_VER="-r11"
 
-		if [ "x${BOARD}" = "xmx6qsabrelite" ] ; then
-			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx6qsabrelite
-			git am "${DIR}/patches/v2013.04/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
-		fi
-
 		unset only_patch
 		if [ "x${BOARD}" = "xmx23olinuxino" ] ; then
 			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx23
@@ -268,7 +262,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.04/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.04/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-#		git am "${DIR}/patches/v2013.04/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
 
 		#Device Tree/Board File:
 		git am "${DIR}/patches/v2013.04/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -297,7 +290,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc1/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
 
 		#Device Tree/Board File:
 		git am "${DIR}/patches/v2013.07-rc1/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -323,7 +315,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc2/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc2/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc2/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc2/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
 
 		#Device Tree/Board File:
 		git am "${DIR}/patches/v2013.07-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -347,8 +338,7 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc3/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-mx6qsabrelite-uEnv.txt-bootz-n-fixes.patch"
+		#git am "${DIR}/patches/v2013.07-rc3/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 
 		#Device Tree/Board File:
 		git am "${DIR}/patches/v2013.07-rc3/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -360,10 +350,6 @@ build_u_boot () {
 
 		#Atmel: sama5d3: Device Tree Only:
 		git am "${DIR}/patches/v2013.07-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	if [ "x${BOARD}" == "xarndale5250" ] ; then
-		git am "${DIR}/patches/v2012.10/0001-MegaPatch-add-arndale5250-support-from-http-git.lina.patch"
 	fi
 
 	unset BUILDTARGET
@@ -560,21 +546,6 @@ build_barebox_latest () {
 	fi
 }
 
-arndale5250 () {
-	cleanup
-	armv7hf_toolchain
-
-	BOARD="arndale5250"
-	UBOOT_CONFIG="${BOARD}_config"
-
-	GIT_SHA="v2012.10"
-	build_u_boot
-
-#	build_uboot_stable
-#	build_uboot_testing
-#	build_uboot_latest
-}
-
 at91sam9g20ek () {
 	cleanup
 	armv5_embedded_toolchain
@@ -701,18 +672,6 @@ mx53loco () {
 	build_uboot_latest
 }
 
-mx6qsabrelite () {
-	cleanup
-	armv7hf_toolchain
-
-	BOARD="mx6qsabrelite"
-	UBOOT_CONFIG="${BOARD}_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
-}
-
 mx6qsabresd () {
 	cleanup
 	armv7hf_toolchain
@@ -723,25 +682,6 @@ mx6qsabresd () {
 	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
-}
-
-odroidx () {
-	cleanup
-	armv7hf_toolchain
-
-	BOARD="odroidx"
-	UBOOT_CONFIG="${BOARD}_config"
-
-#	enable_zImage_support=1
-#	enable_uenv_support=1
-#	build_uboot_stable
-#	unset enable_uenv_support
-#	unset enable_zImage_support
-
-	odroidx_patch=1
-#	build_uboot_testing
-#	build_uboot_latest
-	unset odroidx_patch
 }
 
 omap5_uevm () {
@@ -845,7 +785,6 @@ wandboard () {
 	build_uboot_latest
 }
 
-arndale5250
 at91sam9g20ek
 at91sam9x5ek
 beagleboard
@@ -853,9 +792,7 @@ beaglebone
 mx23olinuxino
 mx51evk
 mx53loco
-mx6qsabrelite
-mx6qsabresd
-odroidx
+#mx6qsabresd
 omap5_uevm
 pandaboard
 sama5d3xek
