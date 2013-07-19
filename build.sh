@@ -293,7 +293,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc1/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 
-		git revert --no-edit 9aee34ecabef065cfec76ce736bedfb1fcf77b03
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc1/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
@@ -320,7 +319,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc2/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/v2013.07-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 
-		git revert --no-edit 9aee34ecabef065cfec76ce736bedfb1fcf77b03
 		git am "${DIR}/patches/v2013.07-rc2/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc2/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc2/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
@@ -346,7 +344,6 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc3/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 
-		git revert --no-edit 9aee34ecabef065cfec76ce736bedfb1fcf77b03
 		git am "${DIR}/patches/v2013.07-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc3/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
