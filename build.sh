@@ -565,7 +565,7 @@ arndale5250 () {
 	armv7hf_toolchain
 
 	BOARD="arndale5250"
-	UBOOT_CONFIG="arndale5250_config"
+	UBOOT_CONFIG="${BOARD}_config"
 
 	GIT_SHA="v2012.10"
 	build_u_boot
@@ -594,6 +594,9 @@ at91sam9g20ek () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	BOARD="at91sam9g20ek_2mmc_nandflash"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 }
 
@@ -616,6 +619,9 @@ at91sam9x5ek () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	BOARD="at91sam9x5ek_mmc"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 }
 
@@ -628,6 +634,9 @@ beagleboard () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	BOARD="omap3_beagle"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 }
 
@@ -640,6 +649,9 @@ beaglebone () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	BOARD="am335x_evm"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 }
 
@@ -653,6 +665,9 @@ mx23olinuxino () {
 
 		build_uboot_stable
 		build_uboot_testing
+
+		BOARD="mx23_olinuxino"
+		UBOOT_CONFIG="${BOARD}_config"
 		build_uboot_latest
 	else
 		echo "-----------------------------"
@@ -667,7 +682,7 @@ mx51evk () {
 	armv7hf_toolchain
 
 	BOARD="mx51evk"
-	UBOOT_CONFIG="mx51evk_config"
+	UBOOT_CONFIG="${BOARD}_config"
 
 	build_uboot_stable
 	build_uboot_testing
@@ -679,7 +694,7 @@ mx53loco () {
 	armv7hf_toolchain
 
 	BOARD="mx53loco"
-	UBOOT_CONFIG="mx53loco_config"
+	UBOOT_CONFIG="${BOARD}_config"
 
 	build_uboot_stable
 	build_uboot_testing
@@ -691,7 +706,7 @@ mx6qsabrelite () {
 	armv7hf_toolchain
 
 	BOARD="mx6qsabrelite"
-	UBOOT_CONFIG="mx6qsabrelite_config"
+	UBOOT_CONFIG="${BOARD}_config"
 
 	build_uboot_stable
 	build_uboot_testing
@@ -703,7 +718,7 @@ mx6qsabresd () {
 	armv7hf_toolchain
 
 	BOARD="mx6qsabresd"
-	UBOOT_CONFIG="mx6qsabresd_config"
+	UBOOT_CONFIG="${BOARD}_config"
 
 	build_uboot_stable
 	build_uboot_testing
@@ -715,7 +730,7 @@ odroidx () {
 	armv7hf_toolchain
 
 	BOARD="odroidx"
-	UBOOT_CONFIG="odroidx_config"
+	UBOOT_CONFIG="${BOARD}_config"
 
 #	enable_zImage_support=1
 #	enable_uenv_support=1
@@ -733,8 +748,8 @@ omap5_uevm () {
 	cleanup
 	armv7hf_toolchain
 
-	BOARD="omap5uevm"
-	UBOOT_CONFIG="omap5_uevm_config"
+	BOARD="omap5_uevm"
+	UBOOT_CONFIG="${BOARD}_config"
 
 #	build_uboot_stable
 #	build_uboot_testing
@@ -750,6 +765,9 @@ pandaboard () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	BOARD="omap4_panda"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 }
 
@@ -774,6 +792,9 @@ sama5d3xek () {
 
 	UBOOT_CONFIG="sama5d3xek_mmc_config"
 	build_uboot_testing
+
+	BOARD="sama5d3xek_mmc"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 }
 
@@ -782,7 +803,7 @@ vf610twr () {
 	armv7hf_toolchain
 
 	BOARD="vf610twr"
-	UBOOT_CONFIG="vf610twr_config"
+	UBOOT_CONFIG="${BOARD}_config"
 
 #	build_uboot_stable
 	build_uboot_testing
@@ -798,6 +819,9 @@ wandboard () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	BOARD="wandboard_quad"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 
 	BOARD="wandboard-dl"
@@ -805,6 +829,9 @@ wandboard () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	BOARD="wandboard_dl"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 
 	BOARD="wandboard-solo"
@@ -812,6 +839,9 @@ wandboard () {
 
 	build_uboot_stable
 	build_uboot_testing
+
+	BOARD="wandboard_solo"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_latest
 }
 
