@@ -353,6 +353,9 @@ build_u_boot () {
 	fi
 
 	if [ "${v2013_07}" ] ; then
+		#omap3 fix usb
+		git am "${DIR}/patches/v2013.07/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
+
 		#Device Tree Only:
 		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/v2013.07-rc3/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
