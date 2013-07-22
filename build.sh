@@ -36,10 +36,10 @@ stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
 
 uboot_stable="v2013.04"
-uboot_testing="v2013.07-rc2"
+uboot_testing="v2013.07-rc3"
 
-#uboot_latest="225fd8c5d4556547896a5d32ee092a258f3df638"
-uboot_latest="576aacdb915242dc60977049528b546fbe6135cc"
+#uboot_latest="576aacdb915242dc60977049528b546fbe6135cc"
+uboot_latest="50ffc3b64aa3c8113f0a9fc31ea96e596d60054a"
 
 barebox_stable="v2013.02.0"
 #barebox_testing="v2013.02.0"
@@ -352,6 +352,28 @@ build_u_boot () {
 		git am "${DIR}/patches/v2013.07-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
+	if [ "${v2013_07}" ] ; then
+		#Device Tree Only:
+		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+
+		git am "${DIR}/patches/v2013.07-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+
+		#Device Tree/Board File:
+		git am "${DIR}/patches/v2013.07-rc3/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+
+		#Board File Only:
+		git am "${DIR}/patches/v2013.07-rc3/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/v2013.07-rc3/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+
+		#Atmel: sama5d3: Device Tree Only:
+		git am "${DIR}/patches/v2013.07-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+	fi
+
 	unset BUILDTARGET
 	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
@@ -497,32 +519,32 @@ build_uboot_stable () {
 
 build_uboot_testing () {
 #	v2013_07_rc1=1
-	v2013_07_rc2=1
-#	v2013_07_rc3=1
+#	v2013_07_rc2=1
+	v2013_07_rc3=1
 #	v2013_07=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
 #	unset v2013_07_rc1
-	unset v2013_07_rc2
-#	unset v2013_07_rc3
+#	unset v2013_07_rc2
+	unset v2013_07_rc3
 #	unset v2013_07
 }
 
 build_uboot_latest () {
 #	v2013_07_rc1=1
 #	v2013_07_rc2=1
-	v2013_07_rc3=1
-#	v2013_07=1
+#	v2013_07_rc3=1
+	v2013_07=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
 #	unset v2013_07_rc1
 #	unset v2013_07_rc2
-	unset v2013_07_rc3
-#	unset v2013_07
+#	unset v2013_07_rc3
+	unset v2013_07
 }
 
 build_barebox_stable () {
