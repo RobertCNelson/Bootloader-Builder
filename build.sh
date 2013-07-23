@@ -481,6 +481,13 @@ build_uboot_latest () {
 #	unset v2013_07
 }
 
+build_uboot_all () {
+	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
+}
+
 at91sam9g20ek () {
 	cleanup
 	armv5_embedded_toolchain
@@ -588,11 +595,7 @@ mx51evk () {
 	armv7hf_toolchain
 
 	BOARD="mx51evk"
-	UBOOT_CONFIG="${BOARD}_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 mx53loco () {
@@ -600,11 +603,7 @@ mx53loco () {
 	armv7hf_toolchain
 
 	BOARD="mx53loco"
-	UBOOT_CONFIG="${BOARD}_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 mx6qsabresd () {
@@ -612,11 +611,7 @@ mx6qsabresd () {
 	armv7hf_toolchain
 
 	BOARD="mx6qsabresd"
-	UBOOT_CONFIG="${BOARD}_config"
-
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 omap5_uevm () {
