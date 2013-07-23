@@ -41,12 +41,6 @@ uboot_testing="v2013.07-rc3"
 #uboot_latest="576aacdb915242dc60977049528b546fbe6135cc"
 uboot_latest="50ffc3b64aa3c8113f0a9fc31ea96e596d60054a"
 
-barebox_stable="v2013.02.0"
-#barebox_testing="v2013.02.0"
-
-#barebox_latest="8c82b1b2021591a8c3537958c7fa60816c584d8a"
-barebox_latest="94e71b843f6456abacc2fe76a5c375a461fabdf7"
-
 unset GIT_OPTS
 unset GIT_NOEDIT
 ( LC_ALL=C git help pull | grep -m 1 -e "--no-edit" ) &>/dev/null && GIT_NOEDIT=1
@@ -480,33 +474,6 @@ build_u_boot () {
 	git_cleanup
 }
 
-build_barebox () {
-	project="barebox"
-	git_generic
-	RELEASE_VER="-r0"
-
-	make ARCH=arm CROSS_COMPILE=${CC} distclean 2> /dev/null
-	barebox_version=$(git describe)
-
-	barebox_filename="${BOARD}-${barebox_version}${RELEASE_VER}"
-
-	mkdir -p ${DIR}/deploy/${BOARD}
-
-	unset BUILDTARGET
-
-	make ARCH=arm CROSS_COMPILE=${CC} ${barebox_config}
-	echo "Building ${project}: ${barebox_filename}"
-	time make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET} > /dev/null
-
-	if [ -f ${DIR}/build/${project}/barebox-flash-image ] ; then
-		filename_search="barebox-flash-image"
-		filename_id="deploy/${BOARD}/zbarebox-${barebox_filename}.bin"
-		file_save
-	fi
-
-	git_cleanup
-}
-
 cleanup () {
 	unset GIT_SHA
 }
@@ -548,27 +515,6 @@ build_uboot_latest () {
 #	unset v2013_07_rc2
 #	unset v2013_07_rc3
 	unset v2013_07
-}
-
-build_barebox_stable () {
-	if [ "${barebox_stable}" ] ; then
-		GIT_SHA=${barebox_stable}
-		build_barebox
-	fi
-}
-
-build_barebox_testing () {
-	if [ "${barebox_stable}" ] ; then
-		GIT_SHA=${barebox_testing}
-		build_barebox
-	fi
-}
-
-build_barebox_latest () {
-	if [ "${barebox_stable}" ] ; then
-		GIT_SHA=${barebox_latest}
-		build_barebox
-	fi
 }
 
 at91sam9g20ek () {
