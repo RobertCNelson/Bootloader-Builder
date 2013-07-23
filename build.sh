@@ -33,13 +33,15 @@ stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 
 #v3.5.4
 #latest_at91bootstrap_sha="bd45f35f9e205310f89bc6dd8233b40d3cf1d3ca"
-latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
+#latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
+latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 
 uboot_stable="v2013.04"
-uboot_testing="v2013.07-rc3"
+uboot_testing="v2013.07"
 
-#uboot_latest="576aacdb915242dc60977049528b546fbe6135cc"
-uboot_latest="50ffc3b64aa3c8113f0a9fc31ea96e596d60054a"
+#uboot_latest="50ffc3b64aa3c8113f0a9fc31ea96e596d60054a"
+#uboot_testing="v2013.07"
+#uboot_latest="62c175fbb8a0f9a926c88294ea9f7e88eb898f6c"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -227,6 +229,7 @@ build_u_boot () {
 	UGIT_VERSION=$(git describe)
 
 	if [ "${v2013_04}" ] ; then
+		uboot_patch_dir="v2013.04"
 		#r1: mx51evk: improve old imx-bsp boot:
 		#r2: bone black: boot off eMMc
 		#r3: need mmcdev/mmcpart
@@ -243,136 +246,95 @@ build_u_boot () {
 		unset only_patch
 		if [ "x${BOARD}" = "xmx23olinuxino" ] ; then
 			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx23
-			git am "${DIR}/patches/v2013.04/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 			only_patch=1
 		fi
 
 		if [ ! "${only_patch}" ] ; then
 		#Device Tree Only:
-		git am "${DIR}/patches/v2013.04/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
-		git am "${DIR}/patches/v2013.04/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 
-		git am "${DIR}/patches/v2013.04/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 
 		#Device Tree/Board File:
-		git am "${DIR}/patches/v2013.04/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 
 		#Board File Only:
-		git am "${DIR}/patches/v2013.04/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.04/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/v2013.04/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04/board/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.04/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
-		git am "${DIR}/patches/v2013.04/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-NET-macb-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 		fi
 	fi
 
-	if [ "${v2013_07_rc1}" ] ; then
-		#Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc1/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
-		git am "${DIR}/patches/v2013.07-rc1/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-
-		git am "${DIR}/patches/v2013.07-rc1/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc1/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc1/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc1/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-
-		#Device Tree/Board File:
-		git am "${DIR}/patches/v2013.07-rc1/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-
-		#Board File Only:
-		git am "${DIR}/patches/v2013.07-rc1/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc1/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc1/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc1/board/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.07-rc1/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	if [ "${v2013_07_rc2}" ] ; then
-		git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.07-rc2_fix-bootz
-		#Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc2/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc2/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
-		git am "${DIR}/patches/v2013.07-rc2/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-
-		git am "${DIR}/patches/v2013.07-rc2/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc2/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc2/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc2/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-
-		#Device Tree/Board File:
-		git am "${DIR}/patches/v2013.07-rc2/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-
-		#Board File Only:
-		git am "${DIR}/patches/v2013.07-rc2/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc2/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc2/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d3: Device Tree Only:
-		#git am "${DIR}/patches/v2013.07-rc2/board/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/v2013.07-rc2/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	if [ "${v2013_07_rc3}" ] ; then
-		#Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-
-		git am "${DIR}/patches/v2013.07-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		#git am "${DIR}/patches/v2013.07-rc3/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-
-		#Device Tree/Board File:
-		git am "${DIR}/patches/v2013.07-rc3/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-
-		#Board File Only:
-		git am "${DIR}/patches/v2013.07-rc3/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
 	if [ "${v2013_07}" ] ; then
+		uboot_patch_dir="v2013.07"
+		#r0: initial release
+		#r1:
+		RELEASE_VER="-r0"
+
 		#omap3 fix usb
-		git am "${DIR}/patches/v2013.07/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
 
 		#Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 
-		git am "${DIR}/patches/v2013.07-rc3/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 
 		#Device Tree/Board File:
-		git am "${DIR}/patches/v2013.07-rc3/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 
 		#Board File Only:
-		git am "${DIR}/patches/v2013.07-rc3/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/v2013.07-rc3/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/v2013.07-rc3/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+	fi
+
+	if [ "${uboot_next}" ] ; then
+		uboot_patch_dir="next"
+		#omap3 fix usb
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
+
+		#Device Tree Only:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+
+		#Device Tree/Board File:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+
+		#Board File Only:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+
+		#Atmel: sama5d3: Device Tree Only:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	unset BUILDTARGET
-	if [ "x${BOARD}" == "xmx23olinuxino" ] ; then
+	if [ "x${BOARD}" == "xmx23olinuxino" ] || [ "x${BOARD}" == "xmx23_olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
 	fi
 
@@ -490,31 +452,33 @@ build_uboot_stable () {
 build_uboot_testing () {
 #	v2013_07_rc1=1
 #	v2013_07_rc2=1
-	v2013_07_rc3=1
-#	v2013_07=1
+#	v2013_07_rc3=1
+	v2013_07=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
 #	unset v2013_07_rc1
 #	unset v2013_07_rc2
-	unset v2013_07_rc3
-#	unset v2013_07
+#	unset v2013_07_rc3
+	unset v2013_07
 }
 
 build_uboot_latest () {
+	uboot_next=1
 #	v2013_07_rc1=1
 #	v2013_07_rc2=1
 #	v2013_07_rc3=1
-	v2013_07=1
+#	v2013_07=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
+	unset uboot_next
 #	unset v2013_07_rc1
 #	unset v2013_07_rc2
 #	unset v2013_07_rc3
-	unset v2013_07
+#	unset v2013_07
 }
 
 at91sam9g20ek () {
@@ -535,10 +499,10 @@ at91sam9g20ek () {
 	UBOOT_CONFIG="at91sam9g20ek_2mmc_nandflash_config"
 
 	build_uboot_stable
-	build_uboot_testing
 
 	BOARD="at91sam9g20ek_2mmc_nandflash"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -560,10 +524,10 @@ at91sam9x5ek () {
 	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
 
 	build_uboot_stable
-	build_uboot_testing
 
 	BOARD="at91sam9x5ek_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -575,10 +539,10 @@ beagleboard () {
 	UBOOT_CONFIG="omap3_beagle_config"
 
 	build_uboot_stable
-	build_uboot_testing
 
 	BOARD="omap3_beagle"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -590,10 +554,10 @@ beaglebone () {
 	UBOOT_CONFIG="am335x_evm_config"
 
 	build_uboot_stable
-	build_uboot_testing
 
 	BOARD="am335x_evm"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -606,10 +570,10 @@ mx23olinuxino () {
 		UBOOT_CONFIG="mx23_olinuxino_config"
 
 		build_uboot_stable
-		build_uboot_testing
 
 		BOARD="mx23_olinuxino"
 		UBOOT_CONFIG="${BOARD}_config"
+		build_uboot_testing
 		build_uboot_latest
 	else
 		echo "-----------------------------"
@@ -663,7 +627,7 @@ omap5_uevm () {
 	UBOOT_CONFIG="${BOARD}_config"
 
 #	build_uboot_stable
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -675,10 +639,10 @@ pandaboard () {
 	UBOOT_CONFIG="omap4_panda_config"
 
 	build_uboot_stable
-	build_uboot_testing
 
 	BOARD="omap4_panda"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -693,19 +657,17 @@ sama5d3xek () {
 	build_at91bootstrap
 
 	if [ "${latest_at91bootstrap_sha}" ] ; then
+		at91bootstrap_config="sama5d3xeksd_uboot_defconfig"
 		GIT_SHA="${latest_at91bootstrap_sha}"
 		build_at91bootstrap
 	fi
 
 	UBOOT_CONFIG="sama5d3xek_sdcard_config"
-
 	build_uboot_stable
-
-	UBOOT_CONFIG="sama5d3xek_mmc_config"
-	build_uboot_testing
 
 	BOARD="sama5d3xek_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -727,32 +689,29 @@ wandboard () {
 
 	BOARD="wandboard-quad"
 	UBOOT_CONFIG="wandboard_quad_config"
-
 	build_uboot_stable
-	build_uboot_testing
 
 	BOARD="wandboard_quad"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 
 	BOARD="wandboard-dl"
 	UBOOT_CONFIG="wandboard_dl_config"
-
 	build_uboot_stable
-	build_uboot_testing
 
 	BOARD="wandboard_dl"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 
 	BOARD="wandboard-solo"
 	UBOOT_CONFIG="wandboard_solo_config"
-
 	build_uboot_stable
-	build_uboot_testing
 
 	BOARD="wandboard_solo"
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 }
 
