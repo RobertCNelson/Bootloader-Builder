@@ -3,57 +3,14 @@ From: Robert Nelson <robertcnelson@gmail.com>
 Date: Fri, 15 Mar 2013 10:14:10 -0500
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
-Defaults:
-#define CONFIG_BOOTDELAY	1
-
-#define CONFIG_CMD_FAT
-#define CONFIG_CMD_EXT2
-#define CONFIG_CMD_EXT4
-#define CONFIG_CMD_FS_GENERIC
-
-/* bootz: zImage/initrd.img support */
-#define CONFIG_CMD_BOOTZ
-#define CONFIG_SUPPORT_RAW_INITRD
-
-fatload -> load
-bootm -> bootz
-
-	"mmcargs=setenv bootargs console=${console} " \
-		"${optargs} " \
-		"root=${mmcroot} " \
-		"rootfstype=${mmcrootfstype} " \
-		"video=${video}\0" \
-	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt\0" \
-	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
-		"env import -t ${loadaddr} ${filesize}\0" \
-
-
-#define CONFIG_BOOTCOMMAND \
-	"mmc dev ${mmcdev};" \
-	"if mmc rescan; then " \
-		"echo SD/MMC found on device ${mmcdev};" \
-		"if run loadbootenv; then " \
-			"run importbootenv;" \
-		"fi;" \
-		"if test -n $uenvcmd; then " \
-			"echo Running uenvcmd ...;" \
-			"run uenvcmd;" \
-		"fi;" \
-		"if run loadzimage; then " \
-			"run loadfdt;" \
-			"run mmcboot;" \
-		"fi;" \
-	"fi;"
-#endif
-
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/beagle/beagle.c       |   38 ++++++++++++++++++++++++----
- include/configs/omap3_beagle.h |   54 +++++++++++++++++++++++++++-------------
- 2 files changed, 70 insertions(+), 22 deletions(-)
+ board/ti/beagle/beagle.c       |   38 +++++++++++++++++++++++----
+ include/configs/omap3_beagle.h |   56 ++++++++++++++++++++++++++++------------
+ 2 files changed, 72 insertions(+), 22 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
-index 3d9b6dd..910463b 100644
+index c686f40..7e028bc 100644
 --- a/board/ti/beagle/beagle.c
 +++ b/board/ti/beagle/beagle.c
 @@ -70,6 +70,7 @@
@@ -64,7 +21,7 @@ index 3d9b6dd..910463b 100644
  #define BCT_BRETTL3			0x01000F00
  #define BCT_BRETTL4			0x02000F00
  #define LSR_COM6L_ADPT			0x01001300
-@@ -214,25 +215,25 @@ void get_board_mem_timings(struct board_sdrc_timings *timings)
+@@ -215,25 +216,25 @@ void get_board_mem_timings(struct board_sdrc_timings *timings)
   *		bus 1 for the availability of an AT24C01B serial EEPROM.
   *		returns the device_vendor field from the EEPROM
   */
@@ -94,7 +51,7 @@ index 3d9b6dd..910463b 100644
  			 sizeof(expansion_config));
  	}
  
-@@ -342,15 +343,18 @@ int misc_init_r(void)
+@@ -343,15 +344,18 @@ int misc_init_r(void)
  	case REVISION_AXBX:
  		printf("Beagle Rev Ax/Bx\n");
  		setenv("beaglerev", "AxBx");
@@ -113,7 +70,7 @@ index 3d9b6dd..910463b 100644
  		MUX_BEAGLE_C();
  		/* Set VAUX2 to 1.8V for EHCI PHY */
  		twl4030_pmrecv_vsel_cfg(TWL4030_PM_RECEIVER_VAUX2_DEDICATED,
-@@ -398,7 +402,7 @@ int misc_init_r(void)
+@@ -399,7 +403,7 @@ int misc_init_r(void)
  					TWL4030_PM_RECEIVER_DEV_GRP_P1);
  	}
  
@@ -122,7 +79,7 @@ index 3d9b6dd..910463b 100644
  	case TINCANTOOLS_ZIPPY:
  		printf("Recognized Tincantools Zippy board (rev %d %s)\n",
  			expansion_config.revision,
-@@ -481,6 +485,30 @@ int misc_init_r(void)
+@@ -482,6 +486,30 @@ int misc_init_r(void)
  	if (expansion_config.content == 1)
  		setenv(expansion_config.env_var, expansion_config.env_setting);
  
@@ -154,7 +111,7 @@ index 3d9b6dd..910463b 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_A:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 48ce4c0..8ecfc14 100644
+index 48ce4c0..45f48eb 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -150,6 +150,13 @@
@@ -269,7 +226,7 @@ index 48ce4c0..8ecfc14 100644
  	"userbutton=if gpio input 173; then run userbutton_xm; " \
  		"else run userbutton_nonxm; fi;\0" \
  	"userbutton_xm=gpio input 4;\0" \
-@@ -294,9 +311,12 @@
+@@ -294,13 +311,18 @@
  		"fi;" \
  		"echo SD/MMC found on device ${mmcdev};" \
  		"if run loadbootenv; then " \
@@ -280,9 +237,15 @@ index 48ce4c0..8ecfc14 100644
 +			"echo Running lcdcmd ...;" \
 +			"run lcdcmd;" \
 +		"fi;" \
++		"echo Checking if uenvcmd is set ...;" \
  		"if test -n $uenvcmd; then " \
  			"echo Running uenvcmd ...;" \
  			"run uenvcmd;" \
+ 		"fi;" \
++		"echo Running default loaduimage ...;" \
+ 		"if run loaduimage; then " \
+ 			"run mmcboot;" \
+ 		"fi;" \
 -- 
 1.7.10.4
 
