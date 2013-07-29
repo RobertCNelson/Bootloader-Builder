@@ -36,8 +36,8 @@ stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
 #latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
 latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 
-uboot_stable="v2013.04"
-uboot_testing="v2013.07"
+uboot_stable="v2013.07"
+#uboot_testing="v2013.07"
 
 #uboot_latest="aaf5e825606a70ddc8fca8e366d8c16a6fd3cc7c"
 uboot_latest="9fab4bf4cc077c21e43941866f3f2c196f28670d"
@@ -441,27 +441,29 @@ cleanup () {
 }
 
 build_uboot_stable () {
-	v2013_04=1
+	v2013_07=1
 	if [ "${uboot_stable}" ] ; then
 		GIT_SHA=${uboot_stable}
 		build_u_boot
 	fi
-	unset v2013_04
+	unset v2013_07
 }
 
 build_uboot_testing () {
+#	uboot_next=1
 #	v2013_07_rc1=1
 #	v2013_07_rc2=1
 #	v2013_07_rc3=1
-	v2013_07=1
+#	v2013_07=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
+#	unset uboot_next
 #	unset v2013_07_rc1
 #	unset v2013_07_rc2
 #	unset v2013_07_rc3
-	unset v2013_07
+#	unset v2013_07
 }
 
 build_uboot_latest () {
@@ -488,6 +490,14 @@ build_uboot_all () {
 	build_uboot_latest
 }
 
+am335x_evm () {
+	cleanup
+	armv7hf_toolchain
+
+	BOARD="am335x_evm"
+	build_uboot_all
+}
+
 at91sam9g20ek () {
 	cleanup
 	armv5_embedded_toolchain
@@ -503,15 +513,8 @@ at91sam9g20ek () {
 		build_at91bootstrap
 	fi
 
-	UBOOT_CONFIG="at91sam9g20ek_2mmc_nandflash_config"
-
-	build_uboot_stable
-
 	BOARD="at91sam9g20ek_2mmc_nandflash"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 at91sam9x5ek () {
@@ -531,47 +534,17 @@ at91sam9x5ek () {
 
 	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
 
-	build_uboot_stable
-
 	BOARD="at91sam9x5ek_mmc"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
-beagleboard () {
-	cleanup
-	armv7hf_toolchain
-
-	BOARD="omap3_beagle"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
-}
-
-beaglebone () {
-	cleanup
-	armv7hf_toolchain
-
-	BOARD="am335x_evm"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
-}
-
-mx23olinuxino () {
+mx23_olinuxino () {
 	cleanup
 	if [ $(which elftosb) ] ; then
 		armv7_toolchain
 
 		BOARD="mx23_olinuxino"
-		#build_uboot_all
-		UBOOT_CONFIG="${BOARD}_config"
-		build_uboot_testing
-		build_uboot_latest
+		build_uboot_all
 	else
 		echo "-----------------------------"
 		echo "Skipping Binary Build of [mx23_olinuxino]: as elftosb is not installed."
@@ -604,26 +577,28 @@ mx6qsabresd () {
 	build_uboot_all
 }
 
+omap3_beagle () {
+	cleanup
+	armv7hf_toolchain
+
+	BOARD="omap3_beagle"
+	build_uboot_all
+}
+
+omap4_panda () {
+	cleanup
+	armv7hf_toolchain
+
+	BOARD="omap4_panda"
+	build_uboot_all
+}
+
 omap5_uevm () {
 	cleanup
 	armv7hf_toolchain
 
 	BOARD="omap5_uevm"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
-}
-
-pandaboard () {
-	cleanup
-	armv7hf_toolchain
-
-	BOARD="omap4_panda"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 sama5d3xek () {
@@ -642,14 +617,8 @@ sama5d3xek () {
 		build_at91bootstrap
 	fi
 
-	UBOOT_CONFIG="sama5d3xek_sdcard_config"
-	build_uboot_stable
-
 	BOARD="sama5d3xek_mmc"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 vf610twr () {
@@ -657,10 +626,7 @@ vf610twr () {
 	armv7hf_toolchain
 
 	BOARD="vf610twr"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 wandboard () {
@@ -668,34 +634,25 @@ wandboard () {
 	armv7hf_toolchain
 
 	BOARD="wandboard_quad"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 
 	BOARD="wandboard_dl"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 
 	BOARD="wandboard_solo"
-	#build_uboot_all
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
+am335x_evm
 at91sam9g20ek
 at91sam9x5ek
-beagleboard
-beaglebone
-mx23olinuxino
+mx23_olinuxino
 mx51evk
 mx53loco
 mx6qsabresd
+omap3_beagle
+omap4_panda
 omap5_uevm
-pandaboard
 sama5d3xek
 vf610twr
 wandboard
