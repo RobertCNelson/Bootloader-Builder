@@ -508,6 +508,7 @@ at91sam9g20ek () {
 	build_uboot_stable
 
 	BOARD="at91sam9g20ek_2mmc_nandflash"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
@@ -533,6 +534,7 @@ at91sam9x5ek () {
 	build_uboot_stable
 
 	BOARD="at91sam9x5ek_mmc"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
@@ -542,12 +544,8 @@ beagleboard () {
 	cleanup
 	armv7hf_toolchain
 
-	BOARD="beagleboard"
-	UBOOT_CONFIG="omap3_beagle_config"
-
-	build_uboot_stable
-
 	BOARD="omap3_beagle"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
@@ -557,12 +555,8 @@ beaglebone () {
 	cleanup
 	armv7hf_toolchain
 
-	BOARD="beaglebone"
-	UBOOT_CONFIG="am335x_evm_config"
-
-	build_uboot_stable
-
 	BOARD="am335x_evm"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
@@ -573,12 +567,8 @@ mx23olinuxino () {
 	if [ $(which elftosb) ] ; then
 		armv7_toolchain
 
-		BOARD="mx23olinuxino"
-		UBOOT_CONFIG="mx23_olinuxino_config"
-
-		build_uboot_stable
-
 		BOARD="mx23_olinuxino"
+		#build_uboot_all
 		UBOOT_CONFIG="${BOARD}_config"
 		build_uboot_testing
 		build_uboot_latest
@@ -619,9 +609,8 @@ omap5_uevm () {
 	armv7hf_toolchain
 
 	BOARD="omap5_uevm"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
-
-#	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -630,12 +619,8 @@ pandaboard () {
 	cleanup
 	armv7hf_toolchain
 
-	BOARD="pandaboard"
-	UBOOT_CONFIG="omap4_panda_config"
-
-	build_uboot_stable
-
 	BOARD="omap4_panda"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
@@ -661,6 +646,7 @@ sama5d3xek () {
 	build_uboot_stable
 
 	BOARD="sama5d3xek_mmc"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
@@ -671,9 +657,8 @@ vf610twr () {
 	armv7hf_toolchain
 
 	BOARD="vf610twr"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
-
-#	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -682,29 +667,20 @@ wandboard () {
 	cleanup
 	armv7hf_toolchain
 
-	BOARD="wandboard-quad"
-	UBOOT_CONFIG="wandboard_quad_config"
-	build_uboot_stable
-
 	BOARD="wandboard_quad"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
-
-	BOARD="wandboard-dl"
-	UBOOT_CONFIG="wandboard_dl_config"
-	build_uboot_stable
 
 	BOARD="wandboard_dl"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
 
-	BOARD="wandboard-solo"
-	UBOOT_CONFIG="wandboard_solo_config"
-	build_uboot_stable
-
 	BOARD="wandboard_solo"
+	#build_uboot_all
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_testing
 	build_uboot_latest
