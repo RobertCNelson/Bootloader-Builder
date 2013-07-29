@@ -227,55 +227,6 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
 
-	if [ "${v2013_04}" ] ; then
-		uboot_patch_dir="v2013.04"
-		#r1: mx51evk: improve old imx-bsp boot:
-		#r2: bone black: boot off eMMc
-		#r3: need mmcdev/mmcpart
-		#r4: bbb: sync with angstrom changes. (gpio/lcdc/boot order)
-		#r5: mx6qsabrelite boots of both sd cards now
-		#r6: beaglexm: add musb/lcdcmd
-		#r7: bone: ignore sd card if no uEnv.txt is present (booting off eMMC with data on microSD)
-		#r8: mx23: pull in voltage changes...
-		#r9: sama5 actually load zImage
-		#r10: bone: add a little note about uenvcmd...
-		#r11: wandboard: quad support...
-		RELEASE_VER="-r11"
-
-		unset only_patch
-		if [ "x${BOARD}" = "xmx23olinuxino" ] ; then
-			git pull --no-edit git://github.com/RobertCNelson/u-boot-boards.git v2013.04_mx23
-			git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-			only_patch=1
-		fi
-
-		if [ ! "${only_patch}" ] ; then
-		#Device Tree Only:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-
-		#Device Tree/Board File:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-
-		#Board File Only:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-USB-ohci-at91-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-NET-macb-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-SPI-atmel_spi-support-sama5d3x-devices.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0004-ARM-atmel-add-sama5d3xek-support.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		fi
-	fi
-
 	if [ "${v2013_07}" ] ; then
 		uboot_patch_dir="v2013.07"
 		#r0: initial release
@@ -334,7 +285,7 @@ build_u_boot () {
 	fi
 
 	unset BUILDTARGET
-	if [ "x${BOARD}" == "xmx23olinuxino" ] || [ "x${BOARD}" == "xmx23_olinuxino" ] ; then
+	if [ "x${BOARD}" == "xmx23_olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
 	fi
 
