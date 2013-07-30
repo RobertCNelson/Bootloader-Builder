@@ -82,7 +82,7 @@ dl_gcc_generic () {
 	fi
 }
 
-arm_none_eabi_embedded () {
+arm_none_eabi_toolchain () {
 	#https://launchpad.net/gcc-arm-embedded/+download
 	#https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q2-update/+download/gcc-arm-none-eabi-4_7-2013q2-20130614-linux.tar.bz2
 
@@ -100,7 +100,7 @@ arm_none_eabi_embedded () {
 	dl_gcc_generic
 }
 
-arm_linux_gnueabihf_embedded () {
+arm_linux_gnueabihf_toolchain () {
 	#https://launchpad.net/linaro-toolchain-binaries/+download
 	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.06/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.06_linux.tar.xz
 
@@ -434,7 +434,7 @@ build_uboot_all () {
 
 am335x_evm () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="am335x_evm"
 	build_uboot_all
@@ -442,7 +442,7 @@ am335x_evm () {
 
 at91sam9g20ek () {
 	cleanup
-	arm_none_eabi_embedded
+	arm_none_eabi_toolchain
 
 	BOARD="at91sam9g20ek_mmc"
 	build_uboot_all
@@ -453,7 +453,7 @@ at91sam9g20ek () {
 
 at91sam9x5ek () {
 	cleanup
-	arm_none_eabi_embedded
+	arm_none_eabi_toolchain
 
 	BOARD="at91sam9x5ek_mmc"
 	build_uboot_all
@@ -465,7 +465,7 @@ at91sam9x5ek () {
 mx23_olinuxino () {
 	cleanup
 	if [ $(which elftosb) ] ; then
-		arm_none_eabi_embedded
+		arm_none_eabi_toolchain
 
 		BOARD="mx23_olinuxino"
 		build_uboot_all
@@ -479,7 +479,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="mx51evk"
 	build_uboot_all
@@ -487,7 +487,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="mx53loco"
 	build_uboot_all
@@ -495,7 +495,7 @@ mx53loco () {
 
 mx6qsabresd () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="mx6qsabresd"
 	build_uboot_all
@@ -503,7 +503,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="omap3_beagle"
 	build_uboot_all
@@ -511,7 +511,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="omap4_panda"
 	build_uboot_all
@@ -519,7 +519,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="omap5_uevm"
 	build_uboot_all
@@ -527,7 +527,7 @@ omap5_uevm () {
 
 sama5d3xek () {
 	cleanup
-	arm_none_eabi_embedded
+	arm_none_eabi_toolchain
 
 	BOARD="sama5d3xek_mmc"
 	build_uboot_all
@@ -538,7 +538,7 @@ sama5d3xek () {
 
 vf610twr () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="vf610twr"
 	build_uboot_all
@@ -546,7 +546,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	arm_linux_gnueabihf_embedded
+	arm_linux_gnueabihf_toolchain
 
 	BOARD="wandboard_quad"
 	build_uboot_all
