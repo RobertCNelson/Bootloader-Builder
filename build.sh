@@ -29,12 +29,10 @@ SYST=$(uname -n)
 # Number of jobs for make to run in parallel.
 NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
-stable_at91bootstrap_sha="d8d995620a7d0b413aa029f45463b4d3e940c907"
+stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 
-#v3.5.4
-#latest_at91bootstrap_sha="bd45f35f9e205310f89bc6dd8233b40d3cf1d3ca"
 #latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
-latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
+#latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 
 uboot_stable="v2013.07"
 #uboot_testing="v2013.07"
@@ -391,6 +389,16 @@ cleanup () {
 	unset GIT_SHA
 }
 
+build_at91bootstrap_all () {
+	GIT_SHA="${stable_at91bootstrap_sha}"
+	build_at91bootstrap
+
+	if [ "${latest_at91bootstrap_sha}" ] ; then
+		GIT_SHA="${latest_at91bootstrap_sha}"
+		build_at91bootstrap
+	fi
+}
+
 build_uboot_stable () {
 	v2013_07=1
 	if [ "${uboot_stable}" ] ; then
@@ -453,40 +461,22 @@ at91sam9g20ek () {
 	cleanup
 	armv5_embedded_toolchain
 
-	BOARD="at91sam9g20ek"
+	BOARD="at91sam9g20ek_mmc"
+	build_uboot_all
 
 	at91bootstrap_config="at91sam9g20eksd_uboot_defconfig"
-	GIT_SHA="${stable_at91bootstrap_sha}"
-	build_at91bootstrap
-
-	if [ "${latest_at91bootstrap_sha}" ] ; then
-		GIT_SHA="${latest_at91bootstrap_sha}"
-		build_at91bootstrap
-	fi
-
-	BOARD="at91sam9g20ek_2mmc_nandflash"
-	build_uboot_all
+	build_at91bootstrap_all
 }
 
 at91sam9x5ek () {
 	cleanup
 	armv5_embedded_toolchain
 
-	BOARD="at91sam9x5ek"
-
-	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
-	GIT_SHA="${stable_at91bootstrap_sha}"
-	build_at91bootstrap
-
-	if [ "${latest_at91bootstrap_sha}" ] ; then
-		GIT_SHA="${latest_at91bootstrap_sha}"
-		build_at91bootstrap
-	fi
-
-	UBOOT_CONFIG="at91sam9x5ek_mmc_config"
-
 	BOARD="at91sam9x5ek_mmc"
 	build_uboot_all
+
+	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
+	build_at91bootstrap_all
 }
 
 mx23_olinuxino () {
@@ -556,20 +546,11 @@ sama5d3xek () {
 	cleanup
 	armv7hf_toolchain
 
-	BOARD="sama5d3xek"
-
-	at91bootstrap_config="at91sama5d3xeksd_uboot_defconfig"
-	GIT_SHA="${stable_at91bootstrap_sha}"
-	build_at91bootstrap
-
-	if [ "${latest_at91bootstrap_sha}" ] ; then
-		at91bootstrap_config="sama5d3xeksd_uboot_defconfig"
-		GIT_SHA="${latest_at91bootstrap_sha}"
-		build_at91bootstrap
-	fi
-
 	BOARD="sama5d3xek_mmc"
 	build_uboot_all
+
+	at91bootstrap_config="sama5d3xeksd_uboot_defconfig"
+	build_at91bootstrap_all
 }
 
 vf610twr () {
