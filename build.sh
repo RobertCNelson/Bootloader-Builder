@@ -211,8 +211,8 @@ build_u_boot () {
 	if [ "${v2013_07}" ] ; then
 		uboot_patch_dir="v2013.07"
 		#r0: initial release
-		#r1:
-		RELEASE_VER="-r0"
+		#r1: (pending)
+		RELEASE_VER="-r1"
 
 		#omap3 fix usb
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
