@@ -37,8 +37,8 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 uboot_stable="v2013.07"
 #uboot_testing="v2013.07"
 
-#uboot_latest="aaf5e825606a70ddc8fca8e366d8c16a6fd3cc7c"
-uboot_latest="9fab4bf4cc077c21e43941866f3f2c196f28670d"
+#uboot_latest="9fab4bf4cc077c21e43941866f3f2c196f28670d"
+uboot_latest="327b5c9f7cde4e621c2f49fbd2e9890d32f2bef8"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -102,14 +102,14 @@ arm_none_eabi_toolchain () {
 
 arm_linux_gnueabihf_toolchain () {
 	#https://launchpad.net/linaro-toolchain-binaries/+download
-	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.06/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.06_linux.tar.xz
+	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.07/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.07-1_linux.tar.xz
 
 	gcc_version="4.8"
-	release="2013.06"
+	release="2013.07"
 	toolchain_name="gcc-linaro-arm-linux-gnueabihf"
 	site="https://launchpad.net/linaro-toolchain-binaries"
 	version="trunk/${release}"
-	directory="${toolchain_name}-${gcc_version}-${release}_linux"
+	directory="${toolchain_name}-${gcc_version}-${release}-1_linux"
 	filename="${directory}.tar.xz"
 	datestamp="${release}-${toolchain_name}"
 	untar="tar -xJf"
