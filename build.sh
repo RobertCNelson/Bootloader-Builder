@@ -211,8 +211,9 @@ build_u_boot () {
 	if [ "${v2013_07}" ] ; then
 		uboot_patch_dir="v2013.07"
 		#r0: initial release
-		#r1: (pending)
-		RELEASE_VER="-r1"
+		#r1: omap5_uevm first pass...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 
 		#omap3 fix usb
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
@@ -232,6 +233,7 @@ build_u_boot () {
 
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
@@ -259,6 +261,7 @@ build_u_boot () {
 		#Board File Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d3: Device Tree Only:
