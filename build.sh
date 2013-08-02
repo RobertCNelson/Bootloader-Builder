@@ -37,8 +37,8 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 uboot_stable="v2013.07"
 #uboot_testing="v2013.07"
 
-#uboot_latest="9fab4bf4cc077c21e43941866f3f2c196f28670d"
-uboot_latest="327b5c9f7cde4e621c2f49fbd2e9890d32f2bef8"
+#uboot_latest="327b5c9f7cde4e621c2f49fbd2e9890d32f2bef8"
+uboot_latest="245d65b6e503f3a159cffb3392ac3b2c25606d8e"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -243,7 +243,7 @@ build_u_boot () {
 	if [ "${uboot_next}" ] ; then
 		uboot_patch_dir="next"
 		#omap3 fix usb
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
+		#git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
 
 		#Device Tree Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
