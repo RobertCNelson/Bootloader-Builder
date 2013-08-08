@@ -37,8 +37,8 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 uboot_stable="v2013.07"
 #uboot_testing="v2013.07"
 
-#uboot_latest="245d65b6e503f3a159cffb3392ac3b2c25606d8e"
-uboot_latest="f53932addd3169839834829937a3cd7ae912f7ac"
+#uboot_latest="f53932addd3169839834829937a3cd7ae912f7ac"
+uboot_latest="d05bfd0586ccebe96e31976459c8ef45ec65e109"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -212,11 +212,14 @@ build_u_boot () {
 		uboot_patch_dir="v2013.07"
 		#r0: initial release
 		#r1: omap5_uevm first pass...
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: omap3_beagle xMA3 -> xMB init dvi display, so device tree just works...
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 
 		#omap3 fix usb
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
+		#xM A3/B it helps to init the display in u-boot for device trees
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-beagleboard-remove-RevB-support-for-BeagleBoard-Xm.patch"
 
 		#Device Tree Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
@@ -244,6 +247,8 @@ build_u_boot () {
 		uboot_patch_dir="next"
 		#omap3 fix usb
 		#git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
+		#xM A3/B it helps to init the display in u-boot for device trees
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-beagleboard-remove-RevB-support-for-BeagleBoard-Xm.patch"
 
 		#Device Tree Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
