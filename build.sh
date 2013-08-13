@@ -37,8 +37,8 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 uboot_stable="v2013.07"
 #uboot_testing="v2013.07"
 
-#uboot_latest="d05bfd0586ccebe96e31976459c8ef45ec65e109"
-uboot_latest="a78dac79ede7fbb4c9e816abc879655540c3f076"
+#uboot_latest="a78dac79ede7fbb4c9e816abc879655540c3f076"
+uboot_latest="d62a89bd5b5033649a90fa5bfe0f5b32013ca8f8"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
