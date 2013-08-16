@@ -37,8 +37,8 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 uboot_stable="v2013.07"
 #uboot_testing="v2013.07"
 
-#uboot_latest="d62a89bd5b5033649a90fa5bfe0f5b32013ca8f8"
-uboot_latest="b98d934128bcd98106e764d2f492ac79c38ae53d"
+#uboot_latest="b98d934128bcd98106e764d2f492ac79c38ae53d"
+uboot_latest="cdce889959c611876690a9f0a3c7ed9aa46189c4"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -213,13 +213,16 @@ build_u_boot () {
 		#r0: initial release
 		#r1: omap5_uevm first pass...
 		#r2: omap3_beagle xMA3 -> xMB init dvi display, so device tree just works...
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: omap3_beagle: let u-boot autoselect the dtb file
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 
 		#omap3 fix usb
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
 		#xM A3/B it helps to init the display in u-boot for device trees
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-beagleboard-remove-RevB-support-for-BeagleBoard-Xm.patch"
+		#xM: auto select dtb xMA/B has different ehci enable polarity then the xMC...
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-omap3_beagle-support-findfdt-and-loadfdt-for-devicet.patch"
 
 		#Device Tree Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
@@ -249,6 +252,8 @@ build_u_boot () {
 		#git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
 		#xM A3/B it helps to init the display in u-boot for device trees
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-beagleboard-remove-RevB-support-for-BeagleBoard-Xm.patch"
+		#xM: auto select dtb xMA/B has different ehci enable polarity then the xMC...
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-omap3_beagle-support-findfdt-and-loadfdt-for-devicet.patch"
 
 		#Device Tree Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
