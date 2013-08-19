@@ -1,4 +1,4 @@
-From caf7b18b999cd1f1a4cb96aa87918e263c908141 Mon Sep 17 00:00:00 2001
+From aa224e9aa2e3ffb55fd709119150f3a7e25e64dc Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Fri, 15 Mar 2013 10:52:21 -0500
 Subject: [PATCH] mx23_olinuxino: uEnv.txt, bootz, n fixes
@@ -9,15 +9,14 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 44 insertions(+), 15 deletions(-)
 
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index 38ad7f4..e6260b8 100644
+index 575fe2a..fed0022 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
-@@ -64,6 +64,15 @@
+@@ -26,6 +26,15 @@
  #define CONFIG_CMD_NET
  #define CONFIG_CMD_USB
  
 +#define CONFIG_CMD_FAT
-+#define CONFIG_CMD_EXT2
 +#define CONFIG_CMD_EXT4
 +#define CONFIG_CMD_FS_GENERIC
 +
@@ -25,19 +24,20 @@ index 38ad7f4..e6260b8 100644
 +#define CONFIG_CMD_BOOTZ
 +#define CONFIG_SUPPORT_RAW_INITRD
 +
- /*
-  * Memory configurations
-  */
-@@ -164,7 +173,7 @@
-  */
- #define CONFIG_CMDLINE_TAG
- #define CONFIG_SETUP_MEMORY_TAGS
++
+ /* Memory configuration */
+ #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
+ #define PHYS_SDRAM_1			0x40000000	/* Base address */
+@@ -66,7 +75,7 @@
+ #endif
+ 
+ /* Booting Linux */
 -#define CONFIG_BOOTDELAY	3
 +#define CONFIG_BOOTDELAY	1
  #define CONFIG_BOOTFILE		"uImage"
  #define CONFIG_LOADADDR		0x42000000
  #define CONFIG_SYS_LOAD_ADDR	CONFIG_LOADADDR
-@@ -197,23 +206,36 @@
+@@ -85,23 +94,36 @@
  	"script=boot.scr\0"	\
  	"uimage=uImage\0" \
  	"console=ttyAMA0\0" \
@@ -78,7 +78,7 @@ index 38ad7f4..e6260b8 100644
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
  				"bootm ${loadaddr} - ${fdt_addr}; " \
-@@ -254,15 +276,22 @@
+@@ -142,16 +164,23 @@
  		"fi;\0"
  
  #define CONFIG_BOOTCOMMAND \
@@ -110,7 +110,8 @@ index 38ad7f4..e6260b8 100644
 +		"fi;" \
 +	"fi;"
  
- #endif /* __MX23_OLINUXINO_CONFIG_H__ */
+ /* The rest of the configuration is shared */
+ #include <configs/mxs.h>
 -- 
 1.7.10.4
 

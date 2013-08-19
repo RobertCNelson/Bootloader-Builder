@@ -37,8 +37,8 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 uboot_stable="v2013.07"
 #uboot_testing="v2013.07"
 
-#uboot_latest="b98d934128bcd98106e764d2f492ac79c38ae53d"
-uboot_latest="cdce889959c611876690a9f0a3c7ed9aa46189c4"
+#uboot_latest="cdce889959c611876690a9f0a3c7ed9aa46189c4"
+uboot_latest="e20cc2ca15b5b0644f51b6e58d530d70acd2bc00"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -248,12 +248,16 @@ build_u_boot () {
 
 	if [ "${uboot_next}" ] ; then
 		uboot_patch_dir="next"
+
+		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
+		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
+
 		#omap3 fix usb
 		#git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
 		#xM A3/B it helps to init the display in u-boot for device trees
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-beagleboard-remove-RevB-support-for-BeagleBoard-Xm.patch"
+#		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-beagleboard-remove-RevB-support-for-BeagleBoard-Xm.patch"
 		#xM: auto select dtb xMA/B has different ehci enable polarity then the xMC...
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-omap3_beagle-support-findfdt-and-loadfdt-for-devicet.patch"
+#		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-omap3_beagle-support-findfdt-and-loadfdt-for-devicet.patch"
 
 		#Device Tree Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
