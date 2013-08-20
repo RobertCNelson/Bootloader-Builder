@@ -35,10 +35,11 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 #latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 
 uboot_stable="v2013.07"
-#uboot_testing="v2013.07"
+uboot_testing="v2013.10-rc1"
 
-#uboot_latest="cdce889959c611876690a9f0a3c7ed9aa46189c4"
-uboot_latest="e20cc2ca15b5b0644f51b6e58d530d70acd2bc00"
+#uboot_latest="e20cc2ca15b5b0644f51b6e58d530d70acd2bc00"
+#uboot_testing="v2013.10-rc1"
+#uboot_latest="40a60c6e8bdd00330310eaa351c9391e74d0bc2c"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -208,7 +209,7 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
 
-	if [ "${v2013_07}" ] ; then
+	if [ "${stable}" ] ; then
 		uboot_patch_dir="v2013.07"
 		#r0: initial release
 		#r1: omap5_uevm first pass...
@@ -245,41 +246,57 @@ build_u_boot () {
 		#Atmel: sama5d3: Device Tree Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
+	
+	if [ "${testing}" ] ; then
+		uboot_patch_dir="v2013.10-rc1"
 
-	if [ "${uboot_next}" ] ; then
+		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
+		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
+
+		#Atmel:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		
+		#Freescale:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+
+		#TI:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+	fi
+
+	if [ "${next}" ] ; then
 		uboot_patch_dir="next"
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
 
-		#omap3 fix usb
-		#git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
-		#xM A3/B it helps to init the display in u-boot for device trees
-#		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-beagleboard-remove-RevB-support-for-BeagleBoard-Xm.patch"
-		#xM: auto select dtb xMA/B has different ehci enable polarity then the xMC...
-#		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-omap3_beagle-support-findfdt-and-loadfdt-for-devicet.patch"
-
-		#Device Tree Only:
+		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		
+		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 
-		#Device Tree/Board File:
+		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-
-		#Board File Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	unset BUILDTARGET
@@ -400,46 +417,30 @@ build_at91bootstrap_all () {
 }
 
 build_uboot_stable () {
-	v2013_07=1
+	stable=1
 	if [ "${uboot_stable}" ] ; then
 		GIT_SHA=${uboot_stable}
 		build_u_boot
 	fi
-	unset v2013_07
+	unset stable
 }
 
 build_uboot_testing () {
-#	uboot_next=1
-#	v2013_07_rc1=1
-#	v2013_07_rc2=1
-#	v2013_07_rc3=1
-#	v2013_07=1
+	testing=1
 	if [ "${uboot_testing}" ] ; then
 		GIT_SHA=${uboot_testing}
 		build_u_boot
 	fi
-#	unset uboot_next
-#	unset v2013_07_rc1
-#	unset v2013_07_rc2
-#	unset v2013_07_rc3
-#	unset v2013_07
+	unset testing
 }
 
 build_uboot_latest () {
-	uboot_next=1
-#	v2013_07_rc1=1
-#	v2013_07_rc2=1
-#	v2013_07_rc3=1
-#	v2013_07=1
+	next=1
 	if [ "${uboot_latest}" ] ; then
 		GIT_SHA=${uboot_latest}
 		build_u_boot
 	fi
-	unset uboot_next
-#	unset v2013_07_rc1
-#	unset v2013_07_rc2
-#	unset v2013_07_rc3
-#	unset v2013_07
+	unset next
 }
 
 build_uboot_all () {
