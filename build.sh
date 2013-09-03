@@ -35,10 +35,11 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 #latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 
 uboot_stable="v2013.07"
-uboot_testing="v2013.10-rc1"
+uboot_testing="v2013.10-rc2"
 
-#uboot_latest="2b26201a2aef0b310b7c04702b0dba5dea493f77"
-uboot_latest="a228296c54a9208d65a0a8bd4f3dddcb76cc69c9"
+#uboot_latest="a228296c54a9208d65a0a8bd4f3dddcb76cc69c9"
+#uboot_testing="v2013.10-rc2"
+#uboot_latest="fb18fa95a14ae875ef0a5421cd9fecc00c7c3a4c"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -247,7 +248,7 @@ build_u_boot () {
 	fi
 	
 	if [ "${testing}" ] ; then
-		uboot_patch_dir="v2013.10-rc1"
+		uboot_patch_dir="v2013.10-rc2"
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
