@@ -1,14 +1,14 @@
-From 40b2e029b23d93d8b0499285b9a0d237c16e76db Mon Sep 17 00:00:00 2001
+From c6ff031e010d9be073b5f2e0ebd13c143785f2dc Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 15 Mar 2013 10:12:53 -0500
+Date: Tue, 10 Sep 2013 14:43:30 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- arch/arm/cpu/armv7/am33xx/ddr.c   |   10 +++++
- include/configs/am335x_evm.h      |   83 ++++++++++++++++++++-----------------
- include/configs/ti_armv7_common.h |    1 +
- 3 files changed, 57 insertions(+), 37 deletions(-)
+ arch/arm/cpu/armv7/am33xx/ddr.c   | 10 +++++
+ include/configs/am335x_evm.h      | 85 +++++++++++++++++++++------------------
+ include/configs/ti_armv7_common.h |  1 +
+ 3 files changed, 57 insertions(+), 39 deletions(-)
 
 diff --git a/arch/arm/cpu/armv7/am33xx/ddr.c b/arch/arm/cpu/armv7/am33xx/ddr.c
 index fa697c7..63e0760 100644
@@ -39,7 +39,7 @@ index fa697c7..63e0760 100644
  
  /**
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index e0a87f8..828ea54 100644
+index 3de30fc..4858a35 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -63,14 +63,15 @@
@@ -69,7 +69,7 @@ index e0a87f8..828ea54 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -105,35 +106,14 @@
+@@ -105,37 +106,14 @@
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
@@ -100,7 +100,9 @@ index e0a87f8..828ea54 100644
 -				"echo Running uenvcmd ...;" \
 -				"run uenvcmd;" \
 -			"fi;" \
--			"run mmcloados;" \
+-			"if run loaduimage; then " \
+-				"run mmcloados;" \
+-			"fi;" \
 -		"fi;\0" \
 +	"loaduimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
 +	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdtaddr} /dtbs/${fdtfile}\0" \
@@ -113,7 +115,7 @@ index e0a87f8..828ea54 100644
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
  		"sf probe ${spibusno}:0; " \
-@@ -164,12 +144,41 @@
+@@ -166,12 +144,41 @@
  #endif
  
  #define CONFIG_BOOTCOMMAND \
@@ -158,13 +160,13 @@ index e0a87f8..828ea54 100644
 +		"echo; echo uenvcmd was not defined in uEnv.txt ...; echo halting ...; echo;" \
 +	"fi;" \
  
- /* USB Composite download gadget - g_dnl */
- #define CONFIG_USB_GADGET
+ /* NS16550 Configuration */
+ #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index e0ab691..0c1d797 100644
+index e89e874..bb75fff 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -147,6 +147,7 @@
+@@ -149,6 +149,7 @@
  #define CONFIG_CMD_ASKENV
  #define CONFIG_CMD_ECHO
  #define CONFIG_CMD_BOOTZ
@@ -173,5 +175,5 @@ index e0ab691..0c1d797 100644
  /*
   * Common filesystems support.  When we have removable storage we
 -- 
-1.7.10.4
+1.8.4.rc3
 
