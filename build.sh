@@ -37,8 +37,8 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 uboot_stable="v2013.07"
 uboot_testing="v2013.10-rc2"
 
-#uboot_latest="315c0ace7c220591a9b220ab7698e85624b430c0"
-uboot_latest="985a71d15b8bd9cfbeae1ac1b08a5319abfd246c"
+#uboot_latest="985a71d15b8bd9cfbeae1ac1b08a5319abfd246c"
+uboot_latest="8386ca8bea7a6a8469c3b6a99313afb642e6cbeb"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -214,8 +214,9 @@ build_u_boot () {
 		#r1: omap5_uevm first pass...
 		#r2: omap3_beagle xMA3 -> xMB init dvi display, so device tree just works...
 		#r3: omap3_beagle: let u-boot autoselect the dtb file
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: wandboard: solo use dual lite dts file. (v3.12-rc)
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 
 		#omap3 fix usb
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
@@ -457,6 +458,17 @@ am335x_evm () {
 	build_uboot_all
 }
 
+arndale () {
+	cleanup
+	arm_linux_gnueabihf_toolchain
+
+	BOARD="arndale"
+	#build_uboot_all
+
+	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_latest
+}
+
 at91sam9g20ek () {
 	cleanup
 	arm_none_eabi_toolchain
@@ -576,6 +588,7 @@ wandboard () {
 }
 
 am335x_evm
+#arndale
 at91sam9g20ek
 at91sam9x5ek
 mx23_olinuxino
