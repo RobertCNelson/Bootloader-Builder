@@ -37,9 +37,8 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 uboot_stable="v2013.07"
 uboot_testing="v2013.10-rc3"
 
-#uboot_testing="v2013.10-rc3"
-#uboot_latest="46ef4faed18196472eb95216b2f74c1397ecf024"
-uboot_latest="d0b961684eb5757211e9463f5f24c3175e453798"
+#uboot_latest="d0b961684eb5757211e9463f5f24c3175e453798"
+uboot_latest="6b40852da5c8dd710f9d61204affff3c6a3c9d22"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -247,7 +246,7 @@ build_u_boot () {
 		#Atmel: sama5d3: Device Tree Only:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
-	
+
 	if [ "${testing}" ] ; then
 		uboot_patch_dir="v2013.10-rc3"
 
@@ -259,7 +258,7 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		
+
 		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
@@ -285,7 +284,7 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		
+
 		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
@@ -467,6 +466,7 @@ arndale () {
 	#build_uboot_all
 
 	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -589,7 +589,7 @@ wandboard () {
 }
 
 am335x_evm
-#arndale
+arndale
 at91sam9g20ek
 at91sam9x5ek
 mx23_olinuxino
