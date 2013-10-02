@@ -1,6 +1,6 @@
-From c6ff031e010d9be073b5f2e0ebd13c143785f2dc Mon Sep 17 00:00:00 2001
+From 5a95f855fc873ec1e4058948605515bc82487db0 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 10 Sep 2013 14:43:30 -0500
+Date: Wed, 2 Oct 2013 14:41:08 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -39,7 +39,7 @@ index fa697c7..63e0760 100644
  
  /**
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 3de30fc..4858a35 100644
+index 978fdf9..e356f6b 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -63,14 +63,15 @@
@@ -68,8 +68,8 @@ index 3de30fc..4858a35 100644
 +	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootenv}\0" \
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
- 	"ramargs=setenv bootargs console=${console} " \
-@@ -105,37 +106,14 @@
+ 	"dfu_alt_info_ram=" DFU_ALT_INFO_RAM "\0" \
+@@ -106,37 +107,14 @@
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
@@ -115,7 +115,7 @@ index 3de30fc..4858a35 100644
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
  		"sf probe ${spibusno}:0; " \
-@@ -166,12 +144,41 @@
+@@ -167,12 +145,41 @@
  #endif
  
  #define CONFIG_BOOTCOMMAND \
