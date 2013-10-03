@@ -35,10 +35,11 @@ stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 #latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 
 uboot_stable="v2013.07"
-uboot_testing="v2013.10-rc3"
+uboot_testing="v2013.10-rc4"
 
-#uboot_latest="6b40852da5c8dd710f9d61204affff3c6a3c9d22"
-uboot_latest="0ae39166b1babbc86da4269458da9bce198bce55"
+#uboot_latest="0ae39166b1babbc86da4269458da9bce198bce55"
+#uboot_testing="v2013.10-rc4"
+#uboot_latest="0c5274e6f3231a3a28dafc1204b3f71a3534c520"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -209,7 +210,7 @@ build_u_boot () {
 	UGIT_VERSION=$(git describe)
 
 	if [ "${stable}" ] ; then
-		uboot_patch_dir="v2013.07"
+		uboot_patch_dir="${uboot_stable}"
 		#r0: initial release
 		#r1: omap5_uevm first pass...
 		#r2: omap3_beagle xMA3 -> xMB init dvi display, so device tree just works...
@@ -248,7 +249,7 @@ build_u_boot () {
 	fi
 
 	if [ "${testing}" ] ; then
-		uboot_patch_dir="v2013.10-rc3"
+		uboot_patch_dir="${uboot_testing}"
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
