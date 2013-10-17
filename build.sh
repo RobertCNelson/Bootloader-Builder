@@ -31,15 +31,15 @@ NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
 stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
 
-#latest_at91bootstrap_sha="7162da97d6d31bf0ba7580f5bef48f549bbf138b"
 #latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
+latest_at91bootstrap_sha="e8ab05b4b61b31b6033a4710582389d1e3655b1b"
 
 uboot_stable="v2013.07"
-uboot_testing="v2013.10-rc4"
+uboot_testing="v2013.10"
 
-#uboot_testing="v2013.10-rc4"
-#uboot_latest="0c5274e6f3231a3a28dafc1204b3f71a3534c520"
-uboot_latest="f835c77fb7e57508ffe8d8ca3a092ee28add77b2"
+#uboot_latest="f835c77fb7e57508ffe8d8ca3a092ee28add77b2"
+#uboot_testing="v2013.10"
+#uboot_latest="183acb700378a8cfc5d50a01a65de93fb2c24586"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
