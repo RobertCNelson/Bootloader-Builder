@@ -29,10 +29,10 @@ SYST=$(uname -n)
 # Number of jobs for make to run in parallel.
 NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
-stable_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
+stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 
-#latest_at91bootstrap_sha="8692a6653fffa7b484eaa05a166c31b9ca75a649"
-latest_at91bootstrap_sha="e8ab05b4b61b31b6033a4710582389d1e3655b1b"
+#latest_at91bootstrap_sha="e8ab05b4b61b31b6033a4710582389d1e3655b1b"
+#latest_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 
 uboot_stable="v2013.07"
 uboot_testing="v2013.10"
