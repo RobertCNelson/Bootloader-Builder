@@ -37,9 +37,8 @@ stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 uboot_stable="v2013.07"
 uboot_testing="v2013.10"
 
-#uboot_testing="v2013.10"
-#uboot_latest="183acb700378a8cfc5d50a01a65de93fb2c24586"
-uboot_latest="7e575c46c34b5f1316eab39025fdced197629ccb"
+#uboot_latest="7e575c46c34b5f1316eab39025fdced197629ccb"
+uboot_latest="e5a9a4076f1fb9fb9ce53c2aec32422073bbc66a"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -103,10 +102,10 @@ arm_none_eabi_toolchain () {
 
 arm_linux_gnueabihf_toolchain () {
 	#https://launchpad.net/linaro-toolchain-binaries/+download
-	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.09/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.09_linux.tar.xz
+	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.10/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.10_linux.tar.xz
 
 	gcc_version="4.8"
-	release="2013.09"
+	release="2013.10"
 	toolchain_name="gcc-linaro-arm-linux-gnueabihf"
 	site="https://launchpad.net/linaro-toolchain-binaries"
 	version="trunk/${release}"
@@ -499,7 +498,12 @@ mx23_olinuxino () {
 		arm_none_eabi_toolchain
 
 		BOARD="mx23_olinuxino"
-		build_uboot_all
+		#build_uboot_all
+
+		UBOOT_CONFIG="${BOARD}_config"
+		build_uboot_stable
+		build_uboot_testing
+		#build_uboot_latest
 	else
 		echo "-----------------------------"
 		echo "Skipping Binary Build of [mx23_olinuxino]: as elftosb is not installed."
