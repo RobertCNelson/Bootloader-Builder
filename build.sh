@@ -208,8 +208,8 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
 
+	uboot_patch_dir="${uboot_stable}"
 	if [ "${stable}" ] ; then
-		uboot_patch_dir="${uboot_stable}"
 		#r0: initial release
 		#r1: omap5_uevm first pass...
 		#r2: omap3_beagle xMA3 -> xMB init dvi display, so device tree just works...
@@ -247,8 +247,11 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
+	uboot_patch_dir="${uboot_testing}"
 	if [ "${testing}" ] ; then
-		uboot_patch_dir="${uboot_testing}"
+		#r1: initial release
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
@@ -274,8 +277,11 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
+	uboot_patch_dir="next"
 	if [ "${next}" ] ; then
-		uboot_patch_dir="next"
+		#r1: initial release
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
