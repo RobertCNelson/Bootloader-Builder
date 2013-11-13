@@ -1,40 +1,35 @@
-From e7cf59c5ce03491f09ec65b818bd6add5c491d9f Mon Sep 17 00:00:00 2001
+From d283c3700529312242291dcae621ba10f3e7f7ac Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 15 Mar 2013 10:16:52 -0500
+Date: Wed, 13 Nov 2013 10:33:49 -0600
 Subject: [PATCH] omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/omap4_common.h |   45 ++++++++++++++++++++++++++++++++--------
- 1 file changed, 36 insertions(+), 9 deletions(-)
+ include/configs/omap4_common.h | 32 +++++++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
 
 diff --git a/include/configs/omap4_common.h b/include/configs/omap4_common.h
-index 2fa4382..ce72abb 100644
+index ea56eeb..0488209 100644
 --- a/include/configs/omap4_common.h
 +++ b/include/configs/omap4_common.h
-@@ -124,6 +124,12 @@
- /* Enabled commands */
- #define CONFIG_CMD_EXT2		/* EXT2 Support                 */
- #define CONFIG_CMD_FAT		/* FAT support                  */
-+#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
-+
-+/* bootz: zImage/initrd.img support */
-+#define CONFIG_CMD_BOOTZ
-+#define CONFIG_SUPPORT_RAW_INITRD
- #define CONFIG_CMD_I2C		/* I2C serial bus support	*/
- #define CONFIG_CMD_MMC		/* MMC support                  */
- 
-@@ -137,7 +143,7 @@
-  * Environment setup
+@@ -47,13 +47,15 @@
+  * the timings to use or use pre-determined timings (based on using the
+  * dynamic method.  Default to the static timing infomation.
   */
+-#define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
++/* Pandaboard ES Rev B3 */
++/* #define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS */
+ #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
+ #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
+ #define CONFIG_SYS_DEFAULT_LPDDR2_TIMINGS
+ #endif
  
--#define CONFIG_BOOTDELAY	3
-+#define CONFIG_BOOTDELAY	1
- #define CONFIG_ENV_VARS_UBOOT_CONFIG
- #define CONFIG_CMD_FS_GENERIC
- #define CONFIG_CMD_EXT2
-@@ -153,26 +159,37 @@
+ #include <configs/ti_armv7_common.h>
++#define CONFIG_SUPPORT_RAW_INITRD
+ 
+ /*
+  * Hardware drivers
+@@ -94,26 +96,37 @@
  	"fdtfile=undefined\0" \
  	"bootpart=0:2\0" \
  	"bootdir=/boot\0" \
@@ -77,7 +72,7 @@ index 2fa4382..ce72abb 100644
  	"findfdt="\
  		"if test $board_name = sdp4430; then " \
  			"setenv fdtfile omap4-sdp.dtb; fi; " \
-@@ -184,7 +201,7 @@
+@@ -125,7 +138,7 @@
  			"setenv fdtfile omap4-panda-es.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -86,7 +81,7 @@ index 2fa4382..ce72abb 100644
  
  #define CONFIG_BOOTCOMMAND \
  	"run findfdt; " \
-@@ -196,10 +213,15 @@
+@@ -137,10 +150,15 @@
  			"if run loadbootenv; then " \
  				"run importbootenv; " \
  			"fi;" \
@@ -102,34 +97,6 @@ index 2fa4382..ce72abb 100644
  		"fi;" \
  		"if run loadimage; then " \
  			"run loadfdt;" \
-@@ -219,7 +241,7 @@
- /* Print Buffer Size */
- #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
- 					sizeof(CONFIG_SYS_PROMPT) + 16)
--#define CONFIG_SYS_MAXARGS		16
-+#define CONFIG_SYS_MAXARGS		64
- /* Boot Argument Buffer Size */
- #define CONFIG_SYS_BARGSIZE		(CONFIG_SYS_CBSIZE)
- 
-@@ -255,7 +277,8 @@
- #define CONFIG_SYS_CACHELINE_SIZE	32
- 
- /* Defines for SDRAM init */
--#define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
-+/* Pandaboard ES Rev B3 */
-+/* #define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS */
- 
- #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
- #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
-@@ -303,4 +326,8 @@
- 
- #define CONFIG_SYS_THUMB_BUILD
- 
-+/* FIXME: Should be safe to remove in v3.8.x */
-+#define CONFIG_SYS_ENABLE_PADS_ALL
-+#define CONFIG_SYS_CLOCKS_ENABLE_ALL
-+
- #endif /* __CONFIG_OMAP4_COMMON_H */
 -- 
-1.7.10.4
+1.8.4.2
 
