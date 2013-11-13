@@ -34,8 +34,8 @@ stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 #latest_at91bootstrap_sha="e8ab05b4b61b31b6033a4710582389d1e3655b1b"
 #latest_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 
-uboot_stable="v2013.07"
-uboot_testing="v2013.10"
+uboot_stable="v2013.10"
+#uboot_testing="v2013.10"
 
 #uboot_latest="2cee0408e5c6f5dbdfa89fb40168ba2ead3f61a6"
 uboot_latest="63c4f17b2f8017d22241522a48c765073b8791b0"
@@ -210,48 +210,39 @@ build_u_boot () {
 
 	uboot_patch_dir="${uboot_stable}"
 	if [ "${stable}" ] ; then
-		#r0: initial release
-		#r1: omap5_uevm first pass...
-		#r2: omap3_beagle xMA3 -> xMB init dvi display, so device tree just works...
-		#r3: omap3_beagle: let u-boot autoselect the dtb file
-		#r4: wandboard: solo use dual lite dts file. (v3.12-rc)
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r1: initial release
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 
-		#omap3 fix usb
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-usb-ehci-omap-Don-t-softreset-USB-High-speed-Host-UH.patch"
-		#xM A3/B it helps to init the display in u-boot for device trees
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-beagleboard-remove-RevB-support-for-BeagleBoard-Xm.patch"
-		#xM: auto select dtb xMA/B has different ehci enable polarity then the xMC...
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-omap3_beagle-support-findfdt-and-loadfdt-for-devicet.patch"
+		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
+		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
 
-		#Device Tree Only:
+		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 
+		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
 
-		#Device Tree/Board File:
+		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d3: Device Tree Only:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	uboot_patch_dir="${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		RELEASE_VER="-r0" #bump on every change...
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
@@ -281,7 +272,7 @@ build_u_boot () {
 	if [ "${next}" ] ; then
 		#r1: initial release
 		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		RELEASE_VER="-r0" #bump on every change...
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
@@ -471,11 +462,7 @@ arndale () {
 	arm_linux_gnueabihf_toolchain
 
 	BOARD="arndale"
-	#build_uboot_all
-
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 at91sam9g20ek () {
@@ -536,7 +523,12 @@ mx6qsabresd () {
 	arm_linux_gnueabihf_toolchain
 
 	BOARD="mx6qsabresd"
-	build_uboot_all
+	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_stable
+	build_uboot_testing
+	#build_uboot_latest
+
+	#build_uboot_all
 }
 
 omap3_beagle () {
@@ -587,13 +579,28 @@ wandboard () {
 	arm_linux_gnueabihf_toolchain
 
 	BOARD="wandboard_quad"
-	build_uboot_all
+	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_stable
+	build_uboot_testing
+	#build_uboot_latest
+
+	#build_uboot_all
 
 	BOARD="wandboard_dl"
-	build_uboot_all
+	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_stable
+	build_uboot_testing
+	#build_uboot_latest
+
+	#build_uboot_all
 
 	BOARD="wandboard_solo"
-	build_uboot_all
+	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_stable
+	build_uboot_testing
+	#build_uboot_latest
+
+	#build_uboot_all
 }
 
 am335x_evm
