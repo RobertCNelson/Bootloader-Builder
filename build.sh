@@ -31,14 +31,15 @@ NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
 stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 
-#latest_at91bootstrap_sha="e8ab05b4b61b31b6033a4710582389d1e3655b1b"
 #latest_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
+latest_at91bootstrap_sha="c2ebb5c4415194d52340403fc2a34d2f45b543b9"
 
 uboot_stable="v2013.10"
-#uboot_testing="v2013.10"
+uboot_testing="v2014.01-rc1"
 
-#uboot_latest="2cee0408e5c6f5dbdfa89fb40168ba2ead3f61a6"
-uboot_latest="63c4f17b2f8017d22241522a48c765073b8791b0"
+#uboot_latest="63c4f17b2f8017d22241522a48c765073b8791b0"
+#uboot_testing="v2014.01-rc1"
+#uboot_latest="d19ad726bcd5d9106f7ba9c750462fcc369f1020"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -525,7 +526,7 @@ mx6qsabresd () {
 	BOARD="mx6qsabresd"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
-	build_uboot_testing
+	#build_uboot_testing
 	#build_uboot_latest
 
 	#build_uboot_all
@@ -581,7 +582,7 @@ wandboard () {
 	BOARD="wandboard_quad"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
-	build_uboot_testing
+	#build_uboot_testing
 	#build_uboot_latest
 
 	#build_uboot_all
@@ -589,7 +590,7 @@ wandboard () {
 	BOARD="wandboard_dl"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
-	build_uboot_testing
+	#build_uboot_testing
 	#build_uboot_latest
 
 	#build_uboot_all
@@ -597,7 +598,7 @@ wandboard () {
 	BOARD="wandboard_solo"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
-	build_uboot_testing
+	#build_uboot_testing
 	#build_uboot_latest
 
 	#build_uboot_all
