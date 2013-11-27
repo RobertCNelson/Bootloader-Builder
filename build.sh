@@ -526,8 +526,10 @@ mx6qsabresd () {
 	BOARD="mx6qsabresd"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
-	#build_uboot_testing
-	#build_uboot_latest
+
+	arm_none_eabi_toolchain
+	build_uboot_testing
+	build_uboot_latest
 
 	#build_uboot_all
 }
@@ -582,24 +584,30 @@ wandboard () {
 	BOARD="wandboard_quad"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
-	#build_uboot_testing
-	#build_uboot_latest
+
+	arm_none_eabi_toolchain
+	build_uboot_testing
+	build_uboot_latest
 
 	#build_uboot_all
 
 	BOARD="wandboard_dl"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
-	#build_uboot_testing
-	#build_uboot_latest
+
+	arm_none_eabi_toolchain
+	build_uboot_testing
+	build_uboot_latest
 
 	#build_uboot_all
 
 	BOARD="wandboard_solo"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
-	#build_uboot_testing
-	#build_uboot_latest
+
+	arm_none_eabi_toolchain
+	build_uboot_testing
+	build_uboot_latest
 
 	#build_uboot_all
 }
