@@ -212,8 +212,9 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_stable}"
 	if [ "${stable}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: enable imx6 errata
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
@@ -237,6 +238,9 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+
+		#imx6 errata
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-ARM-mx6-Update-non-Freescale-boards-to-include-CPU-e.patch"
 	fi
 
 	uboot_patch_dir="${uboot_testing}"
@@ -270,6 +274,9 @@ build_u_boot () {
 
 		#u-boot fixes...
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-imx6-clock-use-lldiv.patch"
+
+		#imx6 errata
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-ARM-mx6-Update-non-Freescale-boards-to-include-CPU-e.patch"
 	fi
 
 	uboot_patch_dir="next"
@@ -303,6 +310,9 @@ build_u_boot () {
 
 		#u-boot fixes...
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-imx6-clock-use-lldiv.patch"
+
+		#imx6 errata
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-ARM-mx6-Update-non-Freescale-boards-to-include-CPU-e.patch"
 	fi
 
 	unset BUILDTARGET
