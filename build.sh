@@ -31,15 +31,15 @@ NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
 stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 
-#latest_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
-latest_at91bootstrap_sha="c2ebb5c4415194d52340403fc2a34d2f45b543b9"
+#latest_at91bootstrap_sha="c2ebb5c4415194d52340403fc2a34d2f45b543b9"
+latest_at91bootstrap_sha="69a7c5685c0ad3356b03a023810f59ed67ad5543"
 
 uboot_stable="v2013.10"
 uboot_testing="v2014.01-rc1"
 
-#uboot_latest="63c4f17b2f8017d22241522a48c765073b8791b0"
 #uboot_testing="v2014.01-rc1"
 #uboot_latest="d19ad726bcd5d9106f7ba9c750462fcc369f1020"
+uboot_latest="f44483b57c49282299da0e5c10073b909cdad979"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -267,6 +267,9 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+
+		#u-boot fixes...
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-imx6-clock-use-lldiv.patch"
 	fi
 
 	uboot_patch_dir="next"
@@ -297,6 +300,9 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+
+		#u-boot fixes...
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-imx6-clock-use-lldiv.patch"
 	fi
 
 	unset BUILDTARGET
@@ -525,13 +531,7 @@ mx6qsabresd () {
 
 	BOARD="mx6qsabresd"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_stable
-
-	arm_none_eabi_toolchain
-	build_uboot_testing
-	build_uboot_latest
-
-	#build_uboot_all
+	build_uboot_all
 }
 
 omap3_beagle () {
@@ -583,33 +583,13 @@ wandboard () {
 
 	BOARD="wandboard_quad"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_stable
-
-	arm_none_eabi_toolchain
-	build_uboot_testing
-	build_uboot_latest
-
-	#build_uboot_all
+	build_uboot_all
 
 	BOARD="wandboard_dl"
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_stable
-
-	arm_none_eabi_toolchain
-	build_uboot_testing
-	build_uboot_latest
-
-	#build_uboot_all
+	build_uboot_all
 
 	BOARD="wandboard_solo"
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_stable
-
-	arm_none_eabi_toolchain
-	build_uboot_testing
-	build_uboot_latest
-
-	#build_uboot_all
+	build_uboot_all
 }
 
 am335x_evm
