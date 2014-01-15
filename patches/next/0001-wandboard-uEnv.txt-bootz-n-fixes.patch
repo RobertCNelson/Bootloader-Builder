@@ -1,15 +1,15 @@
-From 40a8a61b094dce17616f68745ca0e4de444e0f97 Mon Sep 17 00:00:00 2001
+From b103f840bb50e737214a38596df065b53b36cc59 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 15 Jan 2014 14:52:29 -0600
+Date: Wed, 15 Jan 2014 15:29:01 -0600
 Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/wandboard.h | 63 +++++++++++++++++++++++++++++----------------
- 1 file changed, 41 insertions(+), 22 deletions(-)
+ include/configs/wandboard.h | 55 +++++++++++++++++++++++++++++++--------------
+ 1 file changed, 38 insertions(+), 17 deletions(-)
 
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
-index ae8480d..dc96f57 100644
+index 3488472..41a0fd7 100644
 --- a/include/configs/wandboard.h
 +++ b/include/configs/wandboard.h
 @@ -49,7 +49,7 @@
@@ -45,7 +45,7 @@ index ae8480d..dc96f57 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -135,27 +140,34 @@
+@@ -135,27 +140,36 @@
  			"fi; "	\
  		"fi\0" \
  	"mmcargs=setenv bootargs console=${console},${baudrate} " \
@@ -61,51 +61,32 @@ index ae8480d..dc96f57 100644
  		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
- 	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+ 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 +	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
 +	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} /dtbs/${fdt_file}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
++		"bootz ${loadaddr} - ${fdt_addr};\0" \
++	"mmcbootdefault=echo Booting from mmc ...; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
--				"bootm ${loadaddr} - ${fdt_addr}; " \
-+				"bootz ${loadaddr} - ${fdt_addr}; " \
+ 				"bootz ${loadaddr} - ${fdt_addr}; " \
  			"else " \
  				"if test ${boot_fdt} = try; then " \
--					"bootm; " \
+-					"bootz; " \
 +					"bootz ${loadaddr}; " \
  				"else " \
  					"echo WARN: Cannot load the DT; " \
  				"fi; " \
  			"fi; " \
  		"else " \
--			"bootm; " \
+-			"bootz; " \
 +			"bootz ${loadaddr}; " \
  		"fi;\0" \
  	"netargs=setenv bootargs console=${console},${baudrate} " \
  		"root=/dev/nfs " \
-@@ -167,32 +179,38 @@
- 		"else " \
- 			"setenv get_cmd tftp; " \
- 		"fi; " \
--		"${get_cmd} ${uimage}; " \
-+		"${get_cmd} zImage; " \
- 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
- 			"if ${get_cmd} ${fdt_addr} ${fdt_file}; then " \
--				"bootm ${loadaddr} - ${fdt_addr}; " \
-+				"bootz ${loadaddr} - ${fdt_addr}; " \
- 			"else " \
- 				"if test ${boot_fdt} = try; then " \
--					"bootm; " \
-+					"bootz ${loadaddr}; " \
- 				"else " \
- 					"echo WARN: Cannot load the DT; " \
- 				"fi; " \
- 			"fi; " \
- 		"else " \
--			"bootm; " \
-+			"bootz ${loadaddr}; " \
+@@ -183,16 +197,22 @@
  		"fi;\0"
  
  #define CONFIG_BOOTCOMMAND \
@@ -113,7 +94,7 @@ index ae8480d..dc96f57 100644
 -		   "if run loadbootscript; then " \
 -			   "run bootscript; " \
 -		   "else " \
--			   "if run loaduimage; then " \
+-			   "if run loadimage; then " \
 -				   "run mmcboot; " \
 -			   "else run netboot; " \
 -			   "fi; " \
@@ -138,7 +119,7 @@ index ae8480d..dc96f57 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP
-@@ -233,6 +251,7 @@
+@@ -233,6 +253,7 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
