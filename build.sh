@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 #
 # Copyright (c) 2010-2013 Robert Nelson <robertcnelson@gmail.com>
 #
@@ -42,7 +42,7 @@ uboot_latest="b5c068f3f8be5c2f73fc6699885aec0d342099bb"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
-( LC_ALL=C git help pull | grep -m 1 -e "--no-edit" ) &>/dev/null && GIT_NOEDIT=1
+( LC_ALL=C git help pull | grep -m 1 -e "--no-edit" ) >/dev/null 2>&1 && GIT_NOEDIT=1
 
 if [ "${GIT_NOEDIT}" ] ; then
 	GIT_OPTS="--no-edit"
@@ -184,7 +184,7 @@ build_at91bootstrap () {
 	at91bootstrap_version=$(cat Makefile | grep 'VERSION :=' | awk '{print $3}')
 	at91bootstrap_sha=$(git rev-parse --short HEAD)
 
-	make CROSS_COMPILE=${CC} clean &> /dev/null
+	make CROSS_COMPILE=${CC} clean >/dev/null 2>&1
 	make CROSS_COMPILE=${CC} ${at91bootstrap_config} > /dev/null
 	echo "Building ${project}: ${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
 	make CROSS_COMPILE=${CC} -j${NUMJOBS} > /dev/null
@@ -300,7 +300,7 @@ build_u_boot () {
 	fi
 
 	unset BUILDTARGET
-	if [ "x${BOARD}" == "xmx23_olinuxino" ] ; then
+	if [ "x${BOARD}" = "xmx23_olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
 	fi
 
