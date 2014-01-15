@@ -66,7 +66,7 @@ dl_gcc_generic () {
 	if [ ! -f ${DIR}/dl/${datestamp} ] ; then
 		echo "Installing: ${toolchain_name}"
 		echo "-----------------------------"
-		${WGET} ${site}/${version}/+download/${filename}
+		${WGET} ${site}/${version}/${filename}
 		if [ -d ${DIR}/dl/${directory} ] ; then
 			rm -rf ${DIR}/dl/${directory} || true
 		fi
@@ -74,7 +74,7 @@ dl_gcc_generic () {
 		touch ${DIR}/dl/${datestamp}
 	fi
 
-	if [ "x${ARCH}" == "xarmv7l" ] ; then
+	if [ "x${ARCH}" = "xarmv7l" ] ; then
 		#using native gcc
 		CC=
 	else
@@ -88,7 +88,7 @@ arm_none_eabi_toolchain () {
 
 	toolchain_name="gcc-arm-none-eabi"
 	site="https://launchpad.net/gcc-arm-embedded"
-	version="4.7/4.7-2013-q3-update"
+	version="4.7/4.7-2013-q3-update/+download"
 	version_date="20130916"
 	directory="${toolchain_name}-4_7-2013q3"
 	filename="${directory}-${version_date}-linux.tar.bz2"
@@ -101,18 +101,18 @@ arm_none_eabi_toolchain () {
 }
 
 arm_linux_gnueabihf_toolchain () {
-	#https://launchpad.net/linaro-toolchain-binaries/+download
-	#https://launchpad.net/linaro-toolchain-binaries/trunk/2013.10/+download/gcc-linaro-arm-linux-gnueabihf-4.8-2013.10_linux.tar.xz
+	#https://releases.linaro.org/13.12/components/toolchain/binaries/
+	#https://releases.linaro.org/13.12/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.8-2013.12_linux.tar.xz
 
 	gcc_version="4.8"
-	release="2013.10"
+	release="2013.12"
 	toolchain_name="gcc-linaro-arm-linux-gnueabihf"
-	site="https://launchpad.net/linaro-toolchain-binaries"
-	version="trunk/${release}"
+	site="https://releases.linaro.org"
+	version="13.12/components/toolchain/binaries"
 	directory="${toolchain_name}-${gcc_version}-${release}_linux"
 	filename="${directory}.tar.xz"
 	datestamp="${release}-${toolchain_name}"
-	untar="tar -xJf"
+	untar="tar -xf"
 
 	binary="bin/arm-linux-gnueabihf-"
 
