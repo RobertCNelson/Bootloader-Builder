@@ -35,7 +35,7 @@ stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 latest_at91bootstrap_sha="69a7c5685c0ad3356b03a023810f59ed67ad5543"
 
 uboot_stable="v2013.10"
-uboot_testing="v2014.01-rc2"
+uboot_testing="v2014.01-rc3"
 
 #uboot_latest="f44483b57c49282299da0e5c10073b909cdad979"
 #uboot_latest="e03c76c30342797a25ef9350e51c8daa0b56f1df"
@@ -248,9 +248,6 @@ build_u_boot () {
 		#r2: (pending)
 		RELEASE_VER="-r0" #bump on every change...
 
-		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
-		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
-
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -273,9 +270,6 @@ build_u_boot () {
 
 		#u-boot fixes...
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-imx6-clock-use-lldiv.patch"
-
-		#imx6 errata
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-ARM-mx6-Update-non-Freescale-boards-to-include-CPU-e.patch"
 	fi
 
 	uboot_patch_dir="next"
@@ -284,9 +278,6 @@ build_u_boot () {
 		#r2: (pending)
 		RELEASE_VER="-r0" #bump on every change...
 
-		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
-		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
-
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -309,9 +300,6 @@ build_u_boot () {
 
 		#u-boot fixes...
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-imx6-clock-use-lldiv.patch"
-
-		#imx6 errata
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-ARM-mx6-Update-non-Freescale-boards-to-include-CPU-e.patch"
 	fi
 
 	unset BUILDTARGET
