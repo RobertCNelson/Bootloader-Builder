@@ -1,0 +1,67 @@
+From 792ba4332dfa581bc334261857bee1915d7e1226 Mon Sep 17 00:00:00 2001
+From: Eric Nelson <eric.nelson@boundarydevices.com>
+Date: Tue, 26 Nov 2013 17:40:30 -0700
+Subject: [PATCH] ARM: mx6: Update non-Freescale boards to include CPU errata.
+
+The CPU errata expressed in include/configs/mx6_common.h apply
+to all i.MX6DQ and i.MX6DLS parts.
+
+Signed-off-by: Eric Nelson <eric.nelson@boundarydevices.com>
+---
+ include/configs/nitrogen6x.h | 1 +
+ include/configs/titanium.h   | 1 +
+ include/configs/udoo.h       | 1 +
+ include/configs/wandboard.h  | 1 +
+ 4 files changed, 4 insertions(+)
+
+diff --git a/include/configs/nitrogen6x.h b/include/configs/nitrogen6x.h
+index 3df8de0..13718ca 100644
+--- a/include/configs/nitrogen6x.h
++++ b/include/configs/nitrogen6x.h
+@@ -10,6 +10,7 @@
+ #ifndef __CONFIG_H
+ #define __CONFIG_H
+ 
++#include "mx6_common.h"
+ #define CONFIG_MX6
+ #define CONFIG_DISPLAY_CPUINFO
+ #define CONFIG_DISPLAY_BOARDINFO
+diff --git a/include/configs/titanium.h b/include/configs/titanium.h
+index 0bb6731..f9e00c5 100644
+--- a/include/configs/titanium.h
++++ b/include/configs/titanium.h
+@@ -13,6 +13,7 @@
+ #ifndef __CONFIG_H
+ #define __CONFIG_H
+ 
++#include "mx6_common.h"
+ #include <asm/arch/imx-regs.h>
+ #include <asm/imx-common/gpio.h>
+ 
+diff --git a/include/configs/udoo.h b/include/configs/udoo.h
+index 78df071..949be95 100644
+--- a/include/configs/udoo.h
++++ b/include/configs/udoo.h
+@@ -9,6 +9,7 @@
+ #ifndef __CONFIG_H
+ #define __CONFIG_H
+ 
++#include "mx6_common.h"
+ #include <asm/arch/imx-regs.h>
+ #include <asm/imx-common/gpio.h>
+ #include <asm/sizes.h>
+diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
+index 262d1a5..72c4fd7 100644
+--- a/include/configs/wandboard.h
++++ b/include/configs/wandboard.h
+@@ -9,6 +9,7 @@
+ #ifndef __CONFIG_H
+ #define __CONFIG_H
+ 
++#include "mx6_common.h"
+ #include <asm/arch/imx-regs.h>
+ #include <asm/imx-common/gpio.h>
+ #include <asm/sizes.h>
+-- 
+1.8.4.3
+

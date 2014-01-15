@@ -1,0 +1,39 @@
+From 5c9486d121bf05620f0a0b173e3321455fc68fed Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Thu, 5 Dec 2013 08:57:41 -0600
+Subject: [PATCH] imx6: clock use lldiv
+
+That commit introduces a 64-bit division without using the lldiv()
+function, which pulls in previously unused libgcc stuff.
+
+http://patchwork.ozlabs.org/patch/296568/
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ arch/arm/cpu/armv7/mx6/clock.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/cpu/armv7/mx6/clock.c b/arch/arm/cpu/armv7/mx6/clock.c
+index 873d9d0..4eeb09b 100644
+--- a/arch/arm/cpu/armv7/mx6/clock.c
++++ b/arch/arm/cpu/armv7/mx6/clock.c
+@@ -5,6 +5,7 @@
+  */
+ 
+ #include <common.h>
++#include <div64.h>
+ #include <asm/io.h>
+ #include <asm/errno.h>
+ #include <asm/arch/imx-regs.h>
+@@ -123,7 +124,7 @@ static u32 mxc_get_pll_pfd(enum pll_clocks pll, int pfd_num)
+ 		return 0;
+ 	}
+ 
+-	return (freq * 18) / ((div & ANATOP_PFD_FRAC_MASK(pfd_num)) >>
++	return lldiv(freq * 18, (div & ANATOP_PFD_FRAC_MASK(pfd_num)) >>
+ 			      ANATOP_PFD_FRAC_SHIFT(pfd_num));
+ }
+ 
+-- 
+1.8.4.3
+
