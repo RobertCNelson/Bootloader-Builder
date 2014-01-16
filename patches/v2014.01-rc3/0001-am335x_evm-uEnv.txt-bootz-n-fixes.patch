@@ -22,7 +22,7 @@ index d05e666..91798d7 100644
 +/* and the ARM to play fairer in memory, so the LCDC does not get starved causing */
 +/* the screen to roll */
 +/* See Page 439 in spruh73g (AM33xx TRM) for details */
-+#define AM33XX_INT_CONFIG_COUNT 0x00303030
++//#define AM33XX_INT_CONFIG_COUNT 0x00303030
 +
  /**
   * Base address for EMIF instances
@@ -34,7 +34,7 @@ index d05e666..91798d7 100644
 +
 +	/* Configure INT_CONFIG value so that LCDC does not get stalled */
 +	/* for a long time if ARM is accessing memory */
-+	writel(AM33XX_INT_CONFIG_COUNT, &emif_reg[nr]->emif_l3_config);
++	//writel(AM33XX_INT_CONFIG_COUNT, &emif_reg[nr]->emif_l3_config);
  }
  
  void __weak emif_get_ext_phy_ctrl_const_regs(const u32 **regs, u32 *size)
