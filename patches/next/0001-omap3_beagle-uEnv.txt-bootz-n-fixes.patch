@@ -1,13 +1,13 @@
-From 102a29b15b7c8131f2648fb7ac92bb621a9ef264 Mon Sep 17 00:00:00 2001
+From dd54fd4a92fe24547ddf107b2d7966ea40e5eb53 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 17 Jan 2014 09:36:18 -0600
+Date: Fri, 17 Jan 2014 13:33:36 -0600
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/beagle/beagle.c       | 38 +++++++++++++++++++++++++----
- include/configs/omap3_beagle.h | 54 +++++++++++++++++++++++++++++-------------
- 2 files changed, 70 insertions(+), 22 deletions(-)
+ board/ti/beagle/beagle.c       | 38 ++++++++++++++++++++++++++----
+ include/configs/omap3_beagle.h | 52 ++++++++++++++++++++++++++++--------------
+ 2 files changed, 68 insertions(+), 22 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index 9669a32..f3f2f80 100644
@@ -111,7 +111,7 @@ index 9669a32..f3f2f80 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_AB:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 1b566c0..5fff191 100644
+index c58bc91..5fff191 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -134,8 +134,10 @@
@@ -184,12 +184,9 @@ index 1b566c0..5fff191 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${nandroot} " \
  		"rootfstype=${nandrootfstype}\0" \
-@@ -241,14 +252,16 @@
+@@ -244,13 +255,13 @@
+ 		"if test $beaglerev = C4; then " \
  			"setenv fdtfile omap3-beagle.dtb; fi; " \
- 		"if test $beaglerev = Cx; then " \
- 			"setenv fdtfile omap3-beagle.dtb; fi; " \
-+		"if test $beaglerev = C4; then " \
-+			"setenv fdtfile omap3-beagle.dtb; fi; " \
  		"if test $beaglerev = xMAB; then " \
 -			"setenv fdtfile omap3-beagle-xm.dtb; fi; " \
 +			"setenv fdtfile omap3-beagle-xm-ab.dtb; fi; " \
@@ -204,7 +201,7 @@ index 1b566c0..5fff191 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -260,22 +273,23 @@
+@@ -262,22 +273,23 @@
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
@@ -235,7 +232,7 @@ index 1b566c0..5fff191 100644
  	"userbutton=if gpio input 173; then run userbutton_xm; " \
  		"else run userbutton_nonxm; fi;\0" \
  	"userbutton_xm=gpio input 4;\0" \
-@@ -294,10 +308,16 @@
+@@ -296,10 +308,16 @@
  			"echo Loaded environment from ${bootenv};" \
  			"run importbootenv;" \
  		"fi;" \
