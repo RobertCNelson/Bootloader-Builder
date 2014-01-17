@@ -1,13 +1,13 @@
-From a53a53c9701dd8ba4878167f60934660c1a3e3e3 Mon Sep 17 00:00:00 2001
+From 102a29b15b7c8131f2648fb7ac92bb621a9ef264 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 8 Aug 2013 11:01:11 -0500
+Date: Fri, 17 Jan 2014 09:36:18 -0600
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/beagle/beagle.c       | 38 ++++++++++++++++++++++++++----
- include/configs/omap3_beagle.h | 52 ++++++++++++++++++++++++++++--------------
- 2 files changed, 68 insertions(+), 22 deletions(-)
+ board/ti/beagle/beagle.c       | 38 +++++++++++++++++++++++++----
+ include/configs/omap3_beagle.h | 54 +++++++++++++++++++++++++++++-------------
+ 2 files changed, 70 insertions(+), 22 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index 9669a32..f3f2f80 100644
@@ -111,7 +111,7 @@ index 9669a32..f3f2f80 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_AB:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 47d9902..4f4c4e7 100644
+index 1b566c0..5fff191 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -134,8 +134,10 @@
@@ -125,7 +125,7 @@ index 47d9902..4f4c4e7 100644
  #define CONFIG_CMD_MTDPARTS	/* Enable MTD parts commands */
  #define CONFIG_MTD_DEVICE	/* needed for mtdparts commands */
  #define MTDIDS_DEFAULT			"nand0=nand"
-@@ -190,7 +192,7 @@
+@@ -189,7 +191,7 @@
  							/* devices */
  
  /* Environment information */
@@ -134,7 +134,7 @@ index 47d9902..4f4c4e7 100644
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"loadaddr=0x80200000\0" \
-@@ -205,14 +207,18 @@
+@@ -204,14 +206,18 @@
  	"console=ttyO2,115200n8\0" \
  	"mpurate=auto\0" \
  	"buddy=none\0" \
@@ -156,7 +156,7 @@ index 47d9902..4f4c4e7 100644
  	"nandroot=ubi0:rootfs ubi.mtd=4\0" \
  	"nandrootfstype=ubifs\0" \
  	"ramroot=/dev/ram0 rw ramdisk_size=65536 initrd=0x81000000,64M\0" \
-@@ -221,19 +227,24 @@
+@@ -220,19 +226,24 @@
  		"${optargs} " \
  		"mpurate=${mpurate} " \
  		"buddy=${buddy} "\
@@ -184,9 +184,12 @@ index 47d9902..4f4c4e7 100644
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${nandroot} " \
  		"rootfstype=${nandrootfstype}\0" \
-@@ -243,13 +254,13 @@
+@@ -241,14 +252,16 @@
+ 			"setenv fdtfile omap3-beagle.dtb; fi; " \
  		"if test $beaglerev = Cx; then " \
  			"setenv fdtfile omap3-beagle.dtb; fi; " \
++		"if test $beaglerev = C4; then " \
++			"setenv fdtfile omap3-beagle.dtb; fi; " \
  		"if test $beaglerev = xMAB; then " \
 -			"setenv fdtfile omap3-beagle-xm.dtb; fi; " \
 +			"setenv fdtfile omap3-beagle-xm-ab.dtb; fi; " \
@@ -201,7 +204,7 @@ index 47d9902..4f4c4e7 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -261,22 +272,23 @@
+@@ -260,22 +273,23 @@
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${ramroot} " \
  		"rootfstype=${ramrootfstype}\0" \
@@ -232,7 +235,7 @@ index 47d9902..4f4c4e7 100644
  	"userbutton=if gpio input 173; then run userbutton_xm; " \
  		"else run userbutton_nonxm; fi;\0" \
  	"userbutton_xm=gpio input 4;\0" \
-@@ -295,10 +307,16 @@
+@@ -294,10 +308,16 @@
  			"echo Loaded environment from ${bootenv};" \
  			"run importbootenv;" \
  		"fi;" \
@@ -250,5 +253,5 @@ index 47d9902..4f4c4e7 100644
  			"run mmcboot;" \
  		"fi;" \
 -- 
-1.8.4.rc3
+1.8.5.2
 
