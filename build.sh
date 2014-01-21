@@ -102,21 +102,21 @@ gcc_arm_embedded_4_8 () {
 	dl_gcc_generic
 }
 
-arm_linux_gnueabihf_toolchain () {
-	#https://releases.linaro.org/13.12/components/toolchain/binaries/
-	#https://releases.linaro.org/13.12/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.8-2013.12_linux.tar.xz
+gcc_linaro_gnueabihf_4_8 () {
+		#https://releases.linaro.org/13.12/components/toolchain/binaries/
+		#https://releases.linaro.org/13.12/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.8-2013.12_linux.tar.xz
 
-	gcc_version="4.8"
-	release="2013.12"
-	toolchain_name="gcc-linaro-arm-linux-gnueabihf"
-	site="https://releases.linaro.org"
-	version="13.12/components/toolchain/binaries"
-	directory="${toolchain_name}-${gcc_version}-${release}_linux"
-	filename="${directory}.tar.xz"
-	datestamp="${release}-${toolchain_name}"
-	untar="tar -xf"
+		gcc_version="4.8"
+		release="2013.12"
+		toolchain_name="gcc-linaro-arm-linux-gnueabihf"
+		site="https://releases.linaro.org"
+		version="13.12/components/toolchain/binaries"
+		directory="${toolchain_name}-${gcc_version}-${release}_linux"
+		filename="${directory}.tar.xz"
+		datestamp="${release}-${toolchain_name}"
+		untar="tar -xf"
 
-	binary="bin/arm-linux-gnueabihf-"
+		binary="bin/arm-linux-gnueabihf-"
 
 	dl_gcc_generic
 }
@@ -452,7 +452,7 @@ build_uboot_all () {
 
 am335x_evm () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_evm"
 	build_uboot_all
@@ -460,7 +460,7 @@ am335x_evm () {
 
 arndale () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="arndale"
 	build_uboot_all
@@ -509,7 +509,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx51evk"
 	build_uboot_all
@@ -517,7 +517,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx53loco"
 	build_uboot_all
@@ -525,7 +525,7 @@ mx53loco () {
 
 mx6qsabresd () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx6qsabresd"
 	UBOOT_CONFIG="${BOARD}_config"
@@ -534,7 +534,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap3_beagle"
 	build_uboot_all
@@ -542,7 +542,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap4_panda"
 	build_uboot_all
@@ -550,7 +550,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap5_uevm"
 	build_uboot_all
@@ -569,7 +569,7 @@ sama5d3xek () {
 
 vf610twr () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="vf610twr"
 	build_uboot_all
@@ -577,7 +577,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	arm_linux_gnueabihf_toolchain
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_quad"
 	UBOOT_CONFIG="${BOARD}_config"
