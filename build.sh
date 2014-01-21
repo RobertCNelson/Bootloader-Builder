@@ -490,17 +490,21 @@ at91sam9x5ek () {
 
 mx23_olinuxino () {
 	cleanup
-	if [ $(which elftosb) ] ; then
-		gcc_arm_embedded_4_8
+	gcc_arm_embedded_4_8
 
-		BOARD="mx23_olinuxino"
-		build_uboot_all
+	BOARD="mx23_olinuxino"
+	UBOOT_CONFIG="${BOARD}_config"
+
+	if [ $(which elftosb) ] ; then
+		build_uboot_stable
 	else
 		echo "-----------------------------"
 		echo "Skipping Binary Build of [mx23_olinuxino]: as elftosb is not installed."
 		echo "See: http://eewiki.net/display/linuxonarm/iMX233-OLinuXino#iMX233-OLinuXino-elftosb"
 		echo "-----------------------------"
 	fi
+	build_uboot_testing
+	build_uboot_latest
 }
 
 mx51evk () {
