@@ -1,6 +1,6 @@
-From f6ac6309abad67b17bda92dd80cee4983e645ee5 Mon Sep 17 00:00:00 2001
+From 29e80cdd63eaecc287cb76d357d0efba85412264 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 28 Jan 2014 15:29:53 -0600
+Date: Tue, 28 Jan 2014 15:34:39 -0600
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -111,7 +111,7 @@ index 9669a32..f3f2f80 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_AB:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index c58bc91..d18882c 100644
+index c58bc91..b0c13c3 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -134,8 +134,10 @@
@@ -179,7 +179,7 @@ index c58bc91..d18882c 100644
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
 +	"fixfdt=" \
 +		"if test $beaglerev = xMAB; then " \
-+			"fdt resize; fdt set /hsusb2_power_reg enable-active-high; \0" \
++			"fdt addr ${fdtaddr}; fdt resize; fdt set /hsusb2_power_reg enable-active-high; \0" \
  	"bootenv=uEnv.txt\0" \
 -	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 +	"loadbootenv=load mmc ${bootpart} ${loadaddr} ${bootenv}\0" \
