@@ -248,8 +248,9 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: beagle: loadaddr=0x80300000
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
