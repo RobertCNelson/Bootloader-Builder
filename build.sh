@@ -215,8 +215,9 @@ build_u_boot () {
 		#r1: initial release
 		#r2: enable imx6 errata
 		#r3: beagle c4: beaglerev=C4 -> fdtfile omap3-beagle.dtb
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: am335x_evm: assume blank eeprom is beaglebone black...
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
@@ -237,6 +238,7 @@ build_u_boot () {
 
 		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
