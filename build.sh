@@ -217,8 +217,9 @@ build_u_boot () {
 		#r3: beagle c4: beaglerev=C4 -> fdtfile omap3-beagle.dtb
 		#r4: am335x_evm: assume blank eeprom is beaglebone black...
 		#r5: am335x_evm: $fdtbase-$cape.dtb
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: don't forget about the non black...
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
@@ -239,7 +240,9 @@ build_u_boot () {
 
 		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
+			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+		fi
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
@@ -463,6 +466,17 @@ am335x_evm () {
 	build_uboot_all
 }
 
+am335x_boneblack_flasher () {
+	cleanup
+	gcc_linaro_gnueabihf_4_8
+
+	BOARD="am335x_boneblack"
+	UBOOT_CONFIG="am335x_evm_config"
+	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
+}
+
 arndale () {
 	cleanup
 	gcc_linaro_gnueabihf_4_8
@@ -596,6 +610,7 @@ wandboard () {
 }
 
 am335x_evm
+am335x_boneblack_flasher
 arndale
 at91sam9g20ek
 at91sam9x5ek
