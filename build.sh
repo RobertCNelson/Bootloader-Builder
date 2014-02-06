@@ -216,8 +216,9 @@ build_u_boot () {
 		#r2: enable imx6 errata
 		#r3: beagle c4: beaglerev=C4 -> fdtfile omap3-beagle.dtb
 		#r4: am335x_evm: assume blank eeprom is beaglebone black...
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: am335x_evm: $fdtbase-$cape.dtb
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 
 		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
