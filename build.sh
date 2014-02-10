@@ -256,8 +256,12 @@ build_u_boot () {
 		#r1: initial release
 		#r2: beagle: loadaddr=0x80300000
 		#r3: beagle-xm: drop fixfdt (u-boot wants it done in kernel..)
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: beagle-xm: still need to support the ulcd7 on a v3.7.x based kernel
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
+
+		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
+		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
