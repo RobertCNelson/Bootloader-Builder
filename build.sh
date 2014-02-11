@@ -414,6 +414,7 @@ build_u_boot () {
 
 cleanup () {
 	unset GIT_SHA
+	unset transitioned_to_testing
 }
 
 build_at91bootstrap_all () {
@@ -427,12 +428,14 @@ build_at91bootstrap_all () {
 }
 
 build_uboot_stable () {
-	stable=1
-	if [ "${uboot_stable}" ] ; then
-		GIT_SHA=${uboot_stable}
-		build_u_boot
+	if [ "x${transitioned_to_testing}" = "x" ] ; then
+		stable=1
+		if [ "${uboot_stable}" ] ; then
+			GIT_SHA=${uboot_stable}
+			build_u_boot
+		fi
+		unset stable
 	fi
-	unset stable
 }
 
 build_uboot_testing () {
@@ -500,6 +503,7 @@ at91sam9g20ek () {
 
 at91sam9x5ek () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="at91sam9x5ek_mmc"
@@ -555,6 +559,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap3_beagle"
