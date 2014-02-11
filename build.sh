@@ -576,6 +576,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap5_uevm"
@@ -584,6 +585,7 @@ omap5_uevm () {
 
 sama5d3xek () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="sama5d3xek_mmc"
