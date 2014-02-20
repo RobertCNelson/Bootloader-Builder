@@ -484,6 +484,7 @@ am335x_boneblack_flasher () {
 
 arndale () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="arndale"
@@ -492,6 +493,7 @@ arndale () {
 
 at91sam9g20ek () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="at91sam9g20ek_mmc"
@@ -534,6 +536,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx51evk"
@@ -599,6 +602,7 @@ sama5d3xek () {
 
 vf610twr () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="vf610twr"
