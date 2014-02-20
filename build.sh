@@ -607,6 +607,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_quad"
