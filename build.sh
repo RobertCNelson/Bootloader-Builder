@@ -517,6 +517,7 @@ at91sam9x5ek () {
 
 mx23_olinuxino () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="mx23_olinuxino"
@@ -554,6 +555,7 @@ mx53loco () {
 
 mx6qsabresd () {
 	cleanup
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx6qsabresd"
