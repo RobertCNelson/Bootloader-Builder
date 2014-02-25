@@ -1,14 +1,14 @@
-From cf8fcd86e6c56e0e00b6e974bd63c1721dd2492e Mon Sep 17 00:00:00 2001
+From d402cad64c3498f15c0a96fa5c9a746002090c5e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 6 Feb 2014 11:49:11 -0600
+Date: Tue, 25 Feb 2014 10:20:42 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- arch/arm/cpu/armv7/am33xx/ddr.c   | 10 +++++
- include/configs/am335x_evm.h      | 93 ++++++++++++++++++++++-----------------
+ arch/arm/cpu/armv7/am33xx/ddr.c   | 10 ++++
+ include/configs/am335x_evm.h      | 97 +++++++++++++++++++++++----------------
  include/configs/ti_armv7_common.h |  1 +
- 3 files changed, 64 insertions(+), 40 deletions(-)
+ 3 files changed, 68 insertions(+), 40 deletions(-)
 
 diff --git a/arch/arm/cpu/armv7/am33xx/ddr.c b/arch/arm/cpu/armv7/am33xx/ddr.c
 index fa697c7..63e0760 100644
@@ -39,7 +39,7 @@ index fa697c7..63e0760 100644
  
  /**
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index c2ba7e3..a11c0fd 100644
+index c2ba7e3..c735579 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -64,14 +64,16 @@
@@ -127,7 +127,7 @@ index c2ba7e3..a11c0fd 100644
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -167,12 +147,45 @@
+@@ -167,12 +147,49 @@
  #endif
  
  #define CONFIG_BOOTCOMMAND \
@@ -139,16 +139,16 @@ index c2ba7e3..a11c0fd 100644
 -	"setenv bootpart 1:2; " \
 -	"run mmcboot;" \
 -	"run nandboot;"
-+	"if test -n $cape; then " \
-+		"setenv fdtfile $fdtbase-$cape.dtb; " \
-+		"echo using: $fdtfile...; " \
-+	"fi; " \
 +	"mmc dev 0; if mmc rescan ; then " \
 +		"gpio set 54; " \
 +		"setenv mmcdev 0; " \
 +		"echo SD/MMC found on device ${mmcdev}; " \
 +		"if run loadbootenv; then " \
 +			"run importbootenv; " \
++		"fi; " \
++		"if test -n $cape; then " \
++			"setenv fdtfile $fdtbase-$cape.dtb; " \
++			"echo using: $fdtfile...; " \
 +		"fi; " \
 +		"gpio set 55; " \
 +		"echo Checking if uenvcmd is set ...;" \
@@ -165,6 +165,10 @@ index c2ba7e3..a11c0fd 100644
 +		"echo SD/MMC found on device ${mmcdev}; " \
 +		"if run loadbootenv; then " \
 +			"run importbootenv; " \
++		"fi; " \
++		"if test -n $cape; then " \
++			"setenv fdtfile $fdtbase-$cape.dtb; " \
++			"echo using: $fdtfile...; " \
 +		"fi; " \
 +		"gpio set 55; " \
 +		"echo Checking if uenvcmd is set ...;" \
