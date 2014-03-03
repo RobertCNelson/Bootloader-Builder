@@ -1,16 +1,16 @@
-From 3241215e4a2fe2d90db177683f70620ffd76c8ac Mon Sep 17 00:00:00 2001
+From 191ca9ec1ff91aab9573b165942c9583afaa0734 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 21 Jan 2014 12:56:41 -0600
+Date: Mon, 3 Mar 2014 11:13:22 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h      | 28 ++++++++++++++++++----------
+ include/configs/am335x_evm.h      | 36 ++++++++++++++++++++++++------------
  include/configs/ti_armv7_common.h |  1 +
- 2 files changed, 19 insertions(+), 10 deletions(-)
+ 2 files changed, 25 insertions(+), 12 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 73a9adb..4367cc6 100644
+index 73a9adb..7008ff8 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -54,20 +54,21 @@
@@ -57,7 +57,7 @@ index 73a9adb..4367cc6 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -119,18 +120,20 @@
+@@ -119,18 +120,24 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -68,6 +68,10 @@ index 73a9adb..4367cc6 100644
  				"echo Loaded environment from ${bootenv};" \
  				"run importbootenv;" \
  			"fi;" \
++			"if test -n $cape; then " \
++				"setenv fdtfile $fdtbase-$cape.dtb; " \
++				"echo using: $fdtfile...; " \
++			"fi; " \
 +			"echo Checking if uenvcmd is set ...;" \
  			"if test -n $uenvcmd; then " \
 +				"gpio set 56; " \
@@ -81,7 +85,19 @@ index 73a9adb..4367cc6 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -163,10 +166,15 @@
+@@ -149,9 +156,9 @@
+ 		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
+ 	"findfdt="\
+ 		"if test $board_name = A335BONE; then " \
+-			"setenv fdtfile am335x-bone.dtb; fi; " \
++			"setenv fdtfile am335x-bone.dtb; setenv fdtbase am335x-bone; fi; " \
+ 		"if test $board_name = A335BNLT; then " \
+-			"setenv fdtfile am335x-boneblack.dtb; fi; " \
++			"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; fi; " \
+ 		"if test $board_name = A33515BB; then " \
+ 			"setenv fdtfile am335x-evm.dtb; fi; " \
+ 		"if test $board_name = A335X_SK; then " \
+@@ -163,10 +170,15 @@
  #endif
  
  #define CONFIG_BOOTCOMMAND \
@@ -111,5 +127,5 @@ index 99b60fc..954b401 100644
  /*
   * Common filesystems support.  When we have removable storage we
 -- 
-1.8.5.2
+1.9.0
 

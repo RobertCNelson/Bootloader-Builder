@@ -260,8 +260,9 @@ build_u_boot () {
 		#r3: beagle-xm: drop fixfdt (u-boot wants it done in kernel..)
 		#r4: beagle-xm: still need to support the ulcd7 on a v3.7.x based kernel
 		#r5: beagle-xm: board files are done... dont revert the usb fix for old crap.. (v3.7.x kernels)
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: $fdtbase-$cape.dtb
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
