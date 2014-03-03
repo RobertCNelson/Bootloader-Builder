@@ -35,8 +35,8 @@ stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 latest_at91bootstrap_sha="f7f2b5f421436fc23ad1421de424407667e5efa1"
 
 uboot_old="v2013.10"
-uboot_stable="v2013.10"
-uboot_testing="v2014.01"
+uboot_stable="v2014.01"
+#uboot_testing="v2014.01"
 
 #uboot_latest="5c9038b6af1a93410af966999638eabb81efcd0f"
 #uboot_testing="v2014.01"
@@ -256,17 +256,12 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_stable}"
 	if [ "${stable}" ] ; then
 		#r1: initial release
-		#r2: enable imx6 errata
-		#r3: beagle c4: beaglerev=C4 -> fdtfile omap3-beagle.dtb
-		#r4: am335x_evm: assume blank eeprom is beaglebone black...
-		#r5: am335x_evm: $fdtbase-$cape.dtb
-		#r6: am335x_evm: don't forget about the non black...
-		#r7: am335x_evm: check cape after reading uEnv.txt
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
-
-		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
-		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
+		#r2: beagle: loadaddr=0x80300000
+		#r3: beagle-xm: drop fixfdt (u-boot wants it done in kernel..)
+		#r4: beagle-xm: still need to support the ulcd7 on a v3.7.x based kernel
+		#r5: beagle-xm: board files are done... dont revert the usb fix for old crap.. (v3.7.x kernels)
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
@@ -284,15 +279,9 @@ build_u_boot () {
 
 		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
-			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
-		fi
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
-
-		#imx6 errata
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-ARM-mx6-Update-non-Freescale-boards-to-include-CPU-e.patch"
 	fi
 
 	uboot_patch_dir="${uboot_testing}"
@@ -517,6 +506,7 @@ build_uboot_all () {
 
 am335x_evm () {
 	cleanup
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_evm"
@@ -528,6 +518,7 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_boneblack"
@@ -541,7 +532,7 @@ am335x_boneblack_flasher () {
 
 arndale () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="arndale"
@@ -551,7 +542,7 @@ arndale () {
 
 at91sam9g20ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="at91sam9g20ek_mmc"
@@ -564,7 +555,7 @@ at91sam9g20ek () {
 
 at91sam9x5ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="at91sam9x5ek_mmc"
@@ -577,27 +568,17 @@ at91sam9x5ek () {
 
 mx23_olinuxino () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="mx23_olinuxino"
 	UBOOT_CONFIG="${BOARD}_config"
-
-	if [ $(which elftosb) ] ; then
-		build_uboot_stable
-	else
-		echo "-----------------------------"
-		echo "Skipping Binary Build of [mx23_olinuxino]: as elftosb is not installed."
-		echo "See: http://eewiki.net/display/linuxonarm/iMX233-OLinuXino#iMX233-OLinuXino-elftosb"
-		echo "-----------------------------"
-	fi
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_all
 }
 
 mx51evk () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx51evk"
@@ -607,7 +588,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx53loco"
@@ -617,7 +598,7 @@ mx53loco () {
 
 mx6qsabresd () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx6qsabresd"
@@ -627,7 +608,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap3_beagle"
@@ -637,7 +618,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap4_panda"
@@ -647,7 +628,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap5_uevm"
@@ -657,7 +638,7 @@ omap5_uevm () {
 
 sama5d3xek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="sama5d3xek_mmc"
@@ -670,7 +651,7 @@ sama5d3xek () {
 
 vf610twr () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="vf610twr"
@@ -680,7 +661,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_quad"
