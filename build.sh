@@ -31,12 +31,12 @@ NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
 stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 
-#latest_at91bootstrap_sha="69a7c5685c0ad3356b03a023810f59ed67ad5543"
-latest_at91bootstrap_sha="f7f2b5f421436fc23ad1421de424407667e5efa1"
+#latest_at91bootstrap_sha="f7f2b5f421436fc23ad1421de424407667e5efa1"
+latest_at91bootstrap_sha="aa9423ceef27c04036d00ca4f67ba59f68c829eb"
 
 uboot_old="v2013.10"
 uboot_stable="v2014.01"
-#uboot_testing="v2014.01"
+uboot_testing="v2014.04-rc1"
 
 #uboot_latest="5c9038b6af1a93410af966999638eabb81efcd0f"
 #uboot_testing="v2014.01"
