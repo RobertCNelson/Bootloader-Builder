@@ -29,10 +29,10 @@ SYST=$(uname -n)
 # Number of jobs for make to run in parallel.
 NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
-stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
+stable_at91bootstrap_sha="aa9423ceef27c04036d00ca4f67ba59f68c829eb"
 
 #latest_at91bootstrap_sha="f7f2b5f421436fc23ad1421de424407667e5efa1"
-latest_at91bootstrap_sha="aa9423ceef27c04036d00ca4f67ba59f68c829eb"
+#latest_at91bootstrap_sha="aa9423ceef27c04036d00ca4f67ba59f68c829eb"
 
 uboot_old="v2013.10"
 uboot_stable="v2014.01"
@@ -293,6 +293,8 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-ARM-atmel-add-sama5d3-Xplained-board-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
@@ -320,6 +322,8 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-ARM-atmel-add-sama5d3-Xplained-board-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
@@ -654,6 +658,25 @@ sama5d3xek () {
 	build_at91bootstrap_all
 }
 
+sama5d3_xplained () {
+	cleanup
+	#transitioned_to_testing="true"
+	gcc_arm_embedded_4_8
+
+	BOARD="sama5d3_xplained_mmc"
+	UBOOT_CONFIG="${BOARD}_config"
+	#build_uboot_all
+
+	#build_uboot_stable
+	kbuild="enable"
+	build_uboot_testing
+	kbuild="enable"
+	build_uboot_latest
+
+	at91bootstrap_config="sama5d3_xplainedsd_uboot_defconfig"
+	build_at91bootstrap_all
+}
+
 vf610twr () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -695,6 +718,7 @@ omap3_beagle
 omap4_panda
 omap5_uevm
 sama5d3xek
+sama5d3_xplained
 vf610twr
 wandboard
 #
