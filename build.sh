@@ -34,6 +34,7 @@ stable_at91bootstrap_sha="16901eba66246899cb86f3c3364426a44d7e63de"
 #latest_at91bootstrap_sha="69a7c5685c0ad3356b03a023810f59ed67ad5543"
 latest_at91bootstrap_sha="f7f2b5f421436fc23ad1421de424407667e5efa1"
 
+uboot_old="v2013.10"
 uboot_stable="v2013.10"
 uboot_testing="v2014.01"
 
@@ -209,6 +210,48 @@ build_u_boot () {
 
 	make ARCH=arm CROSS_COMPILE=${CC} distclean
 	UGIT_VERSION=$(git describe)
+
+	uboot_patch_dir="${uboot_old}"
+	if [ "${old}" ] ; then
+		#r1: initial release
+		#r2: enable imx6 errata
+		#r3: beagle c4: beaglerev=C4 -> fdtfile omap3-beagle.dtb
+		#r4: am335x_evm: assume blank eeprom is beaglebone black...
+		#r5: am335x_evm: $fdtbase-$cape.dtb
+		#r6: am335x_evm: don't forget about the non black...
+		#r7: am335x_evm: check cape after reading uEnv.txt
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
+
+		#ARM: omap3: Implement dpll5 (HSUSB clk) workaround for OMAP36xx/AM/DM37xx according to errata sprz318e.
+		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
+
+		#Atmel:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+
+		#Freescale:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+
+		#TI:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
+			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+		fi
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+
+		#imx6 errata
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-ARM-mx6-Update-non-Freescale-boards-to-include-CPU-e.patch"
+	fi
 
 	uboot_patch_dir="${uboot_stable}"
 	if [ "${stable}" ] ; then
@@ -428,6 +471,15 @@ build_at91bootstrap_all () {
 	fi
 }
 
+build_uboot_old () {
+	old=1
+	if [ "${uboot_old}" ] ; then
+		GIT_SHA=${uboot_old}
+		build_u_boot
+	fi
+	unset old
+}
+
 build_uboot_stable () {
 	if [ "x${transitioned_to_testing}" = "x" ] ; then
 		stable=1
@@ -458,7 +510,6 @@ build_uboot_latest () {
 }
 
 build_uboot_all () {
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
@@ -469,6 +520,9 @@ am335x_evm () {
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_evm"
+	UBOOT_CONFIG="${BOARD}_config"
+
+	build_uboot_old
 	build_uboot_all
 }
 
@@ -478,9 +532,11 @@ am335x_boneblack_flasher () {
 
 	BOARD="am335x_boneblack"
 	UBOOT_CONFIG="am335x_evm_config"
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_old
+
+	#build_uboot_stable
+	#build_uboot_testing
+	#build_uboot_latest
 }
 
 arndale () {
@@ -489,6 +545,7 @@ arndale () {
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="arndale"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
 
@@ -498,6 +555,7 @@ at91sam9g20ek () {
 	gcc_arm_embedded_4_8
 
 	BOARD="at91sam9g20ek_mmc"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 
 	at91bootstrap_config="at91sam9g20eksd_uboot_defconfig"
@@ -510,6 +568,7 @@ at91sam9x5ek () {
 	gcc_arm_embedded_4_8
 
 	BOARD="at91sam9x5ek_mmc"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 
 	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
@@ -542,6 +601,7 @@ mx51evk () {
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx51evk"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
 
@@ -551,6 +611,7 @@ mx53loco () {
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx53loco"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
 
@@ -570,6 +631,7 @@ omap3_beagle () {
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap3_beagle"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
 
@@ -579,6 +641,7 @@ omap4_panda () {
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap4_panda"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
 
@@ -588,6 +651,7 @@ omap5_uevm () {
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap5_uevm"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
 
@@ -597,6 +661,7 @@ sama5d3xek () {
 	gcc_arm_embedded_4_8
 
 	BOARD="sama5d3xek_mmc"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 
 	at91bootstrap_config="sama5d3xeksd_uboot_defconfig"
@@ -609,6 +674,7 @@ vf610twr () {
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="vf610twr"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
 
@@ -622,9 +688,11 @@ wandboard () {
 	build_uboot_all
 
 	BOARD="wandboard_dl"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 
 	BOARD="wandboard_solo"
+	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
 
