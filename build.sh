@@ -73,7 +73,7 @@ dl_gcc_generic () {
 		if [ -d ${DIR}/dl/${directory} ] ; then
 			rm -rf ${DIR}/dl/${directory} || true
 		fi
-		${untar} ${DIR}/dl/${filename} -C ${DIR}/dl/
+		tar xf ${DIR}/dl/${filename} -C ${DIR}/dl/
 		touch ${DIR}/dl/${datestamp}
 	fi
 
@@ -97,7 +97,6 @@ gcc_arm_embedded_4_8 () {
 		directory="${toolchain_name}-4_8-2013q4"
 		filename="${directory}-${version_date}-linux.tar.bz2"
 		datestamp="${version_date}-${toolchain_name}"
-		untar="tar -xjf"
 
 		binary="bin/arm-none-eabi-"
 
@@ -105,18 +104,15 @@ gcc_arm_embedded_4_8 () {
 }
 
 gcc_linaro_gnueabihf_4_8 () {
-		#https://releases.linaro.org/13.12/components/toolchain/binaries/
-		#https://releases.linaro.org/13.12/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.8-2013.12_linux.tar.xz
-
+		#https://releases.linaro.org/14.02/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.8-2014.02_linux.tar.xz
 		gcc_version="4.8"
-		release="2013.12"
+		release="2014.02"
 		toolchain_name="gcc-linaro-arm-linux-gnueabihf"
 		site="https://releases.linaro.org"
-		version="13.12/components/toolchain/binaries"
+		version="14.02/components/toolchain/binaries"
 		directory="${toolchain_name}-${gcc_version}-${release}_linux"
 		filename="${directory}.tar.xz"
 		datestamp="${release}-${toolchain_name}"
-		untar="tar -xf"
 
 		binary="bin/arm-linux-gnueabihf-"
 
