@@ -1,6 +1,6 @@
-From 191ca9ec1ff91aab9573b165942c9583afaa0734 Mon Sep 17 00:00:00 2001
+From 9bde117ee5e40dd5c9b79c75fd609e554019ee5e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 3 Mar 2014 11:13:22 -0600
+Date: Mon, 3 Mar 2014 12:00:02 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,10 +10,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  2 files changed, 25 insertions(+), 12 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 73a9adb..7008ff8 100644
+index 59a8f36..031e547 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -54,20 +54,21 @@
+@@ -61,13 +61,14 @@
  
  #ifndef CONFIG_SPL_BUILD
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -31,6 +31,7 @@ index 73a9adb..7008ff8 100644
  	"bootfile=zImage\0" \
  	"fdtfile=undefined\0" \
  	"console=ttyO0,115200n8\0" \
+@@ -77,7 +78,7 @@
  	"optargs=\0" \
  	"mmcdev=0\0" \
  	"mmcroot=/dev/mmcblk0p2 ro\0" \
@@ -39,7 +40,7 @@ index 73a9adb..7008ff8 100644
  	"rootpath=/export/rootfs\0" \
  	"nfsopts=nolock\0" \
  	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
-@@ -93,7 +94,7 @@
+@@ -103,7 +104,7 @@
  		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
  		"ip=dhcp\0" \
  	"bootenv=uEnv.txt\0" \
@@ -48,7 +49,7 @@ index 73a9adb..7008ff8 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -102,7 +103,7 @@
+@@ -112,7 +113,7 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -57,7 +58,7 @@ index 73a9adb..7008ff8 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -119,18 +120,24 @@
+@@ -129,18 +130,24 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -85,7 +86,7 @@ index 73a9adb..7008ff8 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -149,9 +156,9 @@
+@@ -159,9 +166,9 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -97,7 +98,7 @@ index 73a9adb..7008ff8 100644
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -163,10 +170,15 @@
+@@ -173,10 +180,15 @@
  #endif
  
  #define CONFIG_BOOTCOMMAND \
@@ -115,10 +116,10 @@ index 73a9adb..7008ff8 100644
  	"run nandboot;"
  
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 99b60fc..954b401 100644
+index 69d69a5..bd7d783 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -147,6 +147,7 @@
+@@ -151,6 +151,7 @@
  #define CONFIG_CMD_ASKENV
  #define CONFIG_CMD_ECHO
  #define CONFIG_CMD_BOOTZ

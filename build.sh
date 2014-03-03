@@ -41,6 +41,7 @@ uboot_testing="v2014.04-rc1"
 #uboot_latest="5c9038b6af1a93410af966999638eabb81efcd0f"
 #uboot_testing="v2014.01"
 #uboot_latest="b44bd2c73c4cfb6e3b9e7f8cf987e8e39aa74a0b"
+uboot_latest="eeb72e67619b98d2502fe634a3a5d9953de92ad0"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -288,12 +289,8 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: beagle: loadaddr=0x80300000
-		#r3: beagle-xm: drop fixfdt (u-boot wants it done in kernel..)
-		#r4: beagle-xm: still need to support the ulcd7 on a v3.7.x based kernel
-		#r5: beagle-xm: board files are done... dont revert the usb fix for old crap.. (v3.7.x kernels)
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"

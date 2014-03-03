@@ -1,15 +1,15 @@
-From 4b49bf1430884428e1ccbe12b615ab5cc98a83d7 Mon Sep 17 00:00:00 2001
+From c0ce46f51d590731533ff72c39c3b6363e1c280e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 8 Nov 2013 11:43:20 -0600
+Date: Mon, 3 Mar 2014 11:53:34 -0600
 Subject: [PATCH] vf610twr: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/vf610twr.h | 67 +++++++++++++++++++++++++---------------------
- 1 file changed, 37 insertions(+), 30 deletions(-)
+ include/configs/vf610twr.h | 50 ++++++++++++++++++++++++++++++----------------
+ 1 file changed, 33 insertions(+), 17 deletions(-)
 
 diff --git a/include/configs/vf610twr.h b/include/configs/vf610twr.h
-index 8d0a00d..1dfd3a0 100644
+index 500fd2f..23a1fd6 100644
 --- a/include/configs/vf610twr.h
 +++ b/include/configs/vf610twr.h
 @@ -54,6 +54,9 @@
@@ -38,7 +38,8 @@ index 8d0a00d..1dfd3a0 100644
 -	"fdt_file=vf610-twr.dtb\0" \
 +	"fdt_file=/dtbs/vf610-twr.dtb\0" \
  	"fdt_addr=0x81000000\0" \
- 	"boot_fdt=try\0" \
+-	"boot_fdt=try\0" \
++	"boot_fdt=yes\0" \
  	"ip_dyn=yes\0" \
  	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
  	"mmcpart=1\0" \
@@ -49,7 +50,7 @@ index 8d0a00d..1dfd3a0 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -107,28 +112,22 @@
+@@ -107,13 +112,18 @@
  			"fi; "	\
  		"fi\0" \
  	"mmcargs=setenv bootargs console=${console},${baudrate} " \
@@ -65,46 +66,26 @@ index 8d0a00d..1dfd3a0 100644
 +		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
-+	"loaduimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
-+	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
++	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 +	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
--		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
--			"if run loadfdt; then " \
--				"bootm ${loadaddr} - ${fdt_addr}; " \
--			"else " \
--				"if test ${boot_fdt} = try; then " \
--					"bootm; " \
--				"else " \
--					"echo WARN: Cannot load the DT; " \
--				"fi; " \
--			"fi; " \
--		"else " \
--			"bootm; " \
--		"fi;\0" \
-+		"bootz ${loadaddr} - ${fdt_addr}; " \
- 	"netargs=setenv bootargs console=${console},${baudrate} " \
- 		"root=/dev/nfs " \
- 	"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
-@@ -155,16 +154,23 @@
- 		"fi;\0"
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+@@ -156,15 +166,20 @@
  
  #define CONFIG_BOOTCOMMAND \
--	   "mmc dev ${mmcdev}; if mmc rescan; then " \
+ 	   "mmc dev ${mmcdev}; if mmc rescan; then " \
 -		   "if run loadbootscript; then " \
 -			   "run bootscript; " \
 -		   "else " \
--			   "if run loaduimage; then " \
+-			   "if run loadimage; then " \
 -				   "run mmcboot; " \
 -			   "else run netboot; " \
 -			   "fi; " \
 -		   "fi; " \
 -	   "else run netboot; fi"
-+	"mmc dev ${mmcdev};" \
-+	"if mmc rescan; then " \
 +		"echo SD/MMC found on device ${mmcdev};" \
 +		"if run loadbootenv; then " \
 +			"run importbootenv;" \
@@ -116,14 +97,13 @@ index 8d0a00d..1dfd3a0 100644
 +		"fi;" \
 +		"echo Running default loadimage ...;" \
 +		"if run loadimage; then " \
-+			"run loadfdt;" \
 +			"run mmcboot;" \
 +		"fi;" \
 +	"fi;"
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-@@ -214,5 +220,6 @@
+@@ -214,5 +229,6 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -131,5 +111,5 @@ index 8d0a00d..1dfd3a0 100644
  
  #endif
 -- 
-1.8.4.rc3
+1.9.0
 

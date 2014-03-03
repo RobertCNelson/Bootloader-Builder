@@ -1,15 +1,15 @@
-From cb55be24b233732d9f998a0a56912ae5276e6837 Mon Sep 17 00:00:00 2001
+From 629c187793c6067bc2ddfba624253448b0ae7875 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 23 Jan 2014 15:32:34 -0600
+Date: Mon, 3 Mar 2014 11:36:09 -0600
 Subject: [PATCH] mx51evk: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx51evk.h | 75 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 51 insertions(+), 24 deletions(-)
+ include/configs/mx51evk.h | 62 +++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 44 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index 1cff171..404151c 100644
+index b389475..c679b7d 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
 @@ -79,6 +79,14 @@
@@ -27,14 +27,14 @@ index 1cff171..404151c 100644
  /*
   * Eth Configs
   */
-@@ -142,37 +150,51 @@
+@@ -142,23 +150,36 @@
  #define CONFIG_LOADADDR		0x92000000	/* loadaddr env var */
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
 +	"initrd_high=0xffffffff\0" \
 +	"fdt_high=0xffffffff\0" \
  	"script=boot.scr\0" \
- 	"uimage=uImage\0" \
+ 	"image=zImage\0" \
 -	"fdt_file=imx51-babbage.dtb\0" \
 -	"fdt_addr=0x91000000\0" \
 -	"boot_fdt=try\0" \
@@ -63,60 +63,24 @@ index 1cff171..404151c 100644
 +		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 +	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt\0" \
 +	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
 +		"env import -t ${loadaddr} ${filesize}\0" \
-+	"loaduimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
-+	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
++	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 +	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
- 			"if run loadfdt; then " \
--				"bootm ${loadaddr} - ${fdt_addr}; " \
-+				"bootz ${loadaddr} - ${fdt_addr}; " \
- 			"else " \
- 				"if test ${boot_fdt} = try; then " \
--					"bootm; " \
-+					"bootz; " \
- 				"else " \
- 					"echo WARN: Cannot load the DT; " \
- 				"fi; " \
- 			"fi; " \
- 		"else " \
--			"bootm; " \
-+			"bootz; " \
- 		"fi;\0" \
- 	"netargs=setenv bootargs console=ttymxc0,${baudrate} " \
- 		"root=/dev/nfs " \
-@@ -187,30 +209,35 @@
- 		"${get_cmd} ${uimage}; " \
- 		"if test ${boot_fdt} = yes ||  test ${boot_fdt} = try; then " \
- 			"if ${get_cmd} ${fdt_addr} ${fdt_file}; then " \
--				"bootm ${loadaddr} - ${fdt_addr}; " \
-+				"bootz ${loadaddr} - ${fdt_addr}; " \
- 			"else " \
- 				"if test ${boot_fdt} = try; then " \
--					"bootm; " \
-+					"bootz; " \
- 				"else " \
- 					"echo ERROR: Cannot load the DT; " \
- 					"exit; " \
- 				"fi; " \
- 			"fi; " \
- 		"else " \
--			"bootm; " \
-+			"bootz; " \
- 		"fi;\0"
+@@ -202,15 +223,20 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"if run loadbootscript; then " \
 -			"run bootscript; " \
 -		"else " \
--			"if run loaduimage; then " \
+-			"if run loadimage; then " \
 -				"run mmcboot; " \
 -			"else run netboot; " \
 -			"fi; " \
@@ -131,8 +95,8 @@ index 1cff171..404151c 100644
 +			"echo Running uenvcmd ...;" \
 +			"run uenvcmd;" \
 +		"fi;" \
-+		"echo Running default loadzimage ...;" \
-+		"if run loadzimage; then " \
++		"echo Running default loadimage ...;" \
++		"if run loadimage; then " \
 +			"run mmcboot;" \
 +		"fi;" \
 +	"fi;"
@@ -140,5 +104,5 @@ index 1cff171..404151c 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-1.8.5.2
+1.9.0
 
