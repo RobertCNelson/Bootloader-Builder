@@ -383,7 +383,15 @@ build_u_boot () {
 	if [ ! "${pre_built}" ] ; then
 		make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
 		echo "Building ${project}: ${uboot_filename}"
-		time make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET} > /dev/null
+		if [ "x${kbuild}" = "xenable" ] ; then
+			echo "-----------------------------"
+			time make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET}
+			echo "-----------------------------"
+		else
+			echo "-----------------------------"
+			time make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET} > /dev/null
+			echo "-----------------------------"
+		fi
 
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
@@ -446,6 +454,7 @@ build_u_boot () {
 cleanup () {
 	unset GIT_SHA
 	unset transitioned_to_testing
+	unset kbuild
 }
 
 build_at91bootstrap_all () {
@@ -498,7 +507,9 @@ build_uboot_latest () {
 
 build_uboot_all () {
 	build_uboot_stable
+	kbuild="enable"
 	build_uboot_testing
+	kbuild="enable"
 	build_uboot_latest
 }
 
