@@ -38,10 +38,8 @@ uboot_old="v2013.10"
 uboot_stable="v2014.01"
 uboot_testing="v2014.04-rc1"
 
-#uboot_latest="5c9038b6af1a93410af966999638eabb81efcd0f"
-#uboot_testing="v2014.01"
-#uboot_latest="b44bd2c73c4cfb6e3b9e7f8cf987e8e39aa74a0b"
-uboot_latest="eeb72e67619b98d2502fe634a3a5d9953de92ad0"
+#uboot_latest="eeb72e67619b98d2502fe634a3a5d9953de92ad0"
+uboot_latest="e4b87e5b1d026bd010e2ba3abbf89561e8320287"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -285,8 +283,9 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x_evm: $fdtbase-$cape.dtb
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
@@ -306,6 +305,9 @@ build_u_boot () {
 
 		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
+			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+		fi
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
@@ -335,6 +337,9 @@ build_u_boot () {
 
 		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
+			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+		fi
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
@@ -535,8 +540,8 @@ am335x_boneblack_flasher () {
 	build_uboot_old
 
 	#build_uboot_stable
-	#build_uboot_testing
-	#build_uboot_latest
+	build_uboot_testing
+	build_uboot_latest
 }
 
 arndale () {

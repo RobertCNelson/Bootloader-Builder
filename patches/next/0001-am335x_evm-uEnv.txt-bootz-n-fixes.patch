@@ -1,16 +1,16 @@
-From 9bde117ee5e40dd5c9b79c75fd609e554019ee5e Mon Sep 17 00:00:00 2001
+From 9606cf5d85031e9905cbddccc87dc2d910f95fb0 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 3 Mar 2014 12:00:02 -0600
+Date: Fri, 7 Mar 2014 10:58:16 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h      | 36 ++++++++++++++++++++++++------------
+ include/configs/am335x_evm.h      | 39 +++++++++++++++++++++++++++------------
  include/configs/ti_armv7_common.h |  1 +
- 2 files changed, 25 insertions(+), 12 deletions(-)
+ 2 files changed, 28 insertions(+), 12 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 59a8f36..031e547 100644
+index a5736b7..9d36f34 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -61,13 +61,14 @@
@@ -31,16 +31,17 @@ index 59a8f36..031e547 100644
  	"bootfile=zImage\0" \
  	"fdtfile=undefined\0" \
  	"console=ttyO0,115200n8\0" \
-@@ -77,7 +78,7 @@
+@@ -76,7 +77,8 @@
+ 		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
  	"optargs=\0" \
  	"mmcdev=0\0" \
- 	"mmcroot=/dev/mmcblk0p2 ro\0" \
--	"mmcrootfstype=ext4 rootwait\0" \
-+	"mmcrootfstype=ext4 rootwait fixrtc\0" \
+-	"mmcroot=/dev/mmcblk0p2 ro\0" \
++	"mmcpart=1\0" \
++	"mmcroot=/dev/mmcblk0p2 ro fixrtc\0" \
+ 	"mmcrootfstype=ext4 rootwait\0" \
  	"rootpath=/export/rootfs\0" \
  	"nfsopts=nolock\0" \
- 	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
-@@ -103,7 +104,7 @@
+@@ -103,7 +105,7 @@
  		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
  		"ip=dhcp\0" \
  	"bootenv=uEnv.txt\0" \
@@ -49,7 +50,7 @@ index 59a8f36..031e547 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -112,7 +113,7 @@
+@@ -112,7 +114,7 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -58,7 +59,7 @@ index 59a8f36..031e547 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -129,18 +130,24 @@
+@@ -129,18 +131,26 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -70,7 +71,9 @@ index 59a8f36..031e547 100644
  				"run importbootenv;" \
  			"fi;" \
 +			"if test -n $cape; then " \
-+				"setenv fdtfile $fdtbase-$cape.dtb; " \
++				"if test -e mmc ${bootpart} ${fdtdir}/$fdtbase-$cape.dtb; then " \
++					"setenv fdtfile $fdtbase-$cape.dtb; " \
++				"fi; " \
 +				"echo using: $fdtfile...; " \
 +			"fi; " \
 +			"echo Checking if uenvcmd is set ...;" \
@@ -86,7 +89,7 @@ index 59a8f36..031e547 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -159,9 +166,9 @@
+@@ -159,9 +169,9 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -98,7 +101,7 @@ index 59a8f36..031e547 100644
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -173,10 +180,15 @@
+@@ -173,10 +183,15 @@
  #endif
  
  #define CONFIG_BOOTCOMMAND \
