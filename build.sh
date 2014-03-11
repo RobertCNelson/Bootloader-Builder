@@ -426,14 +426,14 @@ build_u_boot () {
 			UBOOT_DONE=1
 		fi
 
-		#Samsung SPL
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
+		#SPL: Atmel/Samsung
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then
 			filename_search="spl/u-boot-spl.bin"
 			filename_id="deploy/${BOARD}/u-boot-spl-${uboot_filename}.bin"
 			file_save
 
-			filename_search="u-boot.bin"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.bin"
+			filename_search="u-boot.img"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -652,20 +652,23 @@ omap5_uevm () {
 sama5d3xek () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_arm_embedded_4_8
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="sama5d3xek_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	#build_uboot_all
 
-	at91bootstrap_config="sama5d3xeksd_uboot_defconfig"
-	build_at91bootstrap_all
+	#build_uboot_stable
+	kbuild="enable"
+	build_uboot_testing
+	kbuild="enable"
+	build_uboot_latest
 }
 
 sama5d3_xplained () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_arm_embedded_4_8
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="sama5d3_xplained_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
@@ -676,9 +679,6 @@ sama5d3_xplained () {
 	build_uboot_testing
 	kbuild="enable"
 	build_uboot_latest
-
-	at91bootstrap_config="sama5d3_xplainedsd_uboot_defconfig"
-	build_at91bootstrap_all
 }
 
 vf610twr () {
@@ -700,9 +700,17 @@ wandboard () {
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 
+	cleanup
+	#transitioned_to_testing="true"
+	gcc_linaro_gnueabihf_4_8
+
 	BOARD="wandboard_dl"
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
+
+	cleanup
+	#transitioned_to_testing="true"
+	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_solo"
 	UBOOT_CONFIG="${BOARD}_config"
