@@ -36,10 +36,11 @@ stable_at91bootstrap_sha="aa9423ceef27c04036d00ca4f67ba59f68c829eb"
 
 uboot_old="v2013.10"
 uboot_stable="v2014.01"
-uboot_testing="v2014.04-rc1"
+uboot_testing="v2014.04-rc2"
 
-#uboot_latest="e4b87e5b1d026bd010e2ba3abbf89561e8320287"
-uboot_latest="247161b8160fc699b0a517f081220bb50bc502a8"
+#uboot_latest="247161b8160fc699b0a517f081220bb50bc502a8"
+#uboot_testing="v2014.04-rc2"
+#uboot_latest="8ee950dd273aef6a074d41bf2ee4ef11d6f848fb"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -292,7 +293,6 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-ARM-atmel-add-sama5d3-Xplained-board-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
@@ -324,7 +324,6 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-ARM-atmel-add-sama5d3-Xplained-board-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
