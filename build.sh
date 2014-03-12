@@ -38,9 +38,9 @@ uboot_old="v2013.10"
 uboot_stable="v2014.01"
 uboot_testing="v2014.04-rc2"
 
-#uboot_latest="247161b8160fc699b0a517f081220bb50bc502a8"
 #uboot_testing="v2014.04-rc2"
 #uboot_latest="8ee950dd273aef6a074d41bf2ee4ef11d6f848fb"
+uboot_latest="f351eb0f18e7fe16c32bcc7951dca559fdd21ecf"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -285,8 +285,9 @@ build_u_boot () {
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: $fdtbase-$cape.dtb
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: use Tom's Golden values...
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
