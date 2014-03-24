@@ -27,7 +27,11 @@ ARCH=$(uname -m)
 SYST=$(uname -n)
 
 # Number of jobs for make to run in parallel.
-NUMJOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
+if [ $(which nproc) ] ; then
+	NUMJOBS=$(nproc)
+else
+	NUMJOBS=1
+fi
 
 stable_at91bootstrap_sha="aa9423ceef27c04036d00ca4f67ba59f68c829eb"
 
@@ -38,8 +42,8 @@ uboot_old="v2013.10"
 uboot_stable="v2014.01"
 uboot_testing="v2014.04-rc2"
 
-#uboot_latest="2e50f6dccb3eeb1a20993c9da73fe355da35cf04"
-uboot_latest="bf64035a159f114d0fb93391acb7f5e73eb020e6"
+#uboot_latest="bf64035a159f114d0fb93391acb7f5e73eb020e6"
+uboot_latest="2c072c958bb544c72f0e848375803dbd6971f022"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -85,16 +89,15 @@ dl_gcc_generic () {
 
 #NOTE: ignore formatting, as this is just: meld build.sh ../stable-kernel/scripts/gcc.sh
 gcc_arm_embedded_4_8 () {
-		#https://launchpad.net/gcc-arm-embedded/+download
-		#https://launchpad.net/gcc-arm-embedded/4.8/4.8-2013-q4-major/+download/gcc-arm-none-eabi-4_8-2013q4-20131204-linux.tar.bz2
-
-		toolchain_name="gcc-arm-none-eabi"
-		site="https://launchpad.net/gcc-arm-embedded"
-		version="4.8/4.8-2013-q4-major/+download"
-		version_date="20131204"
-		directory="${toolchain_name}-4_8-2013q4"
-		filename="${directory}-${version_date}-linux.tar.bz2"
-		datestamp="${version_date}-${toolchain_name}"
+		#http://releases.linaro.org/14.02/components/toolchain/binaries/gcc-linaro-arm-none-eabi-4.8-2014.02_linux.tar.xz
+		gcc_version="4.8"
+		release="2014.02"
+		toolchain_name="gcc-linaro-arm-none-eabi"
+		site="https://releases.linaro.org"
+		version="14.02/components/toolchain/binaries"
+		directory="${toolchain_name}-${gcc_version}-${release}_linux"
+		filename="${directory}.tar.xz"
+		datestamp="${release}-${toolchain_name}"
 
 		binary="bin/arm-none-eabi-"
 
@@ -525,7 +528,6 @@ am335x_evm () {
 	BOARD="am335x_evm"
 	UBOOT_CONFIG="${BOARD}_config"
 
-	build_uboot_old
 	build_uboot_all
 }
 
@@ -536,7 +538,6 @@ am335x_boneblack_flasher () {
 
 	BOARD="am335x_boneblack"
 	UBOOT_CONFIG="am335x_evm_config"
-	build_uboot_old
 
 	#build_uboot_stable
 	build_uboot_testing
