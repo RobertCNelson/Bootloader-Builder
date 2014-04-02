@@ -225,7 +225,6 @@ build_u_boot () {
 		git revert --no-edit a704a6d615179a25f556c99d31cbc4ee366ffb54
 
 		#Atmel:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
@@ -264,7 +263,6 @@ build_u_boot () {
 		RELEASE_VER="-r7" #bump on every change...
 
 		#Atmel:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
@@ -293,7 +291,6 @@ build_u_boot () {
 		RELEASE_VER="-r3" #bump on every change...
 
 		#Atmel:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
@@ -324,7 +321,6 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 
 		#Atmel:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9g20ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
@@ -555,19 +551,6 @@ arndale () {
 	build_uboot_all
 }
 
-at91sam9g20ek () {
-	cleanup
-	#transitioned_to_testing="true"
-	gcc_arm_embedded_4_8
-
-	BOARD="at91sam9g20ek_mmc"
-	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
-
-	at91bootstrap_config="at91sam9g20eksd_uboot_defconfig"
-	build_at91bootstrap_all
-}
-
 at91sam9x5ek () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -722,7 +705,6 @@ wandboard () {
 am335x_evm
 am335x_boneblack_flasher
 arndale
-at91sam9g20ek
 at91sam9x5ek
 mx23_olinuxino
 mx51evk
