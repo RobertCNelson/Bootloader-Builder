@@ -519,7 +519,7 @@ build_uboot_all () {
 
 am335x_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_evm"
@@ -530,20 +530,20 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_boneblack"
 	UBOOT_CONFIG="am335x_evm_config"
 
-	#build_uboot_stable
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
 
 arndale () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="arndale"
@@ -553,7 +553,7 @@ arndale () {
 
 at91sam9x5ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="at91sam9x5ek_mmc"
@@ -566,7 +566,7 @@ at91sam9x5ek () {
 
 mx23_olinuxino () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_arm_embedded_4_8
 
 	BOARD="mx23_olinuxino"
@@ -576,7 +576,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx51evk"
@@ -586,7 +586,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx53loco"
@@ -596,7 +596,7 @@ mx53loco () {
 
 mx6qsabresd () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx6qsabresd"
@@ -606,7 +606,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap3_beagle"
@@ -616,7 +616,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap4_panda"
@@ -626,7 +626,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap5_uevm"
@@ -636,39 +636,27 @@ omap5_uevm () {
 
 sama5d3xek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="sama5d3xek_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
-	#build_uboot_all
-
-	#build_uboot_stable
-	kbuild="enable"
-	build_uboot_testing
-	kbuild="enable"
-	build_uboot_latest
+	build_uboot_all
 }
 
 sama5d3_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="sama5d3_xplained_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
-	#build_uboot_all
-
-	#build_uboot_stable
-	kbuild="enable"
-	build_uboot_testing
-	kbuild="enable"
-	build_uboot_latest
+	build_uboot_all
 }
 
 vf610twr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="vf610twr"
@@ -678,7 +666,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_quad"
@@ -686,7 +674,7 @@ wandboard () {
 	build_uboot_all
 
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_dl"
@@ -694,7 +682,7 @@ wandboard () {
 	build_uboot_all
 
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_solo"
