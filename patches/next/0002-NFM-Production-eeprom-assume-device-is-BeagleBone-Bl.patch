@@ -1,17 +1,18 @@
-From 3e5fd53323007e057b148aa9ec7799ca95175c21 Mon Sep 17 00:00:00 2001
+From b2e7cac1a73a876c18403cc50bf65627a225be76 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 11 Mar 2014 09:39:58 -0500
+Date: Fri, 18 Apr 2014 14:49:27 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c | 17 +++++++++++------
- board/ti/am335x/mux.c   |  8 ++++++--
- 2 files changed, 17 insertions(+), 8 deletions(-)
+ board/ti/am335x/board.c      | 17 +++++++++++------
+ board/ti/am335x/mux.c        |  8 ++++++--
+ include/configs/am335x_evm.h |  2 +-
+ 3 files changed, 18 insertions(+), 9 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 7609a18..a709301 100644
+index 554398f..ab34df6 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,11 @@ DECLARE_GLOBAL_DATA_PTR;
@@ -62,7 +63,7 @@ index 7609a18..a709301 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -618,10 +623,10 @@ int board_eth_init(bd_t *bis)
+@@ -632,10 +637,10 @@ int board_eth_init(bd_t *bis)
  	}
  
  	if (read_eeprom(&header) < 0)
@@ -93,6 +94,19 @@ index b2bfda5..01a855d 100644
 +		configure_module_pin_mux(mmc1_pin_mux);
  	}
  }
+diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
+index 5eae7c4..4bd11fb 100644
+--- a/include/configs/am335x_evm.h
++++ b/include/configs/am335x_evm.h
+@@ -70,7 +70,7 @@
+ 	"bootdir=\0" \
+ 	"fdtdir=/dtbs\0" \
+ 	"bootfile=zImage\0" \
+-	"fdtfile=undefined\0" \
++	"fdtfile=am335x-boneblack.dtb\0" \
+ 	"console=ttyO0,115200n8\0" \
+ 	"partitions=" \
+ 		"uuid_disk=${uuid_gpt_disk};" \
 -- 
-1.9.0
+1.9.1
 
