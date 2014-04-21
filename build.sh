@@ -41,8 +41,8 @@ uboot_old="v2014.01"
 uboot_stable="v2014.04"
 #uboot_testing="v2014.04-rc3"
 
-#uboot_latest="1b82491ee6ee1e986e5521b33692a00e1f38fe75"
-uboot_latest="3fa1981e243cbe8f4a31139740600eddde5a4da4"
+#uboot_latest="3fa1981e243cbe8f4a31139740600eddde5a4da4"
+uboot_latest="b149c4c399b111cec1ff7505ca9fabbeeb4fe394"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -246,8 +246,9 @@ build_u_boot () {
 		#r2: am335x_evm: $fdtbase-$cape.dtb
 		#r3: am335x_evm: use Tom's Golden values...
 		#r4: am335x_evm: assume boneblack.dtb for eepromless...
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: panda: yet another old board with new memory...
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
