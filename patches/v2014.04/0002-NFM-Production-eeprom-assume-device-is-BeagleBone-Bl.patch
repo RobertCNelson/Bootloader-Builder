@@ -1,6 +1,6 @@
-From b2e7cac1a73a876c18403cc50bf65627a225be76 Mon Sep 17 00:00:00 2001
+From c8a7492486d8092d46f50169398df97abb6530bb Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 18 Apr 2014 14:49:27 -0500
+Date: Tue, 22 Apr 2014 13:21:54 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -8,8 +8,8 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c      | 17 +++++++++++------
  board/ti/am335x/mux.c        |  8 ++++++--
- include/configs/am335x_evm.h |  2 +-
- 3 files changed, 18 insertions(+), 9 deletions(-)
+ include/configs/am335x_evm.h |  2 ++
+ 3 files changed, 19 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index 554398f..ab34df6 100644
@@ -95,18 +95,18 @@ index b2bfda5..01a855d 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 5eae7c4..4bd11fb 100644
+index 5eae7c4..43bb41a 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -70,7 +70,7 @@
- 	"bootdir=\0" \
- 	"fdtdir=/dtbs\0" \
- 	"bootfile=zImage\0" \
--	"fdtfile=undefined\0" \
-+	"fdtfile=am335x-boneblack.dtb\0" \
- 	"console=ttyO0,115200n8\0" \
- 	"partitions=" \
- 		"uuid_disk=${uuid_gpt_disk};" \
+@@ -186,6 +186,8 @@
+ 	"gpio set 53; " \
+ 	"i2c mw 0x24 1 0x3e; " \
+ 	"run findfdt; " \
++	"setenv fdtfile am335x-boneblack.dtb; "\
++	"setenv fdtbase am335x-boneblack; "\
+ 	"run mmcboot;" \
+ 	"gpio clear 56; " \
+ 	"gpio clear 55; " \
 -- 
-1.9.1
+1.9.2
 
