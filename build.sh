@@ -264,6 +264,7 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -296,6 +297,7 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -326,6 +328,7 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -646,6 +649,24 @@ sama5d3_xplained () {
 	build_uboot_all
 }
 
+udoo () {
+	cleanup
+	#transitioned_to_testing="true"
+	gcc_linaro_gnueabihf_4_8
+
+	BOARD="udoo_quad"
+	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_all
+
+	cleanup
+	#transitioned_to_testing="true"
+	gcc_linaro_gnueabihf_4_8
+
+	BOARD="udoo_dl"
+	UBOOT_CONFIG="${BOARD}_config"
+	build_uboot_all
+}
+
 vf610twr () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -695,6 +716,7 @@ omap4_panda
 omap5_uevm
 sama5d3xek
 sama5d3_xplained
+udoo
 vf610twr
 wandboard
 #
