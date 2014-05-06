@@ -41,8 +41,8 @@ uboot_old="v2014.01"
 uboot_stable="v2014.04"
 #uboot_testing="v2014.04-rc3"
 
-#uboot_latest="adcdeacc3eda1e5949e54062aa99c299e12483be"
-uboot_latest="8854070784450f7ade382c5792b2721fbe27315a"
+#uboot_latest="8854070784450f7ade382c5792b2721fbe27315a"
+uboot_latest="52fded7b94d98c73a824e4a9d90596a33a1cbb8a"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -249,8 +249,9 @@ build_u_boot () {
 		#r5: panda: yet another old board with new memory...
 		#r6: am335x_evm: really assume boneblack.dtb for eepromless...
 		#r7: udoo: ship working u-boot for dual/quad
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: sama5d3_xplained: validatedtb
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
