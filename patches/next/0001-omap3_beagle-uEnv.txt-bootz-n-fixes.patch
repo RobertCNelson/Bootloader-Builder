@@ -1,16 +1,16 @@
-From 76aaf72132fe8526b41bf974d1a7b6254d0de88f Mon Sep 17 00:00:00 2001
+From 8f719b7e5658b9b27efbc3c78637ff5a88c49a77 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 10 Feb 2014 15:01:00 -0600
+Date: Sat, 10 May 2014 18:05:38 -0500
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/beagle/beagle.c       | 38 +++++++++++++++++++++++++++++-----
- include/configs/omap3_beagle.h | 46 ++++++++++++++++++++++++++++--------------
- 2 files changed, 64 insertions(+), 20 deletions(-)
+ board/ti/beagle/beagle.c       | 38 +++++++++++++++++++++++++++++++++-----
+ include/configs/omap3_beagle.h | 42 ++++++++++++++++++++++++++++--------------
+ 2 files changed, 61 insertions(+), 19 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
-index 9669a32..f3f2f80 100644
+index 0674afd..e2267a6 100644
 --- a/board/ti/beagle/beagle.c
 +++ b/board/ti/beagle/beagle.c
 @@ -54,6 +54,7 @@
@@ -51,7 +51,7 @@ index 9669a32..f3f2f80 100644
  			 sizeof(expansion_config));
  	}
  
-@@ -324,15 +325,18 @@ int misc_init_r(void)
+@@ -325,15 +326,18 @@ int misc_init_r(void)
  	case REVISION_AXBX:
  		printf("Beagle Rev Ax/Bx\n");
  		setenv("beaglerev", "AxBx");
@@ -70,8 +70,8 @@ index 9669a32..f3f2f80 100644
  		MUX_BEAGLE_C();
  		/* Set VAUX2 to 1.8V for EHCI PHY */
  		twl4030_pmrecv_vsel_cfg(TWL4030_PM_RECEIVER_VAUX2_DEDICATED,
-@@ -370,7 +374,7 @@ int misc_init_r(void)
- 					TWL4030_PM_RECEIVER_DEV_GRP_P1);
+@@ -374,7 +378,7 @@ int misc_init_r(void)
+ 		generate_fake_mac = true;
  	}
  
 -	switch (get_expansion_id()) {
@@ -79,7 +79,7 @@ index 9669a32..f3f2f80 100644
  	case TINCANTOOLS_ZIPPY:
  		printf("Recognized Tincantools Zippy board (rev %d %s)\n",
  			expansion_config.revision,
-@@ -453,6 +457,30 @@ int misc_init_r(void)
+@@ -457,6 +461,30 @@ int misc_init_r(void)
  	if (expansion_config.content == 1)
  		setenv(expansion_config.env_var, expansion_config.env_setting);
  
@@ -111,26 +111,11 @@ index 9669a32..f3f2f80 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_AB:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index c58bc91..11f2607 100644
+index fae0e6f..658aa4c 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
-@@ -134,8 +134,10 @@
- 
- #define CONFIG_CMD_CACHE
- #define CONFIG_CMD_EXT2		/* EXT2 Support			*/
-+#define CONFIG_CMD_EXT4
- #define CONFIG_CMD_FAT		/* FAT support			*/
- #define CONFIG_CMD_FS_GENERIC	/* Generic FS support */
-+#define CONFIG_SUPPORT_RAW_INITRD
- #define CONFIG_CMD_MTDPARTS	/* Enable MTD parts commands */
- #define CONFIG_MTD_DEVICE	/* needed for mtdparts commands */
- #define MTDIDS_DEFAULT			"nand0=nand"
-@@ -189,29 +191,31 @@
+@@ -118,26 +118,28 @@
  							/* devices */
- 
- /* Environment information */
--#define CONFIG_BOOTDELAY		3
-+#define CONFIG_BOOTDELAY		1
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
 -	"loadaddr=0x80200000\0" \
@@ -165,7 +150,7 @@ index c58bc91..11f2607 100644
  	"nandroot=ubi0:rootfs ubi.mtd=4\0" \
  	"nandrootfstype=ubifs\0" \
  	"ramroot=/dev/ram0 rw ramdisk_size=65536 initrd=0x81000000,64M\0" \
-@@ -225,7 +229,8 @@
+@@ -151,7 +153,8 @@
  		"omapfb.mode=dvi:${dvimode} " \
  		"omapdss.def_disp=${defaultdisplay} " \
  		"root=${mmcroot} " \
@@ -175,7 +160,7 @@ index c58bc91..11f2607 100644
  	"nandargs=setenv bootargs console=${console} " \
  		"${optargs} " \
  		"mpurate=${mpurate} " \
-@@ -244,13 +249,16 @@
+@@ -170,13 +173,16 @@
  		"if test $beaglerev = C4; then " \
  			"setenv fdtfile omap3-beagle.dtb; fi; " \
  		"if test $beaglerev = xMAB; then " \
@@ -194,7 +179,7 @@ index c58bc91..11f2607 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -264,20 +272,20 @@
+@@ -190,20 +196,20 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${bootpart} ${rdaddr} ${bootdir}/${ramdisk}\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -219,7 +204,7 @@ index c58bc91..11f2607 100644
  	"userbutton=if gpio input 173; then run userbutton_xm; " \
  		"else run userbutton_nonxm; fi;\0" \
  	"userbutton_xm=gpio input 4;\0" \
-@@ -296,11 +304,19 @@
+@@ -222,11 +228,19 @@
  			"echo Loaded environment from ${bootenv};" \
  			"run importbootenv;" \
  		"fi;" \
@@ -240,5 +225,5 @@ index c58bc91..11f2607 100644
  		"fi;" \
  	"fi;" \
 -- 
-1.8.5.3
+2.0.0.rc0
 

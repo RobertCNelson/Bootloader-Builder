@@ -41,8 +41,8 @@ uboot_old="v2014.01"
 uboot_stable="v2014.04"
 #uboot_testing="v2014.04-rc3"
 
-#uboot_latest="52fded7b94d98c73a824e4a9d90596a33a1cbb8a"
-uboot_latest="173d294b94cfec10063a5be40934d6d8fb7981ce"
+#uboot_latest="173d294b94cfec10063a5be40934d6d8fb7981ce"
+uboot_latest="bcb879c0e37db1cf527ff408df93918f155012ea"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -538,6 +538,17 @@ am335x_boneblack_flasher () {
 	build_uboot_all
 }
 
+am43xx_evm () {
+	cleanup
+	#transitioned_to_testing="true"
+	gcc_linaro_gnueabihf_4_8
+
+	BOARD="am43xx_evm"
+	UBOOT_CONFIG="${BOARD}_config"
+
+	build_uboot_all
+}
+
 arndale () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -707,6 +718,7 @@ wandboard () {
 
 am335x_evm
 am335x_boneblack_flasher
+am43xx_evm
 arndale
 at91sam9x5ek
 mx23_olinuxino

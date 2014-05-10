@@ -1,15 +1,15 @@
-From 17a7a12fc461ea9db312925ada3fb4b3130e1b9b Mon Sep 17 00:00:00 2001
+From e7b69d22eacdce8e926c727acf3d1e0628fd5e58 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 21 Apr 2014 08:47:12 -0500
+Date: Sat, 10 May 2014 18:09:42 -0500
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/ti_omap4_common.h | 33 +++++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 10 deletions(-)
+ include/configs/ti_omap4_common.h | 29 +++++++++++++++++++++--------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
 
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index bcb5eab..c84d275 100644
+index 77fbfb6..440191c 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -47,13 +47,15 @@
@@ -29,16 +29,9 @@ index bcb5eab..c84d275 100644
  
  /*
   * Hardware drivers
-@@ -87,33 +89,43 @@
-  * Environment setup
-  */
- #define CONFIG_EXTRA_ENV_SETTINGS \
--	"loadaddr=0x82000000\0" \
-+	"loadaddr=0x80300000\0" \
+@@ -90,28 +92,38 @@
+ 	DEFAULT_LINUX_BOOT_ENV \
  	"console=ttyO2,115200n8\0" \
- 	"fdt_high=0xffffffff\0" \
--	"fdtaddr=0x80f80000\0" \
-+	"fdtaddr=0x815f0000\0" \
  	"fdtfile=undefined\0" \
 -	"bootpart=0:2\0" \
 -	"bootdir=/boot\0" \
@@ -81,7 +74,7 @@ index bcb5eab..c84d275 100644
  	"findfdt="\
  		"if test $board_name = sdp4430; then " \
  			"setenv fdtfile omap4-sdp.dtb; fi; " \
-@@ -125,7 +137,7 @@
+@@ -123,7 +135,7 @@
  			"setenv fdtfile omap4-panda-es.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -90,7 +83,7 @@ index bcb5eab..c84d275 100644
  
  #define CONFIG_BOOTCOMMAND \
  	"run findfdt; " \
-@@ -137,6 +149,7 @@
+@@ -135,6 +147,7 @@
  			"if run loadbootenv; then " \
  				"run importbootenv; " \
  			"fi;" \
@@ -99,5 +92,5 @@ index bcb5eab..c84d275 100644
  				"echo Running uenvcmd ...;" \
  				"run uenvcmd;" \
 -- 
-1.9.2
+2.0.0.rc0
 
