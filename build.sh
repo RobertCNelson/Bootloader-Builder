@@ -39,10 +39,11 @@ stable_at91bootstrap_sha="e95dd87d49ca124ccb57e62e656c6a23900af8f4"
 
 uboot_old="v2014.01"
 uboot_stable="v2014.04"
-#uboot_testing="v2014.04-rc3"
+uboot_testing="v2014.07-rc1"
 
-#uboot_latest="173d294b94cfec10063a5be40934d6d8fb7981ce"
-uboot_latest="bcb879c0e37db1cf527ff408df93918f155012ea"
+#uboot_latest="bcb879c0e37db1cf527ff408df93918f155012ea"
+#uboot_testing="v2014.07-rc1"
+#uboot_latest="3e41c54ad8099951d57c3c5a0f5ebc6e8becf70c"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -572,6 +573,23 @@ at91sam9x5ek () {
 	build_at91bootstrap_all
 }
 
+jetson_tk1 () {
+	cleanup
+	#transitioned_to_testing="true"
+	gcc_linaro_gnueabihf_4_8
+
+	BOARD="jetson-tk1"
+	UBOOT_CONFIG="${BOARD}_config"
+	#build_uboot_all
+
+	#kbuild="enable"
+	#build_uboot_stable
+	kbuild="enable"
+	build_uboot_testing
+	kbuild="enable"
+	build_uboot_latest
+}
+
 mx23_olinuxino () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -721,6 +739,7 @@ am335x_boneblack_flasher
 am43xx_evm
 arndale
 at91sam9x5ek
+jetson_tk1
 mx23_olinuxino
 mx51evk
 mx53loco
