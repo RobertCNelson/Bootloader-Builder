@@ -1,6 +1,6 @@
-From 590891a15d4f3facafeb3186a8d3217f33343eb3 Mon Sep 17 00:00:00 2001
+From b0962d36ad7b6eff2d1d0e256a21f8d8f1355a1d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 23 Apr 2014 11:48:34 -0500
+Date: Tue, 13 May 2014 09:41:22 -0500
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -205,17 +205,17 @@ index 0000000..46953c1
 +#include "1066mhz_4x256mx16_dl.cfg"
 +#include "clocks.cfg"
 diff --git a/boards.cfg b/boards.cfg
-index b4203f1..02ee6bd 100644
+index 9d90550..0f3e80c 100644
 --- a/boards.cfg
 +++ b/boards.cfg
-@@ -304,6 +304,7 @@ Active  arm         armv7          mx5         freescale       mx53smd
- Active  arm         armv7          mx5         genesi          mx51_efikamx        mx51_efikamx                         mx51_efikamx:MACH_TYPE=MACH_TYPE_MX51_EFIKAMX,IMX_CONFIG=board/genesi/mx51_efikamx/imximage_mx.cfg                                -
- Active  arm         armv7          mx5         genesi          mx51_efikamx        mx51_efikasb                         mx51_efikamx:MACH_TYPE=MACH_TYPE_MX51_EFIKASB,IMX_CONFIG=board/genesi/mx51_efikamx/imximage_sb.cfg                                -
- Active  arm         armv7          mx5         ttcontrol       vision2             vision2                              vision2:IMX_CONFIG=board/ttcontrol/vision2/imximage_hynix.cfg                                                                     Stefano Babic <sbabic@denx.de>
+@@ -305,6 +305,7 @@ Active  arm         armv7          mx5         freescale       mx53smd
+ Active  arm         armv7          mx5         genesi          mx51_efikamx        mx51_efikamx                          mx51_efikamx:MACH_TYPE=MACH_TYPE_MX51_EFIKAMX,IMX_CONFIG=board/genesi/mx51_efikamx/imximage_mx.cfg                                -
+ Active  arm         armv7          mx5         genesi          mx51_efikamx        mx51_efikasb                          mx51_efikamx:MACH_TYPE=MACH_TYPE_MX51_EFIKASB,IMX_CONFIG=board/genesi/mx51_efikamx/imximage_sb.cfg                                -
+ Active  arm         armv7          mx5         ttcontrol       vision2             vision2                               vision2:IMX_CONFIG=board/ttcontrol/vision2/imximage_hynix.cfg                                                                     Stefano Babic <sbabic@denx.de>
 +Active  arm         armv7          mx6         -               udoo                udoo_dl                              udoo:IMX_CONFIG=board/udoo/udoo-dl.cfg,MX6DL,DDR_MB=1024                                                                          Fabio Estevam <fabio.estevam@freescale.com>
- Active  arm         armv7          mx6         -               udoo                udoo_quad                            udoo:IMX_CONFIG=board/udoo/udoo.cfg,MX6Q,DDR_MB=1024                                                                              Fabio Estevam <fabio.estevam@freescale.com>
- Active  arm         armv7          mx6         -               wandboard           wandboard_dl                         wandboard:IMX_CONFIG=board/boundary/nitrogen6x/nitrogen6dl.cfg,MX6DL,DDR_MB=1024                                                  Fabio Estevam <fabio.estevam@freescale.com>
- Active  arm         armv7          mx6         -               wandboard           wandboard_quad                       wandboard:IMX_CONFIG=board/boundary/nitrogen6x/nitrogen6q2g.cfg,MX6Q,DDR_MB=2048                                                  Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         -               udoo                udoo_quad                             udoo:IMX_CONFIG=board/udoo/udoo.cfg,MX6Q,DDR_MB=1024                                                                              Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         -               wandboard           wandboard_dl                          wandboard:IMX_CONFIG=board/boundary/nitrogen6x/nitrogen6dl.cfg,MX6DL,DDR_MB=1024                                                  Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         -               wandboard           wandboard_quad                        wandboard:IMX_CONFIG=board/boundary/nitrogen6x/nitrogen6q2g.cfg,MX6Q,DDR_MB=2048                                                  Fabio Estevam <fabio.estevam@freescale.com>
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
 index a0306de..da72328 100644
 --- a/include/configs/udoo.h
@@ -337,5 +337,5 @@ index a0306de..da72328 100644
  #ifndef CONFIG_SYS_DCACHE_OFF
  #define CONFIG_CMD_CACHE
 -- 
-1.9.2
+2.0.0.rc0
 
