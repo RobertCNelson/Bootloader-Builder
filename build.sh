@@ -738,7 +738,7 @@ am335x_boneblack_flasher
 am43xx_evm
 arndale
 at91sam9x5ek
-jetson_tk1
+#jetson_tk1
 mx23_olinuxino
 mx51evk
 mx53loco
