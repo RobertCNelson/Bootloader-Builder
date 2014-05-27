@@ -39,10 +39,11 @@ stable_at91bootstrap_sha="e95dd87d49ca124ccb57e62e656c6a23900af8f4"
 
 uboot_old="v2014.01"
 uboot_stable="v2014.04"
-uboot_testing="v2014.07-rc1"
+uboot_testing="v2014.07-rc2"
 
-#uboot_latest="2072e7262965bb48d7fffb1e283101e6ed8b21a8"
-uboot_latest="4d16f67e7ba1a69929b55852f1a274c457a0db27"
+#uboot_latest="4d16f67e7ba1a69929b55852f1a274c457a0db27"
+#uboot_testing="v2014.07-rc2"
+#uboot_latest="0116f40bbc269c57566d69e0db8cb9da2e194d33"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
