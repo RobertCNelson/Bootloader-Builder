@@ -548,7 +548,7 @@ build_uboot_all () {
 
 am335x_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_evm"
@@ -559,7 +559,7 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_boneblack"
@@ -600,23 +600,6 @@ at91sam9x5ek () {
 
 	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
 	build_at91bootstrap_all
-}
-
-jetson_tk1 () {
-	cleanup
-	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
-
-	BOARD="jetson-tk1"
-	UBOOT_CONFIG="${BOARD}_config"
-	#build_uboot_all
-
-	#kbuild="enable"
-	#build_uboot_stable
-	kbuild="enable"
-	build_uboot_testing
-	kbuild="enable"
-	build_uboot_latest
 }
 
 mx23_olinuxino () {
@@ -661,7 +644,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap3_beagle"
@@ -681,7 +664,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap5_uevm"
@@ -768,7 +751,6 @@ am335x_boneblack_flasher
 am43xx_evm
 arndale
 at91sam9x5ek
-#jetson_tk1
 mx23_olinuxino
 mx51evk
 mx53loco
