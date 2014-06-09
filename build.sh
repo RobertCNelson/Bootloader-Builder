@@ -33,7 +33,8 @@ else
 	NUMJOBS=1
 fi
 
-stable_at91bootstrap_sha="e95dd87d49ca124ccb57e62e656c6a23900af8f4"
+#stable_at91bootstrap_sha="e95dd87d49ca124ccb57e62e656c6a23900af8f4"
+stable_at91bootstrap_sha="1e8fd41ce7149f7d2063a3b3bcf2c69e77b97732"
 
 #latest_at91bootstrap_sha=""
 
