@@ -675,7 +675,7 @@ omap5_uevm () {
 
 sama5d3xek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="sama5d3xek_mmc"
@@ -685,7 +685,7 @@ sama5d3xek () {
 
 sama5d3_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="sama5d3_xplained_mmc"
