@@ -317,8 +317,9 @@ build_u_boot () {
 		#r4: vf610twr: we seem to have a sram limit (230kb fails to load)
 		#r5: udoo: fix dtb selection on dl
 		#r6: wand: zImage not zimage
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: mx51evk: fix dtb location
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
