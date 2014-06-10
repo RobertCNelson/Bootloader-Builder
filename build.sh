@@ -316,8 +316,9 @@ build_u_boot () {
 		#r3: am335x_evm: use Tom's Golden values...
 		#r4: vf610twr: we seem to have a sram limit (230kb fails to load)
 		#r5: udoo: fix dtb selection on dl
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: wand: zImage not zimage
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -725,7 +726,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_quad"
@@ -733,7 +734,7 @@ wandboard () {
 	build_uboot_all
 
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_dl"
@@ -741,7 +742,7 @@ wandboard () {
 	build_uboot_all
 
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_solo"
