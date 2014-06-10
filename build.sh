@@ -574,7 +574,7 @@ am335x_boneblack_flasher () {
 
 am43xx_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am43xx_evm"
@@ -585,7 +585,7 @@ am43xx_evm () {
 
 arndale () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="arndale"
@@ -638,7 +638,7 @@ mx53loco () {
 
 mx6qsabresd () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx6qsabresd"
