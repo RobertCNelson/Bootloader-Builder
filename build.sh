@@ -714,7 +714,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	gcc_linaro_gnueabihf_4_8
 
 	BOARD="vf610twr"
