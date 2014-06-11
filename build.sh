@@ -42,9 +42,9 @@ uboot_old="v2014.01"
 uboot_stable="v2014.04"
 uboot_testing="v2014.07-rc3"
 
-#uboot_latest="55e8250bd3cfd996d1caa04f520160a89ec04754"
 #uboot_testing="v2014.07-rc3"
 #uboot_latest="76b21026ceb5a6a83fc53b0ecdf425f240318022"
+uboot_latest="61e76f53708cf082ef9061a140b57df3513b8ba1"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -461,7 +461,19 @@ build_u_boot () {
 			UBOOT_DONE=1
 		fi
 
-		#SPL: Atmel/Samsung
+		#SPL: Atmel
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/boot.bin ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then
+			filename_search="boot.bin"
+			filename_id="deploy/${BOARD}/boot-${uboot_filename}.bin"
+			file_save
+
+			filename_search="u-boot.img"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
+
+		#SPL: Samsung (old Atmel)
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then
 			filename_search="spl/u-boot-spl.bin"
 			filename_id="deploy/${BOARD}/u-boot-spl-${uboot_filename}.bin"
