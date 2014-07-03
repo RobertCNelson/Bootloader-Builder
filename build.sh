@@ -40,10 +40,11 @@ stable_at91bootstrap_sha="1e8fd41ce7149f7d2063a3b3bcf2c69e77b97732"
 
 uboot_old="v2014.01"
 uboot_stable="v2014.04"
-uboot_testing="v2014.07-rc3"
+uboot_testing="v2014.07-rc4"
 
-#uboot_latest="038380597bc9b97378da2e18355cd7346d17b002"
-uboot_latest="ba9b42c81b0734d53edfbb1fe4a6ded7de78c5ab"
+#uboot_latest="ba9b42c81b0734d53edfbb1fe4a6ded7de78c5ab"
+#uboot_testing="v2014.07-rc4"
+#uboot_latest="a176ff0705351bf6d993a8f15e081bfa2ba2e1af"
 
 unset GIT_OPTS
 unset GIT_NOEDIT
@@ -423,11 +424,11 @@ build_u_boot () {
 		echo "Building ${project}: ${uboot_filename}"
 		if [ "x${kbuild}" = "xenable" ] ; then
 			echo "-----------------------------"
-			time make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET}
+			make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET}
 			echo "-----------------------------"
 		else
 			echo "-----------------------------"
-			time make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET} > /dev/null
+			make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET} > /dev/null
 			echo "-----------------------------"
 		fi
 
