@@ -320,8 +320,9 @@ build_u_boot () {
 		#r6: wand: zImage not zimage
 		#r7: mx51evk: fix dtb location
 		#r8: panda: fix uEnv.txt boot
-		#r9: (pending)
-		RELEASE_VER="-r8" #bump on every change...
+		#r9: am335x_evm: microSD 2.0
+		#r10: (pending)
+		RELEASE_VER="-r9" #bump on every change...
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
