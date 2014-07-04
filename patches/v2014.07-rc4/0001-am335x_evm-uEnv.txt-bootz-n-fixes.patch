@@ -1,16 +1,16 @@
-From 01dbd5d668bd100730d5f8158a53fc474102de9c Mon Sep 17 00:00:00 2001
+From be7df77d08a573b7851b7f1c1391e4486d5dbe53 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 3 Jul 2014 13:01:21 -0500
+Date: Fri, 4 Jul 2014 11:48:09 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h      | 115 +++++++++++++++++++++++++++++++-------
+ include/configs/am335x_evm.h      | 132 ++++++++++++++++++++++++++++++++------
  include/configs/ti_armv7_common.h |   1 +
- 2 files changed, 96 insertions(+), 20 deletions(-)
+ 2 files changed, 113 insertions(+), 20 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a48b386..0f42987 100644
+index a48b386..f3969dd 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -78,8 +78,9 @@
@@ -62,7 +62,7 @@ index a48b386..0f42987 100644
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 -	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
-+	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
++	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load mmc ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
@@ -120,7 +120,7 @@ index a48b386..0f42987 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -171,24 +200,70 @@
+@@ -171,24 +200,87 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -149,20 +149,37 @@ index a48b386..0f42987 100644
 +					"setenv fdtfile $fdtbase-$cape.dtb; " \
 +				"fi; " \
 +			"fi; " \
-+			"echo loading ${fdtdir}/${fdtfile} ...; "\
 +			"run loadfdt;" \
 +		"else " \
 +			"setenv fdtdir /usr/lib/linux-image-$uname_r; " \
 +			"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+				"echo loading ${fdtdir}/${fdtfile} ...; "\
 +				"run loadfdt;" \
 +			"else " \
 +				"setenv fdtdir /lib/firmware/$uname_r/device-tree; " \
 +				"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+					"echo loading ${fdtdir}/${fdtfile} ...; "\
 +					"run loadfdt;" \
 +				"else " \
-+					"echo; echo unable to find ${fdtfile} ...;"\
++					"setenv fdtdir /boot/dtb-$uname_r; " \
++					"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++						"run loadfdt;" \
++					"else " \
++						"setenv fdtdir /boot/dtbs; " \
++						"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++							"run loadfdt;" \
++						"else " \
++							"setenv fdtdir /boot/dtb; " \
++							"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++								"run loadfdt;" \
++							"else " \
++								"setenv fdtdir /boot; " \
++								"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++									"run loadfdt;" \
++								"else " \
++									"echo; echo unable to find ${fdtfile} ...;"\
++								"fi;" \
++							"fi;" \
++						"fi;" \
++					"fi;" \
 +				"fi;" \
 +			"fi;" \
 +		"fi; " \
