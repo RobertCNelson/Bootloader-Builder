@@ -772,9 +772,6 @@ wandboard () {
 	build_uboot_all
 }
 
-omap5_uevm
-exit
-
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
