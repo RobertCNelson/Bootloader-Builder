@@ -42,9 +42,9 @@ uboot_old="v2014.01"
 uboot_stable="v2014.04"
 uboot_testing="v2014.07-rc4"
 
-#uboot_latest="ba9b42c81b0734d53edfbb1fe4a6ded7de78c5ab"
 #uboot_testing="v2014.07-rc4"
 #uboot_latest="a176ff0705351bf6d993a8f15e081bfa2ba2e1af"
+uboot_latest="fe8b3212b7938861eacdefe6115810303a96f9cc"
 
 unset GIT_OPTS
 unset GIT_NOEDIT

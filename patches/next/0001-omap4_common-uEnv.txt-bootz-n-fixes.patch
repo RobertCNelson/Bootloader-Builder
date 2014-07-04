@@ -1,6 +1,6 @@
-From eac8f23d359a10676857e09ab4d261b2464eab4b Mon Sep 17 00:00:00 2001
+From c119d42cfe331b5dbce85c0dceb698e6907fb786 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 10 Jun 2014 16:39:34 -0500
+Date: Fri, 4 Jul 2014 11:51:56 -0500
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 15 insertions(+), 16 deletions(-)
 
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 44b3718..596ccaf 100644
+index 30b02f6..fdf2702 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -47,13 +47,15 @@
@@ -70,7 +70,7 @@ index 44b3718..596ccaf 100644
  		"run mmcargs; " \
  		"bootm ${loadaddr}\0" \
 @@ -129,30 +134,24 @@
- 			"setenv fdtfile omap4-duovero.dtb; fi;" \
+ 			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
 -	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
