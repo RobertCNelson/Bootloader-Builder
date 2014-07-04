@@ -1,6 +1,6 @@
-From 4c81be3c4a7cd34fcd8f5ff455ae9f7e420468da Mon Sep 17 00:00:00 2001
+From fe2aee4c58dc5f54f919eedbc8c9ee59319575ca Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 4 Jul 2014 12:41:25 -0500
+Date: Fri, 4 Jul 2014 13:41:12 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,7 +10,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  2 files changed, 112 insertions(+), 20 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a48b386..843ede9 100644
+index a48b386..35d629a 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -78,8 +78,9 @@
@@ -112,9 +112,9 @@ index a48b386..843ede9 100644
 +					"echo Loaded environment from /boot/uEnv.txt;" \
 +					"if test -n $dtb; then " \
 +						"setenv fdtfile $dtb;" \
-+						"echo using ${fdtdir} ...;" \
++						"echo using ${fdtfile} ...;" \
 +					"fi;" \
-+					"echo Checking if uname_r is set ...;" \
++					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n $uname_r; then " \
 +						"gpio set 56; " \
 +						"run uname_boot;" \

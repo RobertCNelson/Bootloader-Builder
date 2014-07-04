@@ -251,6 +251,7 @@ build_u_boot () {
 		#r7: beagle-xm: add buddy2 for ulcd7
 		#r8: (pending)
 		RELEASE_VER="-r7" #bump on every change...
+		#halt_patching_uboot
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -284,6 +285,7 @@ build_u_boot () {
 		#r8: sama5d3_xplained: validatedtb
 		#r9: (pending)
 		RELEASE_VER="-r8" #bump on every change...
+		#halt_patching_uboot
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -322,8 +324,10 @@ build_u_boot () {
 		#r8: panda: fix uEnv.txt boot
 		#r9: am335x_evm: microSD 2.0
 		#r10: am335x_evm: microSD 2.0 + everyone
-		#r11: (pending)
-		RELEASE_VER="-r10" #bump on every change...
+		#r11: am335x_evm, omap3_beagle, omap4_common, omap5_common: microSD 2.0
+		#r12: (pending)
+		RELEASE_VER="-r11" #bump on every change...
+		#halt_patching_uboot
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -341,7 +345,6 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
-halt_patching_uboot
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
 			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
@@ -356,6 +359,7 @@ halt_patching_uboot
 		#r1: initial release
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
+		#halt_patching_uboot
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
@@ -767,6 +771,9 @@ wandboard () {
 	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_all
 }
+
+omap5_uevm
+exit
 
 am335x_evm
 am335x_boneblack_flasher
