@@ -1,16 +1,16 @@
-From be7df77d08a573b7851b7f1c1391e4486d5dbe53 Mon Sep 17 00:00:00 2001
+From 4c81be3c4a7cd34fcd8f5ff455ae9f7e420468da Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 4 Jul 2014 11:48:09 -0500
+Date: Fri, 4 Jul 2014 12:41:25 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h      | 132 ++++++++++++++++++++++++++++++++------
+ include/configs/am335x_evm.h      | 131 ++++++++++++++++++++++++++++++++------
  include/configs/ti_armv7_common.h |   1 +
- 2 files changed, 113 insertions(+), 20 deletions(-)
+ 2 files changed, 112 insertions(+), 20 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a48b386..f3969dd 100644
+index a48b386..843ede9 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -78,8 +78,9 @@
@@ -66,7 +66,7 @@ index a48b386..f3969dd 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -141,18 +146,42 @@
+@@ -141,18 +146,46 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -110,6 +110,10 @@ index a48b386..f3969dd 100644
 +					"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
 +					"env import -t $loadaddr $filesize;" \
 +					"echo Loaded environment from /boot/uEnv.txt;" \
++					"if test -n $dtb; then " \
++						"setenv fdtfile $dtb;" \
++						"echo using ${fdtdir} ...;" \
++					"fi;" \
 +					"echo Checking if uname_r is set ...;" \
 +					"if test -n $uname_r; then " \
 +						"gpio set 56; " \
@@ -120,7 +124,7 @@ index a48b386..f3969dd 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -171,24 +200,87 @@
+@@ -171,24 +204,82 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -144,11 +148,6 @@ index a48b386..f3969dd 100644
 +		"fi;" \
 +		"setenv fdtdir /boot/dtbs/$uname_r; " \
 +		"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+			"if test -n $cape; then " \
-+				"if test -e mmc ${bootpart} ${fdtdir}/$fdtbase-$cape.dtb; then " \
-+					"setenv fdtfile $fdtbase-$cape.dtb; " \
-+				"fi; " \
-+			"fi; " \
 +			"run loadfdt;" \
 +		"else " \
 +			"setenv fdtdir /usr/lib/linux-image-$uname_r; " \

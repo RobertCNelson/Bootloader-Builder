@@ -341,6 +341,7 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
+halt_patching_uboot
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
 			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
