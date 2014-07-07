@@ -42,15 +42,13 @@ uboot_old="v2014.01"
 uboot_stable="v2014.04"
 uboot_testing="v2014.07-rc4"
 
-#uboot_testing="v2014.07-rc4"
-#uboot_latest="a176ff0705351bf6d993a8f15e081bfa2ba2e1af"
-uboot_latest="fe8b3212b7938861eacdefe6115810303a96f9cc"
+#uboot_latest="fe8b3212b7938861eacdefe6115810303a96f9cc"
+uboot_latest="23f23f23d509e8e873797884456070c8a47d72b2"
 
-unset GIT_OPTS
-unset GIT_NOEDIT
-( LC_ALL=C git help pull | grep -m 1 -e "--no-edit" ) >/dev/null 2>&1 && GIT_NOEDIT=1
-
-if [ "${GIT_NOEDIT}" ] ; then
+#Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
+unset git_opts
+git_no_edit=$(LC_ALL=C git help pull | grep -m 1 -e "--no-edit" || true)
+if [ ! "x${git_no_edit}" = "x" ] ; then
 	GIT_OPTS="--no-edit"
 fi
 
