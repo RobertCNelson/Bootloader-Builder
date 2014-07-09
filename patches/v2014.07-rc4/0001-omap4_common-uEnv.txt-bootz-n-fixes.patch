@@ -98,13 +98,13 @@ index 44b3718..41bc4c9 100644
 +							"for mmcpart in 2 3 4 5 6 7 ; do " \
 +								"setenv bootpart $mmcdev:$mmcpart;" \
 +								"run uname_boot;" \
-+							"done" \
++							"done;" \
 +						"else " \
 +							"for mmcpart in 2 3 4 5 6 7 ; do " \
 +								"setenv bootpart $mmcdev:$mmcpart;" \
 +								"setenv mmcroot /dev/mmcblk$mmcdevp$mmcpart ro;" \
 +								"run uname_boot;" \
-+							"done" \
++							"done;" \
 +						"fi;" \
 +					"fi;" \
 +				"fi;" \
