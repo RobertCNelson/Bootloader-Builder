@@ -82,10 +82,10 @@ index 44b3718..cb82730 100644
 +				"fi;" \
 +				"echo; echo uenvcmd was not defined in ${bootpart} /uEnv.txt ...;"\
 +			"else " \
-+				"for mmcpart in 2 3 4 5 6 7 ; do " \
++				"for i in 1 2 3 4 5 6 7 ; do " \
++					"setenv mmcpart $i;" \
 +					"setenv bootpart $mmcdev:$mmcpart;" \
 +					"setenv mmcroot /dev/mmcblk$mmcdevp$mmcpart ro;" \
-+					"setenv bootpart ${mmcdev}:2; " \
 +					"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
 +						"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
 +						"env import -t $loadaddr $filesize;" \
