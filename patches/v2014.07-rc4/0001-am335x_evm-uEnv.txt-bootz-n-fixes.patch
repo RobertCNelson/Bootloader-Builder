@@ -1,42 +1,41 @@
-From fe2aee4c58dc5f54f919eedbc8c9ee59319575ca Mon Sep 17 00:00:00 2001
+From 4bdc82a58109c6945e9e6ee9bfb0b450704c92f9 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 4 Jul 2014 13:41:12 -0500
+Date: Wed, 9 Jul 2014 08:51:22 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h      | 131 ++++++++++++++++++++++++++++++++------
+ include/configs/am335x_evm.h      | 140 ++++++++++++++++++++++++++++++++------
  include/configs/ti_armv7_common.h |   1 +
- 2 files changed, 112 insertions(+), 20 deletions(-)
+ 2 files changed, 122 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a48b386..35d629a 100644
+index a48b386..beab023 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -78,8 +78,9 @@
- #define CONFIG_EXTRA_ENV_SETTINGS \
+@@ -79,7 +79,8 @@
  	DEFAULT_LINUX_BOOT_ENV \
  	"boot_fdt=try\0" \
--	"bootpart=0:2\0" \
+ 	"bootpart=0:2\0" \
 -	"bootdir=/boot\0" \
-+	"bootpart=0:1\0" \
 +	"bootdir=\0" \
 +	"fdtdir=/dtbs\0" \
  	"bootfile=zImage\0" \
  	"fdtfile=undefined\0" \
  	"console=ttyO0,115200n8\0" \
-@@ -87,8 +88,10 @@
+@@ -87,9 +88,11 @@
  		"uuid_disk=${uuid_gpt_disk};" \
  		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
  	"optargs=\0" \
 +	"cmdline=\0" \
  	"mmcdev=0\0" \
--	"mmcroot=/dev/mmcblk0p2 ro\0" \
 +	"mmcpart=1\0" \
-+	"mmcroot=/dev/mmcblk0p2 ro fixrtc\0" \
- 	"mmcrootfstype=ext4 rootwait\0" \
+ 	"mmcroot=/dev/mmcblk0p2 ro\0" \
+-	"mmcrootfstype=ext4 rootwait\0" \
++	"mmcrootfstype=ext4 rootwait fixrtc\0" \
  	"rootpath=/export/rootfs\0" \
  	"nfsopts=nolock\0" \
+ 	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
 @@ -99,7 +102,8 @@
  	"mmcargs=setenv bootargs console=${console} " \
  		"${optargs} " \
@@ -66,7 +65,7 @@ index a48b386..35d629a 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -141,18 +146,46 @@
+@@ -141,18 +146,53 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -104,27 +103,34 @@ index a48b386..35d629a 100644
 +				"fi;" \
 +				"echo; echo uenvcmd was not defined in ${bootpart} /uEnv.txt ...;"\
 +			"else " \
-+				"setenv bootpart ${mmcdev}:2; " \
-+				"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
-+					"gpio set 55;" \
-+					"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
-+					"env import -t $loadaddr $filesize;" \
-+					"echo Loaded environment from /boot/uEnv.txt;" \
-+					"if test -n $dtb; then " \
-+						"setenv fdtfile $dtb;" \
-+						"echo using ${fdtfile} ...;" \
++				"for i in 1 2 3 4 5 6 7 ; do " \
++					"setenv mmcpart ${i};" \
++					"setenv bootpart ${mmcdev}:${mmcpart};" \
++					"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
++					"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
++						"gpio set 55;" \
++						"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
++						"env import -t $loadaddr $filesize;" \
++						"echo Loaded environment from /boot/uEnv.txt;" \
++						"if test -n ${dtb}; then " \
++							"setenv fdtfile ${dtb};" \
++							"echo using ${fdtfile} ...;" \
++						"fi;" \
++						"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
++						"if test -n ${uname_r}; then " \
++							"if test -n ${uuid}; then " \
++								"setenv mmcroot UUID=${uuid} ro;" \
++							"fi;" \
++							"gpio set 56; " \
++							"run uname_boot;" \
++						"fi;" \
 +					"fi;" \
-+					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
-+					"if test -n $uname_r; then " \
-+						"gpio set 56; " \
-+						"run uname_boot;" \
-+					"fi;" \
-+				"fi;" \
++				"done;" \
 +			"fi; " \
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -171,24 +204,82 @@
+@@ -171,24 +211,86 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -141,56 +147,58 @@ index a48b386..35d629a 100644
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
-+		"setenv bootfile vmlinuz-$uname_r; " \
++		"setenv bootfile vmlinuz-${uname_r}; " \
 +		"if test -e mmc ${bootpart} ${bootdir}/${bootfile}; then " \
 +			"echo loading ${bootdir}/${bootfile} ...; "\
 +			"run loadimage;" \
-+		"fi;" \
-+		"setenv fdtdir /boot/dtbs/$uname_r; " \
-+		"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+			"run loadfdt;" \
-+		"else " \
-+			"setenv fdtdir /usr/lib/linux-image-$uname_r; " \
++			"setenv fdtdir /boot/dtbs/${uname_r}; " \
 +			"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +				"run loadfdt;" \
 +			"else " \
-+				"setenv fdtdir /lib/firmware/$uname_r/device-tree; " \
++				"setenv fdtdir /usr/lib/linux-image-${uname_r}; " \
 +				"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +					"run loadfdt;" \
 +				"else " \
-+					"setenv fdtdir /boot/dtb-$uname_r; " \
++					"setenv fdtdir /lib/firmware/${uname_r}/device-tree; " \
 +					"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +						"run loadfdt;" \
 +					"else " \
-+						"setenv fdtdir /boot/dtbs; " \
++						"setenv fdtdir /boot/dtb-${uname_r}; " \
 +						"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +							"run loadfdt;" \
 +						"else " \
-+							"setenv fdtdir /boot/dtb; " \
++							"setenv fdtdir /boot/dtbs; " \
 +							"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +								"run loadfdt;" \
 +							"else " \
-+								"setenv fdtdir /boot; " \
++								"setenv fdtdir /boot/dtb; " \
 +								"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +									"run loadfdt;" \
 +								"else " \
-+									"echo; echo unable to find ${fdtfile} ...;"\
++									"setenv fdtdir /boot; " \
++									"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++										"run loadfdt;" \
++									"else " \
++										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
++										"run mmcargs;" \
++										"bootz ${loadaddr}; " \
++									"fi;" \
 +								"fi;" \
 +							"fi;" \
 +						"fi;" \
 +					"fi;" \
 +				"fi;" \
++			"fi; " \
++			"setenv rdfile initrd.img-${uname_r}; " \
++			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
++				"echo loading ${bootdir}/${rdfile} ...; "\
++				"run loadrd;" \
++				"run mmcargs;" \
++				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++			"else " \
++				"run mmcargs;" \
++				"bootz ${loadaddr} - ${fdtaddr}; " \
 +			"fi;" \
-+		"fi; " \
-+		"setenv rdfile initrd.img-$uname_r; " \
-+		"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
-+			"echo loading ${bootdir}/${rdfile} ...; "\
-+			"run loadrd;" \
-+			"run mmcargs;" \
-+			"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
-+		"else " \
-+			"run mmcargs;" \
-+			"bootz ${loadaddr} - ${fdtaddr}; " \
 +		"fi;\0" \
  	NANDARGS \
  	DFUARGS
@@ -200,6 +208,8 @@ index a48b386..35d629a 100644
 +	"gpio set 53; " \
 +	"i2c mw 0x24 1 0x3e; " \
  	"run findfdt; " \
++	"setenv mmcdev 0; " \
++	"setenv bootpart 0:1; " \
  	"run mmcboot;" \
 +	"gpio clear 56; " \
 +	"gpio clear 55; " \

@@ -1,13 +1,13 @@
-From fac5f180a67158a2f471e8c064df02cae54008ba Mon Sep 17 00:00:00 2001
+From c2bf9ad8ebf362b942e96151781ffb5a93e6ad4f Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 4 Jul 2014 15:52:44 -0500
+Date: Wed, 9 Jul 2014 08:41:29 -0500
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/beagle/beagle.c       |  38 +++++++++--
- include/configs/omap3_beagle.h | 147 ++++++++++++++++++++++++++++++-----------
- 2 files changed, 140 insertions(+), 45 deletions(-)
+ board/ti/beagle/beagle.c       |  38 ++++++++--
+ include/configs/omap3_beagle.h | 156 ++++++++++++++++++++++++++++++-----------
+ 2 files changed, 149 insertions(+), 45 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index 0674afd..e2267a6 100644
@@ -111,7 +111,7 @@ index 0674afd..e2267a6 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_AB:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index c023483..67f58ac 100644
+index c023483..84021ce 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -128,26 +128,28 @@
@@ -176,7 +176,7 @@ index c023483..67f58ac 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -206,10 +210,40 @@
+@@ -206,10 +210,47 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${bootpart} ${rdaddr} ${bootdir}/${ramdisk}\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -202,26 +202,33 @@ index c023483..67f58ac 100644
 +				"fi;" \
 +				"echo; echo uenvcmd was not defined in ${bootpart} /uEnv.txt ...;"\
 +			"else " \
-+				"setenv bootpart ${mmcdev}:2; " \
-+				"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
-+					"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
-+					"env import -t $loadaddr $filesize;" \
-+					"echo Loaded environment from /boot/uEnv.txt;" \
-+					"if test -n $dtb; then " \
-+						"setenv fdtfile $dtb;" \
-+						"echo using ${fdtfile} ...;" \
++				"for i in 1 2 3 4 5 6 7 ; do " \
++					"setenv mmcpart ${i};" \
++					"setenv bootpart ${mmcdev}:${mmcpart};" \
++					"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
++					"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
++						"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
++						"env import -t $loadaddr $filesize;" \
++						"echo Loaded environment from /boot/uEnv.txt;" \
++						"if test -n ${dtb}; then " \
++							"setenv fdtfile ${dtb};" \
++							"echo using ${fdtfile} ...;" \
++						"fi;" \
++						"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
++						"if test -n ${uname_r}; then " \
++							"if test -n ${uuid}; then " \
++								"setenv mmcroot UUID=${uuid} ro;" \
++							"fi;" \
++							"run uname_boot;" \
++						"fi;" \
 +					"fi;" \
-+					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
-+					"if test -n $uname_r; then " \
-+						"run uname_boot;" \
-+					"fi;" \
-+				"fi;" \
++				"done;" \
 +			"fi; " \
 +		"fi;\0" \
  	"mmcbootz=echo Booting with DT from mmc${mmcdev} ...; " \
  		"run mmcargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
-@@ -223,35 +257,68 @@
+@@ -223,35 +264,70 @@
  	"userbutton=if gpio input 173; then run userbutton_xm; " \
  		"else run userbutton_nonxm; fi;\0" \
  	"userbutton_xm=gpio input 4;\0" \
@@ -229,56 +236,58 @@ index c023483..67f58ac 100644
 +	"userbutton_nonxm=gpio input 7;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
-+		"setenv bootfile vmlinuz-$uname_r; " \
++		"setenv bootfile vmlinuz-${uname_r}; " \
 +		"if test -e mmc ${bootpart} ${bootdir}/${bootfile}; then " \
 +			"echo loading ${bootdir}/${bootfile} ...; "\
 +			"run loadimage;" \
-+		"fi;" \
-+		"setenv fdtdir /boot/dtbs/$uname_r; " \
-+		"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+			"run loadfdt;" \
-+		"else " \
-+			"setenv fdtdir /usr/lib/linux-image-$uname_r; " \
++			"setenv fdtdir /boot/dtbs/${uname_r}; " \
 +			"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +				"run loadfdt;" \
 +			"else " \
-+				"setenv fdtdir /lib/firmware/$uname_r/device-tree; " \
++				"setenv fdtdir /usr/lib/linux-image-${uname_r}; " \
 +				"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +					"run loadfdt;" \
 +				"else " \
-+					"setenv fdtdir /boot/dtb-$uname_r; " \
++					"setenv fdtdir /lib/firmware/${uname_r}/device-tree; " \
 +					"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +						"run loadfdt;" \
 +					"else " \
-+						"setenv fdtdir /boot/dtbs; " \
++						"setenv fdtdir /boot/dtb-${uname_r}; " \
 +						"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +							"run loadfdt;" \
 +						"else " \
-+							"setenv fdtdir /boot/dtb; " \
++							"setenv fdtdir /boot/dtbs; " \
 +							"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +								"run loadfdt;" \
 +							"else " \
-+								"setenv fdtdir /boot; " \
++								"setenv fdtdir /boot/dtb; " \
 +								"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +									"run loadfdt;" \
 +								"else " \
-+									"echo; echo unable to find ${fdtfile} ...;"\
++									"setenv fdtdir /boot; " \
++									"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++										"run loadfdt;" \
++									"else " \
++										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
++										"run mmcargs;" \
++										"bootz ${loadaddr}; " \
++									"fi;" \
 +								"fi;" \
 +							"fi;" \
 +						"fi;" \
 +					"fi;" \
 +				"fi;" \
++			"fi; " \
++			"setenv rdfile initrd.img-${uname_r}; " \
++			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
++				"echo loading ${bootdir}/${rdfile} ...; "\
++				"run loadrd;" \
++				"run mmcargs;" \
++				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++			"else " \
++				"run mmcargs;" \
++				"bootz ${loadaddr} - ${fdtaddr}; " \
 +			"fi;" \
-+		"fi; " \
-+		"setenv rdfile initrd.img-$uname_r; " \
-+		"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
-+			"echo loading ${bootdir}/${rdfile} ...; "\
-+			"run loadrd;" \
-+			"run mmcargs;" \
-+			"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
-+		"else " \
-+			"run mmcargs;" \
-+			"bootz ${loadaddr} - ${fdtaddr}; " \
 +		"fi;\0"
  /* "run userbutton" will return 1 (false) if pressed and 0 (true) if not */
  #define CONFIG_BOOTCOMMAND \

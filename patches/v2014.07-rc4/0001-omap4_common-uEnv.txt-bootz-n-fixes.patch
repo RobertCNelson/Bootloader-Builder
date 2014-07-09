@@ -1,6 +1,6 @@
-From 9d655ec4bbbec1cb83a3324184eb7823ea66155e Mon Sep 17 00:00:00 2001
+From da1e2b7a0d476c1c0786fb468670b86b7779c44a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 8 Jul 2014 20:09:03 -0500
+Date: Wed, 9 Jul 2014 08:42:39 -0500
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 112 insertions(+), 33 deletions(-)
 
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 44b3718..cb82730 100644
+index 44b3718..ab66153 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -47,13 +47,15 @@
@@ -90,14 +90,14 @@ index 44b3718..cb82730 100644
 +						"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
 +						"env import -t $loadaddr $filesize;" \
 +						"echo Loaded environment from /boot/uEnv.txt;" \
-+						"if test -n $dtb; then " \
-+							"setenv fdtfile $dtb;" \
++						"if test -n ${dtb}; then " \
++							"setenv fdtfile ${dtb};" \
 +							"echo using ${fdtfile} ...;" \
 +						"fi;" \
 +						"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
-+						"if test -n $uname_r; then " \
-+							"if test -n $uuid; then " \
-+								"setenv mmcroot UUID=$uuid ro;" \
++						"if test -n ${uname_r}; then " \
++							"if test -n ${uuid}; then " \
++								"setenv mmcroot UUID=${uuid} ro;" \
 +							"fi;" \
 +							"run uname_boot;" \
 +						"fi;" \
@@ -119,23 +119,23 @@ index 44b3718..cb82730 100644
 -	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
-+		"setenv bootfile vmlinuz-$uname_r; " \
++		"setenv bootfile vmlinuz-${uname_r}; " \
 +		"if test -e mmc ${bootpart} ${bootdir}/${bootfile}; then " \
 +			"echo loading ${bootdir}/${bootfile} ...; "\
 +			"run loadimage;" \
-+			"setenv fdtdir /boot/dtbs/$uname_r; " \
++			"setenv fdtdir /boot/dtbs/${uname_r}; " \
 +			"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +				"run loadfdt;" \
 +			"else " \
-+				"setenv fdtdir /usr/lib/linux-image-$uname_r; " \
++				"setenv fdtdir /usr/lib/linux-image-${uname_r}; " \
 +				"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +					"run loadfdt;" \
 +				"else " \
-+					"setenv fdtdir /lib/firmware/$uname_r/device-tree; " \
++					"setenv fdtdir /lib/firmware/${uname_r}/device-tree; " \
 +					"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +						"run loadfdt;" \
 +					"else " \
-+						"setenv fdtdir /boot/dtb-$uname_r; " \
++						"setenv fdtdir /boot/dtb-${uname_r}; " \
 +						"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +							"run loadfdt;" \
 +						"else " \
@@ -161,7 +161,7 @@ index 44b3718..cb82730 100644
 +					"fi;" \
 +				"fi;" \
 +			"fi; " \
-+			"setenv rdfile initrd.img-$uname_r; " \
++			"setenv rdfile initrd.img-${uname_r}; " \
 +			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
 +				"echo loading ${bootdir}/${rdfile} ...; "\
 +				"run loadrd;" \

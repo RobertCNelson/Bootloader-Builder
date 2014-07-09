@@ -324,8 +324,9 @@ build_u_boot () {
 		#r10: am335x_evm: microSD 2.0 + everyone
 		#r11: am335x_evm, omap3_beagle, omap4_common, omap5_common: microSD 2.0
 		#r12: omap4_common: multi partition search
-		#r13: (pending)
-		RELEASE_VER="-r12" #bump on every change...
+		#r13: am335x_evm, omap3_beagle, omap4_common, omap5_common: multi partition search
+		#r14: (pending)
+		RELEASE_VER="-r13" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:
