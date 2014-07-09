@@ -323,12 +323,12 @@ build_u_boot () {
 		#r9: am335x_evm: microSD 2.0
 		#r10: am335x_evm: microSD 2.0 + everyone
 		#r11: am335x_evm, omap3_beagle, omap4_common, omap5_common: microSD 2.0
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: omap4_common: multi partition search
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
@@ -360,7 +360,6 @@ build_u_boot () {
 		#halt_patching_uboot
 
 		#Atmel:
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"

@@ -1,15 +1,15 @@
-From 329a61505d120d54d47836fc9feeda5098991777 Mon Sep 17 00:00:00 2001
+From e66c76798bb7480a79f1f0f19db4eeb587820c14 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 4 Jul 2014 15:54:20 -0500
+Date: Tue, 8 Jul 2014 19:03:47 -0500
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/ti_omap4_common.h | 136 +++++++++++++++++++++++++++++---------
- 1 file changed, 103 insertions(+), 33 deletions(-)
+ include/configs/ti_omap4_common.h | 150 +++++++++++++++++++++++++++++---------
+ 1 file changed, 117 insertions(+), 33 deletions(-)
 
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 44b3718..9f24004 100644
+index 44b3718..41bc4c9 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -47,13 +47,15 @@
@@ -29,7 +29,7 @@ index 44b3718..9f24004 100644
  
  /*
   * Hardware drivers
-@@ -90,29 +92,65 @@
+@@ -90,29 +92,77 @@
  	DEFAULT_LINUX_BOOT_ENV \
  	"console=ttyO2,115200n8\0" \
  	"fdtfile=undefined\0" \
@@ -93,7 +93,19 @@ index 44b3718..9f24004 100644
 +					"fi;" \
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n $uname_r; then " \
-+						"run uname_boot;" \
++						"if test -n $uuid; then " \
++							"setenv mmcroot UUID=$uuid ro;" \
++							"for mmcpart in 2 3 4 5 6 7 ; do " \
++								"setenv bootpart $mmcdev:$mmcpart;" \
++								"run uname_boot;" \
++							"done" \
++						"else " \
++							"for mmcpart in 2 3 4 5 6 7 ; do " \
++								"setenv bootpart $mmcdev:$mmcpart;" \
++								"setenv mmcroot /dev/mmcblk$mmcdevp$mmcpart ro;" \
++								"run uname_boot;" \
++							"done" \
++						"fi;" \
 +					"fi;" \
 +				"fi;" \
 +			"fi; " \
@@ -105,14 +117,69 @@ index 44b3718..9f24004 100644
  	"uimageboot=echo Booting from mmc${mmcdev} ...; " \
  		"run mmcargs; " \
  		"bootm ${loadaddr}\0" \
-@@ -129,31 +167,63 @@
+@@ -129,31 +179,65 @@
  			"setenv fdtfile omap4-duovero.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
 -	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
--
--#define CONFIG_BOOTCOMMAND \
--	"run findfdt; " \
++	"uname_boot="\
++		"setenv bootdir /boot; " \
++		"setenv bootfile vmlinuz-$uname_r; " \
++		"if test -e mmc ${bootpart} ${bootdir}/${bootfile}; then " \
++			"echo loading ${bootdir}/${bootfile} ...; "\
++			"run loadimage;" \
++			"setenv fdtdir /boot/dtbs/$uname_r; " \
++			"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++				"run loadfdt;" \
++			"else " \
++				"setenv fdtdir /usr/lib/linux-image-$uname_r; " \
++				"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++					"run loadfdt;" \
++				"else " \
++					"setenv fdtdir /lib/firmware/$uname_r/device-tree; " \
++					"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++						"run loadfdt;" \
++					"else " \
++						"setenv fdtdir /boot/dtb-$uname_r; " \
++						"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++							"run loadfdt;" \
++						"else " \
++							"setenv fdtdir /boot/dtbs; " \
++							"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++								"run loadfdt;" \
++							"else " \
++								"setenv fdtdir /boot/dtb; " \
++								"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++									"run loadfdt;" \
++								"else " \
++									"setenv fdtdir /boot; " \
++									"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
++										"run loadfdt;" \
++									"else " \
++										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
++										"run mmcargs;" \
++										"bootz ${loadaddr}; " \
++									"fi;" \
++								"fi;" \
++							"fi;" \
++						"fi;" \
++					"fi;" \
++				"fi;" \
++			"fi; " \
++			"setenv rdfile initrd.img-$uname_r; " \
++			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
++				"echo loading ${bootdir}/${rdfile} ...; "\
++				"run loadrd;" \
++				"run mmcargs;" \
++				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++			"else " \
++				"run mmcargs;" \
++				"bootz ${loadaddr} - ${fdtaddr}; " \
++			"fi;" \
++		"fi;\0" \
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	"run findfdt; " \
 -	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"echo SD/MMC found on device ${mmcdev};" \
 -		"if run loadbootscript; then " \
@@ -125,68 +192,15 @@ index 44b3718..9f24004 100644
 -				"echo Running uenvcmd ...;" \
 -				"run uenvcmd;" \
 -			"fi;" \
-+	"uname_boot="\
-+		"setenv bootdir /boot; " \
-+		"setenv bootfile vmlinuz-$uname_r; " \
-+		"if test -e mmc ${bootpart} ${bootdir}/${bootfile}; then " \
-+			"echo loading ${bootdir}/${bootfile} ...; "\
-+			"run loadimage;" \
- 		"fi;" \
+-		"fi;" \
 -		"if run loadimage; then " \
-+		"setenv fdtdir /boot/dtbs/$uname_r; " \
-+		"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
- 			"run loadfdt;" \
+-			"run loadfdt;" \
 -			"run mmcboot; " \
 -		"fi; " \
 -		"if run loaduimage; then " \
 -			"run uimageboot;" \
-+		"else " \
-+			"setenv fdtdir /usr/lib/linux-image-$uname_r; " \
-+			"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+				"run loadfdt;" \
-+			"else " \
-+				"setenv fdtdir /lib/firmware/$uname_r/device-tree; " \
-+				"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+					"run loadfdt;" \
-+				"else " \
-+					"setenv fdtdir /boot/dtb-$uname_r; " \
-+					"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+						"run loadfdt;" \
-+					"else " \
-+						"setenv fdtdir /boot/dtbs; " \
-+						"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+							"run loadfdt;" \
-+						"else " \
-+							"setenv fdtdir /boot/dtb; " \
-+							"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+								"run loadfdt;" \
-+							"else " \
-+								"setenv fdtdir /boot; " \
-+								"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
-+									"run loadfdt;" \
-+								"else " \
-+									"echo; echo unable to find ${fdtfile} ...;"\
-+								"fi;" \
-+							"fi;" \
-+						"fi;" \
-+					"fi;" \
-+				"fi;" \
-+			"fi;" \
- 		"fi; " \
+-		"fi; " \
 -	"fi"
-+		"setenv rdfile initrd.img-$uname_r; " \
-+		"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
-+			"echo loading ${bootdir}/${rdfile} ...; "\
-+			"run loadrd;" \
-+			"run mmcargs;" \
-+			"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
-+		"else " \
-+			"run mmcargs;" \
-+			"bootz ${loadaddr} - ${fdtaddr}; " \
-+		"fi;\0" \
-+
-+#define CONFIG_BOOTCOMMAND \
-+	"run findfdt; " \
 +	"run mmcboot;"
  
  /*
