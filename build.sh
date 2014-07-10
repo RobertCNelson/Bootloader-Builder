@@ -42,8 +42,8 @@ uboot_old="v2014.01"
 uboot_stable="v2014.04"
 uboot_testing="v2014.07-rc4"
 
-#uboot_latest="23f23f23d509e8e873797884456070c8a47d72b2"
-uboot_latest="80a7cac033082ec3e106cfcc736a126ec6547d85"
+#uboot_latest="80a7cac033082ec3e106cfcc736a126ec6547d85"
+uboot_latest="bc9a78acd40cf9bc7017639e8d4aec889b66e7ee"
 
 #Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
 unset git_opts
@@ -325,8 +325,9 @@ build_u_boot () {
 		#r11: am335x_evm, omap3_beagle, omap4_common, omap5_common: microSD 2.0
 		#r12: omap4_common: multi partition search
 		#r13: am335x_evm, omap3_beagle, omap4_common, omap5_common: multi partition search
-		#r14: (pending)
-		RELEASE_VER="-r13" #bump on every change...
+		#r14: am335x_evm: ${cape_disable} ${cape_enable}
+		#r15: (pending)
+		RELEASE_VER="-r14" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:

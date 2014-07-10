@@ -1,16 +1,16 @@
-From 4bdc82a58109c6945e9e6ee9bfb0b450704c92f9 Mon Sep 17 00:00:00 2001
+From 7996bf23e3330fdade868c2296c7d483e181bd53 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 9 Jul 2014 08:51:22 -0500
+Date: Thu, 10 Jul 2014 10:07:55 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h      | 140 ++++++++++++++++++++++++++++++++------
+ include/configs/am335x_evm.h      | 144 +++++++++++++++++++++++++++++++++-----
  include/configs/ti_armv7_common.h |   1 +
- 2 files changed, 122 insertions(+), 19 deletions(-)
+ 2 files changed, 126 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a48b386..beab023 100644
+index a48b386..fbe7eee 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -79,7 +79,8 @@
@@ -23,10 +23,12 @@ index a48b386..beab023 100644
  	"bootfile=zImage\0" \
  	"fdtfile=undefined\0" \
  	"console=ttyO0,115200n8\0" \
-@@ -87,9 +88,11 @@
+@@ -87,9 +88,13 @@
  		"uuid_disk=${uuid_gpt_disk};" \
  		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
  	"optargs=\0" \
++	"cape_disable=\0" \
++	"cape_enable=\0" \
 +	"cmdline=\0" \
  	"mmcdev=0\0" \
 +	"mmcpart=1\0" \
@@ -36,9 +38,12 @@ index a48b386..beab023 100644
  	"rootpath=/export/rootfs\0" \
  	"nfsopts=nolock\0" \
  	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
-@@ -99,7 +102,8 @@
+@@ -98,8 +103,11 @@
+ 	"ramrootfstype=ext2\0" \
  	"mmcargs=setenv bootargs console=${console} " \
  		"${optargs} " \
++		"${cape_disable} " \
++		"${cape_enable} " \
  		"root=${mmcroot} " \
 -		"rootfstype=${mmcrootfstype}\0" \
 +		"rootfstype=${mmcrootfstype} " \
@@ -46,7 +51,7 @@ index a48b386..beab023 100644
  	"spiroot=/dev/mtdblock4 rw\0" \
  	"spirootfstype=jffs2\0" \
  	"spisrcaddr=0xe0000\0" \
-@@ -115,7 +119,7 @@
+@@ -115,7 +123,7 @@
  		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
  		"ip=dhcp\0" \
  	"bootenv=uEnv.txt\0" \
@@ -55,7 +60,7 @@ index a48b386..beab023 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -124,7 +128,8 @@
+@@ -124,7 +132,8 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -65,7 +70,7 @@ index a48b386..beab023 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -141,18 +146,53 @@
+@@ -141,18 +150,53 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -130,7 +135,7 @@ index a48b386..beab023 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -171,24 +211,86 @@
+@@ -171,24 +215,86 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
