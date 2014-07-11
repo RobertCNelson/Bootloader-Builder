@@ -326,8 +326,9 @@ build_u_boot () {
 		#r12: omap4_common: multi partition search
 		#r13: am335x_evm, omap3_beagle, omap4_common, omap5_common: multi partition search
 		#r14: am335x_evm: ${cape_disable} ${cape_enable}
-		#r15: (pending)
-		RELEASE_VER="-r14" #bump on every change...
+		#r15:  am335x_evm, omap3_beagle, omap5_common: define #define CONFIG_SUPPORT_RAW_INITRD in each patch
+		#r16: (pending)
+		RELEASE_VER="-r15" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:
