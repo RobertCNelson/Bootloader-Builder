@@ -296,8 +296,9 @@ build_u_boot () {
 		#r14: am335x_evm: ${cape_disable} ${cape_enable}
 		#r15: am335x_evm, omap3_beagle, omap5_common: define #define CONFIG_SUPPORT_RAW_INITRD in each patch
 		#r16: am335x_evm: /boot.scr & /boot/boot.scr support for flash-kernel
-		#r17: (pending)
-		RELEASE_VER="-r16" #bump on every change...
+		#r17: imx: convert all to new partition table setup...
+		#r18: (pending)
+		RELEASE_VER="-r17" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:

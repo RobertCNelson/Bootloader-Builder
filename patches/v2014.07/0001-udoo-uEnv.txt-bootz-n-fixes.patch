@@ -1,16 +1,16 @@
-From a3881f7113b30fbc23c76380238e873924da13a8 Mon Sep 17 00:00:00 2001
+From ce2ce96b05cf99473658f7f015b73e70936baaa3 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 10 Jun 2014 10:12:46 -0500
+Date: Tue, 15 Jul 2014 15:52:17 -0500
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/udoo/1066mhz_4x256mx16_dl.cfg | 58 +++++++++++++++++++++++++
- board/udoo/ddr-setup_dl.cfg         | 84 +++++++++++++++++++++++++++++++++++++
- board/udoo/udoo-dl.cfg              | 29 +++++++++++++
- boards.cfg                          |  1 +
- include/configs/udoo.h              | 60 ++++++++++++++++++--------
- 5 files changed, 215 insertions(+), 17 deletions(-)
+ board/udoo/1066mhz_4x256mx16_dl.cfg |  58 +++++++++++++++++
+ board/udoo/ddr-setup_dl.cfg         |  84 ++++++++++++++++++++++++
+ board/udoo/udoo-dl.cfg              |  29 +++++++++
+ boards.cfg                          |   1 +
+ include/configs/udoo.h              | 123 ++++++++++++++++++++++++++++++------
+ 5 files changed, 277 insertions(+), 18 deletions(-)
  create mode 100644 board/udoo/1066mhz_4x256mx16_dl.cfg
  create mode 100644 board/udoo/ddr-setup_dl.cfg
  create mode 100644 board/udoo/udoo-dl.cfg
@@ -205,10 +205,10 @@ index 0000000..46953c1
 +#include "1066mhz_4x256mx16_dl.cfg"
 +#include "clocks.cfg"
 diff --git a/boards.cfg b/boards.cfg
-index 221b7f8..d57e0c0 100644
+index 1ba2081..7deb002 100644
 --- a/boards.cfg
 +++ b/boards.cfg
-@@ -307,6 +307,7 @@ Active  arm         armv7          mx5         freescale       mx53smd
+@@ -311,6 +311,7 @@ Active  arm         armv7          mx5         freescale       mx53smd
  Active  arm         armv7          mx5         genesi          mx51_efikamx        mx51_efikamx                          mx51_efikamx:MACH_TYPE=MACH_TYPE_MX51_EFIKAMX,IMX_CONFIG=board/genesi/mx51_efikamx/imximage_mx.cfg                                -
  Active  arm         armv7          mx5         genesi          mx51_efikamx        mx51_efikasb                          mx51_efikamx:MACH_TYPE=MACH_TYPE_MX51_EFIKASB,IMX_CONFIG=board/genesi/mx51_efikamx/imximage_sb.cfg                                -
  Active  arm         armv7          mx5         ttcontrol       vision2             vision2                               vision2:IMX_CONFIG=board/ttcontrol/vision2/imximage_hynix.cfg                                                                     Stefano Babic <sbabic@denx.de>
@@ -217,7 +217,7 @@ index 221b7f8..d57e0c0 100644
  Active  arm         armv7          mx6         -               wandboard           wandboard_dl                          wandboard:IMX_CONFIG=board/boundary/nitrogen6x/nitrogen6dl.cfg,MX6DL,DDR_MB=1024                                                  Fabio Estevam <fabio.estevam@freescale.com>
  Active  arm         armv7          mx6         -               wandboard           wandboard_quad                        wandboard:IMX_CONFIG=board/boundary/nitrogen6x/nitrogen6q2g.cfg,MX6Q,DDR_MB=2048                                                  Fabio Estevam <fabio.estevam@freescale.com>
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
-index 700e9c1..1db8a78 100644
+index 700e9c1..6f4542b 100644
 --- a/include/configs/udoo.h
 +++ b/include/configs/udoo.h
 @@ -78,7 +78,7 @@
@@ -229,7 +229,7 @@ index 700e9c1..1db8a78 100644
  
  #define CONFIG_SYS_MEMTEST_START	0x10000000
  #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 500 * SZ_1M)
-@@ -96,9 +96,15 @@
+@@ -96,24 +96,34 @@
  #define CONFIG_BOUNCE_BUFFER
  #define CONFIG_CMD_EXT2
  #define CONFIG_CMD_FAT
@@ -245,12 +245,19 @@ index 700e9c1..1db8a78 100644
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"script=boot.scr\0" \
-@@ -111,9 +117,12 @@
+ 	"image=zImage\0" \
+-	"console=ttymxc1\0" \
++	"console=ttymxc1,115200\0" \
+ 	"splashpos=m,m\0" \
+ 	"fdt_high=0xffffffff\0" \
+ 	"initrd_high=0xffffffff\0" \
+ 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
  	"fdt_addr=0x18000000\0" \
++	"rdaddr=0x12A00000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
 +	"optargs=\0" \
-+	"video=\0" \
++	"cmdline=\0" \
  	"mmcdev=0\0" \
  	"mmcpart=1\0" \
 -	"mmcroot=/dev/mmcblk0p2 rootwait rw\0" \
@@ -259,49 +266,116 @@ index 700e9c1..1db8a78 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -129,27 +138,36 @@
+@@ -128,15 +138,45 @@
+ 				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
- 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+-	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 -		"root=${mmcroot}\0" \
++	"mmcargs=setenv bootargs console=${console} " \
 +		"${optargs} " \
 +		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype} " \
-+		"video=${video}\0" \
-+	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt\0" \
-+	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
-+		"env import -t $loadaddr $filesize\0" \
++		"${cmdline}\0" \
  	"loadbootscript=" \
  		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
 -	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
-+	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
-+	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
-+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} /dtbs/${fdt_file}\0" \
- 	"mmcboot=echo Booting from mmc ...; " \
+-	"mmcboot=echo Booting from mmc ...; " \
++	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
++	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
++	"loadfdt=echo loading ${fdtdir}/${fdt_file} ...;  load mmc ${bootpart} ${fdt_addr} ${fdtdir}/${fdt_file}\0" \
++	"mmcboot=mmc dev ${mmcdev}; " \
++		"if mmc rescan; then " \
++			"echo SD/MMC found on device ${mmcdev};" \
++			"echo Checking for: /boot/uEnv.txt ...;" \
++			"for i in 1 2 3 4 5 6 7 ; do " \
++				"setenv mmcpart ${i};" \
++				"setenv bootpart ${mmcdev}:${mmcpart};" \
++				"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
++					"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
++					"env import -t ${loadaddr} ${filesize};" \
++					"echo Loaded environment from /boot/uEnv.txt;" \
++					"if test -n ${dtb}; then " \
++						"setenv fdt_file ${dtb};" \
++						"echo using ${fdt_file} ...;" \
++					"fi;" \
++					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
++					"if test -n ${uname_r}; then " \
++						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
++						"if test -n ${uuid}; then " \
++							"setenv mmcroot UUID=${uuid} ro;" \
++						"fi;" \
++						"run uname_boot;" \
++					"fi;" \
++				"fi;" \
++			"done;" \
++		"fi;\0" \
++	"mmcboot_old=echo Booting from mmc ...; " \
  		"run mmcargs; " \
-+		"bootz ${loadaddr} - ${fdt_addr};\0" \
-+	"mmcbootdefault=echo Booting from mmc ...; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
- 				"bootz ${loadaddr} - ${fdt_addr}; " \
- 			"else " \
- 				"if test ${boot_fdt} = try; then " \
--					"bootz; " \
-+					"bootz ${loadaddr}; " \
- 				"else " \
- 					"echo WARN: Cannot load the DT; " \
- 				"fi; " \
+@@ -174,19 +214,65 @@
  			"fi; " \
  		"else " \
--			"bootz; " \
-+			"bootz ${loadaddr}; " \
- 		"fi;\0" \
- 	"netargs=setenv bootargs console=${console},${baudrate} " \
- 		"root=/dev/nfs " \
-@@ -177,16 +195,23 @@
+ 			"bootz; " \
++		"fi;\0" \
++	"uname_boot="\
++		"setenv bootdir /boot; " \
++		"setenv bootfile vmlinuz-${uname_r}; " \
++		"if test -e mmc ${bootpart} ${bootdir}/${bootfile}; then " \
++			"echo loading ${bootdir}/${bootfile} ...; "\
++			"run loadimage;" \
++			"setenv fdtdir /boot/dtbs/${uname_r}; " \
++			"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++				"run loadfdt;" \
++			"else " \
++				"setenv fdtdir /usr/lib/linux-image-${uname_r}; " \
++				"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++					"run loadfdt;" \
++				"else " \
++					"setenv fdtdir /lib/firmware/${uname_r}/device-tree; " \
++					"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++						"run loadfdt;" \
++					"else " \
++						"setenv fdtdir /boot/dtb-${uname_r}; " \
++						"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++							"run loadfdt;" \
++						"else " \
++							"setenv fdtdir /boot/dtbs; " \
++							"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++								"run loadfdt;" \
++							"else " \
++								"setenv fdtdir /boot/dtb; " \
++								"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++									"run loadfdt;" \
++								"else " \
++									"setenv fdtdir /boot; " \
++									"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++										"run loadfdt;" \
++									"else " \
++										"echo; echo unable to find ${fdt_file} ...; echo booting legacy ...;"\
++										"run mmcargs;" \
++										"bootz ${loadaddr}; " \
++									"fi;" \
++								"fi;" \
++							"fi;" \
++						"fi;" \
++					"fi;" \
++				"fi;" \
++			"fi; " \
++			"setenv rdfile initrd.img-${uname_r}; " \
++			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
++				"echo loading ${bootdir}/${rdfile} ...; "\
++				"run loadrd;" \
++				"run mmcargs;" \
++				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++			"else " \
++				"run mmcargs;" \
++				"bootz ${loadaddr} - ${fdtaddr}; " \
++			"fi;" \
  		"fi;\0"
  
  #define CONFIG_BOOTCOMMAND \
@@ -315,27 +389,11 @@ index 700e9c1..1db8a78 100644
 -			   "fi; " \
 -		   "fi; " \
 -	   "else run netboot; fi"
-+	"mmc dev ${mmcdev};" \
-+	"if mmc rescan; then " \
-+		"echo SD/MMC found on device ${mmcdev};" \
-+		"if run loadbootenv; then " \
-+			"run importbootenv;" \
-+		"fi;" \
-+		"echo Checking if uenvcmd is set ...;" \
-+		"if test -n $uenvcmd; then " \
-+			"echo Running uenvcmd ...;" \
-+			"run uenvcmd;" \
-+		"fi;" \
-+		"echo Running default loadimage ...;" \
-+		"if run loadimage; then " \
-+			"run loadfdt;" \
-+			"run mmcboot;" \
-+		"fi;" \
-+	"fi;"
++	   "run mmcboot; "
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP
-@@ -228,6 +253,7 @@
+@@ -228,6 +314,7 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -344,5 +402,5 @@ index 700e9c1..1db8a78 100644
  #ifndef CONFIG_SYS_DCACHE_OFF
  #define CONFIG_CMD_CACHE
 -- 
-2.0.0
+2.0.1
 
