@@ -559,6 +559,7 @@ build_uboot_latest () {
 build_uboot_eabi () {
 	gcc_arm_embedded_4_8
 	build_uboot_stable
+	gcc_arm_embedded_4_9
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -566,6 +567,7 @@ build_uboot_eabi () {
 build_uboot_gnueabihf () {
 	gcc_linaro_gnueabihf_4_8
 	build_uboot_stable
+	gcc_linaro_gnueabihf_4_9
 	build_uboot_testing
 	build_uboot_latest
 }
