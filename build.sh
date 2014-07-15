@@ -556,63 +556,67 @@ build_uboot_latest () {
 	unset next
 }
 
-build_uboot_all () {
+build_uboot_eabi () {
+	gcc_arm_embedded_4_8
 	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
 
+build_uboot_gnueabihf () {
+	gcc_linaro_gnueabihf_4_8
+	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
+}
+
+
 am335x_evm () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_evm"
 	UBOOT_CONFIG="${BOARD}_config"
 
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 am335x_boneblack_flasher () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am335x_boneblack"
 	UBOOT_CONFIG="am335x_evm_config"
 
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 am43xx_evm () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="am43xx_evm"
 	UBOOT_CONFIG="${BOARD}_config"
 
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 arndale () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="arndale"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 at91sam9x5ek () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_arm_embedded_4_8
 
 	BOARD="at91sam9x5ek_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_eabi
 
 	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
 	build_at91bootstrap_all
@@ -621,145 +625,130 @@ at91sam9x5ek () {
 mx23_olinuxino () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_arm_embedded_4_8
 
 	BOARD="mx23_olinuxino"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_eabi
 }
 
 mx51evk () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx51evk"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 mx53loco () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx53loco"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 mx6qsabresd () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="mx6qsabresd"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 omap3_beagle () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap3_beagle"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 omap4_panda () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap4_panda"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 omap5_uevm () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="omap5_uevm"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 sama5d3xek () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="sama5d3xek_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 sama5d3_xplained () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="sama5d3_xplained_mmc"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 udoo () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="udoo_quad"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="udoo_dl"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 vf610twr () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="vf610twr"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 wandboard () {
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_quad"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_dl"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 
 	cleanup
 	#transitioned_to_testing="true"
-	gcc_linaro_gnueabihf_4_8
 
 	BOARD="wandboard_solo"
 	UBOOT_CONFIG="${BOARD}_config"
-	build_uboot_all
+	build_uboot_gnueabihf
 }
 
 am335x_evm
