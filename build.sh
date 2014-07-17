@@ -297,8 +297,9 @@ build_u_boot () {
 		#r15: am335x_evm, omap3_beagle, omap5_common: define #define CONFIG_SUPPORT_RAW_INITRD in each patch
 		#r16: am335x_evm: /boot.scr & /boot/boot.scr support for flash-kernel
 		#r17: imx: convert all to new partition table setup...
-		#r18: (pending)
-		RELEASE_VER="-r17" #bump on every change...
+		#r18: am335x_evm: nfs support: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0#nfs_support
+		#r19: (pending)
+		RELEASE_VER="-r18" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:
