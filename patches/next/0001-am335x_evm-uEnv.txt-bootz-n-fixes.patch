@@ -126,9 +126,9 @@ index a48b386..148b9ac 100644
 +					"echo Loaded environment from ${bootenv};" \
 +					"run importbootenv;" \
 +				"fi;" \
-+				"if test -n $cape; then " \
-+					"if test -e mmc ${bootpart} ${fdtdir}/$fdtbase-$cape.dtb; then " \
-+						"setenv fdtfile $fdtbase-$cape.dtb; " \
++				"if test -n ${cape}; then " \
++					"if test -e mmc ${bootpart} ${fdtdir}/${fdtbase}-${cape}.dtb; then " \
++						"setenv fdtfile ${fdtbase}-${cape}.dtb; " \
 +					"fi; " \
 +					"echo using: $fdtfile...; " \
 +				"fi; " \
@@ -199,8 +199,8 @@ index a48b386..148b9ac 100644
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
 +	"nfsboot=echo Booting from ${server_ip} ...; " \
-+		"setenv nfsroot nfsroot=${server_ip}:${root_dir}${nfs_options}; " \
-+		"setenv ip ip=${client_ip}:${server_ip}:${gw_ip}:${netmask}:${hostname}:${device}:${autoconf}; " \
++		"setenv nfsroot ${server_ip}:${root_dir}${nfs_options}; " \
++		"setenv ip ${client_ip}:${server_ip}:${gw_ip}:${netmask}:${hostname}:${device}:${autoconf}; " \
 +		"setenv autoload no; " \
 +		"tftp ${loadaddr} ${bootfile}; " \
 +		"tftp ${fdtaddr} dtbs/${fdtfile}; " \
