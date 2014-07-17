@@ -1,15 +1,15 @@
-From d495461d9400e1a0e74734fe7d6f08f7acde673e Mon Sep 17 00:00:00 2001
+From 3c58256f7f4909481bf91aed59eb538d2c145a9a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 16 Jul 2014 19:21:37 -0500
+Date: Thu, 17 Jul 2014 10:01:09 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h | 205 +++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 186 insertions(+), 19 deletions(-)
+ include/configs/am335x_evm.h | 207 +++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 188 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a48b386..148b9ac 100644
+index a48b386..9b1aba4 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -194,7 +194,7 @@ index a48b386..148b9ac 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -166,29 +263,99 @@
+@@ -166,29 +263,101 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
@@ -202,6 +202,8 @@ index a48b386..148b9ac 100644
 +		"setenv nfsroot ${server_ip}:${root_dir}${nfs_options}; " \
 +		"setenv ip ${client_ip}:${server_ip}:${gw_ip}:${netmask}:${hostname}:${device}:${autoconf}; " \
 +		"setenv autoload no; " \
++		"setenv serverip ${server_ip}; " \
++		"setenv ipaddr ${client_ip}; " \
 +		"tftp ${loadaddr} ${bootfile}; " \
 +		"tftp ${fdtaddr} dtbs/${fdtfile}; " \
 +		"run nfsargs; " \
