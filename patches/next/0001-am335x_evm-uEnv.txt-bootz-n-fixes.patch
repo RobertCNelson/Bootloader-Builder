@@ -68,7 +68,7 @@ index a48b386..9b1aba4 100644
 +		"${optargs} " \
 +		"${cape_disable} " \
 +		"${cape_enable} " \
-+		"root=/dev/nfs rw" \
++		"root=/dev/nfs rw " \
 +		"rootfstype=${nfsrootfstype} " \
 +		"nfsroot=${nfsroot} " \
 +		"ip=${ip} " \
