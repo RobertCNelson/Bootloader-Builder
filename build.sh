@@ -302,8 +302,9 @@ build_u_boot () {
 		#r20: imx: fdtaddr -> fdt_addr
 		#r21: imx: uenvcmd
 		#r22: imx: wand/sabresd dual card support
-		#r23: (pending)
-		RELEASE_VER="-r22" #bump on every change...
+		#r23: imx: mx51evk: fix boot
+		#r24: (pending)
+		RELEASE_VER="-r23" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:
