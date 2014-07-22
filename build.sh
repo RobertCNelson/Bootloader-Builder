@@ -301,8 +301,9 @@ build_u_boot () {
 		#r19: am335x_evm: nfs/tftp of course tftp has a hard coded variable...
 		#r20: imx: fdtaddr -> fdt_addr
 		#r21: imx: uenvcmd
-		#r22: (pending)
-		RELEASE_VER="-r21" #bump on every change...
+		#r22: imx: wand/sabresd dual card support
+		#r23: (pending)
+		RELEASE_VER="-r22" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:

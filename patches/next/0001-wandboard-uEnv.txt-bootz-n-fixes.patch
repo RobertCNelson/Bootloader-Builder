@@ -1,15 +1,15 @@
-From 4b1b7e52bff7d6639d9cb68f7b1489cd85f049c7 Mon Sep 17 00:00:00 2001
+From 483ff87ca1c074470dd95be4ccb0151f02be59a2 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 22 Jul 2014 09:05:30 -0500
+Date: Tue, 22 Jul 2014 10:50:22 -0500
 Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/wandboard.h | 134 +++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 115 insertions(+), 19 deletions(-)
+ include/configs/wandboard.h | 139 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 120 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
-index 7d96908..fbb19ae 100644
+index 7d96908..36b866c 100644
 --- a/include/configs/wandboard.h
 +++ b/include/configs/wandboard.h
 @@ -51,7 +51,7 @@
@@ -109,7 +109,7 @@ index 7d96908..fbb19ae 100644
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
 +						"echo Running uname_boot ...;" \
-+						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
++						"setenv mmcroot /dev/mmcblk${mmckernel}p${mmcpart} ro;" \
 +						"run uname_boot;" \
 +					"fi;" \
 +				"fi;" \
@@ -119,7 +119,7 @@ index 7d96908..fbb19ae 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -216,19 +262,68 @@
+@@ -216,19 +262,73 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -194,11 +194,16 @@ index 7d96908..fbb19ae 100644
 -			   "fi; " \
 -		   "fi; " \
 -	   "else run netboot; fi"
++	"setenv mmcdev 0;" \
++	"setenv mmckernel 0;" \
++	"run mmcboot;" \
++	"setenv mmcdev 1;" \
++	"setenv mmckernel 0;" \
 +	"run mmcboot;"
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP
-@@ -269,6 +364,7 @@
+@@ -269,6 +369,7 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ

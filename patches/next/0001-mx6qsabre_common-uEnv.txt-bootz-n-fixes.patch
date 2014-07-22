@@ -186,7 +186,7 @@ index e59a3b4..9bac1a8 100644
 +	"setenv mmckernel 0;" \
 +	"run mmcboot;" \
 +	"setenv mmcdev 0;" \
-+	"setenv mmckernel 1;" \
++	"setenv mmckernel 0;" \
 +	"run mmcboot;"
  
  #define CONFIG_ARP_TIMEOUT     200UL
