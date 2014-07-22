@@ -42,9 +42,9 @@ uboot_old="v2014.04"
 uboot_stable="v2014.07"
 #uboot_testing="v2014.07"
 
-#uboot_latest="84f24ac8278d287581e5a559a7299e1dc2b53481"
 #uboot_testing="v2014.07"
 #uboot_latest="524123a70761110c5cf3ccc5f52f6d4da071b959"
+uboot_latest="3364b1898c23f8016548acc2c099b08e865b8a61"
 
 #Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
 unset git_opts
@@ -300,8 +300,9 @@ build_u_boot () {
 		#r18: am335x_evm: nfs support: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0#nfs_support
 		#r19: am335x_evm: nfs/tftp of course tftp has a hard coded variable...
 		#r20: imx: fdtaddr -> fdt_addr
-		#r21: (pending)
-		RELEASE_VER="-r20" #bump on every change...
+		#r21: imx: uenvcmd
+		#r22: (pending)
+		RELEASE_VER="-r21" #bump on every change...
 		#halt_patching_uboot
 
 		#Atmel:
