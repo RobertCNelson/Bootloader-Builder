@@ -1,6 +1,6 @@
-From 1b81addd6b36e4c4c8f1ac475ab41b736e5eba4e Mon Sep 17 00:00:00 2001
+From fb925ea0af55d557ff08a96c3802a696c273ab94 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 22 Jul 2014 08:57:38 -0500
+Date: Wed, 23 Jul 2014 08:46:44 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 189 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a48b386..6d6a239 100644
+index 34d27c6..52851ca 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -83,7 +83,7 @@ index a48b386..6d6a239 100644
 -	"loadbootenv=load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 +	"loadbootenv=load mmc ${bootpart} ${loadaddr} ${bootenv}\0" \
  	"importbootenv=echo Importing environment from mmc ...; " \
- 		"env import -t $loadaddr $filesize\0" \
+ 		"env import -t -r $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
 @@ -124,7 +151,14 @@
  		"rootfstype=${ramrootfstype}\0" \

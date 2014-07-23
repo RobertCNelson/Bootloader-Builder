@@ -1,6 +1,6 @@
-From 36050d2b8da860210d3dae5b00c3c7f47db00bf0 Mon Sep 17 00:00:00 2001
+From 01b24274b4128be3f2243c2900474a37411f0213 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 22 Jul 2014 08:48:31 -0500
+Date: Wed, 23 Jul 2014 09:12:38 -0500
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -111,7 +111,7 @@ index 0674afd..e2267a6 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_AB:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 3782049..714109a 100644
+index 9ba031d..6167d57 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
 @@ -28,6 +28,7 @@
@@ -182,7 +182,7 @@ index 3782049..714109a 100644
 -	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 +	"loadbootenv=load mmc ${bootpart} ${loadaddr} ${bootenv}\0" \
  	"importbootenv=echo Importing environment from mmc ...; " \
- 		"env import -t $loadaddr $filesize\0" \
+ 		"env import -t -r $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
 @@ -207,10 +200,44 @@
  		"rootfstype=${ramrootfstype}\0" \

@@ -42,9 +42,8 @@ uboot_old="v2014.04"
 uboot_stable="v2014.07"
 #uboot_testing="v2014.07"
 
-#uboot_testing="v2014.07"
-#uboot_latest="524123a70761110c5cf3ccc5f52f6d4da071b959"
-uboot_latest="3364b1898c23f8016548acc2c099b08e865b8a61"
+#uboot_latest="3364b1898c23f8016548acc2c099b08e865b8a61"
+uboot_latest="fbe79a17fddb7f0b11aa15b9c93e9a4a26165ed8"
 
 #Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
 unset git_opts
@@ -303,9 +302,13 @@ build_u_boot () {
 		#r21: imx: uenvcmd
 		#r22: imx: wand/sabresd dual card support
 		#r23: imx: mx51evk: fix boot
-		#r24: (pending)
-		RELEASE_VER="-r23" #bump on every change...
+		#r24: am335x_evm: -r option for env import...
+		#r25: (pending)
+		RELEASE_VER="-r24" #bump on every change...
 		#halt_patching_uboot
+
+		git am "${DIR}/patches/${uboot_patch_dir}/upstream/0001-Add-option-r-to-env-import-to-allow-import-of-text-f.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/upstream/0002-am335x_evm-handle-import-of-environments-in-files-wi.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
