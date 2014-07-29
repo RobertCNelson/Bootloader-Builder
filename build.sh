@@ -42,8 +42,8 @@ uboot_old="v2014.04"
 uboot_stable="v2014.07"
 #uboot_testing="v2014.07"
 
-#uboot_latest="fbe79a17fddb7f0b11aa15b9c93e9a4a26165ed8"
-uboot_latest="ee860c60d2c5283c009f7ea740c6ee706da87cb7"
+#uboot_latest="ee860c60d2c5283c009f7ea740c6ee706da87cb7"
+uboot_latest="362f16b1e9e94024a511adae9977d145ef942b50"
 
 #Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
 unset git_opts
@@ -429,6 +429,10 @@ build_u_boot () {
 		pre_built=1
 	fi
 
+	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.sunxi ] ; then
+		pre_built=1
+	fi
+
 	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin ] ; then
 		pre_built=1
 	fi
@@ -469,6 +473,14 @@ build_u_boot () {
 
 			filename_search="u-boot.img"
 			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
+
+		#SPL: sunxi
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot-sunxi-with-spl.bin ] ; then
+			filename_search="u-boot-sunxi-with-spl.bin"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.sunxi"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -635,6 +647,21 @@ at91sam9x5ek () {
 	build_at91bootstrap_all
 }
 
+Cubieboard2 () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="Cubieboard2"
+	UBOOT_CONFIG="${BOARD}_config"
+	#build_uboot_gnueabihf
+
+	#gcc_linaro_gnueabihf_4_8
+	#build_uboot_stable
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_testing
+	build_uboot_latest
+}
+
 mx23_olinuxino () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -769,6 +796,7 @@ am335x_boneblack_flasher
 am43xx_evm
 arndale
 at91sam9x5ek
+Cubieboard2
 mx23_olinuxino
 mx51evk
 mx53loco
