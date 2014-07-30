@@ -42,8 +42,8 @@ uboot_old="v2014.04"
 uboot_stable="v2014.07"
 #uboot_testing="v2014.07"
 
-#uboot_latest="ee860c60d2c5283c009f7ea740c6ee706da87cb7"
-uboot_latest="362f16b1e9e94024a511adae9977d145ef942b50"
+#uboot_latest="362f16b1e9e94024a511adae9977d145ef942b50"
+uboot_latest="e1b362f4425209d836f230a872ef2bf04b45de27"
 
 #Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
 unset git_opts
@@ -807,6 +807,6 @@ omap5_uevm
 sama5d3xek
 sama5d3_xplained
 udoo
-vf610twr
+#vf610twr
 wandboard
 #
