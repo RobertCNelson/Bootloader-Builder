@@ -42,8 +42,8 @@ uboot_old="v2014.04"
 uboot_stable="v2014.07"
 #uboot_testing="v2014.07"
 
-#uboot_latest="362f16b1e9e94024a511adae9977d145ef942b50"
-uboot_latest="e1b362f4425209d836f230a872ef2bf04b45de27"
+#uboot_latest="e1b362f4425209d836f230a872ef2bf04b45de27"
+uboot_latest="25b4adbba018633b943a99322bfb2fb819c0bafb"
 
 #Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
 unset git_opts
@@ -580,16 +580,20 @@ build_uboot_latest () {
 }
 
 build_uboot_eabi () {
+	UBOOT_CONFIG="${BOARD}_config"
 	gcc_arm_embedded_4_8
 	build_uboot_stable
+	UBOOT_CONFIG="${BOARD}_defconfig"
 	gcc_arm_embedded_4_9
 	build_uboot_testing
 	build_uboot_latest
 }
 
 build_uboot_gnueabihf () {
+	UBOOT_CONFIG="${BOARD}_config"
 	gcc_linaro_gnueabihf_4_8
 	build_uboot_stable
+	UBOOT_CONFIG="${BOARD}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_testing
 	build_uboot_latest
@@ -601,8 +605,6 @@ am335x_evm () {
 	#transitioned_to_testing="true"
 
 	BOARD="am335x_evm"
-	UBOOT_CONFIG="${BOARD}_config"
-
 	build_uboot_gnueabihf
 }
 
@@ -612,8 +614,12 @@ am335x_boneblack_flasher () {
 
 	BOARD="am335x_boneblack"
 	UBOOT_CONFIG="am335x_evm_config"
-
-	build_uboot_gnueabihf
+	gcc_linaro_gnueabihf_4_8
+	build_uboot_stable
+	UBOOT_CONFIG="am335x_evm_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_testing
+	build_uboot_latest
 }
 
 am43xx_evm () {
@@ -621,8 +627,6 @@ am43xx_evm () {
 	#transitioned_to_testing="true"
 
 	BOARD="am43xx_evm"
-	UBOOT_CONFIG="${BOARD}_config"
-
 	build_uboot_gnueabihf
 }
 
@@ -631,7 +635,6 @@ arndale () {
 	#transitioned_to_testing="true"
 
 	BOARD="arndale"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -640,7 +643,6 @@ at91sam9x5ek () {
 	#transitioned_to_testing="true"
 
 	BOARD="at91sam9x5ek_mmc"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_eabi
 
 	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
@@ -652,11 +654,12 @@ Cubieboard2 () {
 	#transitioned_to_testing="true"
 
 	BOARD="Cubieboard2"
-	UBOOT_CONFIG="${BOARD}_config"
 	#build_uboot_gnueabihf
 
+	#UBOOT_CONFIG="${BOARD}_config"
 	#gcc_linaro_gnueabihf_4_8
 	#build_uboot_stable
+	UBOOT_CONFIG="${BOARD}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_testing
 	build_uboot_latest
@@ -667,7 +670,6 @@ mx23_olinuxino () {
 	#transitioned_to_testing="true"
 
 	BOARD="mx23_olinuxino"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_eabi
 }
 
@@ -676,7 +678,6 @@ mx51evk () {
 	#transitioned_to_testing="true"
 
 	BOARD="mx51evk"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -685,7 +686,6 @@ mx53loco () {
 	#transitioned_to_testing="true"
 
 	BOARD="mx53loco"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -694,7 +694,6 @@ mx6qsabresd () {
 	#transitioned_to_testing="true"
 
 	BOARD="mx6qsabresd"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -703,7 +702,6 @@ omap3_beagle () {
 	#transitioned_to_testing="true"
 
 	BOARD="omap3_beagle"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -712,7 +710,6 @@ omap4_panda () {
 	#transitioned_to_testing="true"
 
 	BOARD="omap4_panda"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -721,7 +718,6 @@ omap5_uevm () {
 	#transitioned_to_testing="true"
 
 	BOARD="omap5_uevm"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -730,7 +726,6 @@ sama5d3xek () {
 	#transitioned_to_testing="true"
 
 	BOARD="sama5d3xek_mmc"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -739,7 +734,6 @@ sama5d3_xplained () {
 	#transitioned_to_testing="true"
 
 	BOARD="sama5d3_xplained_mmc"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -748,14 +742,12 @@ udoo () {
 	#transitioned_to_testing="true"
 
 	BOARD="udoo_quad"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 
 	cleanup
 	#transitioned_to_testing="true"
 
 	BOARD="udoo_dl"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -764,7 +756,6 @@ vf610twr () {
 	#transitioned_to_testing="true"
 
 	BOARD="vf610twr"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
@@ -773,21 +764,18 @@ wandboard () {
 	#transitioned_to_testing="true"
 
 	BOARD="wandboard_quad"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 
 	cleanup
 	#transitioned_to_testing="true"
 
 	BOARD="wandboard_dl"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 
 	cleanup
 	#transitioned_to_testing="true"
 
 	BOARD="wandboard_solo"
-	UBOOT_CONFIG="${BOARD}_config"
 	build_uboot_gnueabihf
 }
 
