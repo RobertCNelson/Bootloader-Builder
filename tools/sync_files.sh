@@ -22,7 +22,7 @@
 
 DIR=$PWD
 
-build_server="http://rcn-ee.homeip.net:81/dl/jenkins/Bootloader-Builder/deploy"
+build_server="http://httphost/jenkins/bootloader/deploy"
 file="latest-bootloader.log"
 
 file_dl=0
