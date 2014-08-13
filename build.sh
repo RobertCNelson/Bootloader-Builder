@@ -42,9 +42,8 @@ uboot_old="v2014.04"
 uboot_stable="v2014.07"
 uboot_testing="v2014.10-rc1"
 
-#uboot_testing="v2014.10-rc1"
-#uboot_latest="e76b933e02e1b38e48754c435e9dba1c0deeb3c6"
-uboot_latest="6d1966e1236838c8c59d58459901283a0e72dddd"
+#uboot_latest="6d1966e1236838c8c59d58459901283a0e72dddd"
+uboot_latest="5b7d0027c2463101dabf337a7cccd768fc20b85e"
 
 #Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
 unset git_opts
