@@ -33,17 +33,7 @@ else
 	NUMJOBS=1
 fi
 
-#stable_at91bootstrap_sha="e95dd87d49ca124ccb57e62e656c6a23900af8f4"
-stable_at91bootstrap_sha="1e8fd41ce7149f7d2063a3b3bcf2c69e77b97732"
-
-#latest_at91bootstrap_sha=""
-
-uboot_old="v2014.04"
-uboot_stable="v2014.07"
-uboot_testing="v2014.10-rc1"
-
-#uboot_latest="e49f14af1349eef94e41b636320bbfcace7403b5"
-uboot_latest="67ee22b0681305ba1099c508eecade996abc1c65"
+. ./version.sh
 
 #Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
 unset git_opts
@@ -162,14 +152,14 @@ git_generic () {
 	git fetch --tags || true
 	cd -
 
-	if [ -d ${DIR}/build/${project} ] ; then
-		rm -rf ${DIR}/build/${project} || true
+	if [ -d ${DIR}/scratch/${project} ] ; then
+		rm -rf ${DIR}/scratch/${project} || true
 	fi
 
-	mkdir -p ${DIR}/build/${project}
-	git clone --shared ${DIR}/git/${project} ${DIR}/build/${project}
+	mkdir -p ${DIR}/scratch/${project}
+	git clone --shared ${DIR}/git/${project} ${DIR}/scratch/${project}
 
-	cd ${DIR}/build/${project}
+	cd ${DIR}/scratch/${project}
 
 	if [ "${GIT_SHA}" ] ; then
 		echo "Checking out: ${GIT_SHA}"
@@ -180,7 +170,7 @@ git_generic () {
 git_cleanup () {
 	cd ${DIR}/
 
-	rm -rf ${DIR}/build/${project} || true
+	rm -rf ${DIR}/scratch/${project} || true
 
 	echo "${project} build completed for: ${BOARD}"
 	echo "-----------------------------"
@@ -221,7 +211,7 @@ build_at91bootstrap () {
 
 	mkdir -p ${DIR}/deploy/${BOARD}/
 
-	if [ -f ${DIR}/build/${project}/binaries/*.bin ] ; then
+	if [ -f ${DIR}/scratch/${project}/binaries/*.bin ] ; then
 		filename_search="binaries/*.bin"
 		filename_id="deploy/${BOARD}/${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
 		file_save
@@ -450,7 +440,7 @@ build_u_boot () {
 
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.imx ] ; then
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.imx ] ; then
 			filename_search="u-boot.imx"
 			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.imx"
 			file_save
@@ -458,7 +448,7 @@ build_u_boot () {
 		fi
 
 		#Freescale mx23 targets just need u-boot.sb from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.sb ] ; then
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.sb ] ; then
 			filename_search="u-boot.sb"
 			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.sb"
 			file_save
@@ -466,7 +456,7 @@ build_u_boot () {
 		fi
 
 		#SPL based targets, need MLO and u-boot.img from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/MLO ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="MLO"
 			filename_id="deploy/${BOARD}/MLO-${uboot_filename}"
 			file_save
@@ -478,7 +468,7 @@ build_u_boot () {
 		fi
 
 		#SPL: sunxi
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot-sunxi-with-spl.bin ] ; then
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-sunxi-with-spl.bin ] ; then
 			filename_search="u-boot-sunxi-with-spl.bin"
 			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.sunxi"
 			file_save
@@ -486,7 +476,7 @@ build_u_boot () {
 		fi
 
 		#SPL: Atmel
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/boot.bin ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/boot.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="boot.bin"
 			filename_id="deploy/${BOARD}/boot-${uboot_filename}.bin"
 			file_save
@@ -498,7 +488,7 @@ build_u_boot () {
 		fi
 
 		#SPL: Samsung (old Atmel)
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/build/${project}/u-boot.img ] ; then
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="spl/u-boot-spl.bin"
 			filename_id="deploy/${BOARD}/u-boot-spl-${uboot_filename}.bin"
 			file_save
@@ -510,7 +500,7 @@ build_u_boot () {
 		fi
 
 		#Just u-boot.bin
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/build/${project}/u-boot.bin ] ; then
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.bin ] ; then
 			filename_search="u-boot.bin"
 			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.bin"
 			file_save
