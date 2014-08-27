@@ -3,6 +3,7 @@ git
 dl
 Bootstrap*
 build
+scratch
 *.host
 stop.after.patch
 force_rebuild

@@ -332,6 +332,10 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
+		if [ "x${BOARD}" = "xA10-OLinuXino-Lime" ] || [ "x${BOARD}" = "xA20-OLinuXino-Lime" ] ; then
+			git pull --no-edit https://github.com/RobertCNelson/u-boot-boards.git v2014.10-rc1-sunxi
+		else
+
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
@@ -354,6 +358,7 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+		fi
 	fi
 
 	uboot_patch_dir="next"
@@ -590,6 +595,38 @@ build_uboot_gnueabihf () {
 }
 
 
+A10_OLinuXino_Lime () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="A10-OLinuXino-Lime"
+	#build_uboot_gnueabihf
+
+	#UBOOT_CONFIG="${BOARD}_config"
+	#gcc_linaro_gnueabihf_4_8
+	#build_uboot_stable
+	UBOOT_CONFIG="${BOARD}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_testing
+	#build_uboot_latest
+}
+
+A20_OLinuXino_Lime () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="A20-OLinuXino-Lime"
+	#build_uboot_gnueabihf
+
+	#UBOOT_CONFIG="${BOARD}_config"
+	#gcc_linaro_gnueabihf_4_8
+	#build_uboot_stable
+	UBOOT_CONFIG="${BOARD}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_testing
+	#build_uboot_latest
+}
+
 am335x_evm () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -769,6 +806,8 @@ wandboard () {
 	build_uboot_gnueabihf
 }
 
+A10_OLinuXino_Lime
+A20_OLinuXino_Lime
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
