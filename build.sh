@@ -73,7 +73,11 @@ dl_gcc_generic () {
 		#using native gcc
 		CC=
 	else
-		CC="${DIR}/dl/${directory}/${binary}"
+		if [ -f /usr/bin/ccache ] ; then
+			CC="ccache ${DIR}/dl/${directory}/${binary}"
+		else
+			CC="${DIR}/dl/${directory}/${binary}"
+		fi
 	fi
 }
 
@@ -186,8 +190,8 @@ git_cleanup () {
 halt_patching_uboot () {
 	pwd
 	echo "-----------------------------"
-	echo "make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}"
-	echo "make ARCH=arm CROSS_COMPILE=${CC} ${BUILDTARGET}"
+	echo "make ARCH=arm CROSS_COMPILE="${CC}" ${UBOOT_CONFIG}"
+	echo "make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET}"
 	echo "-----------------------------"
 	exit
 }
@@ -211,10 +215,10 @@ build_at91bootstrap () {
 	at91bootstrap_version=$(cat Makefile | grep 'VERSION :=' | awk '{print $3}')
 	at91bootstrap_sha=$(git rev-parse --short HEAD)
 
-	make CROSS_COMPILE=${CC} clean >/dev/null 2>&1
-	make CROSS_COMPILE=${CC} ${at91bootstrap_config} > /dev/null
+	make CROSS_COMPILE="${CC}" clean >/dev/null 2>&1
+	make CROSS_COMPILE="${CC}" ${at91bootstrap_config} > /dev/null
 	echo "Building ${project}: ${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
-	make CROSS_COMPILE=${CC} -j${NUMJOBS} > /dev/null
+	make CROSS_COMPILE="${CC}" -j${NUMJOBS} > /dev/null
 
 	mkdir -p ${DIR}/deploy/${BOARD}/
 
@@ -232,7 +236,7 @@ build_u_boot () {
 	git_generic
 	RELEASE_VER="-r0"
 
-	make ARCH=arm CROSS_COMPILE=${CC} distclean
+	make ARCH=arm CROSS_COMPILE="${CC}" distclean
 	UGIT_VERSION=$(git describe)
 
 	uboot_patch_dir="${uboot_old}"
@@ -408,8 +412,8 @@ build_u_boot () {
 		echo "-----------------------------"
 		pwd
 		echo "-----------------------------"
-		echo "make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}"
-		echo "make ARCH=arm CROSS_COMPILE=${CC} ${BUILDTARGET}"
+		echo "make ARCH=arm CROSS_COMPILE="${CC}" ${UBOOT_CONFIG}"
+		echo "make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET}"
 		echo "-----------------------------"
 		exit
 	fi
@@ -444,7 +448,7 @@ build_u_boot () {
 	fi
 
 	if [ ! "${pre_built}" ] ; then
-		make ARCH=arm CROSS_COMPILE=${CC} ${UBOOT_CONFIG}
+		make ARCH=arm CROSS_COMPILE="${CC}" ${UBOOT_CONFIG}
 		echo "Building ${project}: ${uboot_filename}"
 		echo "-----------------------------"
 		make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET}
