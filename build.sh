@@ -80,6 +80,7 @@ dl_gcc_generic () {
 #NOTE: ignore formatting, as this is just: meld build.sh ../stable-kernel/scripts/gcc.sh
 gcc_arm_embedded_4_8 () {
 		#https://releases.linaro.org/14.04/components/toolchain/binaries/gcc-linaro-arm-none-eabi-4.8-2014.04_linux.tar.xz
+		#
 		gcc_version="4.8"
 		release="2014.04"
 		toolchain_name="gcc-linaro-arm-none-eabi"
@@ -94,11 +95,13 @@ gcc_arm_embedded_4_8 () {
 }
 
 gcc_arm_embedded_4_9 () {
-		#https://releases.linaro.org/14.07/components/toolchain/binaries/gcc-linaro-arm-none-eabi-4.9-2014.07_linux.tar.xz
+		#
+		#https://releases.linaro.org/14.08/components/toolchain/binaries/gcc-linaro-arm-none-eabi-4.9-2014.08_linux.tar.xz
+		#
 		gcc_version="4.9"
-		release="2014.07"
+		release="2014.08"
 		toolchain_name="gcc-linaro-arm-none-eabi"
-		version="14.07/components/toolchain/binaries"
+		version="14.08/components/toolchain/binaries"
 		directory="${toolchain_name}-${gcc_version}-${release}_linux"
 		filename="${directory}.tar.xz"
 		datestamp="${release}-${toolchain_name}"
@@ -110,7 +113,9 @@ gcc_arm_embedded_4_9 () {
 
 
 gcc_linaro_gnueabihf_4_8 () {
+		#
 		#https://releases.linaro.org/14.04/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux.tar.xz
+		#
 		gcc_version="4.8"
 		release="2014.04"
 		toolchain_name="gcc-linaro-arm-linux-gnueabihf"
@@ -125,11 +130,13 @@ gcc_linaro_gnueabihf_4_8 () {
 }
 
 gcc_linaro_gnueabihf_4_9 () {
-		#https://releases.linaro.org/14.07/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.9-2014.07_linux.tar.xz
+		#
+		#https://releases.linaro.org/14.08/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.9-2014.08_linux.tar.xz
+		#
 		gcc_version="4.9"
-		release="2014.07"
+		release="2014.08"
 		toolchain_name="gcc-linaro-arm-linux-gnueabihf"
-		version="14.07/components/toolchain/binaries"
+		version="14.08/components/toolchain/binaries"
 		directory="${toolchain_name}-${gcc_version}-${release}_linux"
 		filename="${directory}.tar.xz"
 		datestamp="${release}-${toolchain_name}"
