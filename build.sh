@@ -619,7 +619,7 @@ A10_OLinuXino_Lime () {
 	UBOOT_CONFIG="${BOARD}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_testing
-	#build_uboot_latest
+	build_uboot_latest
 }
 
 A20_OLinuXino_Lime () {
