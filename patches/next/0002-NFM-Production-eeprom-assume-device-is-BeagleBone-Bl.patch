@@ -12,7 +12,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 19 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index da780ed..db8f1c0 100644
+index 0739e60..2b565a3 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -40,6 +40,11 @@ DECLARE_GLOBAL_DATA_PTR;
@@ -27,7 +27,7 @@ index da780ed..db8f1c0 100644
  /*
   * Read header information from EEPROM into global structure.
   */
-@@ -253,7 +258,7 @@ void am33xx_spl_board_init(void)
+@@ -229,7 +234,7 @@ void am33xx_spl_board_init(void)
  	/* Get the frequency */
  	dpll_mpu_opp100.m = am335x_get_efuse_mpu_max_freq(cdev);
  
@@ -36,7 +36,7 @@ index da780ed..db8f1c0 100644
  		/* BeagleBone PMIC Code */
  		int usb_cur_lim;
  
-@@ -287,7 +292,7 @@ void am33xx_spl_board_init(void)
+@@ -263,7 +268,7 @@ void am33xx_spl_board_init(void)
  		 * Override what we have detected since we know if we have
  		 * a Beaglebone Black it supports 1GHz.
  		 */
@@ -45,7 +45,7 @@ index da780ed..db8f1c0 100644
  			dpll_mpu_opp100.m = MPUPLL_M_1000;
  
  		/*
-@@ -397,7 +402,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -373,7 +378,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk(&header))
  		return &dpll_ddr_evm_sk;
@@ -54,7 +54,7 @@ index da780ed..db8f1c0 100644
  		return &dpll_ddr_bone_black;
  	else if (board_is_evm_15_or_later(&header))
  		return &dpll_ddr_evm_sk;
-@@ -488,7 +493,7 @@ void sdram_init(void)
+@@ -459,7 +464,7 @@ void sdram_init(void)
  	if (board_is_evm_sk(&header))
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -63,7 +63,7 @@ index da780ed..db8f1c0 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -643,10 +648,10 @@ int board_eth_init(bd_t *bis)
+@@ -614,10 +619,10 @@ int board_eth_init(bd_t *bis)
  	}
  
  	if (read_eeprom(&header) < 0)
@@ -77,12 +77,12 @@ index da780ed..db8f1c0 100644
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_MII;
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index b2bfda5..01a855d 100644
+index f4bb9f8..1a345d6 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -379,7 +379,11 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
- 		configure_module_pin_mux(mmc0_pin_mux);
+@@ -367,7 +367,11 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
  		configure_module_pin_mux(mmc1_pin_mux);
+ #endif
  	} else {
 -		puts("Unknown board, cannot configure pinmux.");
 -		hang();
@@ -95,10 +95,10 @@ index b2bfda5..01a855d 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index beab023..41fc569 100644
+index 0f48de4..3788fdc 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -283,6 +283,8 @@
+@@ -351,6 +351,8 @@
  	"gpio set 53; " \
  	"i2c mw 0x24 1 0x3e; " \
  	"run findfdt; " \
@@ -108,5 +108,5 @@ index beab023..41fc569 100644
  	"setenv bootpart 0:1; " \
  	"run mmcboot;" \
 -- 
-2.0.0
+2.1.0
 

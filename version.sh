@@ -8,4 +8,4 @@ uboot_old="v2014.04"
 uboot_stable="v2014.07"
 uboot_testing="v2014.10-rc1"
 
-uboot_latest="124c5998755ef6778ca43acab27372fc470b8366"
+uboot_latest="6defdc0b5552ab1af4a66a8abac8196cbb6b9e15"
