@@ -343,9 +343,10 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		if [ "x${BOARD}" = "xA10-OLinuXino-Lime" ] || [ "x${BOARD}" = "xA20-OLinuXino-Lime" ] ; then
-			git pull --no-edit https://github.com/RobertCNelson/u-boot-boards.git v2014.10-rc1-sunxi
-		else
+		#Allwinner:
+		git am "${DIR}/patches/next/0001-kconfig-remove-redundant-SPL-from-CONFIG_SYS_EXTRA_O.patch"
+		git am "${DIR}/patches/next/0002-sunxi-Correct-typo-CONFIG_FTDFILE-CONFIG_FDTFILE.patch"
+		git am "${DIR}/patches/next/0003-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -369,7 +370,6 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
-		fi
 	fi
 
 	uboot_patch_dir="next"
@@ -378,6 +378,11 @@ build_u_boot () {
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
+
+		#Allwinner:
+		git am "${DIR}/patches/next/0001-kconfig-remove-redundant-SPL-from-CONFIG_SYS_EXTRA_O.patch"
+		git am "${DIR}/patches/next/0002-sunxi-Correct-typo-CONFIG_FTDFILE-CONFIG_FDTFILE.patch"
+		git am "${DIR}/patches/next/0003-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -608,34 +613,18 @@ build_uboot_gnueabihf () {
 
 A10_OLinuXino_Lime () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A10-OLinuXino-Lime"
-	#build_uboot_gnueabihf
-
-	#UBOOT_CONFIG="${BOARD}_config"
-	#gcc_linaro_gnueabihf_4_8
-	#build_uboot_stable
-	UBOOT_CONFIG="${BOARD}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_gnueabihf
 }
 
 A20_OLinuXino_Lime () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime"
-	#build_uboot_gnueabihf
-
-	#UBOOT_CONFIG="${BOARD}_config"
-	#gcc_linaro_gnueabihf_4_8
-	#build_uboot_stable
-	UBOOT_CONFIG="${BOARD}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_testing
-	#build_uboot_latest
+	build_uboot_gnueabihf
 }
 
 am335x_evm () {
@@ -689,18 +678,10 @@ at91sam9x5ek () {
 
 Cubieboard2 () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="Cubieboard2"
-	#build_uboot_gnueabihf
-
-	#UBOOT_CONFIG="${BOARD}_config"
-	#gcc_linaro_gnueabihf_4_8
-	#build_uboot_stable
-	UBOOT_CONFIG="${BOARD}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
