@@ -1,15 +1,15 @@
-From f1e752ad4209f9634aaf893c42aca55647f6365e Mon Sep 17 00:00:00 2001
+From 342b648460c805e20c9bf677056ffa70af8f26cb Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 22 Jul 2014 08:45:54 -0500
+Date: Tue, 2 Sep 2014 20:22:14 -0500
 Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx6sabre_common.h | 138 +++++++++++++++++++++++++++++++++-----
- 1 file changed, 120 insertions(+), 18 deletions(-)
+ include/configs/mx6sabre_common.h | 144 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 126 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index e59a3b4..9bac1a8 100644
+index e59a3b4..4f79c61 100644
 --- a/include/configs/mx6sabre_common.h
 +++ b/include/configs/mx6sabre_common.h
 @@ -48,6 +48,11 @@
@@ -106,7 +106,7 @@ index e59a3b4..9bac1a8 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -192,20 +241,73 @@
+@@ -192,20 +241,79 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -147,6 +147,8 @@ index e59a3b4..9bac1a8 100644
 +									"else " \
 +										"echo; echo unable to find ${fdt_file} ...; echo booting legacy ...;"\
 +										"run mmcargs;" \
++										"echo debug: [${bootargs}] ... ;" \
++										"echo debug: [bootz ${loadaddr}] ... ;" \
 +										"bootz ${loadaddr}; " \
 +									"fi;" \
 +								"fi;" \
@@ -163,9 +165,13 @@ index e59a3b4..9bac1a8 100644
 +					"setenv mmcroot UUID=${uuid} ro;" \
 +				"fi;" \
 +				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}; " \
 +			"else " \
 +				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
  		"fi;\0"
@@ -192,5 +198,5 @@ index e59a3b4..9bac1a8 100644
  #define CONFIG_ARP_TIMEOUT     200UL
  
 -- 
-2.0.1
+2.1.0
 

@@ -1,15 +1,15 @@
-From 6f0c445c27185b739216553e98080ea5f7d6838d Mon Sep 17 00:00:00 2001
+From 825de6eedea030b353a4f15443224556b20a02e9 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 23 Jul 2014 16:46:41 -0500
+Date: Tue, 2 Sep 2014 20:24:45 -0500
 Subject: [PATCH] vf610twr: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/vf610twr.h | 115 ++++++++++++++++++++++++++++++++-------------
- 1 file changed, 82 insertions(+), 33 deletions(-)
+ include/configs/vf610twr.h | 117 ++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 84 insertions(+), 33 deletions(-)
 
 diff --git a/include/configs/vf610twr.h b/include/configs/vf610twr.h
-index 0342550..a33967f 100644
+index 0342550..9ad15d0 100644
 --- a/include/configs/vf610twr.h
 +++ b/include/configs/vf610twr.h
 @@ -29,6 +29,8 @@
@@ -136,7 +136,7 @@ index 0342550..a33967f 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -164,19 +198,33 @@
+@@ -164,19 +198,35 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -162,6 +162,8 @@ index 0342550..a33967f 100644
 +				"fi;" \
 +			"fi; " \
 +			"run mmcargs;" \
++			"echo debug: [${bootargs}] ... ;" \
++			"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +			"bootz ${loadaddr} - ${fdt_addr}; " \
  		"fi;\0"
  
@@ -180,7 +182,7 @@ index 0342550..a33967f 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-@@ -189,9 +237,9 @@
+@@ -189,9 +239,9 @@
  #define CONFIG_SYS_MAXARGS		16	/* max number of command args */
  #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
  
@@ -193,7 +195,7 @@ index 0342550..a33967f 100644
  
  #define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR
  
-@@ -226,5 +274,6 @@
+@@ -226,5 +276,6 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -201,5 +203,5 @@ index 0342550..a33967f 100644
  
  #endif
 -- 
-2.0.1
+2.1.0
 

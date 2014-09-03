@@ -1,15 +1,15 @@
-From fb925ea0af55d557ff08a96c3802a696c273ab94 Mon Sep 17 00:00:00 2001
+From 08e125e1129f1c992a2bb8f6895048aa86b8098c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 23 Jul 2014 08:46:44 -0500
+Date: Tue, 2 Sep 2014 20:27:51 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/am335x_evm.h | 208 +++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 189 insertions(+), 19 deletions(-)
+ include/configs/am335x_evm.h | 214 +++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 195 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 34d27c6..52851ca 100644
+index df1a6fc..bf05bc4 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -192,7 +192,7 @@ index 34d27c6..52851ca 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -166,29 +261,104 @@
+@@ -166,29 +261,110 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
@@ -258,6 +258,8 @@ index 34d27c6..52851ca 100644
 +									"else " \
 +										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
 +										"run mmcargs;" \
++										"echo debug: [${bootargs}] ... ;" \
++										"echo debug: [bootz ${loadaddr}] ... ;" \
 +										"bootz ${loadaddr}; " \
 +									"fi;" \
 +								"fi;" \
@@ -274,9 +276,13 @@ index 34d27c6..52851ca 100644
 +					"setenv mmcroot UUID=${uuid} ro;" \
 +				"fi;" \
 +				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
 +				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
 +			"else " \
 +				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} - ${fdtaddr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdtaddr}; " \
 +			"fi;" \
 +		"fi;\0" \
@@ -301,5 +307,5 @@ index 34d27c6..52851ca 100644
  	"run nandboot;"
  
 -- 
-2.0.1
+2.1.0
 

@@ -1,15 +1,15 @@
-From 249bdca9d3dac31254e7dbc3769479b4a497c1b1 Mon Sep 17 00:00:00 2001
+From 1866a7230036f476df69511dd24a626eef124adf Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 15 Jul 2014 15:19:45 -0500
+Date: Tue, 2 Sep 2014 20:16:40 -0500
 Subject: [PATCH] mx23_olinuxino: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx23_olinuxino.h | 116 +++++++++++++++++++++++++++++++++------
- 1 file changed, 100 insertions(+), 16 deletions(-)
+ include/configs/mx23_olinuxino.h | 120 +++++++++++++++++++++++++++++++++------
+ 1 file changed, 104 insertions(+), 16 deletions(-)
 
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index e377fea..f5b0889 100644
+index e377fea..8030025 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
 @@ -26,6 +26,14 @@
@@ -100,7 +100,7 @@ index e377fea..f5b0889 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -139,19 +185,57 @@
+@@ -139,19 +185,61 @@
  			"fi; " \
  		"else " \
  			"bootm; " \
@@ -141,6 +141,8 @@ index e377fea..f5b0889 100644
 +									"else " \
 +										"echo; echo unable to find ${fdt_file} ...; echo booting legacy ...;"\
 +										"run mmcargs;" \
++										"echo debug: [${bootargs}] ... ;" \
++										"echo debug: [bootz ${loadaddr}] ... ;" \
 +										"bootz ${loadaddr}; " \
 +									"fi;" \
 +								"fi;" \
@@ -150,6 +152,8 @@ index e377fea..f5b0889 100644
 +				"fi;" \
 +			"fi; " \
 +			"run mmcargs;" \
++			"echo debug: [${bootargs}] ... ;" \
++			"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +			"bootz ${loadaddr} - ${fdt_addr}; " \
  		"fi;\0"
  
@@ -169,5 +173,5 @@ index e377fea..f5b0889 100644
  /* The rest of the configuration is shared */
  #include <configs/mxs.h>
 -- 
-2.0.1
+2.1.0
 

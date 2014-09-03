@@ -1,15 +1,15 @@
-From 483ff87ca1c074470dd95be4ccb0151f02be59a2 Mon Sep 17 00:00:00 2001
+From bd04a152ae46986c19d32c55bf823116bb3d899c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 22 Jul 2014 10:50:22 -0500
+Date: Tue, 2 Sep 2014 20:23:37 -0500
 Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/wandboard.h | 139 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 120 insertions(+), 19 deletions(-)
+ include/configs/wandboard.h | 145 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 126 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
-index 7d96908..36b866c 100644
+index 7d96908..1540836 100644
 --- a/include/configs/wandboard.h
 +++ b/include/configs/wandboard.h
 @@ -51,7 +51,7 @@
@@ -119,7 +119,7 @@ index 7d96908..36b866c 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -216,19 +262,73 @@
+@@ -216,19 +262,79 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -160,6 +160,8 @@ index 7d96908..36b866c 100644
 +									"else " \
 +										"echo; echo unable to find ${fdt_file} ...; echo booting legacy ...;"\
 +										"run mmcargs;" \
++										"echo debug: [${bootargs}] ... ;" \
++										"echo debug: [bootz ${loadaddr}] ... ;" \
 +										"bootz ${loadaddr}; " \
 +									"fi;" \
 +								"fi;" \
@@ -176,9 +178,13 @@ index 7d96908..36b866c 100644
 +					"setenv mmcroot UUID=${uuid} ro;" \
 +				"fi;" \
 +				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}; " \
 +			"else " \
 +				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
  		"fi;\0"
@@ -203,7 +209,7 @@ index 7d96908..36b866c 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP
-@@ -269,6 +369,7 @@
+@@ -269,6 +375,7 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -212,5 +218,5 @@ index 7d96908..36b866c 100644
  #ifndef CONFIG_SYS_DCACHE_OFF
  #define CONFIG_CMD_CACHE
 -- 
-2.0.1
+2.1.0
 

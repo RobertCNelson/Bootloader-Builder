@@ -1,16 +1,16 @@
-From 94441d1e5cc0e06e8d6ede068f0727a8beb4fdc5 Mon Sep 17 00:00:00 2001
+From 1fcf6ec7b55077e2f06f0ed303f913276c2ab58a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 31 Jul 2014 11:02:41 -0500
+Date: Tue, 2 Sep 2014 20:26:16 -0500
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/udoo/1066mhz_4x256mx16_dl.cfg |  58 +++++++++++++++
- board/udoo/ddr-setup_dl.cfg         |  84 ++++++++++++++++++++++
+ board/udoo/ddr-setup_dl.cfg         |  84 +++++++++++++++++++++
  board/udoo/udoo-dl.cfg              |  29 ++++++++
  configs/udoo_dl_defconfig           |   3 +
- include/configs/udoo.h              | 136 +++++++++++++++++++++++++++++++-----
- 5 files changed, 292 insertions(+), 18 deletions(-)
+ include/configs/udoo.h              | 142 +++++++++++++++++++++++++++++++-----
+ 5 files changed, 298 insertions(+), 18 deletions(-)
  create mode 100644 board/udoo/1066mhz_4x256mx16_dl.cfg
  create mode 100644 board/udoo/ddr-setup_dl.cfg
  create mode 100644 board/udoo/udoo-dl.cfg
@@ -215,7 +215,7 @@ index 0000000..5dc9016
 +CONFIG_ARM=y
 +CONFIG_TARGET_UDOO=y
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
-index 700e9c1..7fca89d 100644
+index 700e9c1..100d5ad 100644
 --- a/include/configs/udoo.h
 +++ b/include/configs/udoo.h
 @@ -78,7 +78,7 @@
@@ -325,7 +325,7 @@ index 700e9c1..7fca89d 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -174,19 +224,68 @@
+@@ -174,19 +224,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -366,6 +366,8 @@ index 700e9c1..7fca89d 100644
 +									"else " \
 +										"echo; echo unable to find ${fdt_file} ...; echo booting legacy ...;"\
 +										"run mmcargs;" \
++										"echo debug: [${bootargs}] ... ;" \
++										"echo debug: [bootz ${loadaddr}] ... ;" \
 +										"bootz ${loadaddr}; " \
 +									"fi;" \
 +								"fi;" \
@@ -382,9 +384,13 @@ index 700e9c1..7fca89d 100644
 +					"setenv mmcroot UUID=${uuid} ro;" \
 +				"fi;" \
 +				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}; " \
 +			"else " \
 +				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
  		"fi;\0"
@@ -404,7 +410,7 @@ index 700e9c1..7fca89d 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP
-@@ -228,6 +327,7 @@
+@@ -228,6 +333,7 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -413,5 +419,5 @@ index 700e9c1..7fca89d 100644
  #ifndef CONFIG_SYS_DCACHE_OFF
  #define CONFIG_CMD_CACHE
 -- 
-2.0.1
+2.1.0
 
