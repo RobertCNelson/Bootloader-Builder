@@ -339,8 +339,9 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x_evm: fix lockup in eMMC when dd'ed
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		#Allwinner:
