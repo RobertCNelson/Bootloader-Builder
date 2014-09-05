@@ -630,7 +630,7 @@ A20_OLinuXino_Lime () {
 
 am335x_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="am335x_evm"
 	build_uboot_gnueabihf
@@ -638,7 +638,7 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="am335x_boneblack"
 	UBOOT_CONFIG="am335x_evm_config"
@@ -652,7 +652,7 @@ am335x_boneblack_flasher () {
 
 am43xx_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="am43xx_evm"
 	build_uboot_gnueabihf
@@ -660,7 +660,7 @@ am43xx_evm () {
 
 arndale () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="arndale"
 	build_uboot_gnueabihf
@@ -719,7 +719,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="omap3_beagle"
 	build_uboot_gnueabihf
@@ -727,7 +727,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="omap4_panda"
 	build_uboot_gnueabihf
@@ -735,7 +735,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="omap5_uevm"
 	build_uboot_gnueabihf

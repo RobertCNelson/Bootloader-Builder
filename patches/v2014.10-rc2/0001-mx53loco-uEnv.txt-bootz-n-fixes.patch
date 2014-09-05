@@ -1,7 +1,7 @@
 From aa5a22073d478d996bb1a8039c5ae53a57ece4c3 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 22 Jul 2014 08:41:33 -0500
-Subject: [PATCH] testing
+Subject: [PATCH] mx53loco: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
