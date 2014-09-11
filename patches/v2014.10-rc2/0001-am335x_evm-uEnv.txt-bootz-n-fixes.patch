@@ -1,14 +1,36 @@
-From 15d1830cc37f854b4fa183bfc1f01a3510fc8043 Mon Sep 17 00:00:00 2001
+From 6e5cc1dc3aa7b655d1b8824a1fd6d90e86148933 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 4 Sep 2014 19:50:56 -0500
+Date: Thu, 11 Sep 2014 16:02:20 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
+ board/ti/am335x/board.c      |   9 ++
  configs/am335x_evm_defconfig |   3 +-
  include/configs/am335x_evm.h | 215 +++++++++++++++++++++++++++++++++++++++----
- 2 files changed, 197 insertions(+), 21 deletions(-)
+ include/power/tps65217.h     |   1 +
+ 4 files changed, 207 insertions(+), 21 deletions(-)
 
+diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
+index 0739e60..6b6dea0 100644
+--- a/board/ti/am335x/board.c
++++ b/board/ti/am335x/board.c
+@@ -300,6 +300,15 @@ void am33xx_spl_board_init(void)
+ 			return;
+ 		}
+ 
++		/* Set DCDC1 (DDR3) to 1.35V for Beaglebone Black. */
++		if (board_is_bone_lt(&header)) {
++			if (tps65217_voltage_update(TPS65217_DEFDCDC1,
++						    TPS65217_DCDC_VOLT_SEL_1350MV)) {
++				puts("tps65217_voltage_update failure\n");
++				return;
++			}
++		}
++
+ 		/*
+ 		 * Set LDO3, LDO4 output voltage to 3.3V for Beaglebone.
+ 		 * Set LDO3 to 1.8V and LDO4 to 3.3V for Beaglebone Black.
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
 index 2e5aeaa..4cc7e19 100644
 --- a/configs/am335x_evm_defconfig
@@ -319,6 +341,18 @@ index df1a6fc..8d622d7 100644
  	"run mmcboot;" \
  	"run nandboot;"
  
+diff --git a/include/power/tps65217.h b/include/power/tps65217.h
+index 297c4cb..008fd6d 100644
+--- a/include/power/tps65217.h
++++ b/include/power/tps65217.h
+@@ -68,6 +68,7 @@ enum {
+ #define TPS65217_DCDC_VOLT_SEL_1125MV		0x09
+ #define TPS65217_DCDC_VOLT_SEL_1275MV		0x0F
+ #define TPS65217_DCDC_VOLT_SEL_1325MV		0x11
++#define TPS65217_DCDC_VOLT_SEL_1350MV		0x12
+ 
+ #define TPS65217_LDO_MASK			0x1F
+ #define TPS65217_LDO_VOLTAGE_OUT_1_8		0x06
 -- 
 2.1.0
 

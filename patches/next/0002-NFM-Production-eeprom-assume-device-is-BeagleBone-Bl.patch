@@ -1,18 +1,18 @@
-From e614ad3ae39a210aeb7b0097389a86e4896fc0f0 Mon Sep 17 00:00:00 2001
+From 5df0faa36562dcff491711b1633aa1f131cbaf48 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 9 Jul 2014 09:04:06 -0500
+Date: Thu, 11 Sep 2014 16:04:35 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c      | 17 +++++++++++------
+ board/ti/am335x/board.c      | 19 ++++++++++++-------
  board/ti/am335x/mux.c        |  8 ++++++--
  include/configs/am335x_evm.h |  2 ++
- 3 files changed, 19 insertions(+), 8 deletions(-)
+ 3 files changed, 20 insertions(+), 9 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 0739e60..2b565a3 100644
+index 6b6dea0..0e27a9f 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -40,6 +40,11 @@ DECLARE_GLOBAL_DATA_PTR;
@@ -45,7 +45,16 @@ index 0739e60..2b565a3 100644
  			dpll_mpu_opp100.m = MPUPLL_M_1000;
  
  		/*
-@@ -373,7 +378,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -301,7 +306,7 @@ void am33xx_spl_board_init(void)
+ 		}
+ 
+ 		/* Set DCDC1 (DDR3) to 1.35V for Beaglebone Black. */
+-		if (board_is_bone_lt(&header)) {
++		if (board_is_bone_lt(&header) || board_is_blank_bone_lt()) {
+ 			if (tps65217_voltage_update(TPS65217_DEFDCDC1,
+ 						    TPS65217_DCDC_VOLT_SEL_1350MV)) {
+ 				puts("tps65217_voltage_update failure\n");
+@@ -382,7 +387,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk(&header))
  		return &dpll_ddr_evm_sk;
@@ -54,7 +63,7 @@ index 0739e60..2b565a3 100644
  		return &dpll_ddr_bone_black;
  	else if (board_is_evm_15_or_later(&header))
  		return &dpll_ddr_evm_sk;
-@@ -459,7 +464,7 @@ void sdram_init(void)
+@@ -468,7 +473,7 @@ void sdram_init(void)
  	if (board_is_evm_sk(&header))
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -63,7 +72,7 @@ index 0739e60..2b565a3 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -614,10 +619,10 @@ int board_eth_init(bd_t *bis)
+@@ -623,10 +628,10 @@ int board_eth_init(bd_t *bis)
  	}
  
  	if (read_eeprom(&header) < 0)
@@ -95,10 +104,10 @@ index f4bb9f8..1a345d6 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 0f48de4..3788fdc 100644
+index 8d622d7..f5d2a0a 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -351,6 +351,8 @@
+@@ -358,6 +358,8 @@
  	"gpio set 53; " \
  	"i2c mw 0x24 1 0x3e; " \
  	"run findfdt; " \
