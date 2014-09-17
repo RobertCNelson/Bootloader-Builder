@@ -346,9 +346,9 @@ build_u_boot () {
 		#halt_patching_uboot
 
 		#Allwinner:
-		git am "${DIR}/patches/next/0001-kconfig-remove-redundant-SPL-from-CONFIG_SYS_EXTRA_O.patch"
-		git am "${DIR}/patches/next/0002-sunxi-Correct-typo-CONFIG_FTDFILE-CONFIG_FDTFILE.patch"
-		git am "${DIR}/patches/next/0003-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-kconfig-remove-redundant-SPL-from-CONFIG_SYS_EXTRA_O.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0002-sunxi-Correct-typo-CONFIG_FTDFILE-CONFIG_FDTFILE.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0003-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
