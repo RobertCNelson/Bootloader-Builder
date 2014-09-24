@@ -1,15 +1,15 @@
-From 6e5cc1dc3aa7b655d1b8824a1fd6d90e86148933 Mon Sep 17 00:00:00 2001
+From c9b58ad39df11d848cb03b7e94bb5cb96105e850 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 11 Sep 2014 16:02:20 -0500
+Date: Wed, 24 Sep 2014 09:15:53 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c      |   9 ++
  configs/am335x_evm_defconfig |   3 +-
- include/configs/am335x_evm.h | 215 +++++++++++++++++++++++++++++++++++++++----
+ include/configs/am335x_evm.h | 218 +++++++++++++++++++++++++++++++++++++++----
  include/power/tps65217.h     |   1 +
- 4 files changed, 207 insertions(+), 21 deletions(-)
+ 4 files changed, 211 insertions(+), 20 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index 0739e60..6b6dea0 100644
@@ -43,7 +43,7 @@ index 2e5aeaa..4cc7e19 100644
  +S:CONFIG_ARM=y
  +S:CONFIG_TARGET_AM335X_EVM=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index df1a6fc..8d622d7 100644
+index aef0ad3..f886c69 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,8 @@
@@ -111,56 +111,50 @@ index df1a6fc..8d622d7 100644
  	"spiroot=/dev/mtdblock4 rw\0" \
  	"spirootfstype=jffs2\0" \
  	"spisrcaddr=0xe0000\0" \
-@@ -115,7 +143,7 @@
+@@ -115,10 +143,12 @@
  		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
  		"ip=dhcp\0" \
  	"bootenv=uEnv.txt\0" \
+-	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
+-	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
++	"script=boot.scr\0" \
++	"scriptfile=${script}\0" \
++	"loadbootscript=load mmc ${bootpart} ${loadaddr} ${scriptfile};\0" \
++	"bootscript=echo Running bootscript from mmc${bootpart} ...; " \
+ 		"source ${loadaddr}\0" \
 -	"loadbootenv=load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 +	"loadbootenv=load mmc ${bootpart} ${loadaddr} ${bootenv}\0" \
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t -r $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -124,7 +152,14 @@
+@@ -127,7 +157,8 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 -	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
 +	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load mmc ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
-+	"script=boot.scr\0" \
-+	"scriptfile=${script}\0" \
-+		"loadbootscript=" \
-+		"load mmc ${bootpart} ${loadaddr} ${scriptfile};\0" \
-+	"bootscript=echo Running bootscript from mmc ...; " \
-+		"source ${loadaddr}\0" \
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -141,18 +176,79 @@
+@@ -144,22 +175,82 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
+-			"echo SD/MMC found on device ${mmcdev};" \
+-			"if run loadbootscript; then " \
+-				"run bootscript;" \
+-			"else " \
 +			"gpio set 54;" \
- 			"echo SD/MMC found on device ${mmcdev};" \
--			"if run loadbootenv; then " \
--				"echo Loaded environment from ${bootenv};" \
--				"run importbootenv;" \
--			"fi;" \
--			"if test -n $uenvcmd; then " \
--				"echo Running uenvcmd ...;" \
--				"run uenvcmd;" \
--			"fi;" \
--			"if run loadimage; then " \
--				"run mmcloados;" \
--			"fi;" \
 +			"setenv bootpart ${mmcdev}:1; " \
 +			"echo Checking for: /uEnv.txt ...;" \
 +			"if test -e mmc ${bootpart} /uEnv.txt; then " \
-+				"if run loadbootenv; then " \
+ 				"if run loadbootenv; then " \
 +					"gpio set 55;" \
-+					"echo Loaded environment from ${bootenv};" \
-+					"run importbootenv;" \
-+				"fi;" \
+ 					"echo Loaded environment from ${bootenv};" \
+ 					"run importbootenv;" \
+ 				"fi;" \
+-				"if test -n $uenvcmd; then " \
 +				"if test -n ${cape}; then " \
 +					"if test -e mmc ${bootpart} ${fdtdir}/${fdtbase}-${cape}.dtb; then " \
 +						"setenv fdtfile ${fdtbase}-${cape}.dtb; " \
@@ -170,9 +164,11 @@ index df1a6fc..8d622d7 100644
 +				"echo Checking if uenvcmd is set ...;" \
 +				"if test -n ${uenvcmd}; then " \
 +					"gpio set 56; " \
-+					"echo Running uenvcmd ...;" \
-+					"run uenvcmd;" \
-+				"fi;" \
+ 					"echo Running uenvcmd ...;" \
+ 					"run uenvcmd;" \
+ 				"fi;" \
+-				"if run loadimage; then " \
+-					"run mmcloados;" \
 +				"echo Checking if client_ip is set ...;" \
 +				"if test -n ${client_ip}; then " \
 +					"if test -n ${dtb}; then " \
@@ -180,6 +176,10 @@ index df1a6fc..8d622d7 100644
 +						"echo using ${fdtfile} ...;" \
 +					"fi;" \
 +					"gpio set 56; " \
++					"if test -n ${uname_r}; then " \
++						"echo Running nfsboot_uname_r ...;" \
++						"run nfsboot_uname_r;" \
++					"fi;" \
 +					"echo Running nfsboot ...;" \
 +					"run nfsboot;" \
 +				"fi;" \
@@ -222,12 +222,13 @@ index df1a6fc..8d622d7 100644
 +						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
 +						"run uname_boot;" \
 +					"fi;" \
-+				"fi;" \
+ 				"fi;" \
+-			"fi ;" \
 +			"done;" \
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -166,29 +262,110 @@
+@@ -173,29 +264,120 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
@@ -239,6 +240,16 @@ index df1a6fc..8d622d7 100644
 +		"setenv ipaddr ${client_ip}; " \
 +		"tftp ${loadaddr} ${bootfile}; " \
 +		"tftp ${fdtaddr} dtbs/${fdtfile}; " \
++		"run nfsargs; " \
++		"bootz ${loadaddr} - ${fdtaddr}\0" \
++	"nfsboot_uname_r=echo Booting from ${server_ip} ...; " \
++		"setenv nfsroot ${server_ip}:${root_dir}${nfs_options}; " \
++		"setenv ip ${client_ip}:${server_ip}:${gw_ip}:${netmask}:${hostname}:${device}:${autoconf}; " \
++		"setenv autoload no; " \
++		"setenv serverip ${server_ip}; " \
++		"setenv ipaddr ${client_ip}; " \
++		"tftp ${loadaddr} vmlinuz-${uname_r}; " \
++		"tftp ${fdtaddr} dtbs/${uname_r}/${fdtfile}; " \
 +		"run nfsargs; " \
 +		"bootz ${loadaddr} - ${fdtaddr}\0" \
  	"ramboot=echo Booting from ramdisk ...; " \
