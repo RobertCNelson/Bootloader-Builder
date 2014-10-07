@@ -339,16 +339,9 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: am335x_evm: fix lockup in eMMC when dd'ed
-		#r3: am335x_evm: set ddr3 to 1.35v
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
-
-		#Allwinner:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-kconfig-remove-redundant-SPL-from-CONFIG_SYS_EXTRA_O.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0002-sunxi-Correct-typo-CONFIG_FTDFILE-CONFIG_FDTFILE.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0003-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
