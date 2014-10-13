@@ -1,27 +1,18 @@
-From baefbd5676ebae5cbcb3ce5cf8451853ecc50fb7 Mon Sep 17 00:00:00 2001
+From ddbdb29ee297a8923e9bd310b3098a153f3cecda Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 2 Sep 2014 20:19:18 -0500
+Date: Mon, 13 Oct 2014 12:01:06 -0500
 Subject: [PATCH] mx51evk: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx51evk.h | 152 ++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 134 insertions(+), 18 deletions(-)
+ include/configs/mx51evk.h | 150 ++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 132 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index b389475..992aae4 100644
+index d6e8ec4..1177df1 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
-@@ -27,6 +27,8 @@
- #define CONFIG_INITRD_TAG
- #define CONFIG_REVISION_TAG
- 
-+#define CONFIG_SYS_GENERIC_BOARD
-+
- #define CONFIG_OF_LIBFDT
- 
- #define CONFIG_MACH_TYPE	MACH_TYPE_MX51_BABBAGE
-@@ -79,6 +81,14 @@
+@@ -80,6 +80,14 @@
  #define CONFIG_CMD_FAT
  #define CONFIG_DOS_PARTITION
  
@@ -36,7 +27,7 @@ index b389475..992aae4 100644
  /*
   * Eth Configs
   */
-@@ -142,24 +152,75 @@
+@@ -143,24 +151,75 @@
  #define CONFIG_LOADADDR		0x92000000	/* loadaddr env var */
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -120,7 +111,7 @@ index b389475..992aae4 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -198,19 +259,74 @@
+@@ -199,19 +258,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -206,5 +197,5 @@ index b389475..992aae4 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-2.1.0
+2.1.1
 
