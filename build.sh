@@ -657,7 +657,7 @@ arndale () {
 
 at91sam9x5ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="at91sam9x5ek_mmc"
 	build_uboot_eabi
@@ -732,7 +732,7 @@ omap5_uevm () {
 
 sama5d3xek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="sama5d3xek_mmc"
 	build_uboot_gnueabihf
@@ -740,7 +740,7 @@ sama5d3xek () {
 
 sama5d3_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="sama5d3_xplained_mmc"
 	build_uboot_gnueabihf
