@@ -647,14 +647,6 @@ am43xx_evm () {
 	build_uboot_gnueabihf
 }
 
-arndale () {
-	cleanup
-	transitioned_to_testing="true"
-
-	BOARD="arndale"
-	build_uboot_gnueabihf
-}
-
 at91sam9x5ek () {
 	cleanup
 	transitioned_to_testing="true"
@@ -666,17 +658,9 @@ at91sam9x5ek () {
 	build_at91bootstrap_all
 }
 
-Cubieboard2 () {
-	cleanup
-	transitioned_to_testing="true"
-
-	BOARD="Cubieboard2"
-	build_uboot_gnueabihf
-}
-
 mx23_olinuxino () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="mx23_olinuxino"
 	build_uboot_eabi
@@ -762,7 +746,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="vf610twr"
 	build_uboot_gnueabihf
@@ -793,9 +777,7 @@ A20_OLinuXino_Lime
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
-arndale
 at91sam9x5ek
-Cubieboard2
 mx23_olinuxino
 mx51evk
 mx53loco
