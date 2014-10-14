@@ -244,45 +244,6 @@ build_u_boot () {
 		#r1: initial release
 		#r2: am335x_evm: $fdtbase-$cape.dtb
 		#r3: am335x_evm: use Tom's Golden values...
-		#r4: am335x_evm: assume boneblack.dtb for eepromless...
-		#r5: panda: yet another old board with new memory...
-		#r6: am335x_evm: really assume boneblack.dtb for eepromless...
-		#r7: udoo: ship working u-boot for dual/quad
-		#r8: sama5d3_xplained: validatedtb
-		#r9: (pending)
-		RELEASE_VER="-r8" #bump on every change...
-		#halt_patching_uboot
-
-		#Atmel:
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-at91sam9x5ek-fix-nand-init-for-Linux-2.6.39.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-
-		#Freescale:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-
-		#TI:
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
-			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
-		fi
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	uboot_patch_dir="${uboot_stable}"
-	if [ "${stable}" ] ; then
-		#r1: initial release
-		#r2: am335x_evm: $fdtbase-$cape.dtb
-		#r3: am335x_evm: use Tom's Golden values...
 		#r4: vf610twr: we seem to have a sram limit (230kb fails to load)
 		#r5: udoo: fix dtb selection on dl
 		#r6: wand: zImage not zimage
@@ -311,6 +272,37 @@ build_u_boot () {
 
 		git am "${DIR}/patches/${uboot_patch_dir}/upstream/0001-Add-option-r-to-env-import-to-allow-import-of-text-f.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/upstream/0002-am335x_evm-handle-import-of-environments-in-files-wi.patch"
+
+		#Atmel:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+
+		#Freescale:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+
+		#TI:
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
+			git am "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+		fi
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+	fi
+
+	uboot_patch_dir="${uboot_stable}"
+	if [ "${stable}" ] ; then
+		#r1: initial release
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
+		#halt_patching_uboot
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -581,29 +573,24 @@ build_uboot_latest () {
 }
 
 build_uboot_eabi () {
-	UBOOT_CONFIG="${BOARD}_config"
-	gcc_arm_embedded_4_8
-	build_uboot_stable
 	UBOOT_CONFIG="${BOARD}_defconfig"
 	gcc_arm_embedded_4_9
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
 
 build_uboot_gnueabihf () {
-	UBOOT_CONFIG="${BOARD}_config"
-	gcc_linaro_gnueabihf_4_8
-	build_uboot_stable
 	UBOOT_CONFIG="${BOARD}_defconfig"
 	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
 
-
 A10_OLinuXino_Lime () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A10-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -611,7 +598,7 @@ A10_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -619,7 +606,7 @@ A20_OLinuXino_Lime () {
 
 am335x_evm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="am335x_evm"
 	build_uboot_gnueabihf
@@ -627,21 +614,19 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="am335x_boneblack"
-	UBOOT_CONFIG="am335x_evm_config"
-	gcc_linaro_gnueabihf_4_8
-	build_uboot_stable
 	UBOOT_CONFIG="am335x_evm_defconfig"
 	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
 
 am43xx_evm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="am43xx_evm"
 	build_uboot_gnueabihf
@@ -649,7 +634,7 @@ am43xx_evm () {
 
 at91sam9x5ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="at91sam9x5ek_mmc"
 	build_uboot_eabi
@@ -660,7 +645,7 @@ at91sam9x5ek () {
 
 mx23_olinuxino () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="mx23_olinuxino"
 	build_uboot_eabi
@@ -700,7 +685,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="omap4_panda"
 	build_uboot_gnueabihf
@@ -708,7 +693,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="omap5_uevm"
 	build_uboot_gnueabihf
@@ -716,7 +701,7 @@ omap5_uevm () {
 
 sama5d3xek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="sama5d3xek_mmc"
 	build_uboot_gnueabihf
@@ -724,7 +709,7 @@ sama5d3xek () {
 
 sama5d3_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="sama5d3_xplained_mmc"
 	build_uboot_gnueabihf
@@ -732,13 +717,13 @@ sama5d3_xplained () {
 
 udoo () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="udoo_quad"
 	build_uboot_gnueabihf
 
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="udoo_dl"
 	build_uboot_gnueabihf
@@ -746,7 +731,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="vf610twr"
 	build_uboot_gnueabihf
@@ -754,19 +739,19 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="wandboard_quad"
 	build_uboot_gnueabihf
 
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="wandboard_dl"
 	build_uboot_gnueabihf
 
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="wandboard_solo"
 	build_uboot_gnueabihf
