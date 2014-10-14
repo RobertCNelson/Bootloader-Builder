@@ -788,6 +788,6 @@ omap5_uevm
 sama5d3xek
 sama5d3_xplained
 udoo
-vf610twr
+#vf610twr
 wandboard
 #
