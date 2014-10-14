@@ -300,9 +300,13 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_stable}"
 	if [ "${stable}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: add: A20-OLinuXino-LIME2
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
+
+		#Allwinner Technology
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME2.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -335,6 +339,9 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
+		#Allwinner Technology
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME2.patch"
+
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
@@ -365,6 +372,9 @@ build_u_boot () {
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
+
+		#Allwinner Technology
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME2.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -604,6 +614,14 @@ A20_OLinuXino_Lime () {
 	build_uboot_gnueabihf
 }
 
+A20_OLinuXino_Lime2 () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="A20-OLinuXino-Lime2"
+	build_uboot_gnueabihf
+}
+
 am335x_evm () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -759,6 +777,7 @@ wandboard () {
 
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
+A20_OLinuXino_Lime2
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
