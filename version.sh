@@ -1,6 +1,6 @@
 #!/bin/sh
 
-stable_at91bootstrap_sha="496c0830c7f1fc7e9ce47a2ea16cb13c887caaa4"
+stable_at91bootstrap_sha="9025696fd4ec58bf4b9fe4f64554fdce8fc3aa68"
 
 uboot_old="v2014.07"
 uboot_stable="v2014.10"

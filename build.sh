@@ -222,8 +222,8 @@ build_at91bootstrap () {
 
 	mkdir -p ${DIR}/deploy/${BOARD}/
 
-	if [ -f ${DIR}/scratch/${project}/binaries/*.bin ] ; then
-		filename_search="binaries/*.bin"
+	if [ -f ${DIR}/scratch/${project}/binaries/at91bootstrap.bin ] ; then
+		filename_search="binaries/at91bootstrap.bin"
 		filename_id="deploy/${BOARD}/${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
 		file_save
 	fi
@@ -313,6 +313,12 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
+		#Atmel: sama5d4ek
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-atmel_nand-if-don-t-have-gf-table-in-rom-code-we-wil.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+
 		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
@@ -347,6 +353,12 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
+		#Atmel: sama5d4ek
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-atmel_nand-if-don-t-have-gf-table-in-rom-code-we-wil.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+
 		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
@@ -380,6 +392,12 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+
+		#Atmel: sama5d4ek
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-atmel_nand-if-don-t-have-gf-table-in-rom-code-we-wil.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
@@ -733,6 +751,17 @@ sama5d3_xplained () {
 	build_uboot_gnueabihf
 }
 
+sama5d4ek () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="sama5d4ek_mmc"
+	build_uboot_eabi
+
+	at91bootstrap_config="sama5d4eksd_uboot_defconfig"
+	build_at91bootstrap_all
+}
+
 udoo () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -791,6 +820,7 @@ omap4_panda
 omap5_uevm
 sama5d3xek
 sama5d3_xplained
+sama5d4ek
 udoo
 #vf610twr
 wandboard
