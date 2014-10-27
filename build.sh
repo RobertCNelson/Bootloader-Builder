@@ -345,9 +345,6 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		#Allwinner Technology
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME2.patch"
-
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
@@ -384,9 +381,6 @@ build_u_boot () {
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
-
-		#Allwinner Technology
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME2.patch"
 
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
