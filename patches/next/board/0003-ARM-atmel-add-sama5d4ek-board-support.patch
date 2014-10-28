@@ -37,12 +37,12 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  create mode 100644 include/configs/sama5d4ek.h
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 72558b8..f4125b1 100644
+index 3415927..5196fc0 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -324,6 +324,9 @@ config TARGET_SAMA5D3_XPLAINED
- config TARGET_SAMA5D3XEK
+@@ -361,6 +361,9 @@ config TARGET_SAMA5D3XEK
  	bool "Support sama5d3xek"
+ 	select SUPPORT_SPL
  
 +config TARGET_SAMA5D4EK
 +	bool "Support sama5d4ek"
@@ -50,7 +50,7 @@ index 72558b8..f4125b1 100644
  config TARGET_BCM28155_AP
  	bool "Support bcm28155_ap"
  
-@@ -585,6 +588,7 @@ source "board/atmel/at91sam9rlek/Kconfig"
+@@ -646,6 +649,7 @@ source "board/atmel/at91sam9rlek/Kconfig"
  source "board/atmel/at91sam9x5ek/Kconfig"
  source "board/atmel/sama5d3_xplained/Kconfig"
  source "board/atmel/sama5d3xek/Kconfig"
