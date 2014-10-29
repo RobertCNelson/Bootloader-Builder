@@ -766,8 +766,8 @@ sama5d4_xplained () {
 	BOARD="sama5d4_xplained_mmc"
 	build_uboot_eabi
 
-	at91bootstrap_config="sama5d4_xplainedsd_uboot_secure"
-	build_at91bootstrap_all
+#	at91bootstrap_config="sama5d4_xplainedsd_uboot_secure"
+#	build_at91bootstrap_all
 }
 
 udoo () {
