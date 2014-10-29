@@ -314,9 +314,10 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d4ek
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-atmel_nand-if-don-t-have-gf-table-in-rom-code-we-wil.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-mtd-atmel_nand-runtime-to-build-gf-table-for-pmecc.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0004-ARM-atmel-add-sama5d4-xplained-ultra-board-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
@@ -351,9 +352,10 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d4ek
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-atmel_nand-if-don-t-have-gf-table-in-rom-code-we-wil.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-mtd-atmel_nand-runtime-to-build-gf-table-for-pmecc.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0004-ARM-atmel-add-sama5d4-xplained-ultra-board-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
@@ -388,9 +390,10 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d4ek
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-atmel_nand-if-don-t-have-gf-table-in-rom-code-we-wil.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-mtd-atmel_nand-runtime-to-build-gf-table-for-pmecc.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
+		git am "${DIR}/patches/${uboot_patch_dir}/board/0004-ARM-atmel-add-sama5d4-xplained-ultra-board-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
@@ -756,6 +759,17 @@ sama5d4ek () {
 	build_at91bootstrap_all
 }
 
+sama5d4_xplained () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="sama5d4_xplained_mmc"
+	build_uboot_eabi
+
+	at91bootstrap_config="sama5d4_xplainedsd_uboot_secure"
+	build_at91bootstrap_all
+}
+
 udoo () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -815,6 +829,7 @@ omap5_uevm
 sama5d3xek
 sama5d3_xplained
 sama5d4ek
+sama5d4_xplained
 udoo
 #vf610twr
 wandboard

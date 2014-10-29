@@ -1,9 +1,9 @@
 #!/bin/sh
 
-stable_at91bootstrap_sha="be375331a7971d23f13e6810690c100923e1cc9f"
+stable_at91bootstrap_sha="6ea9b26e3fa4bec009871de89f4f8c2bcaaa65be"
 
 uboot_old="v2014.07"
 uboot_stable="v2014.10"
 #uboot_testing="v2014.10"
 
-uboot_latest="3664816ffda6e619e0ad44fc02930a2b8929e0bf"
+uboot_latest="d58a9451e7339ed4cf2b2627e534611f427fb791"
