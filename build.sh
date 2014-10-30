@@ -415,6 +415,10 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
+	if [ "x${BOARD}" = "xbeagle_x15_alpha" ] ; then
+		git pull --no-edit https://github.com/RobertCNelson/u-boot-boards.git v2014.07_x15-alpha
+	fi
+
 	unset BUILDTARGET
 	if [ "x${BOARD}" = "xmx23_olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
@@ -812,6 +816,17 @@ wandboard () {
 	build_uboot_gnueabihf
 }
 
+x15_alpha () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="beagle_x15_alpha"
+	UBOOT_CONFIG="beagle_x15_config"
+	gcc_linaro_gnueabihf_4_9
+	GIT_SHA="524123a70761110c5cf3ccc5f52f6d4da071b959"
+	build_u_boot
+}
+
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
 A20_OLinuXino_Lime2
@@ -833,4 +848,5 @@ sama5d4_xplained
 udoo
 #vf610twr
 wandboard
+x15_alpha
 #
