@@ -11,8 +11,8 @@ The code for this board supports following features:
 
 Signed-off-by: Bo Shen <voice.shen@atmel.com>
 ---
- arch/arm/Kconfig                                |   4 +
- board/atmel/sama5d4_xplained/Kconfig            |  18 ++
+ arch/arm/Kconfig                                |   5 +
+ board/atmel/sama5d4_xplained/Kconfig            |  15 ++
  board/atmel/sama5d4_xplained/MAINTAINERS        |   8 +
  board/atmel/sama5d4_xplained/Makefile           |   8 +
  board/atmel/sama5d4_xplained/sama5d4_xplained.c | 319 ++++++++++++++++++++++++
@@ -20,7 +20,7 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  configs/sama5d4_xplained_nandflash_defconfig    |   3 +
  configs/sama5d4_xplained_spiflash_defconfig     |   3 +
  include/configs/sama5d4_xplained.h              | 217 ++++++++++++++++
- 9 files changed, 583 insertions(+)
+ 9 files changed, 581 insertions(+)
  create mode 100644 board/atmel/sama5d4_xplained/Kconfig
  create mode 100644 board/atmel/sama5d4_xplained/MAINTAINERS
  create mode 100644 board/atmel/sama5d4_xplained/Makefile
@@ -31,20 +31,21 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  create mode 100644 include/configs/sama5d4_xplained.h
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 7112832..7c8459e 100644
+index b312581..086c3b5 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -361,6 +361,9 @@ config TARGET_SAMA5D3XEK
- 	bool "Support sama5d3xek"
+@@ -508,6 +508,10 @@ config TARGET_SAMA5D3XEK
+ 	select CPU_V7
  	select SUPPORT_SPL
  
 +config TARGET_SAMA5D4_XPLAINED
 +	bool "Support sama5d4_xplained"
++	select CPU_V7
 +
  config TARGET_SAMA5D4EK
  	bool "Support sama5d4ek"
- 
-@@ -649,6 +652,7 @@ source "board/atmel/at91sam9rlek/Kconfig"
+ 	select CPU_V7
+@@ -862,6 +866,7 @@ source "board/atmel/at91sam9rlek/Kconfig"
  source "board/atmel/at91sam9x5ek/Kconfig"
  source "board/atmel/sama5d3_xplained/Kconfig"
  source "board/atmel/sama5d3xek/Kconfig"
@@ -54,14 +55,11 @@ index 7112832..7c8459e 100644
  source "board/balloon3/Kconfig"
 diff --git a/board/atmel/sama5d4_xplained/Kconfig b/board/atmel/sama5d4_xplained/Kconfig
 new file mode 100644
-index 0000000..f6440c0
+index 0000000..f320a68
 --- /dev/null
 +++ b/board/atmel/sama5d4_xplained/Kconfig
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,15 @@
 +if TARGET_SAMA5D4_XPLAINED
-+
-+config SYS_CPU
-+	default "armv7"
 +
 +config SYS_BOARD
 +	default "sama5d4_xplained"

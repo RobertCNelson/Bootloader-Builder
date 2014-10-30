@@ -11,7 +11,7 @@ The code for this board supports following features:
 
 Signed-off-by: Bo Shen <voice.shen@atmel.com>
 ---
- arch/arm/Kconfig                          |   4 +
+ arch/arm/Kconfig                          |   5 +
  arch/arm/cpu/armv7/at91/Makefile          |   1 +
  arch/arm/cpu/armv7/at91/sama5d4_devices.c |  30 +++
  arch/arm/cpu/armv7/at91/timer.c           |   3 +-
@@ -19,7 +19,7 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  arch/arm/include/asm/arch-at91/clk.h      |  48 ++++-
  arch/arm/include/asm/arch-at91/hardware.h |   2 +
  arch/arm/include/asm/arch-at91/sama5d4.h  | 207 +++++++++++++++++++
- board/atmel/sama5d4ek/Kconfig             |  18 ++
+ board/atmel/sama5d4ek/Kconfig             |  15 ++
  board/atmel/sama5d4ek/MAINTAINERS         |   8 +
  board/atmel/sama5d4ek/Makefile            |  15 ++
  board/atmel/sama5d4ek/sama5d4ek.c         | 317 ++++++++++++++++++++++++++++++
@@ -27,7 +27,7 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  configs/sama5d4ek_nandflash_defconfig     |   3 +
  configs/sama5d4ek_spiflash_defconfig      |   3 +
  include/configs/sama5d4ek.h               | 215 ++++++++++++++++++++
- 16 files changed, 876 insertions(+), 9 deletions(-)
+ 16 files changed, 874 insertions(+), 9 deletions(-)
  create mode 100644 arch/arm/cpu/armv7/at91/sama5d4_devices.c
  create mode 100644 arch/arm/include/asm/arch-at91/sama5d4.h
  create mode 100644 board/atmel/sama5d4ek/Kconfig
@@ -40,20 +40,21 @@ Signed-off-by: Bo Shen <voice.shen@atmel.com>
  create mode 100644 include/configs/sama5d4ek.h
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 7b20fab..7112832 100644
+index 171ad03..b312581 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -361,6 +361,9 @@ config TARGET_SAMA5D3XEK
- 	bool "Support sama5d3xek"
+@@ -508,6 +508,10 @@ config TARGET_SAMA5D3XEK
+ 	select CPU_V7
  	select SUPPORT_SPL
  
 +config TARGET_SAMA5D4EK
 +	bool "Support sama5d4ek"
++	select CPU_V7
 +
  config TARGET_BCM28155_AP
  	bool "Support bcm28155_ap"
- 
-@@ -646,6 +649,7 @@ source "board/atmel/at91sam9rlek/Kconfig"
+ 	select CPU_V7
+@@ -858,6 +862,7 @@ source "board/atmel/at91sam9rlek/Kconfig"
  source "board/atmel/at91sam9x5ek/Kconfig"
  source "board/atmel/sama5d3_xplained/Kconfig"
  source "board/atmel/sama5d3xek/Kconfig"
@@ -478,14 +479,11 @@ index 0000000..6ebd38a
 +#endif
 diff --git a/board/atmel/sama5d4ek/Kconfig b/board/atmel/sama5d4ek/Kconfig
 new file mode 100644
-index 0000000..a889895
+index 0000000..7dc569c
 --- /dev/null
 +++ b/board/atmel/sama5d4ek/Kconfig
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,15 @@
 +if TARGET_SAMA5D4EK
-+
-+config SYS_CPU
-+	default "armv7"
 +
 +config SYS_BOARD
 +	default "sama5d4ek"
