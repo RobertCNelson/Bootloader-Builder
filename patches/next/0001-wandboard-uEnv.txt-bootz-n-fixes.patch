@@ -1,6 +1,6 @@
-From bd04a152ae46986c19d32c55bf823116bb3d899c Mon Sep 17 00:00:00 2001
+From d9048eae6f188597afbd61665693a35a5680c3fc Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 2 Sep 2014 20:23:37 -0500
+Date: Mon, 10 Nov 2014 09:36:07 -0600
 Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 126 insertions(+), 19 deletions(-)
 
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
-index 7d96908..1540836 100644
+index 809017c..1bc51db 100644
 --- a/include/configs/wandboard.h
 +++ b/include/configs/wandboard.h
 @@ -51,7 +51,7 @@
@@ -29,8 +29,8 @@ index 7d96908..1540836 100644
 +#define CONFIG_CMD_FS_GENERIC
  #define CONFIG_DOS_PARTITION
  
- /* Ethernet Configuration */
-@@ -119,17 +121,21 @@
+ /* USB Configs */
+@@ -133,17 +135,21 @@
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
@@ -55,7 +55,7 @@ index 7d96908..1540836 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -144,8 +150,11 @@
+@@ -158,8 +164,11 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -69,7 +69,7 @@ index 7d96908..1540836 100644
  	"videoargs=" \
  		"setenv nextcon 0; " \
  		"if hdmidet; then " \
-@@ -176,9 +185,46 @@
+@@ -190,9 +199,46 @@
  		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
@@ -209,7 +209,7 @@ index 7d96908..1540836 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP
-@@ -269,6 +375,7 @@
+@@ -283,6 +389,7 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -218,5 +218,5 @@ index 7d96908..1540836 100644
  #ifndef CONFIG_SYS_DCACHE_OFF
  #define CONFIG_CMD_CACHE
 -- 
-2.1.0
+2.1.1
 

@@ -641,6 +641,14 @@ A20_OLinuXino_Lime2 () {
 	build_uboot_gnueabihf
 }
 
+A20_OLinuXino_MICRO () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="A20-OLinuXino_MICRO"
+	build_uboot_gnueabihf
+}
+
 am335x_evm () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -830,6 +838,7 @@ x15_alpha () {
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
 A20_OLinuXino_Lime2
+A20_OLinuXino_MICRO
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
