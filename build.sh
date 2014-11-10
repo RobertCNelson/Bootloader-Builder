@@ -301,8 +301,9 @@ build_u_boot () {
 	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: add: A20-OLinuXino-LIME2
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: disable 1.5v -> 1.35v regulator change & mmcpart to 1 when /etc/fstab is in x:1
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		#Allwinner Technology

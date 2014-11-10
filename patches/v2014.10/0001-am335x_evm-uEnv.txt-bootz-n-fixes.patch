@@ -1,32 +1,35 @@
-From c9b58ad39df11d848cb03b7e94bb5cb96105e850 Mon Sep 17 00:00:00 2001
+From c03d3b6d17fb17bbb11b84e94d8a8e438d67327d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 24 Sep 2014 09:15:53 -0500
+Date: Mon, 10 Nov 2014 09:58:21 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c      |   9 ++
+ board/ti/am335x/board.c      |  12 +++
  configs/am335x_evm_defconfig |   3 +-
- include/configs/am335x_evm.h | 218 +++++++++++++++++++++++++++++++++++++++----
+ include/configs/am335x_evm.h | 221 +++++++++++++++++++++++++++++++++++++++----
  include/power/tps65217.h     |   1 +
- 4 files changed, 211 insertions(+), 20 deletions(-)
+ 4 files changed, 217 insertions(+), 20 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 0739e60..6b6dea0 100644
+index 0739e60..faec48e 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -300,6 +300,15 @@ void am33xx_spl_board_init(void)
+@@ -300,6 +300,18 @@ void am33xx_spl_board_init(void)
  			return;
  		}
  
-+		/* Set DCDC1 (DDR3) to 1.35V for Beaglebone Black. */
-+		if (board_is_bone_lt(&header)) {
-+			if (tps65217_voltage_update(TPS65217_DEFDCDC1,
-+						    TPS65217_DCDC_VOLT_SEL_1350MV)) {
-+				puts("tps65217_voltage_update failure\n");
-+				return;
-+			}
-+		}
++// Disable for now: see thread:
++// http://www.spinics.net/lists/devicetree/msg56399.html
++//
++//		/* Set DCDC1 (DDR3) to 1.35V for Beaglebone Black. */
++//		if (board_is_bone_lt(&header)) {
++//			if (tps65217_voltage_update(TPS65217_DEFDCDC1,
++//						    TPS65217_DCDC_VOLT_SEL_1350MV)) {
++//				puts("tps65217_voltage_update failure\n");
++//				return;
++//			}
++//		}
 +
  		/*
  		 * Set LDO3, LDO4 output voltage to 3.3V for Beaglebone.
@@ -43,7 +46,7 @@ index 2e5aeaa..4cc7e19 100644
  +S:CONFIG_ARM=y
  +S:CONFIG_TARGET_AM335X_EVM=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index aef0ad3..f886c69 100644
+index 476430d..fb1ed50 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,8 @@
@@ -55,7 +58,7 @@ index aef0ad3..f886c69 100644
  
  #ifndef CONFIG_SPL_BUILD
  # define CONFIG_FIT
-@@ -79,7 +81,8 @@
+@@ -76,7 +78,8 @@
  	DEFAULT_LINUX_BOOT_ENV \
  	"boot_fdt=try\0" \
  	"bootpart=0:2\0" \
@@ -65,7 +68,7 @@ index aef0ad3..f886c69 100644
  	"bootfile=zImage\0" \
  	"fdtfile=undefined\0" \
  	"console=ttyO0,115200n8\0" \
-@@ -87,9 +90,13 @@
+@@ -84,9 +87,13 @@
  		"uuid_disk=${uuid_gpt_disk};" \
  		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
  	"optargs=\0" \
@@ -80,7 +83,7 @@ index aef0ad3..f886c69 100644
  	"rootpath=/export/rootfs\0" \
  	"nfsopts=nolock\0" \
  	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
-@@ -98,8 +105,29 @@
+@@ -95,8 +102,29 @@
  	"ramrootfstype=ext2\0" \
  	"mmcargs=setenv bootargs console=${console} " \
  		"${optargs} " \
@@ -111,7 +114,7 @@ index aef0ad3..f886c69 100644
  	"spiroot=/dev/mtdblock4 rw\0" \
  	"spirootfstype=jffs2\0" \
  	"spisrcaddr=0xe0000\0" \
-@@ -115,10 +143,12 @@
+@@ -112,10 +140,12 @@
  		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
  		"ip=dhcp\0" \
  	"bootenv=uEnv.txt\0" \
@@ -127,7 +130,7 @@ index aef0ad3..f886c69 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t -r $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -127,7 +157,8 @@
+@@ -124,7 +154,8 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -137,7 +140,7 @@ index aef0ad3..f886c69 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -144,22 +175,82 @@
+@@ -141,22 +172,85 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -147,6 +150,9 @@ index aef0ad3..f886c69 100644
 -			"else " \
 +			"gpio set 54;" \
 +			"setenv bootpart ${mmcdev}:1; " \
++			"if test -e mmc ${bootpart} /etc/fstab; then " \
++				"setenv mmcpart 1;" \
++			"fi; " \
 +			"echo Checking for: /uEnv.txt ...;" \
 +			"if test -e mmc ${bootpart} /uEnv.txt; then " \
  				"if run loadbootenv; then " \
@@ -228,7 +234,7 @@ index aef0ad3..f886c69 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -173,29 +264,120 @@
+@@ -170,29 +264,120 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
@@ -365,5 +371,5 @@ index 297c4cb..008fd6d 100644
  #define TPS65217_LDO_MASK			0x1F
  #define TPS65217_LDO_VOLTAGE_OUT_1_8		0x06
 -- 
-2.1.0
+2.1.1
 
