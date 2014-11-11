@@ -1,15 +1,15 @@
-From c03d3b6d17fb17bbb11b84e94d8a8e438d67327d Mon Sep 17 00:00:00 2001
+From bc6c03d979e626add19227e015f832c99fff9e88 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 10 Nov 2014 09:58:21 -0600
+Date: Tue, 11 Nov 2014 15:36:29 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c      |  12 +++
  configs/am335x_evm_defconfig |   3 +-
- include/configs/am335x_evm.h | 221 +++++++++++++++++++++++++++++++++++++++----
+ include/configs/am335x_evm.h | 220 +++++++++++++++++++++++++++++++++++++++----
  include/power/tps65217.h     |   1 +
- 4 files changed, 217 insertions(+), 20 deletions(-)
+ 4 files changed, 216 insertions(+), 20 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index 0739e60..faec48e 100644
@@ -46,19 +46,18 @@ index 2e5aeaa..4cc7e19 100644
  +S:CONFIG_ARM=y
  +S:CONFIG_TARGET_AM335X_EVM=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 476430d..fb1ed50 100644
+index 560e3bf..32769eb 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -17,6 +17,8 @@
+@@ -17,6 +17,7 @@
  #define __CONFIG_AM335X_EVM_H
  
  #include <configs/ti_am335x_common.h>
-+#define CONFIG_SUPPORT_RAW_INITRD
 +#define CONFIG_ENV_IS_NOWHERE
  
  #ifndef CONFIG_SPL_BUILD
  # define CONFIG_FIT
-@@ -76,7 +78,8 @@
+@@ -76,7 +77,8 @@
  	DEFAULT_LINUX_BOOT_ENV \
  	"boot_fdt=try\0" \
  	"bootpart=0:2\0" \
@@ -68,7 +67,7 @@ index 476430d..fb1ed50 100644
  	"bootfile=zImage\0" \
  	"fdtfile=undefined\0" \
  	"console=ttyO0,115200n8\0" \
-@@ -84,9 +87,13 @@
+@@ -84,9 +86,13 @@
  		"uuid_disk=${uuid_gpt_disk};" \
  		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
  	"optargs=\0" \
@@ -83,7 +82,7 @@ index 476430d..fb1ed50 100644
  	"rootpath=/export/rootfs\0" \
  	"nfsopts=nolock\0" \
  	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
-@@ -95,8 +102,29 @@
+@@ -95,8 +101,29 @@
  	"ramrootfstype=ext2\0" \
  	"mmcargs=setenv bootargs console=${console} " \
  		"${optargs} " \
@@ -114,7 +113,7 @@ index 476430d..fb1ed50 100644
  	"spiroot=/dev/mtdblock4 rw\0" \
  	"spirootfstype=jffs2\0" \
  	"spisrcaddr=0xe0000\0" \
-@@ -112,10 +140,12 @@
+@@ -112,10 +139,12 @@
  		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
  		"ip=dhcp\0" \
  	"bootenv=uEnv.txt\0" \
@@ -130,7 +129,7 @@ index 476430d..fb1ed50 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t -r $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -124,7 +154,8 @@
+@@ -124,7 +153,8 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -140,7 +139,7 @@ index 476430d..fb1ed50 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -141,22 +172,85 @@
+@@ -141,22 +171,85 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -234,7 +233,7 @@ index 476430d..fb1ed50 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -170,29 +264,120 @@
+@@ -170,29 +263,120 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \

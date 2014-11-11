@@ -1,19 +1,19 @@
-From 185a98102c45089072f227c1c8ab536c391646fc Mon Sep 17 00:00:00 2001
+From 369718d9a4e35887bdb9e669b3b00d89cb4d646d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 16 Sep 2014 09:02:50 -0500
+Date: Tue, 11 Nov 2014 15:37:42 -0600
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/beagle/beagle.c       |  38 +++++++--
- include/configs/omap3_beagle.h | 179 ++++++++++++++++++++++++++++-------------
- 2 files changed, 156 insertions(+), 61 deletions(-)
+ include/configs/omap3_beagle.h | 178 ++++++++++++++++++++++++++++-------------
+ 2 files changed, 155 insertions(+), 61 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
-index 0674afd..e2267a6 100644
+index 4c5e381..d50818b 100644
 --- a/board/ti/beagle/beagle.c
 +++ b/board/ti/beagle/beagle.c
-@@ -54,6 +54,7 @@
+@@ -56,6 +56,7 @@
  #define BBTOYS_WIFI			0x01000B00
  #define BBTOYS_VGA			0x02000B00
  #define BBTOYS_LCD			0x03000B00
@@ -21,7 +21,7 @@ index 0674afd..e2267a6 100644
  #define BCT_BRETTL3			0x01000F00
  #define BCT_BRETTL4			0x02000F00
  #define LSR_COM6L_ADPT			0x01001300
-@@ -198,25 +199,25 @@ void get_board_mem_timings(struct board_sdrc_timings *timings)
+@@ -211,25 +212,25 @@ void get_board_mem_timings(struct board_sdrc_timings *timings)
   *		bus 1 for the availability of an AT24C01B serial EEPROM.
   *		returns the device_vendor field from the EEPROM
   */
@@ -51,7 +51,7 @@ index 0674afd..e2267a6 100644
  			 sizeof(expansion_config));
  	}
  
-@@ -325,15 +326,18 @@ int misc_init_r(void)
+@@ -341,15 +342,18 @@ int misc_init_r(void)
  	case REVISION_AXBX:
  		printf("Beagle Rev Ax/Bx\n");
  		setenv("beaglerev", "AxBx");
@@ -70,7 +70,7 @@ index 0674afd..e2267a6 100644
  		MUX_BEAGLE_C();
  		/* Set VAUX2 to 1.8V for EHCI PHY */
  		twl4030_pmrecv_vsel_cfg(TWL4030_PM_RECEIVER_VAUX2_DEDICATED,
-@@ -374,7 +378,7 @@ int misc_init_r(void)
+@@ -390,7 +394,7 @@ int misc_init_r(void)
  		generate_fake_mac = true;
  	}
  
@@ -79,7 +79,7 @@ index 0674afd..e2267a6 100644
  	case TINCANTOOLS_ZIPPY:
  		printf("Recognized Tincantools Zippy board (rev %d %s)\n",
  			expansion_config.revision,
-@@ -457,6 +461,30 @@ int misc_init_r(void)
+@@ -473,6 +477,30 @@ int misc_init_r(void)
  	if (expansion_config.content == 1)
  		setenv(expansion_config.env_var, expansion_config.env_setting);
  
@@ -111,18 +111,10 @@ index 0674afd..e2267a6 100644
  	switch (get_board_revision()) {
  	case REVISION_XM_AB:
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index f25a940..6d3bdd8 100644
+index f25a940..b4413da 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
-@@ -28,6 +28,7 @@
- #define CONFIG_SYS_SPL_MALLOC_SIZE	0x100000
- 
- #include <configs/ti_omap3_common.h>
-+#define CONFIG_SUPPORT_RAW_INITRD
- 
- /*
-  * Display CPU and Board information
-@@ -129,40 +130,32 @@
+@@ -129,40 +129,32 @@
  							/* devices */
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -176,7 +168,7 @@ index f25a940..6d3bdd8 100644
  	"nandargs=setenv bootargs console=${console} " \
  		"${optargs} " \
  		"mpurate=${mpurate} " \
-@@ -193,7 +186,7 @@
+@@ -193,7 +185,7 @@
  			"fi; " \
  		"fi; \0" \
  	"bootenv=uEnv.txt\0" \
@@ -185,7 +177,7 @@ index f25a940..6d3bdd8 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t -r $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -210,10 +203,44 @@
+@@ -210,10 +202,44 @@
  	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
  	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
  		"source ${loadaddr}\0" \
@@ -234,7 +226,7 @@ index f25a940..6d3bdd8 100644
  	"mmcbootz=echo Booting with DT from mmc${mmcdev} ...; " \
  		"run mmcargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
-@@ -227,39 +254,79 @@
+@@ -227,39 +253,79 @@
  	"userbutton=if gpio input 173; then run userbutton_xm; " \
  		"else run userbutton_nonxm; fi;\0" \
  	"userbutton_xm=gpio input 4;\0" \
@@ -345,5 +337,5 @@ index f25a940..6d3bdd8 100644
  /*
   * OMAP3 has 12 GP timers, they can be driven by the system clock
 -- 
-2.1.0
+2.1.1
 

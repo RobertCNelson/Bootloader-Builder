@@ -1,18 +1,18 @@
-From 7e7a2f1f751352281e898b52152b3811a8ba121b Mon Sep 17 00:00:00 2001
+From ade5372b3280699bfd2b49857755d8efec6298ba Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 24 Sep 2014 09:22:54 -0500
+Date: Tue, 11 Nov 2014 15:38:54 -0600
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/ti_omap4_common.h | 150 ++++++++++++++++++++++++++++++--------
- 1 file changed, 118 insertions(+), 32 deletions(-)
+ include/configs/ti_omap4_common.h | 149 ++++++++++++++++++++++++++++++--------
+ 1 file changed, 117 insertions(+), 32 deletions(-)
 
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index b0f199e..16e2ab7 100644
+index 1c93aab..494c669 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
-@@ -46,13 +46,15 @@
+@@ -46,7 +46,8 @@
   * the timings to use or use pre-determined timings (based on using the
   * dynamic method.  Default to the static timing infomation.
   */
@@ -22,14 +22,7 @@ index b0f199e..16e2ab7 100644
  #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
  #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
  #define CONFIG_SYS_DEFAULT_LPDDR2_TIMINGS
- #endif
- 
- #include <configs/ti_armv7_common.h>
-+#define CONFIG_SUPPORT_RAW_INITRD
- 
- /*
-  * Hardware drivers
-@@ -89,29 +91,70 @@
+@@ -89,29 +90,70 @@
  	DEFAULT_LINUX_BOOT_ENV \
  	"console=ttyO2,115200n8\0" \
  	"fdtfile=undefined\0" \
@@ -109,7 +102,7 @@ index b0f199e..16e2ab7 100644
  	"uimageboot=echo Booting from mmc${mmcdev} ...; " \
  		"run mmcargs; " \
  		"bootm ${loadaddr}\0" \
-@@ -128,31 +171,74 @@
+@@ -128,31 +170,74 @@
  			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -207,5 +200,5 @@ index b0f199e..16e2ab7 100644
  /*
   * Defines for SPL
 -- 
-2.1.0
+2.1.1
 
