@@ -620,7 +620,7 @@ build_uboot_gnueabihf () {
 
 A10_OLinuXino_Lime () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A10-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -628,7 +628,7 @@ A10_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -636,7 +636,7 @@ A20_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime2 () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime2"
 	build_uboot_gnueabihf
@@ -644,7 +644,7 @@ A20_OLinuXino_Lime2 () {
 
 A20_OLinuXino_MICRO () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino_MICRO"
 	build_uboot_gnueabihf
