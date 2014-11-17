@@ -1,6 +1,6 @@
-From aa5a22073d478d996bb1a8039c5ae53a57ece4c3 Mon Sep 17 00:00:00 2001
+From 10af1bb957c1694f8877875ac29a4b203c35c45d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 22 Jul 2014 08:41:33 -0500
+Date: Mon, 17 Nov 2014 08:46:56 -0600
 Subject: [PATCH] mx53loco: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 127 insertions(+), 17 deletions(-)
 
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index a74508c..0693d39 100644
+index 10fb1f4..19035f1 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
 @@ -45,6 +45,12 @@
@@ -25,7 +25,7 @@ index a74508c..0693d39 100644
  #define CONFIG_DOS_PARTITION
  
  /* Eth Configs */
-@@ -101,27 +107,76 @@
+@@ -101,26 +107,75 @@
  
  #define CONFIG_ETHPRIME		"FEC0"
  
@@ -38,9 +38,8 @@ index a74508c..0693d39 100644
 +	"fdt_high=0xffffffff\0" \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
-+	"fdt_dir=/dtbs/\0" \
- 	"fdt_file=imx53-qsb.dtb\0" \
 -	"fdt_addr=0x71000000\0" \
++	"fdt_dir=/dtbs/\0" \
 +	"fdt_addr=0x71ff0000\0" \
 +	"rdaddr=0x72000000\0" \
  	"boot_fdt=try\0" \
@@ -109,7 +108,7 @@ index a74508c..0693d39 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -160,19 +215,74 @@
+@@ -159,19 +214,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -195,5 +194,5 @@ index a74508c..0693d39 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-2.1.0
+2.1.1
 
