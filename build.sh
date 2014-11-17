@@ -389,12 +389,6 @@ build_u_boot () {
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d4ek
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0001-mtd-atmel_nand-runtime-to-build-gf-table-for-pmecc.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
-		git am "${DIR}/patches/${uboot_patch_dir}/board/0004-ARM-atmel-add-sama5d4-xplained-ultra-board-support.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
