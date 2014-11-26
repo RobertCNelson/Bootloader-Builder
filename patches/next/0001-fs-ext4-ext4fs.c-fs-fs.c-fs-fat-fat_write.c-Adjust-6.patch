@@ -1,0 +1,138 @@
+From 40dce7a260a1ec401cdafd652d5cb2ede94196bb Mon Sep 17 00:00:00 2001
+From: Tom Rini <trini@ti.com>
+Date: Wed, 26 Nov 2014 17:03:48 -0500
+Subject: [PATCH] fs/ext4/ext4fs.c, fs/fs.c fs/fat/fat_write.c: Adjust 64bit
+ math methods
+
+The changes to introduce loff_t into filesize means that we need to do
+64bit math on 32bit platforms.  Make sure we use the right wrappers for
+these operations.
+
+Cc: Daniel Schwierzeck <daniel.schwierzeck@gmail.com>
+Cc: Suriyan Ramasami <suriyan.r@gmail.com>
+Cc: Simon Glass <sjg@chromium.org>
+Signed-off-by: Tom Rini <trini@ti.com>
+---
+ fs/ext4/ext4fs.c   | 11 ++++++-----
+ fs/fat/fat_write.c | 10 ++++++----
+ fs/fs.c            |  6 ++++--
+ 3 files changed, 16 insertions(+), 11 deletions(-)
+
+diff --git a/fs/ext4/ext4fs.c b/fs/ext4/ext4fs.c
+index 943b5bc..258b937 100644
+--- a/fs/ext4/ext4fs.c
++++ b/fs/ext4/ext4fs.c
+@@ -25,6 +25,7 @@
+ #include <ext_common.h>
+ #include <ext4fs.h>
+ #include "ext4_common.h"
++#include <div64.h>
+ 
+ int ext4fs_symlinknest;
+ struct ext_filesystem ext_fs;
+@@ -67,11 +68,11 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 	if (len > filesize)
+ 		len = filesize;
+ 
+-	blockcnt = ((len + pos) + blocksize - 1) / blocksize;
++	blockcnt = lldiv(((len + pos) + blocksize - 1), blocksize);
+ 
+-	for (i = pos / blocksize; i < blockcnt; i++) {
++	for (i = lldiv(pos, blocksize); i < blockcnt; i++) {
+ 		lbaint_t blknr;
+-		int blockoff = pos % blocksize;
++		int blockoff = pos - (blocksize * i);
+ 		int blockend = blocksize;
+ 		int skipfirst = 0;
+ 		blknr = read_allocated_block(&(node->inode), i);
+@@ -82,7 +83,7 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 
+ 		/* Last block.  */
+ 		if (i == blockcnt - 1) {
+-			blockend = (len + pos) % blocksize;
++			blockend = (len + pos) - (blocksize * i);
+ 
+ 			/* The last portion is exactly blocksize. */
+ 			if (!blockend)
+@@ -90,7 +91,7 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 		}
+ 
+ 		/* First block. */
+-		if (i == pos / blocksize) {
++		if (i == lldiv(pos, blocksize)) {
+ 			skipfirst = blockoff;
+ 			blockend -= skipfirst;
+ 		}
+diff --git a/fs/fat/fat_write.c b/fs/fat/fat_write.c
+index 88dd495..473723b 100644
+--- a/fs/fat/fat_write.c
++++ b/fs/fat/fat_write.c
+@@ -13,6 +13,8 @@
+ #include <asm/byteorder.h>
+ #include <part.h>
+ #include <linux/ctype.h>
++#include <div64.h>
++#include <linux/math64.h>
+ #include "fat.c"
+ 
+ static void uppercase(char *str, int len)
+@@ -770,7 +772,7 @@ static void fill_dentry(fsdata *mydata, dir_entry *dentptr,
+  */
+ static int check_overflow(fsdata *mydata, __u32 clustnum, loff_t size)
+ {
+-	__u32 startsect, sect_num;
++	__u32 startsect, sect_num, offset;
+ 
+ 	if (clustnum > 0) {
+ 		startsect = mydata->data_begin +
+@@ -779,13 +781,13 @@ static int check_overflow(fsdata *mydata, __u32 clustnum, loff_t size)
+ 		startsect = mydata->rootdir_sect;
+ 	}
+ 
+-	sect_num = size / mydata->sect_size;
+-	if (size % mydata->sect_size)
++	sect_num = div_u64_rem(size, mydata->sect_size, &offset);
++	
++	if (offset != 0)
+ 		sect_num++;
+ 
+ 	if (startsect + sect_num > cur_part_info.start + total_sector)
+ 		return -1;
+-
+ 	return 0;
+ }
+ 
+diff --git a/fs/fs.c b/fs/fs.c
+index 3da7860..ddd751c 100644
+--- a/fs/fs.c
++++ b/fs/fs.c
+@@ -23,6 +23,8 @@
+ #include <fs.h>
+ #include <sandboxfs.h>
+ #include <asm/io.h>
++#include <div64.h>
++#include <linux/math64.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+@@ -399,7 +401,7 @@ int do_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[],
+ 	printf("%llu bytes read in %lu ms", len_read, time);
+ 	if (time > 0) {
+ 		puts(" (");
+-		print_size(len_read / time * 1000, "/s");
++		print_size(div_u64(len_read, time) * 1000, "/s");
+ 		puts(")");
+ 	}
+ 	puts("\n");
+@@ -469,7 +471,7 @@ int do_save(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[],
+ 	printf("%llu bytes written in %lu ms", len, time);
+ 	if (time > 0) {
+ 		puts(" (");
+-		print_size(len / time * 1000, "/s");
++		print_size(div_u64(len, time) * 1000, "/s");
+ 		puts(")");
+ 	}
+ 	puts("\n");
+-- 
+2.1.3
+
