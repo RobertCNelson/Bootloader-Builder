@@ -1,0 +1,42 @@
+From 463e0487baff3b17894cd12d72c83b3f9dbec57c Mon Sep 17 00:00:00 2001
+From: Marcus Kempe <makem86@gmail.com>
+Date: Sat, 29 Nov 2014 00:54:34 +0100
+Subject: [PATCH] Delay str
+
+---
+ include/configs/am335x_evm.h      | 5 +++++
+ include/configs/ti_armv7_common.h | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
+index 560e3bf..4e85dd6 100644
+--- a/include/configs/am335x_evm.h
++++ b/include/configs/am335x_evm.h
+@@ -44,6 +44,11 @@
+ /* Always 128 KiB env size */
+ #define CONFIG_ENV_SIZE			(128 << 10)
+ 
++#define CONFIG_AUTOBOOT
++#define CONFIG_AUTOBOOT_KEYED
++#define CONFIG_AUTOBOOT_PROMPT "Type <delay> in %d seconds to get to U-boot-prompt\n", bootdelay
++#define CONFIG_AUTOBOOT_DELAY_STR "delay"
++
+ /* Enhance our eMMC support / experience. */
+ #define CONFIG_CMD_GPT
+ #define CONFIG_EFI_PARTITION
+diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
+index a8790c2..b502b75 100644
+--- a/include/configs/ti_armv7_common.h
++++ b/include/configs/ti_armv7_common.h
+@@ -63,7 +63,7 @@
+ /*
+  * Default to a quick boot delay.
+  */
+-#define CONFIG_BOOTDELAY		1
++#define CONFIG_BOOTDELAY		3
+ 
+ /*
+  * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
+-- 
+1.9.1
+
