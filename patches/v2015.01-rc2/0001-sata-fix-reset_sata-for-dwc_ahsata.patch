@@ -1,0 +1,70 @@
+From c77570a3572eb9a68eacde212aa5529b25acd613 Mon Sep 17 00:00:00 2001
+From: Soeren Moch <smoch@web.de>
+Date: Thu, 27 Nov 2014 10:11:41 +0100
+Subject: [PATCH] sata: fix reset_sata for dwc_ahsata
+
+- fix crash when sata device is not initialized
+- remove disable_sata_clock() since it is not clear which clock for which
+  device should be disabled here
+- call disable_sata_clock() for mx6 in preboot_os instead
+
+Signed-off-by: Soeren Moch <smoch@web.de>
+Acked-by: Nikita Kiryanov <nikita@compulab.co.il>
+Tested-by: Nikita Kiryanov <nikita@compulab.co.il>
+---
+ arch/arm/imx-common/cpu.c  |  3 +++
+ drivers/block/dwc_ahsata.c | 14 ++++++++------
+ 2 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/imx-common/cpu.c b/arch/arm/imx-common/cpu.c
+index b58df7d..28ccd29 100644
+--- a/arch/arm/imx-common/cpu.c
++++ b/arch/arm/imx-common/cpu.c
+@@ -206,6 +206,9 @@ void arch_preboot_os(void)
+ {
+ #if defined(CONFIG_CMD_SATA)
+ 	sata_stop();
++#if defined(CONFIG_MX6)
++	disable_sata_clock();
++#endif
+ #endif
+ #if defined(CONFIG_VIDEO_IPUV3)
+ 	/* disable video before launching O/S */
+diff --git a/drivers/block/dwc_ahsata.c b/drivers/block/dwc_ahsata.c
+index 9a2b547..01a4148 100644
+--- a/drivers/block/dwc_ahsata.c
++++ b/drivers/block/dwc_ahsata.c
+@@ -594,22 +594,24 @@ int init_sata(int dev)
+ 
+ int reset_sata(int dev)
+ {
+-	struct ahci_probe_ent *probe_ent =
+-			(struct ahci_probe_ent *)sata_dev_desc[dev].priv;
+-	struct sata_host_regs *host_mmio =
+-			(struct sata_host_regs *)probe_ent->mmio_base;
++	struct ahci_probe_ent *probe_ent;
++	struct sata_host_regs *host_mmio;
+ 
+ 	if (dev < 0 || dev > (CONFIG_SYS_SATA_MAX_DEVICE - 1)) {
+ 		printf("The sata index %d is out of ranges\n\r", dev);
+ 		return -1;
+ 	}
+ 
++	probe_ent = (struct ahci_probe_ent *)sata_dev_desc[dev].priv;
++	if (NULL == probe_ent)
++		/* not initialized, so nothing to reset */
++		return 0;
++
++	host_mmio = (struct sata_host_regs *)probe_ent->mmio_base;
+ 	setbits_le32(&host_mmio->ghc, SATA_HOST_GHC_HR);
+ 	while (readl(&host_mmio->ghc) & SATA_HOST_GHC_HR)
+ 		udelay(100);
+ 
+-	disable_sata_clock();
+-
+ 	return 0;
+ }
+ 
+-- 
+2.1.3
+
