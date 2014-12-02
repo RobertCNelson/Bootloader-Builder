@@ -6,4 +6,4 @@ uboot_old="v2014.07"
 uboot_stable="v2014.10"
 uboot_testing="v2015.01-rc2"
 
-uboot_latest="38cd8c4253013ccdd4052ee021f6066fe9a52551"
+uboot_latest="9e374e7b729dc9f68be89cd3e3b1d4d48c768ecf"

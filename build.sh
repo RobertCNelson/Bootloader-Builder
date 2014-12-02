@@ -381,8 +381,6 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		git am "${DIR}/patches/${uboot_patch_dir}/0001-fs-ext4-ext4fs.c-fs-fs.c-fs-fat-fat_write.c-Adjust-6.patch"
-
 		#Atmel:
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
