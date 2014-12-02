@@ -1,39 +1,14 @@
-From bc6c03d979e626add19227e015f832c99fff9e88 Mon Sep 17 00:00:00 2001
+From f647be235dd68de5bf93a996cbf13dd8356dc0b7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 11 Nov 2014 15:36:29 -0600
+Date: Tue, 2 Dec 2014 15:25:45 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c      |  12 +++
  configs/am335x_evm_defconfig |   3 +-
- include/configs/am335x_evm.h | 220 +++++++++++++++++++++++++++++++++++++++----
- include/power/tps65217.h     |   1 +
- 4 files changed, 216 insertions(+), 20 deletions(-)
+ include/configs/am335x_evm.h | 224 +++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 207 insertions(+), 20 deletions(-)
 
-diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 0739e60..faec48e 100644
---- a/board/ti/am335x/board.c
-+++ b/board/ti/am335x/board.c
-@@ -300,6 +300,18 @@ void am33xx_spl_board_init(void)
- 			return;
- 		}
- 
-+// Disable for now: see thread:
-+// http://www.spinics.net/lists/devicetree/msg56399.html
-+//
-+//		/* Set DCDC1 (DDR3) to 1.35V for Beaglebone Black. */
-+//		if (board_is_bone_lt(&header)) {
-+//			if (tps65217_voltage_update(TPS65217_DEFDCDC1,
-+//						    TPS65217_DCDC_VOLT_SEL_1350MV)) {
-+//				puts("tps65217_voltage_update failure\n");
-+//				return;
-+//			}
-+//		}
-+
- 		/*
- 		 * Set LDO3, LDO4 output voltage to 3.3V for Beaglebone.
- 		 * Set LDO3 to 1.8V and LDO4 to 3.3V for Beaglebone Black.
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
 index 2e5aeaa..4cc7e19 100644
 --- a/configs/am335x_evm_defconfig
@@ -46,7 +21,7 @@ index 2e5aeaa..4cc7e19 100644
  +S:CONFIG_ARM=y
  +S:CONFIG_TARGET_AM335X_EVM=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 560e3bf..32769eb 100644
+index 560e3bf..2ecf1b8 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -233,7 +208,7 @@ index 560e3bf..32769eb 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -170,29 +263,120 @@
+@@ -170,29 +263,124 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
@@ -307,11 +282,15 @@ index 560e3bf..32769eb 100644
 +									"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +										"run loadfdt;" \
 +									"else " \
-+										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
-+										"run mmcargs;" \
-+										"echo debug: [${bootargs}] ... ;" \
-+										"echo debug: [bootz ${loadaddr}] ... ;" \
-+										"bootz ${loadaddr}; " \
++										"if test -e mmc ${bootpart} ${fdtfile}; then " \
++											"run loadfdt;" \
++										"else " \
++											"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
++											"run mmcargs;" \
++											"echo debug: [${bootargs}] ... ;" \
++											"echo debug: [bootz ${loadaddr}] ... ;" \
++											"bootz ${loadaddr}; " \
++										"fi;" \
 +									"fi;" \
 +								"fi;" \
 +							"fi;" \
@@ -357,18 +336,6 @@ index 560e3bf..32769eb 100644
  	"run mmcboot;" \
  	"run nandboot;"
  
-diff --git a/include/power/tps65217.h b/include/power/tps65217.h
-index 297c4cb..008fd6d 100644
---- a/include/power/tps65217.h
-+++ b/include/power/tps65217.h
-@@ -68,6 +68,7 @@ enum {
- #define TPS65217_DCDC_VOLT_SEL_1125MV		0x09
- #define TPS65217_DCDC_VOLT_SEL_1275MV		0x0F
- #define TPS65217_DCDC_VOLT_SEL_1325MV		0x11
-+#define TPS65217_DCDC_VOLT_SEL_1350MV		0x12
- 
- #define TPS65217_LDO_MASK			0x1F
- #define TPS65217_LDO_VOLTAGE_OUT_1_8		0x06
 -- 
-2.1.1
+2.1.3
 

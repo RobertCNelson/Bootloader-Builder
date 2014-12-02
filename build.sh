@@ -343,8 +343,9 @@ build_u_boot () {
 	uboot_patch_dir="${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x_evm: some users are setting dtb=fullpath to the full path...
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		git am "${DIR}/patches/${uboot_patch_dir}/0001-fs-ext4-ext4fs.c-fs-fs.c-fs-fat-fat_write.c-Adjust-6.patch"
@@ -645,7 +646,7 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="am335x_evm"
 	build_uboot_gnueabihf
@@ -653,12 +654,12 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="am335x_boneblack"
 	UBOOT_CONFIG="am335x_evm_defconfig"
 	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
+	#build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
