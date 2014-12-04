@@ -717,7 +717,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="omap3_beagle"
 	build_uboot_gnueabihf
@@ -733,7 +733,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="omap5_uevm"
 	build_uboot_gnueabihf
