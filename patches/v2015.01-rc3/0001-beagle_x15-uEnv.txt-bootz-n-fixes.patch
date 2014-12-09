@@ -1,15 +1,15 @@
 From b8af042e873f73d9ccc78302f11a0cf7542e04d3 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Mon, 8 Dec 2014 19:22:08 -0600
-Subject: [PATCH] ti_omap5_common: uEnv.txt, bootz, n fixes
+Subject: [PATCH] beagle_x15: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/ti_omap5_common.h | 135 +++++++++++++++++++++++++++++++-------
- 1 file changed, 110 insertions(+), 25 deletions(-)
+ include/configs/ti_omap5_common.h | 133 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 108 insertions(+), 25 deletions(-)
 
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index c47651d..05bc90b 100644
+index c47651d..78043c2 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
 @@ -70,45 +70,66 @@
@@ -29,7 +29,7 @@ index c47651d..05bc90b 100644
  	"mmcdev=0\0" \
 -	"mmcroot=/dev/mmcblk0p2 rw\0" \
 -	"mmcrootfstype=ext4 rootwait\0" \
-+	"mmcroot=/dev/mmcblk1p2 ro\0" \
++	"mmcroot=/dev/mmcblk0p2 ro\0" \
 +	"mmcrootfstype=ext4 rootwait fixrtc\0" \
  	"mmcargs=setenv bootargs console=${console} " \
  		"${optargs} " \
@@ -93,7 +93,7 @@ index c47651d..05bc90b 100644
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
 +						"echo Running uname_boot ...;" \
-+						"setenv mmcroot /dev/mmcblk${mmckernel}p${mmcpart} ro;" \
++						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
 +						"run uname_boot;" \
 +					"fi;" \
 +				"fi;" \
@@ -101,7 +101,7 @@ index c47651d..05bc90b 100644
  		"fi;\0" \
  	"findfdt="\
  		"if test $board_name = omap5_uevm; then " \
-@@ -121,14 +142,78 @@
+@@ -121,14 +142,76 @@
  			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -174,12 +174,10 @@ index c47651d..05bc90b 100644
  #define CONFIG_BOOTCOMMAND \
  	"run findfdt; " \
 +	"setenv mmcdev 0; " \
-+	"setenv mmckernel 1; " \
  	"run mmcboot;" \
  	"setenv mmcdev 1; " \
 -	"setenv bootpart 1:2; " \
 -	"setenv mmcroot /dev/mmcblk0p2 rw; " \
-+	"setenv mmckernel 0; " \
  	"run mmcboot;" \
  
  
