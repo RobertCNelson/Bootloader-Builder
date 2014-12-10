@@ -351,27 +351,6 @@ build_u_boot () {
 		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
-		${git} "${p_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
-
-		#Atmel:
-		${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
-
-		#Freescale:
-		${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-
-		#TI:
-		${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-
 		case "${BOARD}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -386,7 +365,34 @@ build_u_boot () {
 		omap5_uevm)
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		sama5d4ek_mmc)
+			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
+			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d4_xplained_mmc)
+			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
+			;;
 		esac
+
+		${git} "${p_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
+
+		#Atmel:
+		${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+
+		#Freescale:
+		${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+
+		#TI:
+		${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 
 	fi
 
@@ -397,27 +403,6 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		${git} "${p_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
-
-		#Atmel:
-		${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
-
-		#Freescale:
-		${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-
-		#TI:
-		${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-
 		case "${BOARD}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -432,7 +417,34 @@ build_u_boot () {
 		omap5_uevm)
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		sama5d4ek_mmc)
+			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
+			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d4_xplained_mmc)
+			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
+			;;
 		esac
+
+		${git} "${p_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
+
+		#Atmel:
+		${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+
+		#Freescale:
+		${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+
+		#TI:
+		${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 
 	fi
 
@@ -791,24 +803,18 @@ sama5d3_xplained () {
 
 sama5d4ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="sama5d4ek_mmc"
-	build_uboot_eabi
-
-	at91bootstrap_config="sama5d4eksd_uboot_secure_defconfig"
-	build_at91bootstrap_all
+	build_uboot_gnueabihf
 }
 
 sama5d4_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="sama5d4_xplained_mmc"
-	build_uboot_eabi
-
-	at91bootstrap_config="sama5d4_xplainedsd_uboot_secure_defconfig"
-	build_at91bootstrap_all
+	build_uboot_gnueabihf
 }
 
 udoo () {
