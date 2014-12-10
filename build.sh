@@ -241,7 +241,7 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE="${CC}" distclean
 	UGIT_VERSION=$(git describe)
 
-	uboot_patch_dir="${uboot_old}"
+	p_dir="${uboot_old}"
 	if [ "${old}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: $fdtbase-$cape.dtb
@@ -272,34 +272,34 @@ build_u_boot () {
 		RELEASE_VER="-r25" #bump on every change...
 		#halt_patching_uboot
 
-		${git} "${DIR}/patches/${uboot_patch_dir}/upstream/0001-Add-option-r-to-env-import-to-allow-import-of-text-f.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/upstream/0002-am335x_evm-handle-import-of-environments-in-files-wi.patch"
+		${git} "${DIR}/patches/${p_dir}/upstream/0001-Add-option-r-to-env-import-to-allow-import-of-text-f.patch"
+		${git} "${DIR}/patches/${p_dir}/upstream/0002-am335x_evm-handle-import-of-environments-in-files-wi.patch"
 
 		#Atmel:
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
-			${git} "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${DIR}/patches/${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 		fi
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
-	uboot_patch_dir="${uboot_stable}"
+	p_dir="${uboot_stable}"
 	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: add: A20-OLinuXino-LIME2
@@ -309,40 +309,40 @@ build_u_boot () {
 		#halt_patching_uboot
 
 		#Allwinner Technology
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME2.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME2.patch"
 
 		#Atmel:
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
 
 		#Atmel: sama5d4ek
-		${git} "${DIR}/patches/${uboot_patch_dir}/board/0001-mtd-atmel_nand-runtime-to-build-gf-table-for-pmecc.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/board/0004-ARM-atmel-add-sama5d4-xplained-ultra-board-support.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/board/0001-mtd-atmel_nand-runtime-to-build-gf-table-for-pmecc.patch"
+		${git} "${DIR}/patches/${p_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
+		${git} "${DIR}/patches/${p_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
+		${git} "${DIR}/patches/${p_dir}/board/0004-ARM-atmel-add-sama5d4-xplained-ultra-board-support.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
-			${git} "${DIR}/patches/${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${DIR}/patches/${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 		fi
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${DIR}/patches/${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
-	uboot_patch_dir="${DIR}/patches/${uboot_testing}"
+	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: some users are setting dtb=fullpath to the full path...
@@ -351,86 +351,86 @@ build_u_boot () {
 		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
-		${git} "${uboot_patch_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
+		${git} "${p_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
 
 		#Atmel:
-		${git} "${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
-		${git} "${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
-		${git} "${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 
 		case "${BOARD}" in
 		am335x_evm)
-			${git} "${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			${git} "${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		beagle_x15)
-			${git} "${uboot_patch_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap5_uevm)
-			${git} "${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		esac
 
 	fi
 
-	uboot_patch_dir="${DIR}/patches/next"
+	p_dir="${DIR}/patches/next"
 	if [ "${next}" ] ; then
 		#r1: initial release
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		${git} "${uboot_patch_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
+		${git} "${p_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
 
 		#Atmel:
-		${git} "${uboot_patch_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 
 		#Freescale:
-		${git} "${uboot_patch_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 		#TI:
-		${git} "${uboot_patch_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${uboot_patch_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+		${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 
 		case "${BOARD}" in
 		am335x_evm)
-			${git} "${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			${git} "${uboot_patch_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${uboot_patch_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		beagle_x15)
-			${git} "${uboot_patch_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap5_uevm)
-			${git} "${uboot_patch_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		esac
 
