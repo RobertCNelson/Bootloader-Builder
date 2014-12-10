@@ -426,8 +426,6 @@ build_u_boot () {
 			;;
 		esac
 
-		${git} "${p_dir}/0001-sata-fix-reset_sata-for-dwc_ahsata.patch"
-
 		#Atmel:
 		${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 		${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
