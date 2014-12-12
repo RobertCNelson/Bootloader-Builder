@@ -1,29 +1,14 @@
-From 050a7c8931f8b3c5c4366fcf31d5acd3892cee86 Mon Sep 17 00:00:00 2001
+From ca0e98c1aa4a19afe463348cfa726c448c0150c7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 10 Dec 2014 10:33:44 -0600
+Date: Fri, 12 Dec 2014 15:57:42 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- common/spl/spl_mmc.c         |   3 +-
  configs/am335x_evm_defconfig |   3 +-
  include/configs/am335x_evm.h | 224 +++++++++++++++++++++++++++++++++++++++----
- 3 files changed, 208 insertions(+), 22 deletions(-)
+ 2 files changed, 207 insertions(+), 20 deletions(-)
 
-diff --git a/common/spl/spl_mmc.c b/common/spl/spl_mmc.c
-index 7bae16b..d199f0b 100644
---- a/common/spl/spl_mmc.c
-+++ b/common/spl/spl_mmc.c
-@@ -123,8 +123,7 @@ void spl_mmc_load_image(void)
- 			CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR);
- #endif
- #if defined(CONFIG_SPL_FAT_SUPPORT) || defined(CONFIG_SPL_EXT_SUPPORT)
--	}
--	if (err || boot_mode == MMCSD_MODE_FS) {
-+	} else if (boot_mode == MMCSD_MODE_FS) {
- 		debug("boot mode - FS\n");
- #ifdef CONFIG_SPL_FAT_SUPPORT
- #ifdef CONFIG_SPL_OS_BOOT
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
 index 2e5aeaa..4cc7e19 100644
 --- a/configs/am335x_evm_defconfig
