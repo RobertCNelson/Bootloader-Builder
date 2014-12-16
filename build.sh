@@ -348,10 +348,11 @@ build_u_boot () {
 		#r2: am335x_evm: some users are setting dtb=fullpath to the full path...
 		#r3: am335x_evm: fix spl boot in raw mode
 		#r4: omap: raw mode broken, revert...
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: omap: spl: mmc: Fix raw boot mode
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
-		git revert --no-edit 4c5bbc2328a24f5e1ee990c9a9527e48e5fb3b5f
+		${git} "${p_dir}/0001-spl-mmc-Fix-raw-boot-mode-related-to-commit-4c5bbc23.patch"
 
 		case "${BOARD}" in
 		am335x_evm)
@@ -405,7 +406,7 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		git revert --no-edit 4c5bbc2328a24f5e1ee990c9a9527e48e5fb3b5f
+		${git} "${p_dir}/0001-spl-mmc-Fix-raw-boot-mode-related-to-commit-4c5bbc23.patch"
 
 		case "${BOARD}" in
 		am335x_evm)
