@@ -349,7 +349,8 @@ build_u_boot () {
 		#r3: am335x_evm: fix spl boot in raw mode
 		#r4: omap: raw mode broken, revert...
 		#r5: omap: spl: mmc: Fix raw boot mode
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: enable USB Mass Storage function
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		${git} "${p_dir}/0001-spl-mmc-Fix-raw-boot-mode-related-to-commit-4c5bbc23.patch"

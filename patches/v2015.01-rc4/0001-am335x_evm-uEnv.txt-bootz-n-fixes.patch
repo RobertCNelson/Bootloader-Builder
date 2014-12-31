@@ -1,13 +1,13 @@
-From ca0e98c1aa4a19afe463348cfa726c448c0150c7 Mon Sep 17 00:00:00 2001
+From 95d1abdea623668e1ac2dffd5c0b455003d854d1 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 12 Dec 2014 15:57:42 -0600
+Date: Tue, 30 Dec 2014 20:34:30 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  configs/am335x_evm_defconfig |   3 +-
- include/configs/am335x_evm.h | 224 +++++++++++++++++++++++++++++++++++++++----
- 2 files changed, 207 insertions(+), 20 deletions(-)
+ include/configs/am335x_evm.h | 228 +++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 208 insertions(+), 23 deletions(-)
 
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
 index 2e5aeaa..4cc7e19 100644
@@ -21,7 +21,7 @@ index 2e5aeaa..4cc7e19 100644
  +S:CONFIG_ARM=y
  +S:CONFIG_TARGET_AM335X_EVM=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 560e3bf..2ecf1b8 100644
+index 560e3bf..ab8c652 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -208,7 +208,7 @@ index 560e3bf..2ecf1b8 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -170,29 +263,124 @@
+@@ -170,29 +263,123 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
@@ -285,11 +285,10 @@ index 560e3bf..2ecf1b8 100644
 +										"if test -e mmc ${bootpart} ${fdtfile}; then " \
 +											"run loadfdt;" \
 +										"else " \
-+											"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
-+											"run mmcargs;" \
-+											"echo debug: [${bootargs}] ... ;" \
-+											"echo debug: [bootz ${loadaddr}] ... ;" \
-+											"bootz ${loadaddr}; " \
++											"echo; echo unable to find [${fdtfile}] did you name it correctly? ...; echo booting fallback [/boot/dtbs/${uname_r}/${fdtbase}.dtb] ...;"\
++											"setenv fdtdir /boot/dtbs/${uname_r}; " \
++											"setenv fdtfile ${fdtbase}.dtb; " \
++											"run loadfdt;" \
 +										"fi;" \
 +									"fi;" \
 +								"fi;" \
@@ -336,6 +335,18 @@ index 560e3bf..2ecf1b8 100644
  	"run mmcboot;" \
  	"run nandboot;"
  
+@@ -332,9 +519,8 @@
+ #endif
+ 
+ #ifdef CONFIG_MUSB_GADGET
+-#define CONFIG_USB_ETHER
+-#define CONFIG_USB_ETH_RNDIS
+-#define CONFIG_USBNET_HOST_ADDR	"de:ad:be:af:00:00"
++#define CONFIG_CMD_USB_MASS_STORAGE
++#define CONFIG_USB_GADGET_MASS_STORAGE
+ 
+ /* USB TI's IDs */
+ #define CONFIG_G_DNL_VENDOR_NUM 0x0451
 -- 
-2.1.3
+2.1.4
 
