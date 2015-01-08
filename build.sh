@@ -405,8 +405,6 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		${git} "${p_dir}/0001-spl-mmc-Fix-raw-boot-mode-related-to-commit-4c5bbc23.patch"
-
 		case "${BOARD}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
