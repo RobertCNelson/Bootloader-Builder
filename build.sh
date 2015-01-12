@@ -426,6 +426,9 @@ build_u_boot () {
 		sama5d4_xplained_mmc)
 			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
 			;;
+		vf610twr)
+			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		*)
 			#Atmel:
 			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -438,7 +441,6 @@ build_u_boot () {
 			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 			#TI:
@@ -829,7 +831,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="vf610twr"
 	build_uboot_gnueabihf
@@ -876,6 +878,6 @@ sama5d3_xplained
 sama5d4ek
 sama5d4_xplained
 udoo
-#vf610twr
+vf610twr
 wandboard
 #
