@@ -353,8 +353,6 @@ build_u_boot () {
 		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
-		${git} "${p_dir}/0001-spl-mmc-Fix-raw-boot-mode-related-to-commit-4c5bbc23.patch"
-
 		case "${BOARD}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -376,6 +374,9 @@ build_u_boot () {
 		sama5d4_xplained_mmc)
 			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
 			;;
+		vf610twr)
+			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		*)
 			#Atmel:
 			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -388,7 +389,6 @@ build_u_boot () {
 			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 
 			#TI:
