@@ -244,64 +244,6 @@ build_u_boot () {
 	p_dir="${uboot_old}"
 	if [ "${old}" ] ; then
 		#r1: initial release
-		#r2: am335x_evm: $fdtbase-$cape.dtb
-		#r3: am335x_evm: use Tom's Golden values...
-		#r4: vf610twr: we seem to have a sram limit (230kb fails to load)
-		#r5: udoo: fix dtb selection on dl
-		#r6: wand: zImage not zimage
-		#r7: mx51evk: fix dtb location
-		#r8: panda: fix uEnv.txt boot
-		#r9: am335x_evm: microSD 2.0
-		#r10: am335x_evm: microSD 2.0 + everyone
-		#r11: am335x_evm, omap3_beagle, omap4_common, omap5_common: microSD 2.0
-		#r12: omap4_common: multi partition search
-		#r13: am335x_evm, omap3_beagle, omap4_common, omap5_common: multi partition search
-		#r14: am335x_evm: ${cape_disable} ${cape_enable}
-		#r15: am335x_evm, omap3_beagle, omap5_common: define #define CONFIG_SUPPORT_RAW_INITRD in each patch
-		#r16: am335x_evm: /boot.scr & /boot/boot.scr support for flash-kernel
-		#r17: imx: convert all to new partition table setup...
-		#r18: am335x_evm: nfs support: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0#nfs_support
-		#r19: am335x_evm: nfs/tftp of course tftp has a hard coded variable...
-		#r20: imx: fdtaddr -> fdt_addr
-		#r21: imx: uenvcmd
-		#r22: imx: wand/sabresd dual card support
-		#r23: imx: mx51evk: fix boot
-		#r24: am335x_evm: -r option for env import...
-		#r25: omap3_beagle: use Tom's Golden values...
-		#r26: (pending)
-		RELEASE_VER="-r25" #bump on every change...
-		#halt_patching_uboot
-
-		${git} "${DIR}/patches/${p_dir}/upstream/0001-Add-option-r-to-env-import-to-allow-import-of-text-f.patch"
-		${git} "${DIR}/patches/${p_dir}/upstream/0002-am335x_evm-handle-import-of-environments-in-files-wi.patch"
-
-		#Atmel:
-		${git} "${DIR}/patches/${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-
-		#Freescale:
-		${git} "${DIR}/patches/${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-
-		#TI:
-		${git} "${DIR}/patches/${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
-			${git} "${DIR}/patches/${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
-		fi
-		${git} "${DIR}/patches/${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	p_dir="${uboot_stable}"
-	if [ "${stable}" ] ; then
-		#r1: initial release
 		#r2: add: A20-OLinuXino-LIME2
 		#r3: am335x_evm: disable 1.5v -> 1.35v regulator change & mmcpart to 1 when /etc/fstab is in x:1
 		#r4: (pending)
@@ -342,8 +284,8 @@ build_u_boot () {
 		${git} "${DIR}/patches/${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
-	p_dir="${DIR}/patches/${uboot_testing}"
-	if [ "${testing}" ] ; then
+	p_dir="${DIR}/patches/${uboot_stable}"
+	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: some users are setting dtb=fullpath to the full path...
 		#r3: am335x_evm: fix spl boot in raw mode
@@ -351,6 +293,58 @@ build_u_boot () {
 		#r5: omap: spl: mmc: Fix raw boot mode
 		#r6: am335x_evm: enable USB Mass Storage function
 		RELEASE_VER="-r6" #bump on every change...
+		#halt_patching_uboot
+
+		case "${BOARD}" in
+		am335x_evm)
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		am335x_boneblack)
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			;;
+		beagle_x15)
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap5_uevm)
+			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d4ek_mmc)
+			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
+			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d4_xplained_mmc)
+			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
+			;;
+		vf610twr)
+			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		*)
+			#Atmel:
+			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+
+			#Freescale:
+			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+
+			#TI:
+			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		esac
+	fi
+
+	p_dir="${DIR}/patches/${uboot_testing}"
+	if [ "${testing}" ] ; then
+		#r1: initial release
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
 		case "${BOARD}" in
@@ -650,7 +644,7 @@ build_uboot_gnueabihf () {
 
 A10_OLinuXino_Lime () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A10-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -658,7 +652,7 @@ A10_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -666,7 +660,7 @@ A20_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime2 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime2"
 	build_uboot_gnueabihf
@@ -674,7 +668,7 @@ A20_OLinuXino_Lime2 () {
 
 A20_OLinuXino_MICRO () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino_MICRO"
 	build_uboot_gnueabihf
@@ -682,7 +676,7 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="am335x_evm"
 	build_uboot_gnueabihf
@@ -690,12 +684,12 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="am335x_boneblack"
 	UBOOT_CONFIG="am335x_evm_defconfig"
 	gcc_linaro_gnueabihf_4_9
-	#build_uboot_stable
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -721,7 +715,7 @@ at91sam9x5ek () {
 
 beagle_x15 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="beagle_x15"
 	build_uboot_gnueabihf
@@ -761,7 +755,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="omap3_beagle"
 	build_uboot_gnueabihf
@@ -777,7 +771,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="omap5_uevm"
 	build_uboot_gnueabihf
@@ -801,7 +795,7 @@ sama5d3_xplained () {
 
 sama5d4ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="sama5d4ek_mmc"
 	build_uboot_gnueabihf
@@ -809,7 +803,7 @@ sama5d4ek () {
 
 sama5d4_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="sama5d4_xplained_mmc"
 	build_uboot_gnueabihf
@@ -831,7 +825,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="vf610twr"
 	build_uboot_gnueabihf
