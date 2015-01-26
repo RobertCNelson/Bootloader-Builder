@@ -1,10 +1,10 @@
 #!/bin/sh
 
-stable_at91bootstrap_sha="3ba51d7431b6a05173930d3f72a05d781377838e"
+stable_at91bootstrap_sha="1c1daff8bbc9406d1e155a1f2d0ab7b639fe6e84"
 
 uboot_old="v2014.10"
 uboot_stable="v2015.01"
 #uboot_testing="v2015.01"
 
-uboot_prev="768f6096f9c389b5ed36bee2957bee16b085fc4a"
-uboot_latest="b56f6e2b4e0291efbe1b50f082dec73272ad7ab3"
+uboot_prev="b56f6e2b4e0291efbe1b50f082dec73272ad7ab3"
+uboot_latest="37b608a52dcb13312a4f7ccea199cd6bac76d298"
