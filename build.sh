@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# Copyright (c) 2010-2014 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2010-2015 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,13 @@ TEMPDIR=$(mktemp -d)
 ARCH=$(uname -m)
 SYST=$(uname -n)
 
-# Number of jobs for make to run in parallel.
-if [ $(which nproc) ] ; then
-	NUMJOBS=$(nproc)
-else
-	NUMJOBS=1
+if [ "x${ARCH}" = "xi686" ] ; then
+	echo "Linaro no longer supports 32bit cross compilers, thus 32bit is no longer suppored by this script..."
+	exit
 fi
+
+# Number of jobs for make to run in parallel.
+NUMJOBS=$(getconf _NPROCESSORS_ONLN)
 
 . ./version.sh
 
@@ -102,17 +103,20 @@ gcc_arm_embedded_4_8 () {
 
 gcc_arm_embedded_4_9 () {
 		#
-		#https://releases.linaro.org/14.09/components/toolchain/binaries/gcc-linaro-arm-none-eabi-4.9-2014.09_linux.tar.xz
+		#https://releases.linaro.org/14.11/components/toolchain/binaries/arm-none-eabi/gcc-linaro-4.9-2014.11-x86_64_arm-eabi.tar.xz
 		#
-		gcc_version="4.9"
-		release="2014.09"
-		toolchain_name="gcc-linaro-arm-none-eabi"
-		version="14.09/components/toolchain/binaries"
-		directory="${toolchain_name}-${gcc_version}-${release}_linux"
-		filename="${directory}.tar.xz"
-		datestamp="${release}-${toolchain_name}"
 
-		binary="bin/arm-none-eabi-"
+		gcc_version="4.9"
+		release="14.11"
+		target="arm-none-eabi"
+
+		version="${release}/components/toolchain/binaries/${target}"
+		filename="gcc-linaro-${gcc_version}-20${release}-x86_64_arm-eabi.tar.xz"
+		directory="gcc-linaro-${gcc_version}-20${release}-x86_64_arm-eabi"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/${target}-"
 
 	dl_gcc_generic
 }
@@ -137,17 +141,20 @@ gcc_linaro_gnueabihf_4_8 () {
 
 gcc_linaro_gnueabihf_4_9 () {
 		#
-		#https://releases.linaro.org/14.09/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux.tar.xz
+		#https://releases.linaro.org/14.11/components/toolchain/binaries/arm-linux-gnueabihf/gcc-linaro-4.9-2014.11-x86_64_arm-linux-gnueabihf.tar.xz
 		#
-		gcc_version="4.9"
-		release="2014.09"
-		toolchain_name="gcc-linaro-arm-linux-gnueabihf"
-		version="14.09/components/toolchain/binaries"
-		directory="${toolchain_name}-${gcc_version}-${release}_linux"
-		filename="${directory}.tar.xz"
-		datestamp="${release}-${toolchain_name}"
 
-		binary="bin/arm-linux-gnueabihf-"
+		gcc_version="4.9"
+		release="14.11"
+		target="arm-linux-gnueabihf"
+
+		version="${release}/components/toolchain/binaries/${target}"
+		filename="gcc-linaro-${gcc_version}-20${release}-x86_64_${target}.tar.xz"
+		directory="gcc-linaro-${gcc_version}-20${release}-x86_64_${target}"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/${target}-"
 
 	dl_gcc_generic
 }
