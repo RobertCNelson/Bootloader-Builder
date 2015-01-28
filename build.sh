@@ -421,11 +421,11 @@ build_u_boot () {
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		sama5d4ek_mmc)
-			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
+#			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
 			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		sama5d4_xplained_mmc)
-			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
+#			git pull ${GIT_OPTS} https://github.com/RobertCNelson/u-boot-boards.git v2015.01-rc3_sama5d4
 			;;
 		vf610twr)
 			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
@@ -876,8 +876,8 @@ omap4_panda
 omap5_uevm
 sama5d3xek
 sama5d3_xplained
-sama5d4ek
-sama5d4_xplained
+#sama5d4ek
+#sama5d4_xplained
 udoo
 vf610twr
 wandboard
