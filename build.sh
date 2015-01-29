@@ -299,7 +299,9 @@ build_u_boot () {
 		#r4: omap: raw mode broken, revert...
 		#r5: omap: spl: mmc: Fix raw boot mode
 		#r6: am335x_evm: enable USB Mass Storage function
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x_evm: force USB Mass Storage on boot failure...
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${BOARD}" in
@@ -728,6 +730,14 @@ beagle_x15 () {
 	build_uboot_gnueabihf
 }
 
+cm_fx6 () {
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="cm_fx6"
+	build_uboot_gnueabihf
+}
+
 mx23_olinuxino () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -867,6 +877,7 @@ am335x_boneblack_flasher
 am43xx_evm
 at91sam9x5ek
 beagle_x15
+cm_fx6
 mx23_olinuxino
 mx51evk
 mx53loco
