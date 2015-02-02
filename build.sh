@@ -653,7 +653,7 @@ build_uboot_gnueabihf () {
 
 A10_OLinuXino_Lime () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A10-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -661,7 +661,7 @@ A10_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -669,7 +669,7 @@ A20_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime2 () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime2"
 	build_uboot_gnueabihf
@@ -677,7 +677,7 @@ A20_OLinuXino_Lime2 () {
 
 A20_OLinuXino_MICRO () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino_MICRO"
 	build_uboot_gnueabihf
@@ -705,7 +705,7 @@ am335x_boneblack_flasher () {
 
 am43xx_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="am43xx_evm"
 	build_uboot_gnueabihf
@@ -732,7 +732,7 @@ beagle_x15 () {
 
 cm_fx6 () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="cm_fx6"
 	build_uboot_gnueabihf
@@ -812,7 +812,7 @@ sama5d3_xplained () {
 
 sama5d4ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="sama5d4ek_mmc"
 	build_uboot_gnueabihf
@@ -820,7 +820,7 @@ sama5d4ek () {
 
 sama5d4_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="sama5d4_xplained_mmc"
 	build_uboot_gnueabihf
