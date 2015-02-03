@@ -352,11 +352,15 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: sunxi: config_distro_defaults-enable-CONFIG_CMD_PART
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${BOARD}" in
+		A10-OLinuXino-Lime|A20-OLinuXino-Lime|A20-OLinuXino-Lime2|A20-OLinuXino_MICRO)
+			${git} "${p_dir}/0001-config_distro_defaults-enable-CONFIG_CMD_PART.patch"
+			;;
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
@@ -409,6 +413,9 @@ build_u_boot () {
 		#halt_patching_uboot
 
 		case "${BOARD}" in
+		A10-OLinuXino-Lime|A20-OLinuXino-Lime|A20-OLinuXino-Lime2|A20-OLinuXino_MICRO)
+			${git} "${p_dir}/0001-config_distro_defaults-enable-CONFIG_CMD_PART.patch"
+			;;
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
