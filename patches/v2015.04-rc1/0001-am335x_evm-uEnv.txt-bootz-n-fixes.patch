@@ -1,6 +1,6 @@
-From 95d1abdea623668e1ac2dffd5c0b455003d854d1 Mon Sep 17 00:00:00 2001
+From 55dddca412b85f5ab46ac7b4efa3cd829b057bdd Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 29 Jan 2015 13:28:44 -0600
+Date: Mon, 2 Feb 2015 18:02:16 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -21,7 +21,7 @@ index 2e5aeaa..4cc7e19 100644
  +S:CONFIG_ARM=y
  +S:CONFIG_TARGET_AM335X_EVM=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 0004750..d652006 100644
+index f1c270c..69d2bf9 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -31,8 +31,8 @@ index 0004750..d652006 100644
 +#define CONFIG_ENV_IS_NOWHERE
  
  #ifndef CONFIG_SPL_BUILD
- # define CONFIG_FIT
-@@ -74,7 +75,8 @@
+ #ifndef CONFIG_FIT
+@@ -72,7 +73,8 @@
  	DEFAULT_LINUX_BOOT_ENV \
  	"boot_fdt=try\0" \
  	"bootpart=0:2\0" \
@@ -42,7 +42,7 @@ index 0004750..d652006 100644
  	"bootfile=zImage\0" \
  	"fdtfile=undefined\0" \
  	"console=ttyO0,115200n8\0" \
-@@ -82,9 +84,13 @@
+@@ -80,9 +82,13 @@
  		"uuid_disk=${uuid_gpt_disk};" \
  		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
  	"optargs=\0" \
@@ -57,7 +57,7 @@ index 0004750..d652006 100644
  	"rootpath=/export/rootfs\0" \
  	"nfsopts=nolock\0" \
  	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
-@@ -93,8 +99,29 @@
+@@ -91,8 +97,29 @@
  	"ramrootfstype=ext2\0" \
  	"mmcargs=setenv bootargs console=${console} " \
  		"${optargs} " \
@@ -88,7 +88,7 @@ index 0004750..d652006 100644
  	"spiroot=/dev/mtdblock4 rw\0" \
  	"spirootfstype=jffs2\0" \
  	"spisrcaddr=0xe0000\0" \
-@@ -110,10 +137,12 @@
+@@ -108,10 +135,12 @@
  		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
  		"ip=dhcp\0" \
  	"bootenv=uEnv.txt\0" \
@@ -104,7 +104,7 @@ index 0004750..d652006 100644
  	"importbootenv=echo Importing environment from mmc ...; " \
  		"env import -t -r $loadaddr $filesize\0" \
  	"ramargs=setenv bootargs console=${console} " \
-@@ -122,7 +151,10 @@
+@@ -120,7 +149,10 @@
  		"rootfstype=${ramrootfstype}\0" \
  	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
  	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -116,7 +116,7 @@ index 0004750..d652006 100644
  	"mmcloados=run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -139,22 +171,85 @@
+@@ -137,22 +169,85 @@
  		"fi;\0" \
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
@@ -210,7 +210,7 @@ index 0004750..d652006 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -168,31 +263,124 @@
+@@ -166,31 +261,124 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
@@ -339,7 +339,7 @@ index 0004750..d652006 100644
  
  /* NS16550 Configuration */
  #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
-@@ -330,9 +518,8 @@
+@@ -329,9 +517,8 @@
  #endif
  
  #ifdef CONFIG_MUSB_GADGET
