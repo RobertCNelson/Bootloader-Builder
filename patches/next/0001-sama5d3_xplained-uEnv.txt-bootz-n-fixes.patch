@@ -1,6 +1,6 @@
-From 4699bb39d5385eea30cb21db9db6281ba31e8087 Mon Sep 17 00:00:00 2001
+From 89890f8fd5664a3783216aa90cccbbfee7c8599a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 2 Jun 2014 10:27:30 -0500
+Date: Wed, 11 Feb 2015 15:42:46 -0600
 Subject: [PATCH] sama5d3_xplained: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -116,7 +116,7 @@ index 92ed4e8..1729b5e 100644
  }
  
 diff --git a/include/configs/sama5d3_xplained.h b/include/configs/sama5d3_xplained.h
-index f72ab0b..9c03b50 100644
+index 5a0ab28..5c7d1e3 100644
 --- a/include/configs/sama5d3_xplained.h
 +++ b/include/configs/sama5d3_xplained.h
 @@ -51,7 +51,22 @@
@@ -158,14 +158,13 @@ index f72ab0b..9c03b50 100644
  #endif
  
  #define CONFIG_SYS_LOAD_ADDR			0x22000000 /* load address */
-@@ -172,18 +193,63 @@
- #define CONFIG_ENV_IS_IN_MMC
- #define CONFIG_ENV_OFFSET	0x2000
- #define CONFIG_ENV_SIZE		0x1000
+@@ -174,17 +195,62 @@
+ #define FAT_ENV_FILE		"uboot.env"
+ #define FAT_ENV_DEVICE_AND_PART	"0"
+ #define CONFIG_ENV_SIZE		0x4000
 -#define CONFIG_BOOTCOMMAND	"fatload mmc 0:1 0x21000000 at91-sama5d3_xplained.dtb; " \
 -				"fatload mmc 0:1 0x22000000 zImage; " \
 -				"bootz 0x22000000 - 0x21000000"
- #define CONFIG_SYS_MMC_ENV_DEV	0
  #else
  #define CONFIG_ENV_IS_NOWHERE
  #endif
@@ -229,5 +228,5 @@ index f72ab0b..9c03b50 100644
  #define CONFIG_BOOTARGS							\
  	"console=ttyS0,115200 earlyprintk "				\
 -- 
-2.0.0.rc2
+2.1.4
 
