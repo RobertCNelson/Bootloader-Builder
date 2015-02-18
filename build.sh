@@ -362,9 +362,17 @@ build_u_boot () {
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		beagle_x15)
+			${git} "${p_dir}/board/0001-ARM-OMAP-Change-set_pl310_ctrl_reg-to-be-generic.patch"
+			${git} "${p_dir}/board/0002-ARM-OMAP5-DRA7-Setup-L2-Aux-Control-Register-with-re.patch"
+			${git} "${p_dir}/board/0003-ARM-OMAP5-Add-workaround-for-ARM-errata-798870.patch"
+			${git} "${p_dir}/board/0004-configs-ti_omap5_common-Enable-workaround-for-ARM-er.patch"
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap5_uevm)
+			${git} "${p_dir}/board/0001-ARM-OMAP-Change-set_pl310_ctrl_reg-to-be-generic.patch"
+			${git} "${p_dir}/board/0002-ARM-OMAP5-DRA7-Setup-L2-Aux-Control-Register-with-re.patch"
+			${git} "${p_dir}/board/0003-ARM-OMAP5-Add-workaround-for-ARM-errata-798870.patch"
+			${git} "${p_dir}/board/0004-configs-ti_omap5_common-Enable-workaround-for-ARM-er.patch"
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		sama5d4ek_mmc)
@@ -410,9 +418,17 @@ build_u_boot () {
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		beagle_x15)
+			${git} "${p_dir}/board/0001-ARM-OMAP-Change-set_pl310_ctrl_reg-to-be-generic.patch"
+			${git} "${p_dir}/board/0002-ARM-OMAP5-DRA7-Setup-L2-Aux-Control-Register-with-re.patch"
+			${git} "${p_dir}/board/0003-ARM-OMAP5-Add-workaround-for-ARM-errata-798870.patch"
+			${git} "${p_dir}/board/0004-configs-ti_omap5_common-Enable-workaround-for-ARM-er.patch"
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap5_uevm)
+			${git} "${p_dir}/board/0001-ARM-OMAP-Change-set_pl310_ctrl_reg-to-be-generic.patch"
+			${git} "${p_dir}/board/0002-ARM-OMAP5-DRA7-Setup-L2-Aux-Control-Register-with-re.patch"
+			${git} "${p_dir}/board/0003-ARM-OMAP5-Add-workaround-for-ARM-errata-798870.patch"
+			${git} "${p_dir}/board/0004-configs-ti_omap5_common-Enable-workaround-for-ARM-er.patch"
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		sama5d4ek_mmc)
@@ -713,7 +729,7 @@ at91sam9x5ek () {
 
 beagle_x15 () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="beagle_x15"
 	build_uboot_gnueabihf
