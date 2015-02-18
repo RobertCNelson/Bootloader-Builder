@@ -20,11 +20,11 @@ Signed-off-by: Nishanth Menon <nm@ti.com>
  3 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/arch/arm/cpu/armv7/omap-common/lowlevel_init.S b/arch/arm/cpu/armv7/omap-common/lowlevel_init.S
-index 86c0e42..cc3603d 100644
+index e19c7ae..4fc4af0 100644
 --- a/arch/arm/cpu/armv7/omap-common/lowlevel_init.S
 +++ b/arch/arm/cpu/armv7/omap-common/lowlevel_init.S
 @@ -22,11 +22,13 @@ ENTRY(save_boot_params)
- 	bx	lr
+ 	b	save_boot_params_ret
  ENDPROC(save_boot_params)
  
 -ENTRY(set_pl310_ctrl_reg)
