@@ -795,6 +795,18 @@ omap5_uevm () {
 	build_uboot_gnueabihf
 }
 
+rpi_2 () {
+	cleanup
+	transitioned_to_testing="true"
+
+	BOARD="rpi_2"
+#	build_uboot_gnueabihf
+
+	UBOOT_CONFIG="rpi_2_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_latest
+}
+
 sama5d3xek () {
 	cleanup
 	transitioned_to_testing="true"
@@ -886,6 +898,7 @@ mx6qsabresd
 omap3_beagle
 omap4_panda
 omap5_uevm
+rpi_2
 sama5d3xek
 sama5d3_xplained
 sama5d4ek
