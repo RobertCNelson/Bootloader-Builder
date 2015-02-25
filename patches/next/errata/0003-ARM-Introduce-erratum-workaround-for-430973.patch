@@ -1,0 +1,55 @@
+From 29c7313073af90d6305d53aff3b61671ae380899 Mon Sep 17 00:00:00 2001
+From: Nishanth Menon <nm@ti.com>
+Date: Wed, 25 Feb 2015 14:55:11 -0600
+Subject: [PATCH 03/11] ARM: Introduce erratum workaround for 430973
+
+430973: Stale prediction on replaced inter working branch causes
+	Cortex-A8 to execute in the wrong ARM/Thumb state
+Impacts: Every Cortex-A8 processors with revision lower than r2p1
+Work around: Set IBE to 1
+
+Based on ARM errata Document revision 20.0 (13 Nov 2010)
+
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
+ README                     |  1 +
+ arch/arm/cpu/armv7/start.S | 11 +++++++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/README b/README
+index dd88979..6257de0 100644
+--- a/README
++++ b/README
+@@ -624,6 +624,7 @@ The following options need to be configured:
+ 		NOTE: The following can be machine specific errata. These
+ 		do have ability to provide rudimentary version and machine
+ 		specific checks, but expect no product checks.
++		CONFIG_ARM_ERRATA_430973
+ 		CONFIG_ARM_ERRATA_454179
+ 		CONFIG_ARM_ERRATA_798870
+ 
+diff --git a/arch/arm/cpu/armv7/start.S b/arch/arm/cpu/armv7/start.S
+index 449675f..f121e54 100644
+--- a/arch/arm/cpu/armv7/start.S
++++ b/arch/arm/cpu/armv7/start.S
+@@ -197,6 +197,17 @@ skip_errata_798870:
+ skip_errata_454179:
+ #endif
+ 
++#ifdef CONFIG_ARM_ERRATA_430973
++	cmp	r2, #0x21		@ Only on < r2p1
++	blt	skip_errata_430973
++
++	mrc	p15, 0, r0, c1, c0, 1	@ Read ACR
++	orr	r0, r0, #(0x1 << 6)	@ Set IBE bit
++	b	v7_arch_cp15_set_acr
++
++skip_errata_430973:
++#endif
++
+ 	mov	pc, lr			@ back to my caller
+ ENDPROC(cpu_init_cp15)
+ 
+-- 
+2.1.4
+

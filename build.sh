@@ -405,6 +405,18 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
+		${git} "${p_dir}/errata/0001-ARM-Introduce-erratum-workaround-for-798870.patch"
+		${git} "${p_dir}/errata/0002-ARM-Introduce-erratum-workaround-for-454179.patch"
+		${git} "${p_dir}/errata/0003-ARM-Introduce-erratum-workaround-for-430973.patch"
+		${git} "${p_dir}/errata/0004-ARM-Introduce-erratum-workaround-for-621766.patch"
+		${git} "${p_dir}/errata/0005-ARM-OMAP-Change-set_pl310_ctrl_reg-to-be-generic.patch"
+		${git} "${p_dir}/errata/0006-ARM-OMAP3-Rename-omap3.h-to-omap.h-to-be-generic-as-.patch"
+		${git} "${p_dir}/errata/0007-ARM-OMAP3-Get-rid-of-omap3_gp_romcode_call-and-repla.patch"
+		${git} "${p_dir}/errata/0008-ARM-DRA7-OMAP5-Add-workaround-for-ARM-errata-798870.patch"
+		${git} "${p_dir}/errata/0009-ARM-OMAP5-DRA7-Setup-L2-Aux-Control-Register-with-re.patch"
+		${git} "${p_dir}/errata/0010-ARM-OMAP3-Enable-workaround-for-ARM-errata-454179-43.patch"
+		${git} "${p_dir}/errata/0011-ARM-OMAP3-rx51-Enable-workaround-for-ARM-errata-4541.patch"
+
 		case "${BOARD}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -413,12 +425,33 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
+		at91sam9x5ek_mmc)
+			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		beagle_x15)
 			${git} "${p_dir}/board/0001-ARM-OMAP-Change-set_pl310_ctrl_reg-to-be-generic.patch"
 			${git} "${p_dir}/board/0002-ARM-OMAP5-DRA7-Setup-L2-Aux-Control-Register-with-re.patch"
 			${git} "${p_dir}/board/0003-ARM-OMAP5-Add-workaround-for-ARM-errata-798870.patch"
 			${git} "${p_dir}/board/0004-configs-ti_omap5_common-Enable-workaround-for-ARM-er.patch"
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx23_olinuxino)
+			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx51evk)
+			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx53loco)
+			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx6qsabresd)
+			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap3_beagle)
+			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap4_panda)
+			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap5_uevm)
 			${git} "${p_dir}/board/0001-ARM-OMAP-Change-set_pl310_ctrl_reg-to-be-generic.patch"
@@ -427,29 +460,23 @@ build_u_boot () {
 			${git} "${p_dir}/board/0004-configs-ti_omap5_common-Enable-workaround-for-ARM-er.patch"
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		sama5d3xek_mmc)
+			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d3_xplained_mmc)
+			${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		sama5d4ek_mmc)
 			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		udoo_quad|udoo_dl)
+			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		vf610twr)
 			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		*)
-			#Atmel:
-			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-
-			#Freescale:
-			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		wandboard_quad|wandboard_dl|wandboard_solo)
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-
-			#TI:
-			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		esac
 	fi
