@@ -1,6 +1,6 @@
-From a47f1879cf840b748c6a2c3a58a8b707e570fc64 Mon Sep 17 00:00:00 2001
+From 55dddca412b85f5ab46ac7b4efa3cd829b057bdd Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 5 Mar 2015 15:10:47 -0600
+Date: Mon, 2 Feb 2015 18:02:16 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,13 +10,11 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  2 files changed, 210 insertions(+), 24 deletions(-)
 
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
-index b2f332e..1c59034 100644
+index 2e5aeaa..4cc7e19 100644
 --- a/configs/am335x_evm_defconfig
 +++ b/configs/am335x_evm_defconfig
-@@ -1,7 +1,6 @@
+@@ -1,5 +1,4 @@
  CONFIG_SPL=y
- CONFIG_SPL_STACK_R=y
- CONFIG_SPL_STACK_R_ADDR=0x82000000
 -CONFIG_SYS_EXTRA_OPTIONS="NAND"
 -CONFIG_CONS_INDEX=1
 +CONFIG_SYS_EXTRA_OPTIONS="SERIAL1,CONS_INDEX=1"

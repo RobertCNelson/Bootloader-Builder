@@ -345,9 +345,8 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: omap: v3 errata
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
 		${git} "${p_dir}/errata/0001-ARM-Introduce-erratum-workaround-for-798870.patch"
@@ -491,6 +490,17 @@ build_u_boot () {
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		esac
+	fi
+
+	if [ "x${BOARD}" = "xbeagle_x15_ti" ] ; then
+		git pull ${GIT_OPTS} https://github.com/rcn-ee/ti-uboot ti-u-boot-2014.07
+		#r1: ARM: BeagleBoard-x15: Add mux data
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
+
+		p_dir="${DIR}/patches/v2014.07"
+		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+
 	fi
 
 	unset BUILDTARGET
@@ -770,6 +780,16 @@ beagle_x15 () {
 	build_uboot_gnueabihf
 }
 
+beagle_x15_ti () {
+	cleanup
+
+	BOARD="beagle_x15_ti"
+	UBOOT_CONFIG="beagle_x15_config"
+	gcc_linaro_gnueabihf_4_9
+	GIT_SHA="v2014.07"
+	build_u_boot
+}
+
 cm_fx6 () {
 	cleanup
 	transitioned_to_testing="true"
@@ -839,11 +859,7 @@ rpi_2 () {
 	transitioned_to_testing="true"
 
 	BOARD="rpi_2"
-#	build_uboot_gnueabihf
-
-	UBOOT_CONFIG="rpi_2_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_latest
+	build_uboot_gnueabihf
 }
 
 sama5d3xek () {
@@ -929,6 +945,7 @@ am335x_boneblack_flasher
 am43xx_evm
 at91sam9x5ek
 beagle_x15
+beagle_x15_ti
 cm_fx6
 mx23_olinuxino
 mx51evk
