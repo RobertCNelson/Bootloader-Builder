@@ -495,8 +495,10 @@ build_u_boot () {
 	if [ "x${BOARD}" = "xbeagle_x15_ti" ] ; then
 		git pull ${GIT_OPTS} https://github.com/rcn-ee/ti-uboot ti-u-boot-2014.07
 		#r1: ARM: BeagleBoard-x15: Add mux data
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: CONFIG_SUPPORT_RAW_INITRD
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
+		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2014.07"
 		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"

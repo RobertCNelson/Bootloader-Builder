@@ -1,18 +1,26 @@
-From 4c76dd2b4271fe86691ae09f7d57e896afa24493 Mon Sep 17 00:00:00 2001
+From 5aecf488f9b376011b5e9d31260194378b23609c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 5 Mar 2015 15:34:56 -0600
+Date: Thu, 5 Mar 2015 16:49:15 -0600
 Subject: [PATCH] beagle_x15: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/ti_omap5_common.h | 133 +++++++++++++++++++++++++++++++-------
- 1 file changed, 108 insertions(+), 25 deletions(-)
+ include/configs/ti_omap5_common.h | 134 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 109 insertions(+), 25 deletions(-)
 
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index 2bde13f..55adac0 100644
+index 2bde13f..2267df2 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
-@@ -82,51 +82,72 @@
+@@ -50,6 +50,7 @@
+ #include <asm/arch/omap.h>
+ 
+ #include <configs/ti_armv7_common.h>
++#define CONFIG_SUPPORT_RAW_INITRD
+ 
+ /*
+  * Hardware drivers
+@@ -82,51 +83,72 @@
  	DEFAULT_LINUX_BOOT_ENV \
  	"console=" CONSOLEDEV ",115200n8\0" \
  	"fdtfile=undefined\0" \
@@ -107,7 +115,7 @@ index 2bde13f..55adac0 100644
  		"fi;\0" \
  	"netboot=echo Booting from network ...; " \
  		"set env autoload no; " \
-@@ -146,16 +167,78 @@
+@@ -146,16 +168,78 @@
  			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
