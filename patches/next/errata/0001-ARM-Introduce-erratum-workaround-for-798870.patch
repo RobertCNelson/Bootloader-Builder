@@ -1,6 +1,6 @@
-From 6a35595c4ba53675df7caa4576721ef651cea26d Mon Sep 17 00:00:00 2001
+From 7c4961e89e881f1c6726c67726dd63fd63d588f9 Mon Sep 17 00:00:00 2001
 From: Nishanth Menon <nm@ti.com>
-Date: Wed, 25 Feb 2015 14:55:09 -0600
+Date: Mon, 9 Mar 2015 17:11:59 -0500
 Subject: [PATCH 01/11] ARM: Introduce erratum workaround for 798870
 
 Add workaround for Cortex-A15 ARM erratum 798870 which says
@@ -22,19 +22,19 @@ Based on ARM errata Document revision 18.0 (22 Nov 2013)
 
 Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
- README                       |  5 +++++
+ README                       |  4 ++++
  arch/arm/cpu/armv7/Makefile  |  2 +-
  arch/arm/cpu/armv7/cp15.c    | 23 +++++++++++++++++++++++
- arch/arm/cpu/armv7/start.S   | 20 ++++++++++++++++++++
+ arch/arm/cpu/armv7/start.S   | 25 ++++++++++++++++++++++++-
  arch/arm/include/asm/armv7.h |  3 +++
- 5 files changed, 52 insertions(+), 1 deletion(-)
+ 5 files changed, 55 insertions(+), 2 deletions(-)
  create mode 100644 arch/arm/cpu/armv7/cp15.c
 
 diff --git a/README b/README
-index ba57dc5..13a7b7c 100644
+index 3c4a2e6..7a1df76 100644
 --- a/README
 +++ b/README
-@@ -621,6 +621,11 @@ The following options need to be configured:
+@@ -690,6 +690,10 @@ The following options need to be configured:
  		exists, unlike the similar options in the Linux kernel. Do not
  		set these options unless they apply!
  
@@ -42,12 +42,11 @@ index ba57dc5..13a7b7c 100644
 +		do have ability to provide rudimentary version and machine
 +		specific checks, but expect no product checks.
 +		CONFIG_ARM_ERRATA_798870
-+
- - Driver Model
- 		Driver model is a new framework for devices in U-Boot
- 		introduced in early 2014. U-Boot is being progressively
+ 
+ - Linux Kernel Interface:
+ 		CONFIG_CLOCKS_IN_MHZ
 diff --git a/arch/arm/cpu/armv7/Makefile b/arch/arm/cpu/armv7/Makefile
-index b228ed6..2dcbae1 100644
+index ad22489..1312a9d 100644
 --- a/arch/arm/cpu/armv7/Makefile
 +++ b/arch/arm/cpu/armv7/Makefile
 @@ -9,7 +9,7 @@ extra-y	:= start.o
@@ -89,19 +88,21 @@ index 0000000..8ac81c9
 +	asm volatile ("mcr p15, 1, %0, c15, c0, 0\n\t" : : "r"(l2actlr));
 +}
 diff --git a/arch/arm/cpu/armv7/start.S b/arch/arm/cpu/armv7/start.S
-index 9b49ece..3003b44 100644
+index 9b49ece..89637e2 100644
 --- a/arch/arm/cpu/armv7/start.S
 +++ b/arch/arm/cpu/armv7/start.S
-@@ -166,6 +166,26 @@ ENTRY(cpu_init_cp15)
+@@ -166,7 +166,30 @@ ENTRY(cpu_init_cp15)
  	mcr	p15, 0, r0, c15, c0, 1	@ write diagnostic register
  #endif
  
-+	mrc p15, 0, r1, c0, c0, 0	@ r1 has Read Main ID Register (MIDR)
-+	mov r3, r1, lsr #20		@ get variant field
-+	and r3, r3, #0xf		@ r3 has CPU variant
-+	and r4, r1, #0xf                @ r4 has CPU revision
-+	mov r2, r3, lsl #4		@ shift variant field for combined value
-+	orr r2, r4, r2                  @ r2 has combined CPU variant + revision
+-	mov	pc, lr			@ back to my caller
++	mov	r5, lr			@ Store my Caller
++	mrc	p15, 0, r1, c0, c0, 0	@ r1 has Read Main ID Register (MIDR)
++	mov	r3, r1, lsr #20		@ get variant field
++	and	r3, r3, #0xf		@ r3 has CPU variant
++	and	r4, r1, #0xf		@ r4 has CPU revision
++	mov	r2, r3, lsl #4		@ shift variant field for combined value
++	orr	r2, r4, r2		@ r2 has combined CPU variant + revision
 +
 +#ifdef CONFIG_ARM_ERRATA_798870
 +	cmp	r2, #0x30		@ Applies to lower than R3p0
@@ -111,19 +112,22 @@ index 9b49ece..3003b44 100644
 +
 +	mrc	p15, 1, r0, c15, c0, 0  @ read l2 aux ctrl reg
 +	orr	r0, r0, #1 << 7         @ Enable hazard-detect timeout
-+	b	v7_arch_cp15_set_l2aux_ctrl
++	push	{r1-r5}			@ Save the cpu info registers
++	bl	v7_arch_cp15_set_l2aux_ctrl
 +	isb				@ Recommended ISB after l2actlr update
++	pop	{r1-r5}			@ Restore the cpu info - fall through
 +skip_errata_798870:
 +#endif
 +
- 	mov	pc, lr			@ back to my caller
++	mov	pc, r5			@ back to my caller
  ENDPROC(cpu_init_cp15)
  
+ #ifndef CONFIG_SKIP_LOWLEVEL_INIT
 diff --git a/arch/arm/include/asm/armv7.h b/arch/arm/include/asm/armv7.h
-index a13da23..30e0cc3 100644
+index c3cc508..cd40912 100644
 --- a/arch/arm/include/asm/armv7.h
 +++ b/arch/arm/include/asm/armv7.h
-@@ -93,6 +93,9 @@ extern char __secure_end[];
+@@ -137,6 +137,9 @@ extern char __secure_end[];
  
  #endif /* CONFIG_ARMV7_NONSEC || CONFIG_ARMV7_VIRT */
  

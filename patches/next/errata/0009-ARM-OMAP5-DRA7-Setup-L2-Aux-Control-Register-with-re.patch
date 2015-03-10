@@ -1,6 +1,6 @@
-From 91bef218ac2ea73b993a850821fefd24d86df490 Mon Sep 17 00:00:00 2001
+From 5fc9bd13de87fc9767510c85c590869f7131389f Mon Sep 17 00:00:00 2001
 From: Nishanth Menon <nm@ti.com>
-Date: Wed, 25 Feb 2015 14:55:17 -0600
+Date: Mon, 9 Mar 2015 17:12:07 -0500
 Subject: [PATCH 09/11] ARM: OMAP5 / DRA7: Setup L2 Aux Control Register with
  recommended configuration
 

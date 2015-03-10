@@ -1,6 +1,6 @@
-From 96d3c2081ed1bb0c90651029d64820af0adb993b Mon Sep 17 00:00:00 2001
+From 7c92f6885c99c94d46fc6ee4fa5e4c7a9f53e3ba Mon Sep 17 00:00:00 2001
 From: Nishanth Menon <nm@ti.com>
-Date: Wed, 25 Feb 2015 14:55:18 -0600
+Date: Mon, 9 Mar 2015 17:12:08 -0500
 Subject: [PATCH 10/11] ARM: OMAP3: Enable workaround for ARM errata 454179,
  430973, 621766
 

@@ -1,6 +1,6 @@
-From 3ee0109300b7520aefe321d9067b22cf412bd758 Mon Sep 17 00:00:00 2001
+From 865ebdb876099cdb197bf1e80f4bc484a1104066 Mon Sep 17 00:00:00 2001
 From: Nishanth Menon <nm@ti.com>
-Date: Wed, 25 Feb 2015 14:55:15 -0600
+Date: Mon, 9 Mar 2015 17:12:05 -0500
 Subject: [PATCH 07/11] ARM: OMAP3: Get rid of omap3_gp_romcode_call and
  replace with omap_smc1
 
@@ -16,8 +16,8 @@ Signed-off-by: Nishanth Menon <nm@ti.com>
  arch/arm/cpu/armv7/omap-common/lowlevel_init.S |  2 ++
  arch/arm/cpu/armv7/omap3/board.c               |  6 ++----
  arch/arm/cpu/armv7/omap3/lowlevel_init.S       | 11 -----------
- arch/arm/include/asm/arch-omap3/sys_proto.h    |  2 +-
- 5 files changed, 6 insertions(+), 17 deletions(-)
+ arch/arm/include/asm/arch-omap3/sys_proto.h    |  1 -
+ 5 files changed, 5 insertions(+), 17 deletions(-)
 
 diff --git a/arch/arm/cpu/armv7/omap-common/Makefile b/arch/arm/cpu/armv7/omap-common/Makefile
 index 7695e16..f3725b2 100644
@@ -33,7 +33,7 @@ index 7695e16..f3725b2 100644
  
  obj-y	+= mem-common.o
 diff --git a/arch/arm/cpu/armv7/omap-common/lowlevel_init.S b/arch/arm/cpu/armv7/omap-common/lowlevel_init.S
-index 222ae1a..681cd51 100644
+index 80619b0..746df92 100644
 --- a/arch/arm/cpu/armv7/omap-common/lowlevel_init.S
 +++ b/arch/arm/cpu/armv7/omap-common/lowlevel_init.S
 @@ -16,11 +16,13 @@
@@ -97,15 +97,14 @@ index 80cb263..7a69151 100644
   * Funtion for making PPA HAL API calls in secure devices
   * Input:
 diff --git a/arch/arm/include/asm/arch-omap3/sys_proto.h b/arch/arm/include/asm/arch-omap3/sys_proto.h
-index bcf92fb..c06605d 100644
+index bcf92fb..0c77a22 100644
 --- a/arch/arm/include/asm/arch-omap3/sys_proto.h
 +++ b/arch/arm/include/asm/arch-omap3/sys_proto.h
-@@ -73,6 +73,6 @@ void power_init_r(void);
+@@ -73,6 +73,5 @@ void power_init_r(void);
  void dieid_num_r(void);
  void get_dieid(u32 *id);
  void do_omap3_emu_romcode_call(u32 service_id, u32 parameters);
 -void omap3_gp_romcode_call(u32 service_id, u32 parameter);
-+void omap_smc1(u32 service, u32 val);
  u32 warm_reset(void);
  #endif
 -- 

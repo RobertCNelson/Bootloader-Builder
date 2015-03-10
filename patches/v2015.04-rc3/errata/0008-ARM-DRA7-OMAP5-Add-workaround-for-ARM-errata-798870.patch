@@ -1,6 +1,6 @@
-From a2ce724ca6883c01a5c79dbe6263b8ba5547b9bd Mon Sep 17 00:00:00 2001
+From bc7ed800d8e22f6f2a60c4617fcc4627c643fe92 Mon Sep 17 00:00:00 2001
 From: Praveen Rao <prao@ti.com>
-Date: Wed, 25 Feb 2015 14:55:16 -0600
+Date: Mon, 9 Mar 2015 17:12:06 -0500
 Subject: [PATCH 08/11] ARM: DRA7 / OMAP5: Add workaround for ARM errata 798870
 
 This patch enables the workaround for ARM errata 798870 for OMAP5 /
@@ -19,9 +19,9 @@ Signed-off-by: Angela Stegmaier <angelabaker@ti.com>
 Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
  arch/arm/cpu/armv7/omap5/hwinit.c           | 7 +++++++
- arch/arm/include/asm/arch-omap5/sys_proto.h | 4 ++++
+ arch/arm/include/asm/arch-omap5/sys_proto.h | 3 +++
  include/configs/ti_omap5_common.h           | 3 +++
- 3 files changed, 14 insertions(+)
+ 3 files changed, 13 insertions(+)
 
 diff --git a/arch/arm/cpu/armv7/omap5/hwinit.c b/arch/arm/cpu/armv7/omap5/hwinit.c
 index a8a474a..f806055 100644
@@ -39,15 +39,14 @@ index a8a474a..f806055 100644
 +	omap_smc1(OMAP5_SERVICE_L2ACTLR_SET, l2auxctrl);
 +}
 diff --git a/arch/arm/include/asm/arch-omap5/sys_proto.h b/arch/arm/include/asm/arch-omap5/sys_proto.h
-index 1038303..37dc992 100644
+index 1038303..ea84665 100644
 --- a/arch/arm/include/asm/arch-omap5/sys_proto.h
 +++ b/arch/arm/include/asm/arch-omap5/sys_proto.h
-@@ -66,4 +66,8 @@ static inline u32 usec_to_32k(u32 usec)
+@@ -66,4 +66,7 @@ static inline u32 usec_to_32k(u32 usec)
  {
  	return div_round_up(32768 * usec, 1000000);
  }
 +
-+void omap_smc1(u32 service, u32 val);
 +#define OMAP5_SERVICE_L2ACTLR_SET    0x104
 +
  #endif

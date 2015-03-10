@@ -1,6 +1,6 @@
-From 440017c669adff8144fb53cb6a3abd17f4034403 Mon Sep 17 00:00:00 2001
+From c1e087f8cbf475a2383106e30edf3ff9d23bb4c5 Mon Sep 17 00:00:00 2001
 From: Nishanth Menon <nm@ti.com>
-Date: Wed, 25 Feb 2015 14:55:19 -0600
+Date: Mon, 9 Mar 2015 17:12:09 -0500
 Subject: [PATCH 11/11] ARM: OMAP3: rx51: Enable workaround for ARM errata
  454179, 430973, 621766
 
@@ -108,13 +108,13 @@ index 5587a10..bfbc197 100644
  	 * No harm in clearing both banked bits(in fact this is required
  	 * by an erratum)
 diff --git a/arch/arm/include/asm/arch-omap3/sys_proto.h b/arch/arm/include/asm/arch-omap3/sys_proto.h
-index c06605d..ff1bf73 100644
+index 0c77a22..3e45ce1 100644
 --- a/arch/arm/include/asm/arch-omap3/sys_proto.h
 +++ b/arch/arm/include/asm/arch-omap3/sys_proto.h
-@@ -74,5 +74,6 @@ void dieid_num_r(void);
+@@ -73,5 +73,6 @@ void power_init_r(void);
+ void dieid_num_r(void);
  void get_dieid(u32 *id);
  void do_omap3_emu_romcode_call(u32 service_id, u32 parameters);
- void omap_smc1(u32 service, u32 val);
 +void omap3_set_aux_cr_secure(u32 acr);
  u32 warm_reset(void);
  #endif

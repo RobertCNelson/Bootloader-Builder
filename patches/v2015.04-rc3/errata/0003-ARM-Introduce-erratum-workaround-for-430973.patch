@@ -1,6 +1,6 @@
-From 29c7313073af90d6305d53aff3b61671ae380899 Mon Sep 17 00:00:00 2001
+From efda6ee34597d0df502b805d516951d2ad8e7a7a Mon Sep 17 00:00:00 2001
 From: Nishanth Menon <nm@ti.com>
-Date: Wed, 25 Feb 2015 14:55:11 -0600
+Date: Mon, 9 Mar 2015 17:12:01 -0500
 Subject: [PATCH 03/11] ARM: Introduce erratum workaround for 430973
 
 430973: Stale prediction on replaced inter working branch causes
@@ -13,11 +13,11 @@ Based on ARM errata Document revision 20.0 (13 Nov 2010)
 Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
  README                     |  1 +
- arch/arm/cpu/armv7/start.S | 11 +++++++++++
- 2 files changed, 12 insertions(+)
+ arch/arm/cpu/armv7/start.S | 13 +++++++++++++
+ 2 files changed, 14 insertions(+)
 
 diff --git a/README b/README
-index dd88979..6257de0 100644
+index b840dd9..12a37cb 100644
 --- a/README
 +++ b/README
 @@ -624,6 +624,7 @@ The following options need to be configured:
@@ -29,25 +29,27 @@ index dd88979..6257de0 100644
  		CONFIG_ARM_ERRATA_798870
  
 diff --git a/arch/arm/cpu/armv7/start.S b/arch/arm/cpu/armv7/start.S
-index 449675f..f121e54 100644
+index 8483687..41fb24c 100644
 --- a/arch/arm/cpu/armv7/start.S
 +++ b/arch/arm/cpu/armv7/start.S
-@@ -197,6 +197,17 @@ skip_errata_798870:
+@@ -202,6 +202,19 @@ skip_errata_798870:
  skip_errata_454179:
  #endif
  
 +#ifdef CONFIG_ARM_ERRATA_430973
 +	cmp	r2, #0x21		@ Only on < r2p1
-+	blt	skip_errata_430973
++	bge	skip_errata_430973
 +
 +	mrc	p15, 0, r0, c1, c0, 1	@ Read ACR
 +	orr	r0, r0, #(0x1 << 6)	@ Set IBE bit
-+	b	v7_arch_cp15_set_acr
++	push	{r1-r5}			@ Save the cpu info registers
++	bl	v7_arch_cp15_set_acr
++	pop	{r1-r5}			@ Restore the cpu info - fall through
 +
 +skip_errata_430973:
 +#endif
 +
- 	mov	pc, lr			@ back to my caller
+ 	mov	pc, r5			@ back to my caller
  ENDPROC(cpu_init_cp15)
  
 -- 

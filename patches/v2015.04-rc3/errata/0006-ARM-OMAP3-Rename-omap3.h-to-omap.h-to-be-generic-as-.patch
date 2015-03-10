@@ -1,6 +1,6 @@
-From 3b12f67d75a0f4b217cde489b09cbb777f705aba Mon Sep 17 00:00:00 2001
+From 66decbc7aeebc5b68362daad4f86379368d3b6b5 Mon Sep 17 00:00:00 2001
 From: Nishanth Menon <nm@ti.com>
-Date: Wed, 25 Feb 2015 14:55:14 -0600
+Date: Mon, 9 Mar 2015 17:12:04 -0500
 Subject: [PATCH 06/11] ARM: OMAP3: Rename omap3.h to omap.h to be generic as
  all SoCs
 
