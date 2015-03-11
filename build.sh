@@ -497,8 +497,9 @@ build_u_boot () {
 		git pull ${GIT_OPTS} https://github.com/rcn-ee/ti-uboot ti-u-boot-2014.07
 		#r1: ARM: BeagleBoard-x15: Add mux data
 		#r2: CONFIG_SUPPORT_RAW_INITRD
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: ARM: BeagleBoard-x15: fix video related pinmuxing …
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2014.07"

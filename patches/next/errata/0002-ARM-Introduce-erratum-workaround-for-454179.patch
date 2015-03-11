@@ -21,7 +21,7 @@ Signed-off-by: Nishanth Menon <nm@ti.com>
  4 files changed, 22 insertions(+)
 
 diff --git a/README b/README
-index 7a1df76..1f86893 100644
+index e918af7..c322638 100644
 --- a/README
 +++ b/README
 @@ -693,6 +693,7 @@ The following options need to be configured:
@@ -31,7 +31,7 @@ index 7a1df76..1f86893 100644
 +		CONFIG_ARM_ERRATA_454179
  		CONFIG_ARM_ERRATA_798870
  
- - Linux Kernel Interface:
+ - Tegra SoC options:
 diff --git a/arch/arm/cpu/armv7/cp15.c b/arch/arm/cpu/armv7/cp15.c
 index 8ac81c9..b44c9f9 100644
 --- a/arch/arm/cpu/armv7/cp15.c

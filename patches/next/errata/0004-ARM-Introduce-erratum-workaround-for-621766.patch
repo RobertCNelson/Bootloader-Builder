@@ -17,7 +17,7 @@ Signed-off-by: Nishanth Menon <nm@ti.com>
  2 files changed, 14 insertions(+)
 
 diff --git a/README b/README
-index bcd794f..76cf7f2 100644
+index 360f2a9..57426e5 100644
 --- a/README
 +++ b/README
 @@ -695,6 +695,7 @@ The following options need to be configured:
@@ -27,7 +27,7 @@ index bcd794f..76cf7f2 100644
 +		CONFIG_ARM_ERRATA_621766
  		CONFIG_ARM_ERRATA_798870
  
- - Linux Kernel Interface:
+ - Tegra SoC options:
 diff --git a/arch/arm/cpu/armv7/start.S b/arch/arm/cpu/armv7/start.S
 index 41fb24c..5050021 100644
 --- a/arch/arm/cpu/armv7/start.S
