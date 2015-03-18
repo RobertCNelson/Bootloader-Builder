@@ -345,22 +345,9 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: sync errata...
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
-
-		${git} "${p_dir}/errata/0001-ARM-Introduce-erratum-workaround-for-798870.patch"
-		${git} "${p_dir}/errata/0002-ARM-Introduce-erratum-workaround-for-454179.patch"
-		${git} "${p_dir}/errata/0003-ARM-Introduce-erratum-workaround-for-430973.patch"
-		${git} "${p_dir}/errata/0004-ARM-Introduce-erratum-workaround-for-621766.patch"
-		${git} "${p_dir}/errata/0005-ARM-OMAP-Change-set_pl310_ctrl_reg-to-be-generic.patch"
-		${git} "${p_dir}/errata/0006-ARM-OMAP3-Rename-omap3.h-to-omap.h-to-be-generic-as-.patch"
-		${git} "${p_dir}/errata/0007-ARM-OMAP3-Get-rid-of-omap3_gp_romcode_call-and-repla.patch"
-		${git} "${p_dir}/errata/0008-ARM-DRA7-OMAP5-Add-workaround-for-ARM-errata-798870.patch"
-		${git} "${p_dir}/errata/0009-ARM-OMAP5-DRA7-Setup-L2-Aux-Control-Register-with-re.patch"
-		${git} "${p_dir}/errata/0010-ARM-OMAP3-Enable-workaround-for-ARM-errata-454179-43.patch"
-		${git} "${p_dir}/errata/0011-ARM-OMAP3-rx51-Enable-workaround-for-ARM-errata-4541.patch"
 
 		case "${BOARD}" in
 		am335x_evm)
@@ -840,7 +827,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="omap5_uevm"
 	build_uboot_gnueabihf
