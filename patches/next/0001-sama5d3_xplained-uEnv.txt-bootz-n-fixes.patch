@@ -1,13 +1,14 @@
-From 89890f8fd5664a3783216aa90cccbbfee7c8599a Mon Sep 17 00:00:00 2001
+From eddf770389c7cdb139e42f9c1ec633979d2ee036 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 11 Feb 2015 15:42:46 -0600
+Date: Wed, 1 Apr 2015 12:57:46 -0500
 Subject: [PATCH] sama5d3_xplained: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/atmel/sama5d3_xplained/sama5d3_xplained.c | 81 +++++++++++++++++++++++++
- include/configs/sama5d3_xplained.h              | 80 +++++++++++++++++++++---
- 2 files changed, 154 insertions(+), 7 deletions(-)
+ include/configs/at91-sama5_common.h             | 56 +++++++++++++++--
+ include/configs/sama5d3_xplained.h              | 24 +++++++-
+ 3 files changed, 154 insertions(+), 7 deletions(-)
 
 diff --git a/board/atmel/sama5d3_xplained/sama5d3_xplained.c b/board/atmel/sama5d3_xplained/sama5d3_xplained.c
 index 92ed4e8..1729b5e 100644
@@ -115,59 +116,21 @@ index 92ed4e8..1729b5e 100644
  	return 0;
  }
  
-diff --git a/include/configs/sama5d3_xplained.h b/include/configs/sama5d3_xplained.h
-index 5a0ab28..5c7d1e3 100644
---- a/include/configs/sama5d3_xplained.h
-+++ b/include/configs/sama5d3_xplained.h
-@@ -51,7 +51,22 @@
-  */
- #define ATMEL_PMC_UHP			AT91SAM926x_PMC_UHP
+diff --git a/include/configs/at91-sama5_common.h b/include/configs/at91-sama5_common.h
+index dedb785..0708559 100644
+--- a/include/configs/at91-sama5_common.h
++++ b/include/configs/at91-sama5_common.h
+@@ -35,7 +35,7 @@
+ /* general purpose I/O */
+ #define CONFIG_AT91_GPIO
  
 -#define CONFIG_BOOTDELAY		3
-+/* LCD */
-+#define CONFIG_LCD
-+#define LCD_BPP				LCD_COLOR16
-+#define LCD_OUTPUT_BPP                  24
-+#define CONFIG_LCD_LOGO
-+#define CONFIG_LCD_INFO
-+#define CONFIG_LCD_INFO_BELOW_LOGO
-+#define CONFIG_SYS_WHITE_ON_BLACK
-+#define CONFIG_ATMEL_HLCD
-+#define CONFIG_ATMEL_LCD_RGB565
-+#define CONFIG_SYS_CONSOLE_IS_IN_ENV
-+
-+/* board specific (not enough SRAM) */
-+#define CONFIG_SAMA5D3_LCD_BASE		0x23E00000
-+
 +#define CONFIG_BOOTDELAY		1
  
  /*
   * BOOTP options
-@@ -152,8 +167,14 @@
- #if defined(CONFIG_CMD_USB) || defined(CONFIG_CMD_MMC)
- #define CONFIG_CMD_FAT
- #define CONFIG_FAT_WRITE
-+#define CONFIG_CMD_EXT2
- #define CONFIG_CMD_EXT4
- #define CONFIG_CMD_EXT4_WRITE
-+#define CONFIG_CMD_FS_GENERIC
-+
-+/* bootz: zImage/initrd.img support */
-+#define CONFIG_CMD_BOOTZ
-+#define CONFIG_SUPPORT_RAW_INITRD
- #endif
- 
- #define CONFIG_SYS_LOAD_ADDR			0x22000000 /* load address */
-@@ -174,17 +195,62 @@
- #define FAT_ENV_FILE		"uboot.env"
- #define FAT_ENV_DEVICE_AND_PART	"0"
- #define CONFIG_ENV_SIZE		0x4000
--#define CONFIG_BOOTCOMMAND	"fatload mmc 0:1 0x21000000 at91-sama5d3_xplained.dtb; " \
--				"fatload mmc 0:1 0x22000000 zImage; " \
--				"bootz 0x22000000 - 0x21000000"
- #else
- #define CONFIG_ENV_IS_NOWHERE
- #endif
+@@ -57,9 +57,57 @@
+ #define CONFIG_CMD_SETEXPR
  
  #ifdef CONFIG_SYS_USE_MMC
 -#define CONFIG_BOOTARGS							\
@@ -227,6 +190,57 @@ index 5a0ab28..5c7d1e3 100644
  #else
  #define CONFIG_BOOTARGS							\
  	"console=ttyS0,115200 earlyprintk "				\
+diff --git a/include/configs/sama5d3_xplained.h b/include/configs/sama5d3_xplained.h
+index bfd8aa7..17d7376 100644
+--- a/include/configs/sama5d3_xplained.h
++++ b/include/configs/sama5d3_xplained.h
+@@ -71,6 +71,21 @@
+ #define CONFIG_CMD_UBIFS
+ #endif
+ 
++/* LCD */
++#define CONFIG_LCD
++#define LCD_BPP				LCD_COLOR16
++#define LCD_OUTPUT_BPP                  24
++#define CONFIG_LCD_LOGO
++#define CONFIG_LCD_INFO
++#define CONFIG_LCD_INFO_BELOW_LOGO
++#define CONFIG_SYS_WHITE_ON_BLACK
++#define CONFIG_ATMEL_HLCD
++#define CONFIG_ATMEL_LCD_RGB565
++#define CONFIG_SYS_CONSOLE_IS_IN_ENV
++
++/* board specific (not enough SRAM) */
++#define CONFIG_SAMA5D3_LCD_BASE		0x23E00000
++
+ /* Ethernet Hardware */
+ #define CONFIG_MACB
+ #define CONFIG_RMII
+@@ -109,8 +124,14 @@
+ #if defined(CONFIG_CMD_USB) || defined(CONFIG_CMD_MMC)
+ #define CONFIG_CMD_FAT
+ #define CONFIG_FAT_WRITE
++#define CONFIG_CMD_EXT2
+ #define CONFIG_CMD_EXT4
+ #define CONFIG_CMD_EXT4_WRITE
++#define CONFIG_CMD_FS_GENERIC
++
++/* bootz: zImage/initrd.img support */
++#define CONFIG_CMD_BOOTZ
++#define CONFIG_SUPPORT_RAW_INITRD
+ #endif
+ 
+ #define CONFIG_SYS_LOAD_ADDR			0x22000000 /* load address */
+@@ -131,9 +152,6 @@
+ #define FAT_ENV_FILE		"uboot.env"
+ #define FAT_ENV_DEVICE_AND_PART	"0"
+ #define CONFIG_ENV_SIZE		0x4000
+-#define CONFIG_BOOTCOMMAND	"fatload mmc 0:1 0x21000000 at91-sama5d3_xplained.dtb; " \
+-				"fatload mmc 0:1 0x22000000 zImage; " \
+-				"bootz 0x22000000 - 0x21000000"
+ #else
+ #define CONFIG_ENV_IS_NOWHERE
+ #endif
 -- 
 2.1.4
 

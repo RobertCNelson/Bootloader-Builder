@@ -898,19 +898,19 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="wandboard_quad"
 	build_uboot_gnueabihf
 
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="wandboard_dl"
 	build_uboot_gnueabihf
 
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="wandboard_solo"
 	build_uboot_gnueabihf
