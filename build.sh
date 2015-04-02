@@ -788,7 +788,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="mx51evk"
 	build_uboot_gnueabihf
@@ -796,7 +796,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="mx53loco"
 	build_uboot_gnueabihf
@@ -804,7 +804,7 @@ mx53loco () {
 
 mx6qsabresd () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="mx6qsabresd"
 	build_uboot_gnueabihf
@@ -876,13 +876,13 @@ sama5d4_xplained () {
 
 udoo () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="udoo_quad"
 	build_uboot_gnueabihf
 
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="udoo_dl"
 	build_uboot_gnueabihf
@@ -890,7 +890,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="vf610twr"
 	build_uboot_gnueabihf
