@@ -474,8 +474,9 @@ build_u_boot () {
 		#r2: CONFIG_SUPPORT_RAW_INITRD
 		#r3: ARM: BeagleBoard-x15: fix video related pinmuxing …
 		#r4: ARM: BeagleBoard-x15: Fix VIN pin muxing
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: usb: gadget: ether: fix build breakage / ARM: BeagleBoard-x15: Enable i2c5 clocks
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2014.07"
