@@ -744,7 +744,7 @@ am43xx_evm () {
 
 at91sam9x5ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="at91sam9x5ek_mmc"
 	build_uboot_eabi
@@ -821,7 +821,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="omap4_panda"
 	build_uboot_gnueabihf
