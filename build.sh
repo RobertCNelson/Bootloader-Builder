@@ -345,15 +345,18 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x: fix regression on ddr2 platforms..
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${BOARD}" in
 		am335x_evm)
+			${git} "${p_dir}/0001-am33xx-ddr.c-Fix-regression-on-DDR2-platforms.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
+			${git} "${p_dir}/0001-am33xx-ddr.c-Fix-regression-on-DDR2-platforms.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -414,9 +417,11 @@ build_u_boot () {
 
 		case "${BOARD}" in
 		am335x_evm)
+			${git} "${p_dir}/0001-am33xx-ddr.c-Fix-regression-on-DDR2-platforms.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
+			${git} "${p_dir}/0001-am33xx-ddr.c-Fix-regression-on-DDR2-platforms.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;

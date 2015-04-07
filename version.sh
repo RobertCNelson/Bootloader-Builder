@@ -6,5 +6,5 @@ uboot_old="v2014.10"
 uboot_stable="v2015.01"
 uboot_testing="v2015.04-rc5"
 
-uboot_prev="8a5c9ca4d0b8aa13a1bb321494d24f656a9a7d72"
-uboot_latest="d68df028099235c5316eec1ed5f586f3744a8707"
+uboot_prev="d68df028099235c5316eec1ed5f586f3744a8707"
+uboot_latest="3419af770ddb6d3d777f651f9eb89479df4623ba"
