@@ -417,11 +417,9 @@ build_u_boot () {
 
 		case "${BOARD}" in
 		am335x_evm)
-			${git} "${p_dir}/0001-am33xx-ddr.c-Fix-regression-on-DDR2-platforms.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			${git} "${p_dir}/0001-am33xx-ddr.c-Fix-regression-on-DDR2-platforms.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -786,7 +784,7 @@ cm_fx6 () {
 
 mx23_olinuxino () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	BOARD="mx23_olinuxino"
 	build_uboot_eabi

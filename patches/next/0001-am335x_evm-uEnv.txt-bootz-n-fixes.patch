@@ -1,13 +1,13 @@
-From b1aedd7462b3661f05e3c981a70cb3530d1bcb39 Mon Sep 17 00:00:00 2001
+From 835c6575900b013f81f49ad366e539bf062fa709 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 18 Mar 2015 11:03:55 -0500
+Date: Wed, 8 Apr 2015 08:50:59 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  configs/am335x_evm_defconfig |   3 +-
- include/configs/am335x_evm.h | 231 ++++++++++++++++++++++++++++++++++++++-----
- 2 files changed, 210 insertions(+), 24 deletions(-)
+ include/configs/am335x_evm.h | 230 ++++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 209 insertions(+), 24 deletions(-)
 
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
 index 968d041..3406926 100644
@@ -23,7 +23,7 @@ index 968d041..3406926 100644
  CONFIG_ARM=y
  CONFIG_TARGET_AM335X_EVM=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a87059c..62e317f 100644
+index a87059c..2cb613d 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -212,7 +212,7 @@ index a87059c..62e317f 100644
  		"fi;\0" \
  	"spiboot=echo Booting from spi ...; " \
  		"run spiargs; " \
-@@ -166,31 +261,124 @@
+@@ -166,31 +261,123 @@
  		"tftp ${fdtaddr} ${fdtfile}; " \
  		"run netargs; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
@@ -324,7 +324,6 @@ index a87059c..62e317f 100644
  #define CONFIG_BOOTCOMMAND \
 +	"setenv umsmedia 0; "\
 +	"gpio set 53; " \
-+	"i2c mw 0x24 1 0x3e; " \
  	"run findfdt; " \
 +	"setenv mmcdev 0; " \
 +	"setenv bootpart 0:1; " \
@@ -341,7 +340,7 @@ index a87059c..62e317f 100644
  
  /* NS16550 Configuration */
  #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
-@@ -329,9 +517,8 @@
+@@ -329,9 +516,8 @@
  #endif
  
  #ifdef CONFIG_MUSB_GADGET
