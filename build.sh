@@ -248,51 +248,8 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE="${CC}" distclean
 	UGIT_VERSION=$(git describe)
 
-	p_dir="${uboot_old}"
+	p_dir="${DIR}/patches/${uboot_old}"
 	if [ "${old}" ] ; then
-		#r1: initial release
-		#r2: add: A20-OLinuXino-LIME2
-		#r3: am335x_evm: disable 1.5v -> 1.35v regulator change & mmcpart to 1 when /etc/fstab is in x:1
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
-		#halt_patching_uboot
-
-		#Allwinner Technology
-		${git} "${DIR}/patches/${p_dir}/0001-sun7i-Add-support-for-Olimex-A20-OLinuXino-LIME2.patch"
-
-		#Atmel:
-		${git} "${DIR}/patches/${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-
-		#Atmel: sama5d4ek
-		${git} "${DIR}/patches/${p_dir}/board/0001-mtd-atmel_nand-runtime-to-build-gf-table-for-pmecc.patch"
-		${git} "${DIR}/patches/${p_dir}/board/0002-net-macb-enable-GMAC-IP-without-GE-feature-support.patch"
-		${git} "${DIR}/patches/${p_dir}/board/0003-ARM-atmel-add-sama5d4ek-board-support.patch"
-		${git} "${DIR}/patches/${p_dir}/board/0004-ARM-atmel-add-sama5d4-xplained-ultra-board-support.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
-
-		#Freescale:
-		${git} "${DIR}/patches/${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-
-		#TI:
-		${git} "${DIR}/patches/${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-		if [ "x${BOARD}" = "xam335x_boneblack" ] ; then
-			${git} "${DIR}/patches/${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
-		fi
-		${git} "${DIR}/patches/${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-		${git} "${DIR}/patches/${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	p_dir="${DIR}/patches/${uboot_stable}"
-	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: some users are setting dtb=fullpath to the full path...
 		#r3: am335x_evm: fix spl boot in raw mode
@@ -342,21 +299,81 @@ build_u_boot () {
 		esac
 	fi
 
-	p_dir="${DIR}/patches/${uboot_testing}"
-	if [ "${testing}" ] ; then
+	p_dir="${DIR}/patches/${uboot_stable}"
+	if [ "${stable}" ] ; then
 		#r1: initial release
-		#r2: am335x: fix regression on ddr2 platforms..
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
 		case "${BOARD}" in
 		am335x_evm)
-			${git} "${p_dir}/0001-am33xx-ddr.c-Fix-regression-on-DDR2-platforms.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			${git} "${p_dir}/0001-am33xx-ddr.c-Fix-regression-on-DDR2-platforms.patch"
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			;;
+		at91sam9x5ek_mmc)
+			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		beagle_x15)
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx23_olinuxino)
+			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx51evk)
+			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx53loco)
+			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx6qsabresd)
+			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap3_beagle)
+			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap4_panda)
+			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap5_uevm)
+			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d3xek_mmc)
+			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d3_xplained_mmc)
+			${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d4ek_mmc)
+			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		udoo_quad|udoo_dl)
+			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		vf610twr)
+			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		wandboard_quad|wandboard_dl|wandboard_solo)
+			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		esac
+	fi
+
+	p_dir="${DIR}/patches/${uboot_testing}"
+	if [ "${testing}" ] ; then
+		#r1: initial release
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
+		#halt_patching_uboot
+
+		case "${BOARD}" in
+		am335x_evm)
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		am335x_boneblack)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -687,7 +704,7 @@ build_uboot_gnueabihf () {
 
 A10_OLinuXino_Lime () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A10-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -695,7 +712,7 @@ A10_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime"
 	build_uboot_gnueabihf
@@ -703,7 +720,7 @@ A20_OLinuXino_Lime () {
 
 A20_OLinuXino_Lime2 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino-Lime2"
 	build_uboot_gnueabihf
@@ -711,7 +728,7 @@ A20_OLinuXino_Lime2 () {
 
 A20_OLinuXino_MICRO () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="A20-OLinuXino_MICRO"
 	build_uboot_gnueabihf
@@ -739,7 +756,7 @@ am335x_boneblack_flasher () {
 
 am43xx_evm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="am43xx_evm"
 	build_uboot_gnueabihf
@@ -747,7 +764,7 @@ am43xx_evm () {
 
 at91sam9x5ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="at91sam9x5ek_mmc"
 	build_uboot_eabi
@@ -758,7 +775,7 @@ at91sam9x5ek () {
 
 beagle_x15 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="beagle_x15"
 	build_uboot_gnueabihf
@@ -776,7 +793,7 @@ beagle_x15_ti () {
 
 cm_fx6 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="cm_fx6"
 	build_uboot_gnueabihf
@@ -784,7 +801,7 @@ cm_fx6 () {
 
 mx23_olinuxino () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="mx23_olinuxino"
 	build_uboot_eabi
@@ -792,7 +809,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="mx51evk"
 	build_uboot_gnueabihf
@@ -800,7 +817,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="mx53loco"
 	build_uboot_gnueabihf
@@ -808,7 +825,7 @@ mx53loco () {
 
 mx6qsabresd () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="mx6qsabresd"
 	build_uboot_gnueabihf
@@ -816,7 +833,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="omap3_beagle"
 	build_uboot_gnueabihf
@@ -824,7 +841,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="omap4_panda"
 	build_uboot_gnueabihf
@@ -832,7 +849,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="omap5_uevm"
 	build_uboot_gnueabihf
@@ -840,7 +857,7 @@ omap5_uevm () {
 
 rpi_2 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="rpi_2"
 	build_uboot_gnueabihf
@@ -848,7 +865,7 @@ rpi_2 () {
 
 sama5d3xek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="sama5d3xek_mmc"
 	build_uboot_gnueabihf
@@ -856,7 +873,7 @@ sama5d3xek () {
 
 sama5d3_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="sama5d3_xplained_mmc"
 	build_uboot_gnueabihf
@@ -864,7 +881,7 @@ sama5d3_xplained () {
 
 sama5d4ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="sama5d4ek_mmc"
 	build_uboot_gnueabihf
@@ -872,7 +889,7 @@ sama5d4ek () {
 
 sama5d4_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="sama5d4_xplained_mmc"
 	build_uboot_gnueabihf
@@ -880,13 +897,13 @@ sama5d4_xplained () {
 
 udoo () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="udoo_quad"
 	build_uboot_gnueabihf
 
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="udoo_dl"
 	build_uboot_gnueabihf
@@ -894,7 +911,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="vf610twr"
 	build_uboot_gnueabihf
@@ -902,19 +919,19 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="wandboard_quad"
 	build_uboot_gnueabihf
 
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="wandboard_dl"
 	build_uboot_gnueabihf
 
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	BOARD="wandboard_solo"
 	build_uboot_gnueabihf
