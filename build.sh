@@ -702,36 +702,26 @@ build_uboot_gnueabihf () {
 	build_uboot_latest
 }
 
-A10_OLinuXino_Lime () {
+always_mainline () {
 	cleanup
 	#transitioned_to_testing="true"
-
-	BOARD="A10-OLinuXino-Lime"
 	build_uboot_gnueabihf
+}
+
+A10_OLinuXino_Lime () {
+	BOARD="A10-OLinuXino-Lime" ; always_mainline
 }
 
 A20_OLinuXino_Lime () {
-	cleanup
-	#transitioned_to_testing="true"
-
-	BOARD="A20-OLinuXino-Lime"
-	build_uboot_gnueabihf
+	BOARD="A20-OLinuXino-Lime" ; always_mainline
 }
 
 A20_OLinuXino_Lime2 () {
-	cleanup
-	#transitioned_to_testing="true"
-
-	BOARD="A20-OLinuXino-Lime2"
-	build_uboot_gnueabihf
+	BOARD="A20-OLinuXino-Lime2" ; always_mainline
 }
 
 A20_OLinuXino_MICRO () {
-	cleanup
-	#transitioned_to_testing="true"
-
-	BOARD="A20-OLinuXino_MICRO"
-	build_uboot_gnueabihf
+	BOARD="A20-OLinuXino_MICRO" ; always_mainline
 }
 
 am335x_evm () {
@@ -771,6 +761,14 @@ at91sam9x5ek () {
 
 	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
 	build_at91bootstrap_all
+}
+
+Bananapi () {
+	BOARD="Bananapi" ; always_mainline
+}
+
+Bananapro () {
+	BOARD="Bananapro" ; always_mainline
 }
 
 beagle_x15 () {
@@ -945,6 +943,8 @@ am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
 at91sam9x5ek
+Bananapi
+Bananapro
 beagle_x15
 beagle_x15_ti
 cm_fx6
