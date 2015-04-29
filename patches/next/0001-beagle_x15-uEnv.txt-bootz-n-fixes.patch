@@ -1,6 +1,6 @@
-From 9f716c6eb4518bc766593750bdb9f1e93a5b393c Mon Sep 17 00:00:00 2001
+From 2ae8271cbff5f5948443ad9b2b914bd113cb6e1f Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 15 Apr 2015 12:54:56 -0500
+Date: Wed, 29 Apr 2015 10:20:28 -0500
 Subject: [PATCH] beagle_x15: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 108 insertions(+), 25 deletions(-)
 
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index 7957a73..c4ff87b 100644
+index f2be8d5..3e1ddeb 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
 @@ -77,51 +77,72 @@
@@ -107,7 +107,7 @@ index 7957a73..c4ff87b 100644
  		"fi;\0" \
  	"netboot=echo Booting from network ...; " \
  		"set env autoload no; " \
-@@ -141,15 +162,77 @@
+@@ -141,7 +162,70 @@
  			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -178,7 +178,10 @@ index 7957a73..c4ff87b 100644
 +		"fi;\0" \
  	DFUARGS \
  
- #define CONFIG_BOOTCOMMAND \
+ 
+@@ -152,10 +236,9 @@
+ 		"echo Booting into fastboot ...; fastboot;" \
+ 	"fi;" \
  	"run findfdt; " \
 +	"setenv mmcdev 0; " \
  	"run mmcboot;" \
@@ -186,7 +189,7 @@ index 7957a73..c4ff87b 100644
 -	"setenv bootpart 1:2; " \
 -	"setenv mmcroot /dev/mmcblk0p2 rw; " \
  	"run mmcboot;" \
- 
+ 	""
  
 -- 
 2.1.4
