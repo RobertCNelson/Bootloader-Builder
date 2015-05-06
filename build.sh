@@ -495,8 +495,9 @@ build_u_boot () {
 		#r3: ARM: BeagleBoard-x15: fix video related pinmuxing …
 		#r4: ARM: BeagleBoard-x15: Fix VIN pin muxing
 		#r5: usb: gadget: ether: fix build breakage / ARM: BeagleBoard-x15: Enable i2c5 clocks
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: ARM: DRA7xx: fix McAsp pinumux ti-u-boot-2014.07
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2014.07"
@@ -704,7 +705,7 @@ build_uboot_gnueabihf () {
 
 always_mainline () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	build_uboot_gnueabihf
 }
 
