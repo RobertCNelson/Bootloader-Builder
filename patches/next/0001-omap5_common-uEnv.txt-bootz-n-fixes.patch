@@ -1,6 +1,6 @@
-From df52f2be6485c46ed6ed1e8baa61b0235a00ce70 Mon Sep 17 00:00:00 2001
+From 744571f277a6fa95261e0c63368766fc73ce431c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 29 Apr 2015 10:35:37 -0500
+Date: Wed, 20 May 2015 14:43:49 -0500
 Subject: [PATCH] ti_omap5_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,10 +9,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 110 insertions(+), 25 deletions(-)
 
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index f2be8d5..ab8fc3c 100644
+index 3383491..55db20c 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
-@@ -77,51 +77,72 @@
+@@ -77,46 +77,67 @@
  	DEFAULT_LINUX_BOOT_ENV \
  	"console=" CONSOLEDEV ",115200n8\0" \
  	"fdtfile=undefined\0" \
@@ -36,14 +36,9 @@ index f2be8d5..ab8fc3c 100644
 -		"vram=${vram} " \
  		"root=${mmcroot} " \
 -		"rootfstype=${mmcrootfstype}\0" \
+-	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
- 	"netargs=setenv bootargs console=${console} " \
- 		"${optargs} " \
- 		"root=/dev/nfs " \
- 		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
- 		"ip=dhcp\0" \
--	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
 +	"loadbootscript=load mmc ${bootpart} ${loadaddr} boot.scr\0" \
  	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
  		"source ${loadaddr}\0" \
@@ -105,9 +100,9 @@ index f2be8d5..ab8fc3c 100644
 +				"fi;" \
 +			"done;" \
  		"fi;\0" \
- 	"netboot=echo Booting from network ...; " \
- 		"set env autoload no; " \
-@@ -141,7 +162,70 @@
+ 	"findfdt="\
+ 		"if test $board_name = omap5_uevm; then " \
+@@ -129,7 +150,70 @@
  			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -177,9 +172,9 @@ index f2be8d5..ab8fc3c 100644
 +			"fi;" \
 +		"fi;\0" \
  	DFUARGS \
+ 	NETARGS \
  
- 
-@@ -152,10 +236,11 @@
+@@ -141,10 +225,11 @@
  		"echo Booting into fastboot ...; fastboot;" \
  	"fi;" \
  	"run findfdt; " \
