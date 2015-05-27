@@ -32,7 +32,7 @@ if [ "x${ARCH}" = "xi686" ] ; then
 fi
 
 # Number of jobs for make to run in parallel.
-NUMJOBS=$(getconf _NPROCESSORS_ONLN)
+CORES=$(getconf _NPROCESSORS_ONLN)
 
 . ./version.sh
 
@@ -42,7 +42,7 @@ git="git am"
 unset git_opts
 git_no_edit=$(LC_ALL=C git help pull | grep -m 1 -e "--no-edit" || true)
 if [ ! "x${git_no_edit}" = "x" ] ; then
-	GIT_OPTS="--no-edit"
+	git_opts="--no-edit"
 fi
 
 mkdir -p ${DIR}/git/
@@ -57,14 +57,14 @@ if [ ! "${MIRROR}" ] ; then
 	MIRROR="http:"
 fi
 
-WGET="wget -c --directory-prefix=${DIR}/dl/"
+wget_dl="wget -c --directory-prefix=${DIR}/dl/"
 
 dl_gcc_generic () {
 	site="https://releases.linaro.org"
 	if [ ! -f ${DIR}/dl/${datestamp} ] ; then
 		echo "Installing: ${toolchain_name}"
 		echo "-----------------------------"
-		${WGET} ${site}/${version}/${filename}
+		${wget_dl} ${site}/${version}/${filename}
 		if [ -d ${DIR}/dl/${directory} ] ; then
 			rm -rf ${DIR}/dl/${directory} || true
 		fi
@@ -160,7 +160,7 @@ gcc_linaro_gnueabihf_4_9 () {
 }
 
 git_generic () {
-	echo "Starting ${project} build for: ${BOARD}"
+	echo "Starting ${project} build for: ${board}"
 	echo "-----------------------------"
 
 	if [ ! -f ${DIR}/git/${project}/.git/config ] ; then
@@ -168,7 +168,7 @@ git_generic () {
 	fi
 
 	cd ${DIR}/git/${project}/
-	git pull ${GIT_OPTS} || true
+	git pull ${git_opts} || true
 	git fetch --tags || true
 	cd -
 
@@ -192,14 +192,14 @@ git_cleanup () {
 
 	rm -rf ${DIR}/scratch/${project} || true
 
-	echo "${project} build completed for: ${BOARD}"
+	echo "${project} build completed for: ${board}"
 	echo "-----------------------------"
 }
 
 halt_patching_uboot () {
 	pwd
 	echo "-----------------------------"
-	echo "make ARCH=arm CROSS_COMPILE="${CC}" ${UBOOT_CONFIG}"
+	echo "make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config}"
 	echo "make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET}"
 	echo "-----------------------------"
 	exit
@@ -213,7 +213,7 @@ file_save () {
 		rm -rf "${DIR}/${filename_id}#*" || true
 	fi
 	touch ${DIR}/${filename_id}_${md5sum}
-	echo "${BOARD}#${MIRROR}/${filename_id}#${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
+	echo "${board}#${MIRROR}/${filename_id}#${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 }
 
 build_at91bootstrap () {
@@ -226,14 +226,14 @@ build_at91bootstrap () {
 
 	make CROSS_COMPILE="${CC}" clean >/dev/null 2>&1
 	make CROSS_COMPILE="${CC}" ${at91bootstrap_config} > /dev/null
-	echo "Building ${project}: ${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
-	make CROSS_COMPILE="${CC}" -j${NUMJOBS} > /dev/null
+	echo "Building ${project}: ${board}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
+	make CROSS_COMPILE="${CC}" -j${CORES} > /dev/null
 
-	mkdir -p ${DIR}/deploy/${BOARD}/
+	mkdir -p ${DIR}/deploy/${board}/
 
 	if [ -f ${DIR}/scratch/${project}/binaries/at91bootstrap.bin ] ; then
 		filename_search="binaries/at91bootstrap.bin"
-		filename_id="deploy/${BOARD}/${BOARD}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
+		filename_id="deploy/${board}/${board}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
 		file_save
 	fi
 
@@ -261,7 +261,7 @@ build_u_boot () {
 		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
-		case "${BOARD}" in
+		case "${board}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
@@ -306,7 +306,7 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		case "${BOARD}" in
+		case "${board}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
@@ -369,7 +369,7 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		case "${BOARD}" in
+		case "${board}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
@@ -432,7 +432,7 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		case "${BOARD}" in
+		case "${board}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
@@ -488,8 +488,8 @@ build_u_boot () {
 		esac
 	fi
 
-	if [ "x${BOARD}" = "xbeagle_x15_ti" ] ; then
-		git pull ${GIT_OPTS} https://github.com/rcn-ee/ti-uboot ti-u-boot-2014.07
+	if [ "x${board}" = "xbeagle_x15_ti" ] ; then
+		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2014.07
 		#r1: ARM: BeagleBoard-x15: Add mux data
 		#r2: CONFIG_SUPPORT_RAW_INITRD
 		#r3: ARM: BeagleBoard-x15: fix video related pinmuxing …
@@ -506,7 +506,7 @@ build_u_boot () {
 	fi
 
 	unset BUILDTARGET
-	if [ "x${BOARD}" = "xmx23_olinuxino" ] ; then
+	if [ "x${board}" = "xmx23_olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
 	fi
 
@@ -514,34 +514,34 @@ build_u_boot () {
 		echo "-----------------------------"
 		pwd
 		echo "-----------------------------"
-		echo "make ARCH=arm CROSS_COMPILE="${CC}" ${UBOOT_CONFIG}"
+		echo "make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config}"
 		echo "make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET}"
 		echo "-----------------------------"
 		exit
 	fi
 
-	uboot_filename="${BOARD}-${UGIT_VERSION}${RELEASE_VER}"
+	uboot_filename="${board}-${UGIT_VERSION}${RELEASE_VER}"
 
-	mkdir -p ${DIR}/deploy/${BOARD}
+	mkdir -p ${DIR}/deploy/${board}
 
 	unset pre_built
-	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.imx ] ; then
+	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.imx ] ; then
 		pre_built=1
 	fi
 
-	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.sb ] ; then
+	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.sb ] ; then
 		pre_built=1
 	fi
 
-	if [ -f ${DIR}/deploy/${BOARD}/MLO-${uboot_filename} ] ; then
+	if [ -f ${DIR}/deploy/${board}/MLO-${uboot_filename} ] ; then
 		pre_built=1
 	fi
 
-	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.sunxi ] ; then
+	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.sunxi ] ; then
 		pre_built=1
 	fi
 
-	if [ -f ${DIR}/deploy/${BOARD}/u-boot-${uboot_filename}.bin ] ; then
+	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.bin ] ; then
 		pre_built=1
 	fi
 
@@ -550,17 +550,17 @@ build_u_boot () {
 	fi
 
 	if [ ! "${pre_built}" ] ; then
-		make ARCH=arm CROSS_COMPILE="${CC}" ${UBOOT_CONFIG}
+		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config}
 		echo "Building ${project}: ${uboot_filename}"
 		echo "-----------------------------"
-		make ARCH=arm CROSS_COMPILE="${CC}" -j${NUMJOBS} ${BUILDTARGET}
+		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET}
 		echo "-----------------------------"
 
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.imx ] ; then
 			filename_search="u-boot.imx"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.imx"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.imx"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -568,7 +568,7 @@ build_u_boot () {
 		#Freescale mx23 targets just need u-boot.sb from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.sb ] ; then
 			filename_search="u-boot.sb"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.sb"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.sb"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -576,11 +576,11 @@ build_u_boot () {
 		#SPL based targets, need MLO and u-boot.img from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="MLO"
-			filename_id="deploy/${BOARD}/MLO-${uboot_filename}"
+			filename_id="deploy/${board}/MLO-${uboot_filename}"
 			file_save
 
 			filename_search="u-boot.img"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -588,11 +588,11 @@ build_u_boot () {
 		#SPL (i.mx6) targets, need SPL and u-boot.img from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/SPL ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="SPL"
-			filename_id="deploy/${BOARD}/SPL-${uboot_filename}"
+			filename_id="deploy/${board}/SPL-${uboot_filename}"
 			file_save
 
 			filename_search="u-boot.img"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -600,7 +600,7 @@ build_u_boot () {
 		#SPL: sunxi
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-sunxi-with-spl.bin ] ; then
 			filename_search="u-boot-sunxi-with-spl.bin"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.sunxi"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.sunxi"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -608,11 +608,11 @@ build_u_boot () {
 		#SPL: Atmel
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/boot.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="boot.bin"
-			filename_id="deploy/${BOARD}/boot-${uboot_filename}.bin"
+			filename_id="deploy/${board}/boot-${uboot_filename}.bin"
 			file_save
 
 			filename_search="u-boot.img"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -620,11 +620,11 @@ build_u_boot () {
 		#SPL: Samsung (old Atmel)
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="spl/u-boot-spl.bin"
-			filename_id="deploy/${BOARD}/u-boot-spl-${uboot_filename}.bin"
+			filename_id="deploy/${board}/u-boot-spl-${uboot_filename}.bin"
 			file_save
 
 			filename_search="u-boot.img"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -632,7 +632,7 @@ build_u_boot () {
 		#Just u-boot.bin
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.bin ] ; then
 			filename_search="u-boot.bin"
-			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.bin"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.bin"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -700,7 +700,7 @@ build_uboot_latest () {
 }
 
 build_uboot_eabi () {
-	UBOOT_CONFIG="${BOARD}_defconfig"
+	uboot_config="${board}_defconfig"
 	gcc_arm_embedded_4_9
 	build_uboot_stable
 	build_uboot_testing
@@ -708,7 +708,7 @@ build_uboot_eabi () {
 }
 
 build_uboot_gnueabihf () {
-	UBOOT_CONFIG="${BOARD}_defconfig"
+	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
 	build_uboot_testing
@@ -722,26 +722,26 @@ always_mainline () {
 }
 
 A10_OLinuXino_Lime () {
-	BOARD="A10-OLinuXino-Lime" ; always_mainline
+	board="A10-OLinuXino-Lime" ; always_mainline
 }
 
 A20_OLinuXino_Lime () {
-	BOARD="A20-OLinuXino-Lime" ; always_mainline
+	board="A20-OLinuXino-Lime" ; always_mainline
 }
 
 A20_OLinuXino_Lime2 () {
-	BOARD="A20-OLinuXino-Lime2" ; always_mainline
+	board="A20-OLinuXino-Lime2" ; always_mainline
 }
 
 A20_OLinuXino_MICRO () {
-	BOARD="A20-OLinuXino_MICRO" ; always_mainline
+	board="A20-OLinuXino_MICRO" ; always_mainline
 }
 
 am335x_evm () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="am335x_evm"
+	board="am335x_evm"
 	build_uboot_gnueabihf
 }
 
@@ -749,8 +749,8 @@ am335x_boneblack_flasher () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="am335x_boneblack"
-	UBOOT_CONFIG="am335x_evm_defconfig"
+	board="am335x_boneblack"
+	uboot_config="am335x_evm_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
 	build_uboot_testing
@@ -761,7 +761,7 @@ am43xx_evm () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="am43xx_evm"
+	board="am43xx_evm"
 	build_uboot_gnueabihf
 }
 
@@ -769,7 +769,7 @@ at91sam9x5ek () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="at91sam9x5ek_mmc"
+	board="at91sam9x5ek_mmc"
 	build_uboot_eabi
 
 	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
@@ -777,26 +777,26 @@ at91sam9x5ek () {
 }
 
 Bananapi () {
-	BOARD="Bananapi" ; always_mainline
+	board="Bananapi" ; always_mainline
 }
 
 Bananapro () {
-	BOARD="Bananapro" ; always_mainline
+	board="Bananapro" ; always_mainline
 }
 
 beagle_x15 () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="beagle_x15"
+	board="beagle_x15"
 	build_uboot_gnueabihf
 }
 
 beagle_x15_ti () {
 	cleanup
 
-	BOARD="beagle_x15_ti"
-	UBOOT_CONFIG="beagle_x15_config"
+	board="beagle_x15_ti"
+	uboot_config="beagle_x15_config"
 	gcc_linaro_gnueabihf_4_9
 	GIT_SHA="v2014.07"
 	build_u_boot
@@ -806,7 +806,7 @@ cm_fx6 () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="cm_fx6"
+	board="cm_fx6"
 	build_uboot_gnueabihf
 }
 
@@ -814,7 +814,7 @@ mx23_olinuxino () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="mx23_olinuxino"
+	board="mx23_olinuxino"
 	build_uboot_eabi
 }
 
@@ -822,7 +822,7 @@ mx51evk () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="mx51evk"
+	board="mx51evk"
 	build_uboot_gnueabihf
 }
 
@@ -830,7 +830,7 @@ mx53loco () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="mx53loco"
+	board="mx53loco"
 	build_uboot_gnueabihf
 }
 
@@ -838,7 +838,7 @@ mx6qsabresd () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="mx6qsabresd"
+	board="mx6qsabresd"
 	build_uboot_gnueabihf
 }
 
@@ -846,7 +846,7 @@ omap3_beagle () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="omap3_beagle"
+	board="omap3_beagle"
 	build_uboot_gnueabihf
 }
 
@@ -854,7 +854,7 @@ omap4_panda () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="omap4_panda"
+	board="omap4_panda"
 	build_uboot_gnueabihf
 }
 
@@ -862,7 +862,7 @@ omap5_uevm () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="omap5_uevm"
+	board="omap5_uevm"
 	build_uboot_gnueabihf
 }
 
@@ -870,7 +870,7 @@ rpi_2 () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="rpi_2"
+	board="rpi_2"
 	build_uboot_gnueabihf
 }
 
@@ -878,7 +878,7 @@ sama5d3xek () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="sama5d3xek_mmc"
+	board="sama5d3xek_mmc"
 	build_uboot_gnueabihf
 }
 
@@ -886,7 +886,7 @@ sama5d3_xplained () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="sama5d3_xplained_mmc"
+	board="sama5d3_xplained_mmc"
 	build_uboot_gnueabihf
 }
 
@@ -894,7 +894,7 @@ sama5d4ek () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="sama5d4ek_mmc"
+	board="sama5d4ek_mmc"
 	build_uboot_gnueabihf
 }
 
@@ -902,7 +902,7 @@ sama5d4_xplained () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="sama5d4_xplained_mmc"
+	board="sama5d4_xplained_mmc"
 	build_uboot_gnueabihf
 }
 
@@ -910,13 +910,13 @@ udoo () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="udoo_quad"
+	board="udoo_quad"
 	build_uboot_gnueabihf
 
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="udoo_dl"
+	board="udoo_dl"
 	build_uboot_gnueabihf
 }
 
@@ -924,7 +924,7 @@ vf610twr () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="vf610twr"
+	board="vf610twr"
 	build_uboot_gnueabihf
 }
 
@@ -932,8 +932,8 @@ wandboard () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="wandboard_quad"
-	UBOOT_CONFIG="${BOARD}_defconfig"
+	board="wandboard_quad"
+	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
 	build_uboot_testing
@@ -941,8 +941,8 @@ wandboard () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="wandboard_dl"
-	UBOOT_CONFIG="${BOARD}_defconfig"
+	board="wandboard_dl"
+	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
 	build_uboot_testing
@@ -950,8 +950,8 @@ wandboard () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="wandboard_solo"
-	UBOOT_CONFIG="${BOARD}_defconfig"
+	board="wandboard_solo"
+	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
 	build_uboot_testing
@@ -959,8 +959,8 @@ wandboard () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	BOARD="wandboard"
-	UBOOT_CONFIG="${BOARD}_defconfig"
+	board="wandboard"
+	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 #	build_uboot_stable
 #	build_uboot_testing
