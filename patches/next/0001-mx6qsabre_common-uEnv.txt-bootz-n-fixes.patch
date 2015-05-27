@@ -1,30 +1,18 @@
-From 342b648460c805e20c9bf677056ffa70af8f26cb Mon Sep 17 00:00:00 2001
+From 2d4223f7ac8a96eb79cd002882d6c4e2ea5c5f33 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 2 Sep 2014 20:22:14 -0500
+Date: Wed, 27 May 2015 10:36:59 -0500
 Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx6sabre_common.h | 144 +++++++++++++++++++++++++++++++++-----
- 1 file changed, 126 insertions(+), 18 deletions(-)
+ include/configs/mx6sabre_common.h | 139 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 121 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index e59a3b4..4f79c61 100644
+index 6a37ae7..f790695 100644
 --- a/include/configs/mx6sabre_common.h
 +++ b/include/configs/mx6sabre_common.h
-@@ -48,6 +48,11 @@
- 
- #define CONFIG_MMC
- #define CONFIG_CMD_MMC
-+#define CONFIG_FS_FAT
-+#define CONFIG_FS_EXT4
-+#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
-+#define CONFIG_CMD_BOOTZ			/* bootz zImage support */
-+#define CONFIG_SUPPORT_RAW_INITRD		/* bootz raw initrd support */
- #define CONFIG_GENERIC_MMC
- #define CONFIG_BOUNCE_BUFFER
- #define CONFIG_CMD_EXT2
-@@ -124,14 +129,18 @@
+@@ -83,14 +83,18 @@
  	"image=zImage\0" \
  	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
  	"fdt_addr=0x18000000\0" \
@@ -45,7 +33,7 @@ index e59a3b4..4f79c61 100644
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
  			"setenv get_cmd dhcp; " \
-@@ -146,15 +155,55 @@
+@@ -105,15 +109,55 @@
  			"fi; "	\
  		"fi\0" \
  	EMMC_ENV	  \
@@ -106,7 +94,7 @@ index e59a3b4..4f79c61 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -192,20 +241,79 @@
+@@ -151,20 +195,79 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -198,5 +186,5 @@ index e59a3b4..4f79c61 100644
  #define CONFIG_ARP_TIMEOUT     200UL
  
 -- 
-2.1.0
+2.1.4
 

@@ -1,16 +1,16 @@
-From 1fcf6ec7b55077e2f06f0ed303f913276c2ab58a Mon Sep 17 00:00:00 2001
+From 39f7bf700d6ffbee00f7d3d33f61732e40afde14 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 2 Sep 2014 20:26:16 -0500
+Date: Wed, 27 May 2015 10:43:18 -0500
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/udoo/1066mhz_4x256mx16_dl.cfg |  58 +++++++++++++++
- board/udoo/ddr-setup_dl.cfg         |  84 +++++++++++++++++++++
+ board/udoo/1066mhz_4x256mx16_dl.cfg |  58 ++++++++++++++++
+ board/udoo/ddr-setup_dl.cfg         |  84 +++++++++++++++++++++++
  board/udoo/udoo-dl.cfg              |  29 ++++++++
  configs/udoo_dl_defconfig           |   3 +
- include/configs/udoo.h              | 142 +++++++++++++++++++++++++++++++-----
- 5 files changed, 298 insertions(+), 18 deletions(-)
+ include/configs/udoo.h              | 133 +++++++++++++++++++++++++++++++-----
+ 5 files changed, 290 insertions(+), 17 deletions(-)
  create mode 100644 board/udoo/1066mhz_4x256mx16_dl.cfg
  create mode 100644 board/udoo/ddr-setup_dl.cfg
  create mode 100644 board/udoo/udoo-dl.cfg
@@ -207,40 +207,18 @@ index 0000000..46953c1
 +#include "clocks.cfg"
 diff --git a/configs/udoo_dl_defconfig b/configs/udoo_dl_defconfig
 new file mode 100644
-index 0000000..5dc9016
+index 0000000..a76f6f5
 --- /dev/null
 +++ b/configs/udoo_dl_defconfig
 @@ -0,0 +1,3 @@
-+CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/udoo/udoo-dl.cfg,MX6DL,DDR_MB=1024"
 +CONFIG_ARM=y
 +CONFIG_TARGET_UDOO=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/udoo/udoo-dl.cfg,MX6DL,DDR_MB=1024"
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
-index 700e9c1..100d5ad 100644
+index fce2b9b..dddcc0c 100644
 --- a/include/configs/udoo.h
 +++ b/include/configs/udoo.h
-@@ -78,7 +78,7 @@
- #define CONFIG_CMD_BMODE
- #define CONFIG_CMD_SETEXPR
- 
--#define CONFIG_BOOTDELAY		3
-+#define CONFIG_BOOTDELAY		1
- 
- #define CONFIG_SYS_MEMTEST_START	0x10000000
- #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 500 * SZ_1M)
-@@ -96,24 +96,34 @@
- #define CONFIG_BOUNCE_BUFFER
- #define CONFIG_CMD_EXT2
- #define CONFIG_CMD_FAT
-+#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
- #define CONFIG_DOS_PARTITION
- 
-+#if defined(CONFIG_MX6DL) || defined(CONFIG_MX6S)
-+#define CONFIG_DEFAULT_FDT_FILE		"imx6dl-udoo.dtb"
-+#elif defined(CONFIG_MX6Q)
- #define CONFIG_DEFAULT_FDT_FILE		"imx6q-udoo.dtb"
-+#endif
- 
+@@ -65,17 +65,21 @@
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
@@ -264,7 +242,7 @@ index 700e9c1..100d5ad 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -128,15 +138,55 @@
+@@ -90,15 +94,55 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -325,7 +303,7 @@ index 700e9c1..100d5ad 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -174,19 +224,74 @@
+@@ -136,19 +180,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -408,16 +386,8 @@ index 700e9c1..100d5ad 100644
 -	   "else run netboot; fi"
 +	   "run mmcboot; "
  
- /* Miscellaneous configurable options */
- #define CONFIG_SYS_LONGHELP
-@@ -228,6 +333,7 @@
- 
- #define CONFIG_OF_LIBFDT
- #define CONFIG_CMD_BOOTZ
-+#define CONFIG_SUPPORT_RAW_INITRD
- 
- #ifndef CONFIG_SYS_DCACHE_OFF
- #define CONFIG_CMD_CACHE
+ /* Print Buffer Size */
+ #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
 -- 
-2.1.0
+2.1.4
 
