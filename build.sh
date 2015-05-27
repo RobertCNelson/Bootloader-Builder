@@ -932,33 +932,6 @@ wandboard () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="wandboard_quad"
-	uboot_config="${board}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-	build_uboot_testing
-
-	cleanup
-	#transitioned_to_testing="true"
-
-	board="wandboard_dl"
-	uboot_config="${board}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-	build_uboot_testing
-
-	cleanup
-	#transitioned_to_testing="true"
-
-	board="wandboard_solo"
-	uboot_config="${board}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-	build_uboot_testing
-
-	cleanup
-	#transitioned_to_testing="true"
-
 	board="wandboard"
 	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
