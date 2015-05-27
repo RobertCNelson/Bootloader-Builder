@@ -482,7 +482,7 @@ build_u_boot () {
 		vf610twr)
 			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		wandboard_quad|wandboard_dl|wandboard_solo)
+		wandboard)
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		esac
@@ -577,6 +577,18 @@ build_u_boot () {
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="MLO"
 			filename_id="deploy/${BOARD}/MLO-${uboot_filename}"
+			file_save
+
+			filename_search="u-boot.img"
+			filename_id="deploy/${BOARD}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
+
+		#SPL (i.mx6) targets, need SPL and u-boot.img from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/SPL ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
+			filename_search="SPL"
+			filename_id="deploy/${BOARD}/SPL-${uboot_filename}"
 			file_save
 
 			filename_search="u-boot.img"
@@ -921,19 +933,40 @@ wandboard () {
 	#transitioned_to_testing="true"
 
 	BOARD="wandboard_quad"
-	build_uboot_gnueabihf
+	UBOOT_CONFIG="${BOARD}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+	build_uboot_testing
 
 	cleanup
 	#transitioned_to_testing="true"
 
 	BOARD="wandboard_dl"
-	build_uboot_gnueabihf
+	UBOOT_CONFIG="${BOARD}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+	build_uboot_testing
 
 	cleanup
 	#transitioned_to_testing="true"
 
 	BOARD="wandboard_solo"
-	build_uboot_gnueabihf
+	UBOOT_CONFIG="${BOARD}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+	build_uboot_testing
+
+	cleanup
+	#transitioned_to_testing="true"
+
+	BOARD="wandboard"
+	UBOOT_CONFIG="${BOARD}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+#	build_uboot_stable
+#	build_uboot_testing
+	build_uboot_latest
+
+#	build_uboot_gnueabihf
 }
 
 A10_OLinuXino_Lime

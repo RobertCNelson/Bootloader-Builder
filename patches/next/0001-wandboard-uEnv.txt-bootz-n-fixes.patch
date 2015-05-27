@@ -1,46 +1,94 @@
-From d9048eae6f188597afbd61665693a35a5680c3fc Mon Sep 17 00:00:00 2001
+From 3db8924f63be3141c5cb899a6abec6412e8960b7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 10 Nov 2014 09:36:07 -0600
+Date: Wed, 27 May 2015 10:06:38 -0500
 Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/wandboard.h | 145 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 126 insertions(+), 19 deletions(-)
+ board/wandboard/wandboard.c |  26 +++++++-
+ include/configs/wandboard.h | 149 ++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 154 insertions(+), 21 deletions(-)
 
+diff --git a/board/wandboard/wandboard.c b/board/wandboard/wandboard.c
+index 90625ab..0af63d2 100644
+--- a/board/wandboard/wandboard.c
++++ b/board/wandboard/wandboard.c
+@@ -50,6 +50,7 @@ DECLARE_GLOBAL_DATA_PTR;
+ #define USDHC1_CD_GPIO		IMX_GPIO_NR(1, 2)
+ #define USDHC3_CD_GPIO		IMX_GPIO_NR(3, 9)
+ #define ETH_PHY_RESET		IMX_GPIO_NR(3, 29)
++#define REV_DETECTION		IMX_GPIO_NR(2, 28)
+ 
+ int dram_init(void)
+ {
+@@ -105,6 +106,10 @@ static iomux_v3_cfg_t const enet_pads[] = {
+ 	IOMUX_PADS(PAD_EIM_D29__GPIO3_IO29    | MUX_PAD_CTRL(NO_PAD_CTRL)),
+ };
+ 
++static iomux_v3_cfg_t const rev_detection_pad[] = {
++	IOMUX_PADS(PAD_EIM_EB0__GPIO2_IO28  | MUX_PAD_CTRL(NO_PAD_CTRL)),
++};
++
+ static void setup_iomux_uart(void)
+ {
+ 	SETUP_IOMUX_PADS(uart1_pads);
+@@ -393,6 +398,17 @@ static const struct boot_mode board_boot_modes[] = {
+ };
+ #endif
+ 
++static bool is_revc1(void)
++{
++	SETUP_IOMUX_PADS(rev_detection_pad);
++	gpio_direction_input(REV_DETECTION);
++
++	if (gpio_get_value(REV_DETECTION))
++		return true;
++	else
++		return false;
++}
++
+ int board_late_init(void)
+ {
+ #ifdef CONFIG_CMD_BMODE
+@@ -404,6 +420,11 @@ int board_late_init(void)
+ 		setenv("board_rev", "MX6Q");
+ 	else
+ 		setenv("board_rev", "MX6DL");
++
++	if (is_revc1())
++		setenv("board_name", "C1");
++	else
++		setenv("board_name", "B1");
+ #endif
+ 	return 0;
+ }
+@@ -424,7 +445,10 @@ int board_init(void)
+ 
+ int checkboard(void)
+ {
+-	puts("Board: Wandboard\n");
++	if (is_revc1())
++		puts("Board: Wandboard rev C1\n");
++	else
++		puts("Board: Wandboard rev B1\n");
+ 
+ 	return 0;
+ }
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
-index 809017c..1bc51db 100644
+index 69590ad..8b43878 100644
 --- a/include/configs/wandboard.h
 +++ b/include/configs/wandboard.h
-@@ -51,7 +51,7 @@
- #define CONFIG_CMD_BMODE
- #define CONFIG_CMD_SETEXPR
- 
--#define CONFIG_BOOTDELAY		5
-+#define CONFIG_BOOTDELAY		1
- 
- #define CONFIG_SYS_MEMTEST_START	0x10000000
- #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 500 * SZ_1M)
-@@ -76,6 +76,8 @@
- #define CONFIG_BOUNCE_BUFFER
- #define CONFIG_CMD_EXT2
- #define CONFIG_CMD_FAT
-+#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
- #define CONFIG_DOS_PARTITION
- 
- /* USB Configs */
-@@ -133,17 +135,21 @@
+@@ -95,17 +95,21 @@
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
 -	"console=ttymxc0\0" \
 +	"console=ttymxc0,115200\0" \
  	"splashpos=m,m\0" \
+ 	"fdtfile=undefined\0" \
  	"fdt_high=0xffffffff\0" \
-+	"rdaddr=0x12A00000\0" \
  	"initrd_high=0xffffffff\0" \
- 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
++	"rdaddr=0x12A00000\0" \
  	"fdt_addr=0x18000000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
@@ -55,7 +103,7 @@ index 809017c..1bc51db 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -158,8 +164,11 @@
+@@ -120,8 +124,11 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -69,16 +117,15 @@ index 809017c..1bc51db 100644
  	"videoargs=" \
  		"setenv nextcon 0; " \
  		"if hdmidet; then " \
-@@ -190,9 +199,46 @@
+@@ -152,8 +159,110 @@
  		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
 -	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
--	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
--	"mmcboot=echo Booting from mmc ...; " \
+-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdtfile}\0" \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
-+	"loadfdt=echo loading ${fdtdir}/${fdt_file} ...;  load mmc ${bootpart} ${fdt_addr} ${fdtdir}/${fdt_file}\0" \
++	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...;  load mmc ${bootpart} ${fdt_addr} ${fdtdir}/${fdtfile}\0" \
 +	"mmcboot=mmc dev ${mmcdev}; " \
 +		"if mmc rescan; then " \
 +			"echo SD/MMC found on device ${mmcdev};" \
@@ -103,8 +150,8 @@ index 809017c..1bc51db 100644
 +					"env import -t ${loadaddr} ${filesize};" \
 +					"echo Loaded environment from /boot/uEnv.txt;" \
 +					"if test -n ${dtb}; then " \
-+						"setenv fdt_file ${dtb};" \
-+						"echo Using: dtb=${fdt_file} ...;" \
++						"setenv fdtfile ${dtb};" \
++						"echo Using: dtb=${fdtfile} ...;" \
 +					"fi;" \
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
@@ -115,15 +162,6 @@ index 809017c..1bc51db 100644
 +				"fi;" \
 +			"done;" \
 +		"fi;\0" \
-+	"mmcboot_old=echo Booting from mmc ...; " \
- 		"run mmcargs; " \
- 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
- 			"if run loadfdt; then " \
-@@ -216,19 +262,79 @@
- 			"fi; " \
- 		"else " \
- 			"bootz; " \
-+		"fi;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
 +		"setenv bootfile vmlinuz-${uname_r}; " \
@@ -131,34 +169,34 @@ index 809017c..1bc51db 100644
 +			"echo loading ${bootdir}/${bootfile} ...; "\
 +			"run loadimage;" \
 +			"setenv fdtdir /boot/dtbs/${uname_r}; " \
-+			"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++			"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +				"run loadfdt;" \
 +			"else " \
 +				"setenv fdtdir /usr/lib/linux-image-${uname_r}; " \
-+				"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++				"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +					"run loadfdt;" \
 +				"else " \
 +					"setenv fdtdir /lib/firmware/${uname_r}/device-tree; " \
-+					"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++					"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +						"run loadfdt;" \
 +					"else " \
 +						"setenv fdtdir /boot/dtb-${uname_r}; " \
-+						"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++						"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +							"run loadfdt;" \
 +						"else " \
 +							"setenv fdtdir /boot/dtbs; " \
-+							"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++							"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +								"run loadfdt;" \
 +							"else " \
 +								"setenv fdtdir /boot/dtb; " \
-+								"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++								"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +									"run loadfdt;" \
 +								"else " \
 +									"setenv fdtdir /boot; " \
-+									"if test -e mmc ${bootpart} ${fdtdir}/${fdt_file}; then " \
++									"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
 +										"run loadfdt;" \
 +									"else " \
-+										"echo; echo unable to find ${fdt_file} ...; echo booting legacy ...;"\
++										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
 +										"run mmcargs;" \
 +										"echo debug: [${bootargs}] ... ;" \
 +										"echo debug: [bootz ${loadaddr}] ... ;" \
@@ -187,9 +225,30 @@ index 809017c..1bc51db 100644
 +				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
- 		"fi;\0"
++		"fi;\0" \
++	"mmcboot_old=echo Booting from mmc ...; " \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+@@ -194,25 +303,25 @@
+ 			"bootz; " \
+ 		"fi;\0" \
+ 	"findfdt="\
+-		"if test $board_rev = MX6Q ; then " \
++		"if test $board_name = C1 && test $board_rev = MX6Q ; then " \
+ 			"setenv fdtfile imx6q-wandboard.dtb; fi; " \
+-		"if test $board_rev = MX6DL ; then " \
++		"if test $board_name = C1 && test $board_rev = MX6DL ; then " \
+ 			"setenv fdtfile imx6dl-wandboard.dtb; fi; " \
++		"if test $board_name = B1 && test $board_rev = MX6Q ; then " \
++			"setenv fdtfile imx6q-wandboard-revb1.dtb; fi; " \
++		"if test $board_name = B1 && test $board_rev = MX6DL ; then " \
++			"setenv fdtfile imx6dl-wandboard-revb1.dtb; fi; " \
+ 		"if test $fdtfile = undefined; then " \
+ 			"echo WARNING: Could not determine dtb to use; fi; \0" \
  
  #define CONFIG_BOOTCOMMAND \
+-	   "run findfdt; " \
 -	   "mmc dev ${mmcdev}; if mmc rescan; then " \
 -		   "if run loadbootscript; then " \
 -			   "run bootscript; " \
@@ -200,6 +259,7 @@ index 809017c..1bc51db 100644
 -			   "fi; " \
 -		   "fi; " \
 -	   "else run netboot; fi"
++	"run findfdt; " \
 +	"setenv mmcdev 0;" \
 +	"setenv mmckernel 0;" \
 +	"run mmcboot;" \
@@ -207,16 +267,8 @@ index 809017c..1bc51db 100644
 +	"setenv mmckernel 0;" \
 +	"run mmcboot;"
  
- /* Miscellaneous configurable options */
- #define CONFIG_SYS_LONGHELP
-@@ -283,6 +389,7 @@
- 
- #define CONFIG_OF_LIBFDT
- #define CONFIG_CMD_BOOTZ
-+#define CONFIG_SUPPORT_RAW_INITRD
- 
- #ifndef CONFIG_SYS_DCACHE_OFF
- #define CONFIG_CMD_CACHE
+ /* Physical Memory Map */
+ #define CONFIG_NR_DRAM_BANKS		1
 -- 
-2.1.1
+2.1.4
 
