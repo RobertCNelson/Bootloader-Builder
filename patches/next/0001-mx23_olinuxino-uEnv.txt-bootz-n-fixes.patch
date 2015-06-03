@@ -1,6 +1,6 @@
-From 1866a7230036f476df69511dd24a626eef124adf Mon Sep 17 00:00:00 2001
+From a4a4cfc588c889873e5a31e097287abc7255e53f Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 2 Sep 2014 20:16:40 -0500
+Date: Wed, 3 Jun 2015 14:48:45 -0500
 Subject: [PATCH] mx23_olinuxino: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,11 +9,11 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 104 insertions(+), 16 deletions(-)
 
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index e377fea..8030025 100644
+index 65203a0..1827e2b 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
-@@ -26,6 +26,14 @@
- #define CONFIG_CMD_NET
+@@ -25,6 +25,14 @@
+ #define CONFIG_CMD_MMC
  #define CONFIG_CMD_USB
  
 +#define CONFIG_CMD_FAT
@@ -27,7 +27,7 @@ index e377fea..8030025 100644
  /* Memory configuration */
  #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
  #define PHYS_SDRAM_1			0x40000000	/* Base address */
-@@ -66,7 +74,7 @@
+@@ -65,7 +73,7 @@
  #endif
  
  /* Booting Linux */
@@ -36,7 +36,7 @@ index e377fea..8030025 100644
  #define CONFIG_BOOTFILE		"uImage"
  #define CONFIG_LOADADDR		0x42000000
  #define CONFIG_SYS_LOAD_ADDR	CONFIG_LOADADDR
-@@ -87,20 +95,58 @@
+@@ -86,20 +94,58 @@
  	"console=ttyAMA0\0" \
  	"fdt_file=imx23-olinuxino.dtb\0" \
  	"fdt_addr=0x41000000\0" \
@@ -100,7 +100,7 @@ index e377fea..8030025 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -139,19 +185,61 @@
+@@ -138,19 +184,61 @@
  			"fi; " \
  		"else " \
  			"bootm; " \
@@ -173,5 +173,5 @@ index e377fea..8030025 100644
  /* The rest of the configuration is shared */
  #include <configs/mxs.h>
 -- 
-2.1.0
+2.1.4
 

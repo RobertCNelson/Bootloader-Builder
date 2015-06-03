@@ -1,6 +1,6 @@
-From eddf770389c7cdb139e42f9c1ec633979d2ee036 Mon Sep 17 00:00:00 2001
+From b8f6cf6466ec044a76ef972cf3e932b5a32df777 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 1 Apr 2015 12:57:46 -0500
+Date: Wed, 3 Jun 2015 15:24:35 -0500
 Subject: [PATCH] sama5d3_xplained: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -117,7 +117,7 @@ index 92ed4e8..1729b5e 100644
  }
  
 diff --git a/include/configs/at91-sama5_common.h b/include/configs/at91-sama5_common.h
-index dedb785..0708559 100644
+index 9289964..0021bf9 100644
 --- a/include/configs/at91-sama5_common.h
 +++ b/include/configs/at91-sama5_common.h
 @@ -35,7 +35,7 @@
@@ -129,8 +129,8 @@ index dedb785..0708559 100644
  
  /*
   * BOOTP options
-@@ -57,9 +57,57 @@
- #define CONFIG_CMD_SETEXPR
+@@ -56,9 +56,57 @@
+ #define CONFIG_CMD_DHCP
  
  #ifdef CONFIG_SYS_USE_MMC
 -#define CONFIG_BOOTARGS							\
@@ -191,7 +191,7 @@ index dedb785..0708559 100644
  #define CONFIG_BOOTARGS							\
  	"console=ttyS0,115200 earlyprintk "				\
 diff --git a/include/configs/sama5d3_xplained.h b/include/configs/sama5d3_xplained.h
-index bfd8aa7..17d7376 100644
+index c4141a0..36ffbd5 100644
 --- a/include/configs/sama5d3_xplained.h
 +++ b/include/configs/sama5d3_xplained.h
 @@ -71,6 +71,21 @@
@@ -216,7 +216,7 @@ index bfd8aa7..17d7376 100644
  /* Ethernet Hardware */
  #define CONFIG_MACB
  #define CONFIG_RMII
-@@ -109,8 +124,14 @@
+@@ -108,8 +123,14 @@
  #if defined(CONFIG_CMD_USB) || defined(CONFIG_CMD_MMC)
  #define CONFIG_CMD_FAT
  #define CONFIG_FAT_WRITE
@@ -231,7 +231,7 @@ index bfd8aa7..17d7376 100644
  #endif
  
  #define CONFIG_SYS_LOAD_ADDR			0x22000000 /* load address */
-@@ -131,9 +152,6 @@
+@@ -130,9 +151,6 @@
  #define FAT_ENV_FILE		"uboot.env"
  #define FAT_ENV_DEVICE_AND_PART	"0"
  #define CONFIG_ENV_SIZE		0x4000

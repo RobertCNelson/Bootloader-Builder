@@ -1,6 +1,6 @@
-From 28a0cfb195507d91084ba5a614157221b3b26fcf Mon Sep 17 00:00:00 2001
+From 914b65ce5b59918dc64fac032bec13c985daf4d0 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 1 Apr 2015 13:03:32 -0500
+Date: Wed, 3 Jun 2015 15:59:05 -0500
 Subject: [PATCH] sama5d4ek: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,7 +10,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  2 files changed, 54 insertions(+), 7 deletions(-)
 
 diff --git a/include/configs/at91-sama5_common.h b/include/configs/at91-sama5_common.h
-index dedb785..f4733f4 100644
+index 9289964..af65566 100644
 --- a/include/configs/at91-sama5_common.h
 +++ b/include/configs/at91-sama5_common.h
 @@ -35,7 +35,7 @@
@@ -22,8 +22,8 @@ index dedb785..f4733f4 100644
  
  /*
   * BOOTP options
-@@ -57,9 +57,50 @@
- #define CONFIG_CMD_SETEXPR
+@@ -56,9 +56,50 @@
+ #define CONFIG_CMD_DHCP
  
  #ifdef CONFIG_SYS_USE_MMC
 -#define CONFIG_BOOTARGS							\
