@@ -1,6 +1,6 @@
-From 744571f277a6fa95261e0c63368766fc73ce431c Mon Sep 17 00:00:00 2001
+From 5461b2a6673a36eca518eaecce9167ebf3cd590f Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 20 May 2015 14:43:49 -0500
+Date: Wed, 17 Jun 2015 16:50:47 -0500
 Subject: [PATCH] beagle_x15: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 108 insertions(+), 25 deletions(-)
 
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index 3383491..615d5cd 100644
+index 3da7816..d89b2fa 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
 @@ -77,46 +77,67 @@
@@ -185,7 +185,7 @@ index 3383491..615d5cd 100644
 -	"setenv mmcroot /dev/mmcblk0p2 rw; " \
  	"run mmcboot;" \
  	""
- 
+ #endif
 -- 
 2.1.4
 
