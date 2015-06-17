@@ -741,14 +741,14 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
 
 am335x_boneblack_flasher () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
@@ -852,7 +852,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
