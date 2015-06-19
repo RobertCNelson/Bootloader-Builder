@@ -498,8 +498,9 @@ build_u_boot () {
 		#r4: ARM: BeagleBoard-x15: Fix VIN pin muxing
 		#r5: usb: gadget: ether: fix build breakage / ARM: BeagleBoard-x15: Enable i2c5 clocks
 		#r6: ARM: DRA7xx: fix McAsp pinumux ti-u-boot-2014.07
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=fb6ab76dad21e12b12d0f824fcfa2609a26ec695
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2014.07"
