@@ -432,8 +432,6 @@ build_u_boot () {
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		git revert --no-edit 0751b138064db28f0866f0c2439afb8b3975180c -s
-
 		case "${board}" in
 		am335x_evm)
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
