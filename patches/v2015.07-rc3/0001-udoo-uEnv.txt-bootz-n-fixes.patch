@@ -1,6 +1,6 @@
-From 39f7bf700d6ffbee00f7d3d33f61732e40afde14 Mon Sep 17 00:00:00 2001
+From 65eb21f82f4c725030b49601a191683cd8783cf3 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 27 May 2015 10:43:18 -0500
+Date: Tue, 30 Jun 2015 08:58:13 -0500
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -8,9 +8,9 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/udoo/1066mhz_4x256mx16_dl.cfg |  58 ++++++++++++++++
  board/udoo/ddr-setup_dl.cfg         |  84 +++++++++++++++++++++++
  board/udoo/udoo-dl.cfg              |  29 ++++++++
- configs/udoo_dl_defconfig           |   3 +
+ configs/udoo_dl_defconfig           |   5 ++
  include/configs/udoo.h              | 133 +++++++++++++++++++++++++++++++-----
- 5 files changed, 290 insertions(+), 17 deletions(-)
+ 5 files changed, 292 insertions(+), 17 deletions(-)
  create mode 100644 board/udoo/1066mhz_4x256mx16_dl.cfg
  create mode 100644 board/udoo/ddr-setup_dl.cfg
  create mode 100644 board/udoo/udoo-dl.cfg
@@ -207,18 +207,20 @@ index 0000000..46953c1
 +#include "clocks.cfg"
 diff --git a/configs/udoo_dl_defconfig b/configs/udoo_dl_defconfig
 new file mode 100644
-index 0000000..a76f6f5
+index 0000000..47a2bab
 --- /dev/null
 +++ b/configs/udoo_dl_defconfig
-@@ -0,0 +1,3 @@
+@@ -0,0 +1,5 @@
 +CONFIG_ARM=y
 +CONFIG_TARGET_UDOO=y
 +CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/udoo/udoo-dl.cfg,MX6DL,DDR_MB=1024"
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
-index fce2b9b..dddcc0c 100644
+index 910bf01..003c791 100644
 --- a/include/configs/udoo.h
 +++ b/include/configs/udoo.h
-@@ -65,17 +65,21 @@
+@@ -63,17 +63,21 @@
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
@@ -242,7 +244,7 @@ index fce2b9b..dddcc0c 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -90,15 +94,55 @@
+@@ -88,15 +92,55 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -303,7 +305,7 @@ index fce2b9b..dddcc0c 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -136,19 +180,74 @@
+@@ -134,19 +178,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
