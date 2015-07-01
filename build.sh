@@ -108,7 +108,7 @@ gcc_arm_embedded_4_9 () {
 
 		gcc_version="4.9"
 		release="15.02"
-		target="arm-eabi"
+		target="arm-none-eabi"
 
 		version="${release}/components/toolchain/binaries/${target}"
 		filename="gcc-linaro-${gcc_version}-20${release}-3-x86_64_arm-eabi.tar.xz"
@@ -116,7 +116,7 @@ gcc_arm_embedded_4_9 () {
 
 		datestamp="${gcc_version}-20${release}-3-${target}"
 
-		binary="bin/${target}-"
+		binary="bin/arm-eabi-"
 
 	dl_gcc_generic
 }
