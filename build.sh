@@ -251,14 +251,8 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_old}"
 	if [ "${old}" ] ; then
 		#r1: initial release
-		#r2: am335x_evm: some users are setting dtb=fullpath to the full path...
-		#r3: am335x_evm: fix spl boot in raw mode
-		#r4: omap: raw mode broken, revert...
-		#r5: omap: spl: mmc: Fix raw boot mode
-		#r6: am335x_evm: enable USB Mass Storage function
-		#r7: am335x_evm: force USB Mass Storage on boot failure...
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -269,32 +263,50 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
+		at91sam9x5ek_mmc)
+			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		beagle_x15)
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx23_olinuxino)
+			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx51evk)
+			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx53loco)
+			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx6qsabresd)
+			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap3_beagle)
+			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap4_panda)
+			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap5_uevm)
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		sama5d3xek_mmc)
+			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d3_xplained_mmc)
+			${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d4ek_mmc)
+			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		udoo_quad|udoo_dl)
+			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		vf610twr)
 			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		*)
-			#Atmel:
-			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-
-			#Freescale:
-			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		wandboard_quad|wandboard_dl|wandboard_solo)
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-
-			#TI:
-			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		esac
 	fi
@@ -356,7 +368,7 @@ build_u_boot () {
 		vf610twr)
 			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		wandboard_quad|wandboard_dl|wandboard_solo)
+		wandboard)
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		esac
@@ -718,7 +730,7 @@ build_uboot_gnueabihf () {
 
 always_mainline () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	build_uboot_gnueabihf
 }
 
@@ -740,14 +752,14 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
 
 am335x_boneblack_flasher () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
@@ -759,14 +771,14 @@ am335x_boneblack_flasher () {
 
 am43xx_evm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="am43xx_evm" ; build_uboot_gnueabihf
 }
 
 at91sam9x5ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="at91sam9x5ek_mmc"
 	build_uboot_eabi
@@ -785,7 +797,7 @@ Bananapro () {
 
 beagle_x15 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="beagle_x15" ; build_uboot_gnueabihf
 }
@@ -802,117 +814,117 @@ beagle_x15_ti () {
 
 cm_fx6 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="cm_fx6" ; build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
 
 mx51evk () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="mx51evk" ; build_uboot_gnueabihf
 }
 
 mx53loco () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="mx53loco" ; build_uboot_gnueabihf
 }
 
 mx6qsabresd () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
 
 omap3_beagle () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
 
 omap4_panda () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="omap4_panda" ; build_uboot_gnueabihf
 }
 
 omap5_uevm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
 rpi_2 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="rpi_2" ; build_uboot_gnueabihf
 }
 
 sama5d3xek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="sama5d4ek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 udoo () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="udoo_quad" ; build_uboot_gnueabihf
 
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="udoo_dl" ; build_uboot_gnueabihf
 }
 
 vf610twr () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="vf610twr" ; build_uboot_gnueabihf
 }
 
 wandboard () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 
 	board="wandboard" ; build_uboot_gnueabihf
 }
