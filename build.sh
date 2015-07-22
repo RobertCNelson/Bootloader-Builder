@@ -501,19 +501,14 @@ build_u_boot () {
 	fi
 
 	if [ "x${board}" = "xbeagle_x15_ti" ] ; then
-		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2014.07
-		#r1: ARM: BeagleBoard-x15: Add mux data
-		#r2: CONFIG_SUPPORT_RAW_INITRD
-		#r3: ARM: BeagleBoard-x15: fix video related pinmuxing …
-		#r4: ARM: BeagleBoard-x15: Fix VIN pin muxing
-		#r5: usb: gadget: ether: fix build breakage / ARM: BeagleBoard-x15: Enable i2c5 clocks
-		#r6: ARM: DRA7xx: fix McAsp pinumux ti-u-boot-2014.07
-		#r7: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=fb6ab76dad21e12b12d0f824fcfa2609a26ec695
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2015.07
+		#r1: ARM: DRA7: Remove Unused pinmux definitions
+		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=024c903babcb743b5e8803160101bc3e54d2c46c
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
-		p_dir="${DIR}/patches/v2014.07"
+		p_dir="${DIR}/patches/v2015.07"
 		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 
 	fi
@@ -808,7 +803,7 @@ beagle_x15_ti () {
 	board="beagle_x15_ti"
 	uboot_config="beagle_x15_config"
 	gcc_linaro_gnueabihf_4_9
-	GIT_SHA="v2014.07"
+	GIT_SHA="v2015.07"
 	build_u_boot
 }
 
