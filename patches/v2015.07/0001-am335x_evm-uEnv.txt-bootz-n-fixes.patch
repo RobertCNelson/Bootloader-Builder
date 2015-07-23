@@ -71,7 +71,7 @@ index 035c156..7ada553 100644
 +	"hostname=\0" \
 +	"device=eth0\0" \
 +	"autoconf=off\0" \
-+	"root_dir=/home/userid/targetNFS\0" \
++	"root_dir=/home/userid/targetNFS\0" "tftp_dir=\0" \
 +	"nfs_options=,vers=3\0" \
 +	"nfsrootfstype=ext4 rootwait fixrtc\0" \
 +	"nfsargs=setenv bootargs console=${console} " \
@@ -217,8 +217,8 @@ index 035c156..7ada553 100644
 +		"setenv autoload no; " \
 +		"setenv serverip ${server_ip}; " \
 +		"setenv ipaddr ${client_ip}; " \
-+		"tftp ${loadaddr} ${bootfile}; " \
-+		"tftp ${fdtaddr} dtbs/${fdtfile}; " \
++		"tftp ${loadaddr} ${tftp_dir}${bootfile}; " \
++		"tftp ${fdtaddr} ${tftp_dir}dtbs/${fdtfile}; " \
 +		"run nfsargs; " \
 +		"bootz ${loadaddr} - ${fdtaddr}\0" \
 +	"nfsboot_uname_r=echo Booting from ${server_ip} ...; " \
@@ -227,8 +227,8 @@ index 035c156..7ada553 100644
 +		"setenv autoload no; " \
 +		"setenv serverip ${server_ip}; " \
 +		"setenv ipaddr ${client_ip}; " \
-+		"tftp ${loadaddr} vmlinuz-${uname_r}; " \
-+		"tftp ${fdtaddr} dtbs/${uname_r}/${fdtfile}; " \
++		"tftp ${loadaddr} ${tftp_dir}vmlinuz-${uname_r}; " \
++		"tftp ${fdtaddr} ${tftp_dir}dtbs/${uname_r}/${fdtfile}; " \
 +		"run nfsargs; " \
 +		"bootz ${loadaddr} - ${fdtaddr}\0" \
  	"ramboot=echo Booting from ramdisk ...; " \
