@@ -505,8 +505,10 @@ build_u_boot () {
 		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2015.07
 		#r1: ARM: DRA7: Remove Unused pinmux definitions
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=024c903babcb743b5e8803160101bc3e54d2c46c
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: ARM: am43xx_evm: Enable EDMA3 support DMA on qspi
+		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8dcdcb22f9d06df1ac411b2fe70c06adcd15237b
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
