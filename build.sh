@@ -507,8 +507,9 @@ build_u_boot () {
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=024c903babcb743b5e8803160101bc3e54d2c46c
 		#r2: ARM: am43xx_evm: Enable EDMA3 support DMA on qspi
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8dcdcb22f9d06df1ac411b2fe70c06adcd15237b
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: load boot from usb/sata/microSD/eMMC
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
@@ -937,7 +938,7 @@ am43xx_evm
 at91sam9x5ek
 Bananapi
 Bananapro
-beagle_x15
+#beagle_x15
 beagle_x15_ti
 cm_fx6
 #mx23_olinuxino
