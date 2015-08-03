@@ -962,7 +962,7 @@ Bananapro
 #beagle_x15
 beagle_x15_ti
 cm_fx6
-mx23_olinuxino
+#mx23_olinuxino
 mx51evk
 mx53loco
 mx6qsabresd
