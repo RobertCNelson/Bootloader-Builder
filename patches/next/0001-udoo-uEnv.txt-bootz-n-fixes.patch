@@ -942,7 +942,7 @@ index 910bf01..144264a 100644
 +				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
-+		"fi;" \
++		"fi;\0" \
 +		"findfdt=" \
 +			"if test $board_rev = MX6Q ; then " \
 +				"setenv fdt_file imx6q-udoo.dtb; fi; " \

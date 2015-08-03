@@ -1,6 +1,6 @@
-From 2d4223f7ac8a96eb79cd002882d6c4e2ea5c5f33 Mon Sep 17 00:00:00 2001
+From 45157801ae8329a6052ffc2fdce7221592c568fb Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 27 May 2015 10:36:59 -0500
+Date: Mon, 3 Aug 2015 12:19:35 -0500
 Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,12 +9,12 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 121 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index 6a37ae7..f790695 100644
+index 6a57841..2a43549 100644
 --- a/include/configs/mx6sabre_common.h
 +++ b/include/configs/mx6sabre_common.h
-@@ -83,14 +83,18 @@
+@@ -77,14 +77,18 @@
  	"image=zImage\0" \
- 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
+ 	"fdt_file=undefined\0" \
  	"fdt_addr=0x18000000\0" \
 +	"rdaddr=0x12A00000\0" \
  	"boot_fdt=try\0" \
@@ -33,7 +33,7 @@ index 6a37ae7..f790695 100644
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
  			"setenv get_cmd dhcp; " \
-@@ -105,15 +109,55 @@
+@@ -99,15 +103,55 @@
  			"fi; "	\
  		"fi\0" \
  	EMMC_ENV	  \
@@ -94,11 +94,10 @@ index 6a37ae7..f790695 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -151,20 +195,79 @@
- 			"fi; " \
+@@ -146,6 +190,70 @@
  		"else " \
  			"bootz; " \
-+		"fi;\0" \
+ 		"fi;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
 +		"setenv bootfile vmlinuz-${uname_r}; " \
@@ -162,9 +161,14 @@ index 6a37ae7..f790695 100644
 +				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
- 		"fi;\0"
++		"fi;\0"
+ 		"findfdt="\
+ 			"if test $fdt_file = undefined; then " \
+ 				"if test $board_name = SABREAUTO && test $board_rev = MX6QP; then " \
+@@ -165,17 +273,12 @@
  
  #define CONFIG_BOOTCOMMAND \
+ 	"run findfdt;" \
 -	"mmc dev ${mmcdev};" \
 -	"if mmc rescan; then " \
 -		"if run loadbootscript; then " \
@@ -186,5 +190,5 @@ index 6a37ae7..f790695 100644
  #define CONFIG_ARP_TIMEOUT     200UL
  
 -- 
-2.1.4
+2.4.6
 
