@@ -489,7 +489,7 @@ build_u_boot () {
 		sama5d4ek_mmc)
 			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		udoo_quad|udoo_dl)
+		udoo)
 			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		vf610twr)
@@ -904,14 +904,33 @@ sama5d4_xplained () {
 
 udoo () {
 	cleanup
-	#transitioned_to_testing="true"
 
-	board="udoo_quad" ; build_uboot_gnueabihf
+	board="udoo"
+	uboot_config="${board}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+#	build_uboot_stable
+#	build_uboot_testing
+	build_uboot_latest
 
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="udoo_dl" ; build_uboot_gnueabihf
+	board="udoo_quad"
+	uboot_config="${board}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+	build_uboot_testing
+#	build_uboot_latest
+
+	cleanup
+	#transitioned_to_testing="true"
+
+	board="udoo_dl"
+	uboot_config="${board}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+	build_uboot_testing
+#	build_uboot_latest
 }
 
 vf610twr () {
@@ -941,7 +960,7 @@ Bananapro
 #beagle_x15
 beagle_x15_ti
 cm_fx6
-#mx23_olinuxino
+mx23_olinuxino
 mx51evk
 mx53loco
 mx6qsabresd
