@@ -949,9 +949,6 @@ wandboard () {
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
-mx6qsabresd
-exit
-
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
 A20_OLinuXino_Lime2

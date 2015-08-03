@@ -1,6 +1,6 @@
-From 45157801ae8329a6052ffc2fdce7221592c568fb Mon Sep 17 00:00:00 2001
+From 21020897c084e4a70f959245c6fe2403bb09b52d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 3 Aug 2015 12:19:35 -0500
+Date: Mon, 3 Aug 2015 12:28:10 -0500
 Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 121 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index 6a57841..2a43549 100644
+index 6a57841..8bd9329 100644
 --- a/include/configs/mx6sabre_common.h
 +++ b/include/configs/mx6sabre_common.h
 @@ -77,14 +77,18 @@
@@ -161,7 +161,7 @@ index 6a57841..2a43549 100644
 +				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
-+		"fi;\0"
++		"fi;\0" \
  		"findfdt="\
  			"if test $fdt_file = undefined; then " \
  				"if test $board_name = SABREAUTO && test $board_rev = MX6QP; then " \
