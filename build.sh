@@ -426,7 +426,7 @@ build_u_boot () {
 		sama5d4ek_mmc)
 			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		udoo_quad|udoo_dl)
+		udoo)
 			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		vf610twr)
@@ -729,7 +729,9 @@ build_uboot_gnueabihf () {
 
 always_mainline () {
 	cleanup
-	#transitioned_to_testing="true"
+	if [ ! "x${uboot_testing}" = "x" ] ; then
+		transitioned_to_testing="true"
+	fi
 	build_uboot_gnueabihf
 }
 
@@ -909,7 +911,7 @@ udoo () {
 	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 #	build_uboot_stable
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 
 	cleanup
@@ -919,7 +921,7 @@ udoo () {
 	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
-	build_uboot_testing
+#	build_uboot_testing
 #	build_uboot_latest
 
 	cleanup
@@ -929,7 +931,7 @@ udoo () {
 	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
-	build_uboot_testing
+#	build_uboot_testing
 #	build_uboot_latest
 }
 
@@ -951,8 +953,8 @@ A10_OLinuXino_Lime
 A20_OLinuXino_Lime
 A20_OLinuXino_Lime2
 A20_OLinuXino_MICRO
-am335x_evm
-am335x_boneblack_flasher
+#am335x_evm
+#am335x_boneblack_flasher
 am43xx_evm
 at91sam9x5ek
 Bananapi
