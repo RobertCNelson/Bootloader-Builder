@@ -1,6 +1,6 @@
-From 10af1bb957c1694f8877875ac29a4b203c35c45d Mon Sep 17 00:00:00 2001
+From 6e99b35660cbce95a7ba52977b73fe72b5e1f64c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 17 Nov 2014 08:46:56 -0600
+Date: Mon, 3 Aug 2015 12:04:15 -0500
 Subject: [PATCH] mx53loco: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,11 +9,11 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 127 insertions(+), 17 deletions(-)
 
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index 10fb1f4..19035f1 100644
+index ad2629d..26e0438 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
-@@ -45,6 +45,12 @@
- #define CONFIG_GENERIC_MMC
+@@ -46,6 +46,12 @@
+ #define CONFIG_CMD_FS_GENERIC
  #define CONFIG_CMD_FAT
  #define CONFIG_CMD_EXT2
 +#define CONFIG_CMD_EXT4
@@ -25,7 +25,7 @@ index 10fb1f4..19035f1 100644
  #define CONFIG_DOS_PARTITION
  
  /* Eth Configs */
-@@ -101,26 +107,75 @@
+@@ -100,26 +106,75 @@
  
  #define CONFIG_ETHPRIME		"FEC0"
  
@@ -59,11 +59,11 @@ index 10fb1f4..19035f1 100644
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
  	"loadbootscript=" \
- 		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
--	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+-	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+-	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
@@ -108,7 +108,7 @@ index 10fb1f4..19035f1 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -159,19 +214,74 @@
+@@ -158,19 +213,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -194,5 +194,5 @@ index 10fb1f4..19035f1 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-2.1.1
+2.4.6
 
