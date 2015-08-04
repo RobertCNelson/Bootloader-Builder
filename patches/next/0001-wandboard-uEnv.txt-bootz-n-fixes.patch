@@ -1,26 +1,18 @@
-From 6e82dd3fd87e954447b17167fb41e014db870ced Mon Sep 17 00:00:00 2001
+From 5bd44d7c21f21798bcd4db2a310a9cbdc2f54c6e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 4 Aug 2015 12:29:58 -0500
+Date: Tue, 4 Aug 2015 13:13:46 -0500
 Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/wandboard.h | 140 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 123 insertions(+), 17 deletions(-)
+ include/configs/wandboard.h | 139 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 122 insertions(+), 17 deletions(-)
 
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
-index f4e9cf2..113df47 100644
+index f4e9cf2..d3904d8 100644
 --- a/include/configs/wandboard.h
 +++ b/include/configs/wandboard.h
-@@ -13,6 +13,7 @@
- 
- #define CONFIG_SPL_LIBCOMMON_SUPPORT
- #define CONFIG_SPL_MMC_SUPPORT
-+#define CONFIG_SPL_EXT_SUPPORT
- #include "imx6_spl.h"
- 
- #define MACH_TYPE_WANDBOARD		4412
-@@ -88,17 +89,21 @@
+@@ -88,17 +88,21 @@
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
@@ -45,7 +37,7 @@ index f4e9cf2..113df47 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -113,8 +118,11 @@
+@@ -113,8 +117,11 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -59,7 +51,7 @@ index f4e9cf2..113df47 100644
  	"videoargs=" \
  		"setenv nextcon 0; " \
  		"if hdmidet; then " \
-@@ -145,8 +153,110 @@
+@@ -145,8 +152,110 @@
  		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
@@ -172,7 +164,7 @@ index f4e9cf2..113df47 100644
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-@@ -200,16 +310,12 @@
+@@ -200,16 +309,12 @@
  
  #define CONFIG_BOOTCOMMAND \
  	   "run findfdt; " \
