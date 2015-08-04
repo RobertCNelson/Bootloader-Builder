@@ -1,6 +1,6 @@
-From 343856a4646fce42ad6e9dac51c13ef263fd11bf Mon Sep 17 00:00:00 2001
+From 27425d9d715e74eb1cd0f56d078f5b1c933dd964 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 3 Aug 2015 10:47:24 -0500
+Date: Tue, 4 Aug 2015 12:28:59 -0500
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -16,8 +16,8 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/udoo/udoo_spl.c            | 271 +++++++++++++++++++++++++++++++++++++++
  configs/udoo_defconfig           |   6 +
  configs/udoo_quad_defconfig      |   5 -
- include/configs/udoo.h           | 152 +++++++++++++++++++---
- 12 files changed, 467 insertions(+), 270 deletions(-)
+ include/configs/udoo.h           | 153 +++++++++++++++++++---
+ 12 files changed, 468 insertions(+), 270 deletions(-)
  delete mode 100644 board/udoo/1066mhz_4x256mx16.cfg
  delete mode 100644 board/udoo/clocks.cfg
  delete mode 100644 board/udoo/ddr-setup.cfg
@@ -759,21 +759,22 @@ index 42c21c6..0000000
 -# CONFIG_CMD_IMLS is not set
 -# CONFIG_CMD_FLASH is not set
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
-index 910bf01..144264a 100644
+index 910bf01..2aab57a 100644
 --- a/include/configs/udoo.h
 +++ b/include/configs/udoo.h
-@@ -11,6 +11,10 @@
+@@ -11,6 +11,11 @@
  
  #include "mx6_common.h"
  
 +#define CONFIG_SPL_MMC_SUPPORT
 +#define CONFIG_SPL_FAT_SUPPORT
++#define CONFIG_SPL_EXT_SUPPORT
 +#include "imx6_spl.h"
 +
  #define MACH_TYPE_UDOO		4800
  #define CONFIG_MACH_TYPE	MACH_TYPE_UDOO
  
-@@ -18,6 +22,7 @@
+@@ -18,6 +23,7 @@
  #define CONFIG_SYS_MALLOC_LEN		(2 * SZ_1M)
  
  #define CONFIG_BOARD_EARLY_INIT_F
@@ -781,7 +782,7 @@ index 910bf01..144264a 100644
  
  #define CONFIG_MXC_UART
  #define CONFIG_MXC_UART_BASE		UART2_BASE
-@@ -58,22 +63,26 @@
+@@ -58,22 +64,26 @@
  /* MMC Configuration */
  #define CONFIG_SYS_FSL_ESDHC_ADDR	0
  
@@ -812,7 +813,7 @@ index 910bf01..144264a 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -88,15 +97,55 @@
+@@ -88,15 +98,55 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -873,7 +874,7 @@ index 910bf01..144264a 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -134,19 +183,82 @@
+@@ -134,19 +184,82 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
