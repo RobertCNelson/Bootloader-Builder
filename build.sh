@@ -908,33 +908,10 @@ sama5d4_xplained () {
 
 udoo () {
 	cleanup
+	transitioned_to_testing="true"
 
-	board="udoo"
-	uboot_config="${board}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-#	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
-
+	board="udoo" ; build_uboot_gnueabihf
 	cleanup
-	#transitioned_to_testing="true"
-
-	board="udoo_quad"
-	uboot_config="${board}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-#	build_uboot_testing
-#	build_uboot_latest
-
-	cleanup
-	#transitioned_to_testing="true"
-
-	board="udoo_dl"
-	uboot_config="${board}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-#	build_uboot_testing
-#	build_uboot_latest
 }
 
 vf610twr () {
@@ -946,7 +923,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="wandboard" ; build_uboot_gnueabihf
 }
