@@ -315,8 +315,9 @@ build_u_boot () {
 	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: add tftp_dir prefix ${tftp_dir}${bootfile} & ${tftp_dir}dtbs/${fdtfile}
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: dump reset reason...
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -757,7 +758,14 @@ am335x_evm () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="am335x_evm" ; build_uboot_gnueabihf
+#	board="am335x_evm" ; build_uboot_gnueabihf
+
+	board="am335x_evm"
+	uboot_config="am335x_evm_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+#	build_uboot_testing
+#	build_uboot_latest
 }
 
 am335x_boneblack_flasher () {
@@ -768,8 +776,8 @@ am335x_boneblack_flasher () {
 	uboot_config="am335x_evm_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
+#	build_uboot_testing
+#	build_uboot_latest
 }
 
 am43xx_evm () {
@@ -932,8 +940,8 @@ A10_OLinuXino_Lime
 A20_OLinuXino_Lime
 A20_OLinuXino_Lime2
 A20_OLinuXino_MICRO
-#am335x_evm
-#am335x_boneblack_flasher
+am335x_evm
+am335x_boneblack_flasher
 am43xx_evm
 at91sam9x5ek
 Bananapi
