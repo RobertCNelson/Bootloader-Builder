@@ -768,7 +768,7 @@ am335x_evm () {
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
 #	build_uboot_testing
-#	build_uboot_latest
+	build_uboot_latest
 }
 
 am335x_boneblack_flasher () {
@@ -780,7 +780,7 @@ am335x_boneblack_flasher () {
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
 #	build_uboot_testing
-#	build_uboot_latest
+	build_uboot_latest
 }
 
 am43xx_evm () {
