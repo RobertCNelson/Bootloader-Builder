@@ -47,7 +47,7 @@ index 96245a3..c0cf520 100644
 -	safe_string[sizeof(header.version)] = 0;
 -	setenv("board_rev", safe_string);
 +	/* BeagleBone Green has 0x1a at [0], they are free to increment 'a' */
-+	if (header.name[0] && (0x10)) {
++	if ( (header.name[0] != 0x30) && (header.name[0] && 0x10) ) {
 +		setenv("board_rev", "BBG1");
 +	} else {
 +		strncpy(safe_string, (char *)header.version, sizeof(header.version));
