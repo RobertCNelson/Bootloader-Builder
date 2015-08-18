@@ -514,8 +514,10 @@ build_u_boot () {
 		#r2: ARM: am43xx_evm: Enable EDMA3 support DMA on qspi
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8dcdcb22f9d06df1ac411b2fe70c06adcd15237b
 		#r3: load boot from usb/sata/microSD/eMMC
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: ARM: keystone2: drop unused defines from config file
+		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e22bd9012ff5785bb1a595721c39a63c2ae78896
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
@@ -759,33 +761,26 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
-#	board="am335x_evm" ; build_uboot_gnueabihf
-
-	board="am335x_evm"
-	uboot_config="am335x_evm_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-#	build_uboot_testing
-	build_uboot_latest
+	board="am335x_evm" ; build_uboot_gnueabihf
 }
 
 am335x_boneblack_flasher () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 }
 
 am43xx_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="am43xx_evm" ; build_uboot_gnueabihf
 }
@@ -863,7 +858,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
