@@ -384,15 +384,18 @@ build_u_boot () {
 		#r1: initial release
 		#r2: udoo/wand: enable CONFIG_SPL_EXT_SUPPORT
 		#r3: udoo/wand: disable CONFIG_SPL_X_SUPPORT, want to use raw...
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: am335x_evm: fix gpio...
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
 		am335x_evm)
+			git revert --no-edit 0a9e34056fcf86fb64e70bd281875eb7bbdbabde -s
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
+			git revert --no-edit 0a9e34056fcf86fb64e70bd281875eb7bbdbabde -s
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -453,9 +456,11 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
+			git revert --no-edit 0a9e34056fcf86fb64e70bd281875eb7bbdbabde -s
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
+			git revert --no-edit 0a9e34056fcf86fb64e70bd281875eb7bbdbabde -s
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
