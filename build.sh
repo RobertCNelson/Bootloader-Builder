@@ -521,8 +521,9 @@ build_u_boot () {
 		#r3: load boot from usb/sata/microSD/eMMC
 		#r4: ARM: keystone2: drop unused defines from config file
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e22bd9012ff5785bb1a595721c39a63c2ae78896
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: ti: qspi: set flash quad bit based on quad support flag
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
