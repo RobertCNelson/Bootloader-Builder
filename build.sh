@@ -406,6 +406,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
+			git revert --no-edit 92a655c326b22de58dcd5371ca1a62fdc57f8e04 -s
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx51evk)
@@ -471,6 +472,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
+			git revert --no-edit 92a655c326b22de58dcd5371ca1a62fdc57f8e04 -s
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx51evk)
@@ -795,7 +797,7 @@ am43xx_evm () {
 
 at91sam9x5ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="at91sam9x5ek_mmc"
 	build_uboot_eabi
@@ -831,14 +833,14 @@ beagle_x15_ti () {
 
 cm_fx6 () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="cm_fx6" ; build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
@@ -887,7 +889,7 @@ omap5_uevm () {
 
 rpi_2 () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="rpi_2" ; build_uboot_gnueabihf
 }
@@ -955,7 +957,7 @@ Bananapro
 #beagle_x15
 beagle_x15_ti
 cm_fx6
-#mx23_olinuxino
+mx23_olinuxino
 mx51evk
 mx53loco
 mx6qsabresd
