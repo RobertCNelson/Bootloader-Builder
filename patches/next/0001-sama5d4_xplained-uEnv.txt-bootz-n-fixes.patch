@@ -1,7 +1,7 @@
-From 7600ba294ba2df80068c86c098d84af9602e36f7 Mon Sep 17 00:00:00 2001
+From 908c87c5816c8916cdd9ed21aedfe8609cbc9979 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 3 Sep 2015 13:01:33 -0500
-Subject: [PATCH] sama5d4ek: uEnv.txt, bootz, n fixes
+Date: Thu, 3 Sep 2015 12:26:23 -0500
+Subject: [PATCH] sama5d4_xplained: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---

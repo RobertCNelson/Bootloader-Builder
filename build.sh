@@ -501,6 +501,9 @@ build_u_boot () {
 		sama5d4ek_mmc)
 			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		sama5d4_xplained_mmc)
+			${git} "${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		udoo)
 			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 			;;
@@ -933,7 +936,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="vf610twr" ; build_uboot_gnueabihf
 }
