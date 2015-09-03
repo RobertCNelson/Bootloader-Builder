@@ -1,17 +1,17 @@
-From b8f6cf6466ec044a76ef972cf3e932b5a32df777 Mon Sep 17 00:00:00 2001
+From cdcebabf83de5a33a94aade15cab6fa500a49e74 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 3 Jun 2015 15:24:35 -0500
+Date: Thu, 3 Sep 2015 12:26:23 -0500
 Subject: [PATCH] sama5d3_xplained: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/atmel/sama5d3_xplained/sama5d3_xplained.c | 81 +++++++++++++++++++++++++
- include/configs/at91-sama5_common.h             | 56 +++++++++++++++--
- include/configs/sama5d3_xplained.h              | 24 +++++++-
- 3 files changed, 154 insertions(+), 7 deletions(-)
+ include/configs/at91-sama5_common.h             |  6 +-
+ include/configs/sama5d3_xplained.h              | 15 +++++
+ 3 files changed, 99 insertions(+), 3 deletions(-)
 
 diff --git a/board/atmel/sama5d3_xplained/sama5d3_xplained.c b/board/atmel/sama5d3_xplained/sama5d3_xplained.c
-index 92ed4e8..1729b5e 100644
+index 7a01149..0ab1953 100644
 --- a/board/atmel/sama5d3_xplained/sama5d3_xplained.c
 +++ b/board/atmel/sama5d3_xplained/sama5d3_xplained.c
 @@ -14,6 +14,8 @@
@@ -117,10 +117,10 @@ index 92ed4e8..1729b5e 100644
  }
  
 diff --git a/include/configs/at91-sama5_common.h b/include/configs/at91-sama5_common.h
-index 9289964..0021bf9 100644
+index de5f12e..bea4624 100644
 --- a/include/configs/at91-sama5_common.h
 +++ b/include/configs/at91-sama5_common.h
-@@ -35,7 +35,7 @@
+@@ -36,7 +36,7 @@
  /* general purpose I/O */
  #define CONFIG_AT91_GPIO
  
@@ -129,69 +129,23 @@ index 9289964..0021bf9 100644
  
  /*
   * BOOTP options
-@@ -56,9 +56,57 @@
- #define CONFIG_CMD_DHCP
- 
- #ifdef CONFIG_SYS_USE_MMC
--#define CONFIG_BOOTARGS							\
--	"console=ttyS0,115200 earlyprintk "				\
+@@ -64,12 +64,12 @@
+ #define CONFIG_BOOTCOMMAND	"if test ! -n ${dtb_name}; then "	\
+ 				    "setenv dtb_name at91-${board_name}.dtb; " \
+ 				"fi; "					\
+-				"fatload mmc 0:1 0x21000000 ${dtb_name}; " \
++				"fatload mmc 0:1 0x21000000 /dtbs/${dtb_name}; " \
+ 				"fatload mmc 0:1 0x22000000 zImage; "	\
+ 				"bootz 0x22000000 - 0x21000000"
+ #define CONFIG_BOOTARGS							\
+ 	"console=ttyS0,115200 earlyprintk "				\
 -	"root=/dev/mmcblk0p2 rw rootwait"
-+#define CONFIG_EXTRA_ENV_SETTINGS \
-+	"loadaddr=0x22000000\0" \
-+	"ftdaddr=0x21000000\0" \
-+	"bootfile=zImage\0" \
-+	"fdt_file=at91-sama5d3_xplained.dtb\0" \
-+	"fdt_dir=/dtbs\0" \
-+	"console=ttyS0,115200n8\0" \
-+	"optargs=\0" \
-+	"video=\0" \
-+	"mmcdev=0\0" \
-+	"mmcpart=1\0" \
-+	"mmcroot=/dev/mmcblk0p2 ro\0" \
-+	"mmcrootfstype=ext4 rootwait\0" \
-+	"mmcargs=setenv bootargs console=${console} " \
-+		"${optargs} " \
-+		"root=${mmcroot} " \
-+		"rootfstype=${mmcrootfstype}\0" \
-+		"video=${video}\0" \
-+	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt\0" \
-+	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
-+		"env import -t $loadaddr $filesize\0" \
-+	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} zImage\0" \
-+	"validatefdt=" \
-+		"if test ! -e mmc ${mmcdev}:${mmcpart} ${fdt_dir}/${fdt_file}; then " \
-+			"echo warn: unable to find: [${fdt_file}] using: [at91-sama5d3_xplained.dtb] ...;" \
-+			"setenv fdt_file at91-sama5d3_xplained.dtb; " \
-+		"fi; \0" \
-+	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${ftdaddr} ${fdt_dir}/${fdt_file}\0" \
-+	"mmcboot=echo Booting from mmc ...; " \
-+		"run mmcargs; " \
-+		"bootz ${loadaddr} - ${ftdaddr}\0"
-+
-+#define CONFIG_BOOTCOMMAND \
-+	"mmc dev ${mmcdev};" \
-+	"if mmc rescan; then " \
-+		"echo SD/MMC found on device ${mmcdev};" \
-+		"if run loadbootenv; then " \
-+			"run importbootenv;" \
-+		"fi;" \
-+		"echo Checking if uenvcmd is set ...;" \
-+		"if test -n $uenvcmd; then " \
-+			"echo Running uenvcmd ...;" \
-+			"run uenvcmd;" \
-+		"fi;" \
-+		"echo Running default loadimage ...;" \
-+		"if run loadimage; then " \
-+			"run validatefdt;" \
-+			"run loadfdt;" \
-+			"run mmcboot;" \
-+		"fi;" \
-+	"fi;"
++	"root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait"
  #else
  #define CONFIG_BOOTARGS							\
  	"console=ttyS0,115200 earlyprintk "				\
 diff --git a/include/configs/sama5d3_xplained.h b/include/configs/sama5d3_xplained.h
-index c4141a0..36ffbd5 100644
+index 73de62c..5b44b5e 100644
 --- a/include/configs/sama5d3_xplained.h
 +++ b/include/configs/sama5d3_xplained.h
 @@ -71,6 +71,21 @@
@@ -216,31 +170,6 @@ index c4141a0..36ffbd5 100644
  /* Ethernet Hardware */
  #define CONFIG_MACB
  #define CONFIG_RMII
-@@ -108,8 +123,14 @@
- #if defined(CONFIG_CMD_USB) || defined(CONFIG_CMD_MMC)
- #define CONFIG_CMD_FAT
- #define CONFIG_FAT_WRITE
-+#define CONFIG_CMD_EXT2
- #define CONFIG_CMD_EXT4
- #define CONFIG_CMD_EXT4_WRITE
-+#define CONFIG_CMD_FS_GENERIC
-+
-+/* bootz: zImage/initrd.img support */
-+#define CONFIG_CMD_BOOTZ
-+#define CONFIG_SUPPORT_RAW_INITRD
- #endif
- 
- #define CONFIG_SYS_LOAD_ADDR			0x22000000 /* load address */
-@@ -130,9 +151,6 @@
- #define FAT_ENV_FILE		"uboot.env"
- #define FAT_ENV_DEVICE_AND_PART	"0"
- #define CONFIG_ENV_SIZE		0x4000
--#define CONFIG_BOOTCOMMAND	"fatload mmc 0:1 0x21000000 at91-sama5d3_xplained.dtb; " \
--				"fatload mmc 0:1 0x22000000 zImage; " \
--				"bootz 0x22000000 - 0x21000000"
- #else
- #define CONFIG_ENV_IS_NOWHERE
- #endif
 -- 
-2.1.4
+2.5.1
 
