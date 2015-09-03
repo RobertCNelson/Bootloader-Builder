@@ -472,7 +472,6 @@ build_u_boot () {
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
-			git revert --no-edit 92a655c326b22de58dcd5371ca1a62fdc57f8e04 -s
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx51evk)
