@@ -525,8 +525,10 @@ build_u_boot () {
 		#r5: ti: qspi: set flash quad bit based on quad support flag
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=c8123f5004f7563085eaa0f122e45d7575e66ad6
 		#r6: ARM: DRA7: emif: Fix disabling/enabling of refreshes ti-u-boot-2015.07
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3ec018bb44bca64873c934be87c182e5fea0290b
+		#r7: ARM: AM33xx: Push all the rtc_only related functions under LOWLEVEL_INIT macro ti
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
