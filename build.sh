@@ -391,11 +391,9 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
-			git revert --no-edit 0a9e34056fcf86fb64e70bd281875eb7bbdbabde -s
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			git revert --no-edit 0a9e34056fcf86fb64e70bd281875eb7bbdbabde -s
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -406,7 +404,6 @@ build_u_boot () {
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
-			git revert --no-edit 92a655c326b22de58dcd5371ca1a62fdc57f8e04 -s
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx51evk)
@@ -457,11 +454,9 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
-			git revert --no-edit 0a9e34056fcf86fb64e70bd281875eb7bbdbabde -s
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			git revert --no-edit 0a9e34056fcf86fb64e70bd281875eb7bbdbabde -s
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -589,6 +584,10 @@ build_u_boot () {
 		echo "-----------------------------"
 		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET}
 		echo "-----------------------------"
+		if [ "x${board}" = "xfirefly-rk3288" ] ; then
+			./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot.rk3288
+			echo "-----------------------------"
+		fi
 
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
@@ -647,6 +646,17 @@ build_u_boot () {
 
 			filename_search="u-boot.img"
 			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
+
+		#SPL: RockChip rk3288
+		#./firefly-rk3288/tools/mkimage -T rksd -d firefly-rk3288/spl/u-boot-spl-dtb.bin out
+		#sudo dd if=out of=/dev/sdc
+		#sudo dd if=firefly-rk3288/u-boot-dtb.img of=/dev/sdc seek=256
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.rk3288 ] ; then
+			filename_search="u-boot.rk3288"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.rk3288"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -840,6 +850,13 @@ cm_fx6 () {
 	transitioned_to_testing="true"
 
 	board="cm_fx6" ; build_uboot_gnueabihf
+}
+
+firefly_rk3288 () {
+	cleanup
+	transitioned_to_testing="true"
+
+	board="firefly-rk3288" ; build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
