@@ -385,8 +385,9 @@ build_u_boot () {
 		#r2: udoo/wand: enable CONFIG_SPL_EXT_SUPPORT
 		#r3: udoo/wand: disable CONFIG_SPL_X_SUPPORT, want to use raw...
 		#r4: am335x_evm: fix gpio...
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: omap3, disable thumb2...
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -525,8 +526,9 @@ build_u_boot () {
 		#r6: ARM: DRA7: emif: Fix disabling/enabling of refreshes ti-u-boot-2015.07
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3ec018bb44bca64873c934be87c182e5fea0290b
 		#r7: ARM: AM33xx: Push all the rtc_only related functions under LOWLEVEL_INIT macro ti
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: ARM: AM335x: Fix usb ether boot support
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
