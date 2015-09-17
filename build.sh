@@ -527,8 +527,10 @@ build_u_boot () {
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3ec018bb44bca64873c934be87c182e5fea0290b
 		#r7: ARM: AM33xx: Push all the rtc_only related functions under LOWLEVEL_INIT macro ti
 		#r8: ARM: AM335x: Fix usb ether boot support
-		#r9: (pending)
-		RELEASE_VER="-r8" #bump on every change...
+		#r9: ARM: DRA74/beagle_x15: Remove pin input/output config from WAKEUP pins
+		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=d49aa5effa20d0b943c74ced84e67defce6d6d1c
+		#r10: (pending)
+		RELEASE_VER="-r9" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
@@ -870,21 +872,21 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="mx51evk" ; build_uboot_gnueabihf
 }
 
 mx53loco () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="mx53loco" ; build_uboot_gnueabihf
 }
 
 mx6qsabresd () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
