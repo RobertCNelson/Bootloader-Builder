@@ -532,8 +532,9 @@ build_u_boot () {
 		#r8: ARM: AM335x: Fix usb ether boot support
 		#r9: ARM: DRA74/beagle_x15: Remove pin input/output config from WAKEUP pins
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=d49aa5effa20d0b943c74ced84e67defce6d6d1c
-		#r10: (pending)
-		RELEASE_VER="-r9" #bump on every change...
+		#r10: ARM: DRA7: Fix DDR init sequence during warm reset
+		#r11: (pending)
+		RELEASE_VER="-r10" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
