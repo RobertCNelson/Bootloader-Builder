@@ -102,7 +102,7 @@ index 1cd7dae..55642bc 100644
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
 +						"echo Running uname_boot ...;" \
-+						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
++						"echo Running uname_boot ...;" \
 +						"run uname_boot;" \
 +					"fi;" \
 +				"fi;" \

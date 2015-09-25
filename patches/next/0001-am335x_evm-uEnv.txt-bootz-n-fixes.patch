@@ -494,7 +494,7 @@ index 3cf768e..1385166 100644
 +					"if test -n ${uname_r}; then " \
 +						"gpio set 56; " \
 +						"echo Running uname_boot ...;" \
-+						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
++						"echo Running uname_boot ...;" \
 +						"run uname_boot;" \
 +					"fi;" \
 +				"fi;" \
