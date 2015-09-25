@@ -5,11 +5,37 @@ Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/ti_omap4_common.h | 149 ++++++++++++++++++++++++++++++--------
- 1 file changed, 117 insertions(+), 32 deletions(-)
+ include/configs/ti_armv7_common.h |  12 +++-
+ include/configs/ti_omap4_common.h | 134 ++++++++++++++++++++++++++++++--------
+ 2 files changed, 116 insertions(+), 30 deletions(-)
 
+diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
+index 6dc6515..5bf81b3 100644
+--- a/include/configs/ti_armv7_common.h
++++ b/include/configs/ti_armv7_common.h
+@@ -61,11 +61,17 @@
+ #define DEFAULT_MMC_TI_ARGS \
+ 	"mmcdev=0\0" \
+ 	"mmcrootfstype=ext4 rootwait\0" \
+-	"finduuid=part uuid mmc 0:2 uuid\0" \
++	"finduuid=part uuid mmc ${bootpart} uuid\0" \
+ 	"args_mmc=run finduuid;setenv bootargs console=${console} " \
+ 		"${optargs} " \
+-		"root=PARTUUID=${uuid} rw " \
+-		"rootfstype=${mmcrootfstype}\0"
++		"root=PARTUUID=${uuid} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0" \
++	"args_mmc_uuid=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"root=UUID=${uuid} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0"
+ 
+ /*
+  * Default to a quick boot delay.
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 1c93aab..494c669 100644
+index 1cd7dae..55642bc 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -46,7 +46,8 @@
@@ -22,8 +48,8 @@ index 1c93aab..494c669 100644
  #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
  #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
  #define CONFIG_SYS_DEFAULT_LPDDR2_TIMINGS
-@@ -89,29 +90,70 @@
- 	DEFAULT_LINUX_BOOT_ENV \
+@@ -86,20 +87,59 @@
+ 	DEFAULT_MMC_TI_ARGS \
  	"console=ttyO2,115200n8\0" \
  	"fdtfile=undefined\0" \
 -	"bootpart=0:2\0" \
@@ -34,19 +60,6 @@ index 1c93aab..494c669 100644
  	"bootfile=zImage\0" \
  	"usbtty=cdc_acm\0" \
  	"vram=16M\0" \
- 	"mmcdev=0\0" \
--	"mmcroot=/dev/mmcblk0p2 rw\0" \
--	"mmcrootfstype=ext3 rootwait\0" \
-+	"mmcpart=1\0" \
-+	"mmcroot=/dev/mmcblk0p2 ro\0" \
-+	"mmcrootfstype=ext4 rootwait fixrtc\0" \
- 	"mmcargs=setenv bootargs console=${console} " \
--		"vram=${vram} " \
-+		"${optargs} " \
- 		"root=${mmcroot} " \
--		"rootfstype=${mmcrootfstype}\0" \
-+		"rootfstype=${mmcrootfstype} " \
-+		"${cmdline}\0" \
  	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
  	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
  		"source ${loadaddr}\0" \
@@ -96,13 +109,10 @@ index 1c93aab..494c669 100644
 +			"done;" \
 +		"fi;\0" \
 +	"mmc_classic_boot=echo Booting from mmc${mmcdev} ...; " \
- 		"run mmcargs; " \
--		"bootz ${loadaddr} - ${fdtaddr}\0" \
-+		"bootz ${loadaddr}\0" \
+ 		"run args_mmc; " \
+ 		"bootz ${loadaddr} - ${fdtaddr}\0" \
  	"uimageboot=echo Booting from mmc${mmcdev} ...; " \
- 		"run mmcargs; " \
- 		"bootm ${loadaddr}\0" \
-@@ -128,31 +170,74 @@
+@@ -118,31 +158,71 @@
  			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -142,7 +152,7 @@ index 1c93aab..494c669 100644
 +										"run loadfdt;" \
 +									"else " \
 +										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
-+										"run mmcargs;" \
++										"run args_mmc;" \
 +										"echo debug: [${bootargs}] ... ;" \
 +										"echo debug: [bootz ${loadaddr}] ... ;" \
 +										"bootz ${loadaddr}; " \
@@ -157,15 +167,12 @@ index 1c93aab..494c669 100644
 +			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
 +				"echo loading ${bootdir}/${rdfile} ...; "\
 +				"run loadrd;" \
-+				"if test -n ${uuid}; then " \
-+					"setenv mmcroot UUID=${uuid} ro;" \
-+				"fi;" \
-+				"run mmcargs;" \
++				"run args_mmc_uuid;" \
 +				"echo debug: [${bootargs}] ... ;" \
 +				"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
 +				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
 +			"else " \
-+				"run mmcargs;" \
++				"run args_mmc;" \
 +				"echo debug: [${bootargs}] ... ;" \
 +				"echo debug: [bootz ${loadaddr} - ${fdtaddr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdtaddr}; " \
@@ -200,5 +207,5 @@ index 1c93aab..494c669 100644
  /*
   * Defines for SPL
 -- 
-2.1.1
+2.5.3
 
