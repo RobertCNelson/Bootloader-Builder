@@ -973,9 +973,6 @@ wandboard () {
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
-omap5_uevm
-exit
-
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
 A20_OLinuXino_Lime2
