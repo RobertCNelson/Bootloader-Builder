@@ -531,11 +531,13 @@ build_u_boot () {
 		#r9: ARM: DRA74/beagle_x15: Remove pin input/output config from WAKEUP pins
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=d49aa5effa20d0b943c74ced84e67defce6d6d1c
 		#r10: ARM: DRA7: Fix DDR init sequence during warm reset
-		#r11: (pending)
-		RELEASE_VER="-r10" #bump on every change...
+		#r11: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=055751e98b7ab9147154a637489c0630af4dc825
+		#r12: (pending)
+		RELEASE_VER="-r11" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
+		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 
 	fi
