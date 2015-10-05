@@ -427,6 +427,19 @@ build_u_boot () {
 		omap5_uevm)
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		sama5d2_xplained_mmc)
+#			patch -p1 < "${p_dir}/board/0001-arm-atmel-Add-SAMA5D2-Xplained-board.patch"
+#			patch -p1 < "${p_dir}/board/0002-gpio-atmel-Add-the-PIO4-driver-support.patch"
+#			patch -p1 < "${p_dir}/board/0003-mmc-atmel-Add-atmel-sdhci-support.patch"
+#			patch -p1 < "${p_dir}/board/0004-arm-at91-Change-the-Chip-ID-registers-addresses.patch"
+#			patch -p1 < "${p_dir}/board/0005-arm-at91-clock-Add-the-generated-clock-support.patch"
+#			git add .
+#			git commit -a -m 'sama5d2_xplained fixes' -s
+#			git format-patch -1 -o "${p_dir}/"
+
+			echo "patch -p1 < \"${p_dir}/0001-sama5d2_xplained-fixes.patch\""
+			${git} "${p_dir}/0001-sama5d2_xplained-fixes.patch"
+			;;
 		sama5d3xek_mmc)
 			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
 			;;
@@ -491,6 +504,10 @@ build_u_boot () {
 			;;
 		omap5_uevm)
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d2_xplained_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-sama5d2_xplained-fixes.patch\""
+			${git} "${p_dir}/0001-sama5d2_xplained-fixes.patch"
 			;;
 		sama5d3xek_mmc)
 			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
@@ -927,6 +944,13 @@ rpi_2 () {
 	board="rpi_2" ; build_uboot_gnueabihf
 }
 
+sama5d2_xplained () {
+	cleanup
+	transitioned_to_testing="true"
+
+	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
+}
+
 sama5d3xek () {
 	cleanup
 	transitioned_to_testing="true"
@@ -998,6 +1022,7 @@ omap3_beagle
 omap4_panda
 omap5_uevm
 rpi_2
+sama5d2_xplained
 sama5d3xek
 sama5d3_xplained
 sama5d4ek
