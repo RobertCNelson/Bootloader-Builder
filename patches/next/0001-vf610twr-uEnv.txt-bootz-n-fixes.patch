@@ -1,6 +1,6 @@
-From 825de6eedea030b353a4f15443224556b20a02e9 Mon Sep 17 00:00:00 2001
+From 3fe84931f0e3bc0abf368dfeb6718410c533e6f6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 2 Sep 2014 20:24:45 -0500
+Date: Mon, 5 Oct 2015 12:37:06 -0500
 Subject: [PATCH] vf610twr: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,10 +9,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 67 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/vf610twr.h b/include/configs/vf610twr.h
-index bd79e81..e94051a 100644
+index 324ba8f..856c294 100644
 --- a/include/configs/vf610twr.h
 +++ b/include/configs/vf610twr.h
-@@ -90,6 +90,9 @@
+@@ -82,6 +82,9 @@
  #define CONFIG_CMD_MMC
  #define CONFIG_GENERIC_MMC
  #define CONFIG_CMD_FAT
@@ -22,8 +22,8 @@ index bd79e81..e94051a 100644
  #define CONFIG_DOS_PARTITION
  
  #define CONFIG_CMD_PING
-@@ -122,7 +125,7 @@
- #define CONFIG_SYS_I2C_MXC
+@@ -114,7 +117,7 @@
+ #define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
  #define CONFIG_SYS_SPD_BUS_NUM		0
  
 -#define CONFIG_BOOTDELAY		3
@@ -31,7 +31,7 @@ index bd79e81..e94051a 100644
  
  #define CONFIG_LOADADDR			0x82000000
  
-@@ -133,7 +136,7 @@
+@@ -125,7 +128,7 @@
  #define CONFIG_EXTRA_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
@@ -40,7 +40,7 @@ index bd79e81..e94051a 100644
  	"fdt_high=0xffffffff\0" \
  	"initrd_high=0xffffffff\0" \
  	"fdt_file=vf610-twr.dtb\0" \
-@@ -142,7 +145,10 @@
+@@ -134,7 +137,10 @@
  	"ip_dyn=yes\0" \
  	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
  	"mmcpart=1\0" \
@@ -52,7 +52,7 @@ index bd79e81..e94051a 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -157,15 +163,41 @@
+@@ -149,15 +155,41 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -99,7 +99,7 @@ index bd79e81..e94051a 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -203,19 +235,35 @@
+@@ -195,19 +227,35 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -145,7 +145,7 @@ index bd79e81..e94051a 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-@@ -273,5 +321,6 @@
+@@ -265,5 +313,6 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -153,5 +153,5 @@ index bd79e81..e94051a 100644
  
  #endif
 -- 
-2.1.4
+2.5.3
 
