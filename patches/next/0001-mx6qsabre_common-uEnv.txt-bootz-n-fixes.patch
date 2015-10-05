@@ -1,6 +1,6 @@
-From 21020897c084e4a70f959245c6fe2403bb09b52d Mon Sep 17 00:00:00 2001
+From 9d96f7524c69684c82b769b7edf5c557e415ceab Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 3 Aug 2015 12:28:10 -0500
+Date: Mon, 5 Oct 2015 11:08:48 -0500
 Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,10 +9,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 121 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index 6a57841..8bd9329 100644
+index 9dcc64e..dc07eae 100644
 --- a/include/configs/mx6sabre_common.h
 +++ b/include/configs/mx6sabre_common.h
-@@ -77,14 +77,18 @@
+@@ -77,9 +77,12 @@
  	"image=zImage\0" \
  	"fdt_file=undefined\0" \
  	"fdt_addr=0x18000000\0" \
@@ -23,7 +23,10 @@ index 6a57841..8bd9329 100644
 +	"console=ttymxc0,115200\0" \
 +	"optargs=\0" \
 +	"cmdline=\0" \
- 	"fdt_high=0xffffffff\0"	  \
+ 	"dfuspi=dfu 0 sf 0:0:10000000:0\0" \
+ 	"dfu_alt_info_spl=spl raw 0x400\0" \
+ 	"dfu_alt_info_img=u-boot raw 0x10000\0" \
+@@ -88,7 +91,8 @@
  	"initrd_high=0xffffffff\0" \
  	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
  	"mmcpart=1\0" \
@@ -33,7 +36,7 @@ index 6a57841..8bd9329 100644
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
  			"setenv get_cmd dhcp; " \
-@@ -99,15 +103,55 @@
+@@ -103,15 +107,55 @@
  			"fi; "	\
  		"fi\0" \
  	EMMC_ENV	  \
@@ -94,7 +97,7 @@ index 6a57841..8bd9329 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -146,6 +190,70 @@
+@@ -150,6 +194,70 @@
  		"else " \
  			"bootz; " \
  		"fi;\0" \
@@ -165,7 +168,7 @@ index 6a57841..8bd9329 100644
  		"findfdt="\
  			"if test $fdt_file = undefined; then " \
  				"if test $board_name = SABREAUTO && test $board_rev = MX6QP; then " \
-@@ -165,17 +273,12 @@
+@@ -169,17 +277,12 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"run findfdt;" \
@@ -190,5 +193,5 @@ index 6a57841..8bd9329 100644
  #define CONFIG_ARP_TIMEOUT     200UL
  
 -- 
-2.4.6
+2.5.3
 

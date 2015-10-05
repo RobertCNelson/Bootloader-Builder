@@ -415,6 +415,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx6qsabresd)
+			echo "patch -p1 < \"${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap3_beagle)
@@ -478,6 +479,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx6qsabresd)
+			echo "patch -p1 < \"${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap3_beagle)
