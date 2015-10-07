@@ -436,7 +436,7 @@ index 3cf768e..7230fbf 100644
  
  /* NS16550 Configuration */
  #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
-@@ -309,9 +330,8 @@
+@@ -309,9 +329,8 @@
  #endif
  
  #ifdef CONFIG_USB_MUSB_GADGET
@@ -449,7 +449,7 @@ index 3cf768e..7230fbf 100644
  /* USB TI's IDs */
  #define CONFIG_G_DNL_VENDOR_NUM 0x0451
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 6dc6515..8bf2ec1 100644
+index 6dc6515..c77631b 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -61,11 +61,242 @@
@@ -467,7 +467,7 @@ index 6dc6515..8bf2ec1 100644
 +		"root=PARTUUID=${uuid} ro " \
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
-+	"args_mmc_old=run finduuid;setenv bootargs console=${console} " \
++	"args_mmc_old=setenv bootargs console=${console} " \
 +		"${optargs} " \
 +		"${cape_disable} " \
 +		"${cape_enable} " \
@@ -606,7 +606,7 @@ index 6dc6515..8bf2ec1 100644
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
 +						"gpio set 56; " \
-+						"setenv oldroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
++						"setenv oldroot /dev/mmcblk${mmcdev}p${mmcpart};" \
 +						"echo Running uname_boot ...;" \
 +						"run uname_boot;" \
 +					"fi;" \
