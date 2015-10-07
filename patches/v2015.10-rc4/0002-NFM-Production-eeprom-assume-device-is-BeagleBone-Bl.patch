@@ -88,7 +88,7 @@ index 680f656..f24d34e 100644
 -		hang();
 +		puts("Unknown board: assuming BeagleBone Black.");
 +		/* Beaglebone LT pinmux */
-+		configure_module_pin_mux(i2c1_pin_mux);
++//		configure_module_pin_mux(i2c1_pin_mux);
 +		configure_module_pin_mux(mii1_pin_mux);
 +		configure_module_pin_mux(mmc0_pin_mux);
 +		configure_module_pin_mux(mmc1_pin_mux);
