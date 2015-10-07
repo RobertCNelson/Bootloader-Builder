@@ -7,9 +7,9 @@ Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c      | 17 +++++++++++------
- board/ti/am335x/mux.c        |  8 ++++++--
+ board/ti/am335x/mux.c        |  7 +++++--
  include/configs/am335x_evm.h |  2 ++
- 3 files changed, 19 insertions(+), 8 deletions(-)
+ 3 files changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index e6c5ed6..0a3f166 100644
@@ -77,10 +77,10 @@ index e6c5ed6..0a3f166 100644
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_MII;
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 6ff89e5..de908f4 100644
+index fd3da58..57a8a73 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -367,7 +367,11 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
+@@ -365,7 +365,10 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
  		configure_module_pin_mux(mmc1_pin_mux);
  #endif
  	} else {
@@ -88,18 +88,17 @@ index 6ff89e5..de908f4 100644
 -		hang();
 +		puts("Unknown board: assuming BeagleBone Black.");
 +		/* Beaglebone LT pinmux */
-+//		configure_module_pin_mux(i2c1_pin_mux);
 +		configure_module_pin_mux(mii1_pin_mux);
 +		configure_module_pin_mux(mmc0_pin_mux);
 +		configure_module_pin_mux(mmc1_pin_mux);
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 582b33d..3976d76 100644
+index 7230fbf..d8b9e11 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -181,6 +181,8 @@
- 	"setenv umsmedia 0; "\
+@@ -180,6 +180,8 @@
+ #define CONFIG_BOOTCOMMAND \
  	"gpio set 53; " \
  	"run findfdt; " \
 +	"setenv fdtfile am335x-boneblack.dtb; "\
