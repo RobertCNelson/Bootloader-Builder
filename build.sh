@@ -558,8 +558,9 @@ build_u_boot () {
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=d49aa5effa20d0b943c74ced84e67defce6d6d1c
 		#r10: ARM: DRA7: Fix DDR init sequence during warm reset
 		#r11: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=055751e98b7ab9147154a637489c0630af4dc825
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3b05302127445f615f22696ac3d4b45a0207aa7d
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		p_dir="${DIR}/patches/v2015.07"
