@@ -389,8 +389,9 @@ build_u_boot () {
 		#r6: fix tftp with revert (fixed in master)
 		#r7: am335x_evm: we are not yet ready...
 		#r8: omap, we arent' ready for partuuid...
-		#r9: (pending)
-		RELEASE_VER="-r8" #bump on every change...
+		#r9: omap, we arent' ready for partuuid...
+		#r10: (pending)
+		RELEASE_VER="-r9" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -424,12 +425,15 @@ build_u_boot () {
 			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap3_beagle)
+			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap4_panda)
+			echo "patch -p1 < \"${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap5_uevm)
+			echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		sama5d2_xplained_mmc)
