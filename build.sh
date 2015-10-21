@@ -397,12 +397,10 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
-			git revert --no-edit 1fec3c5d832d6e0cac10135179016b0640f1a863 -s
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			git revert --no-edit 1fec3c5d832d6e0cac10135179016b0640f1a863 -s
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -428,17 +426,14 @@ build_u_boot () {
 			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap3_beagle)
-			git revert --no-edit 1fec3c5d832d6e0cac10135179016b0640f1a863 -s
 			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap4_panda)
-			git revert --no-edit 1fec3c5d832d6e0cac10135179016b0640f1a863 -s
 			echo "patch -p1 < \"${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		omap5_uevm)
-			git revert --no-edit 1fec3c5d832d6e0cac10135179016b0640f1a863 -s
 			echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
