@@ -1,5 +1,5 @@
-	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
-	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...;  load mmc ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
+	"loadrd=load ${interface} ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
+	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load ${interface} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
 	EEWIKI_BOOT \
 	EEWIKI_UNAME_BOOT \
 
@@ -7,7 +7,7 @@
 #define DEFAULT_MMC_TI_ARGS \
 	"mmcdev=0\0" \
 	"mmcrootfstype=ext4 rootwait\0" \
-	"finduuid=part uuid mmc ${bootpart} uuid\0" \
+	"finduuid=part uuid ${interface} ${bootpart} uuid\0" \
 	"args_mmc=run finduuid;setenv bootargs console=${console} " \
 		"${optargs} " \
 		"root=PARTUUID=${uuid} ro " \
@@ -31,12 +31,12 @@
 
 #define EEWIKI_BOOT \
 	"boot=mmc dev ${mmcdev}; " \
-		"if mmc rescan; then " \
+		"if ${interface} rescan; then " \
 			"echo SD/MMC found on device ${mmcdev};" \
 			"setenv bootpart ${mmcdev}:1; " \
 			"echo Checking for: /uEnv.txt ...;" \
-			"if test -e mmc ${bootpart} /uEnv.txt; then " \
-				"load mmc ${bootpart} ${loadaddr} /uEnv.txt;" \
+			"if test -e ${interface} ${bootpart} /uEnv.txt; then " \
+				"load ${interface} ${bootpart} ${loadaddr} /uEnv.txt;" \
 				"env import -t ${loadaddr} ${filesize};" \
 				"echo Loaded environment from /uEnv.txt;" \
 				"echo Checking if uenvcmd is set ...;" \
@@ -49,8 +49,8 @@
 			"for i in 1 2 3 4 5 6 7 ; do " \
 				"setenv mmcpart ${i};" \
 				"setenv bootpart ${mmcdev}:${mmcpart};" \
-				"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
-					"load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
+				"if test -e ${interface} ${bootpart} /boot/uEnv.txt; then " \
+					"load ${interface} ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
 					"env import -t ${loadaddr} ${filesize};" \
 					"echo Loaded environment from /boot/uEnv.txt;" \
 					"if test -n ${dtb}; then " \
@@ -71,35 +71,35 @@
 	"uname_boot="\
 		"setenv bootdir /boot; " \
 		"setenv bootfile vmlinuz-${uname_r}; " \
-		"if test -e mmc ${bootpart} ${bootdir}/${bootfile}; then " \
+		"if test -e ${interface} ${bootpart} ${bootdir}/${bootfile}; then " \
 			"echo loading ${bootdir}/${bootfile} ...; "\
 			"run loadimage;" \
 			"setenv fdtdir /boot/dtbs/${uname_r}; " \
-			"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
+			"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
 				"run loadfdt;" \
 			"else " \
 				"setenv fdtdir /usr/lib/linux-image-${uname_r}; " \
-				"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
+				"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
 					"run loadfdt;" \
 				"else " \
 					"setenv fdtdir /lib/firmware/${uname_r}/device-tree; " \
-					"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
+					"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
 						"run loadfdt;" \
 					"else " \
 						"setenv fdtdir /boot/dtb-${uname_r}; " \
-						"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
+						"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
 							"run loadfdt;" \
 						"else " \
 							"setenv fdtdir /boot/dtbs; " \
-							"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
+							"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
 								"run loadfdt;" \
 							"else " \
 								"setenv fdtdir /boot/dtb; " \
-								"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
+								"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
 									"run loadfdt;" \
 								"else " \
 									"setenv fdtdir /boot; " \
-									"if test -e mmc ${bootpart} ${fdtdir}/${fdtfile}; then " \
+									"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
 										"run loadfdt;" \
 									"else " \
 										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
@@ -115,7 +115,7 @@
 				"fi;" \
 			"fi; " \
 			"setenv rdfile initrd.img-${uname_r}; " \
-			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
+			"if test -e ${interface} ${bootpart} ${bootdir}/${rdfile}; then " \
 				"echo loading ${bootdir}/${rdfile} ...; "\
 				"run loadrd;" \
 				"if test -n ${uenv_root}; then " \
