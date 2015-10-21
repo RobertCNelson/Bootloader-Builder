@@ -1,6 +1,6 @@
-From 3fe84931f0e3bc0abf368dfeb6718410c533e6f6 Mon Sep 17 00:00:00 2001
+From b2d8726c8bb1cd68e163ea209c71a78db740c880 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 5 Oct 2015 12:37:06 -0500
+Date: Wed, 21 Oct 2015 11:12:37 -0500
 Subject: [PATCH] vf610twr: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 67 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/vf610twr.h b/include/configs/vf610twr.h
-index 324ba8f..856c294 100644
+index 7f4260a..b95c223 100644
 --- a/include/configs/vf610twr.h
 +++ b/include/configs/vf610twr.h
 @@ -82,6 +82,9 @@
@@ -29,18 +29,16 @@ index 324ba8f..856c294 100644
 -#define CONFIG_BOOTDELAY		3
 +#define CONFIG_BOOTDELAY		1
  
- #define CONFIG_LOADADDR			0x82000000
+ #define CONFIG_SYS_LOAD_ADDR		0x82000000
  
-@@ -125,7 +128,7 @@
- #define CONFIG_EXTRA_ENV_SETTINGS \
+@@ -145,13 +148,16 @@
+ 	MEM_LAYOUT_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
 -	"console=ttyLP1\0" \
 +	"console=ttyLP1,115200\0" \
- 	"fdt_high=0xffffffff\0" \
- 	"initrd_high=0xffffffff\0" \
  	"fdt_file=vf610-twr.dtb\0" \
-@@ -134,7 +137,10 @@
+ 	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
  	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
  	"mmcpart=1\0" \
@@ -52,7 +50,7 @@ index 324ba8f..856c294 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -149,15 +155,41 @@
+@@ -166,15 +172,41 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -99,7 +97,7 @@ index 324ba8f..856c294 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -195,19 +227,35 @@
+@@ -212,19 +244,35 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -145,7 +143,7 @@ index 324ba8f..856c294 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-@@ -265,5 +313,6 @@
+@@ -280,5 +328,6 @@
  
  #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
@@ -153,5 +151,5 @@ index 324ba8f..856c294 100644
  
  #endif
 -- 
-2.5.3
+2.6.1
 
