@@ -602,12 +602,14 @@ build_u_boot () {
 		#r14: fix beagle usb/scsi boot...
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=75d995e87f47902b40065982ccbaae7a466d0913
 		#r15: really fix beagle usb/scsi boot...
-		#r16: (pending)
-		RELEASE_VER="-r15" #bump on every change...
-		#halt_patching_uboot
+		#r16: netinstall fixes
+		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=a843d2b1a1efff638e03289e755674509ce2fa16
+		#r17: (pending)
+		RELEASE_VER="-r16" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+		#halt_patching_uboot
 		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 
 	fi
