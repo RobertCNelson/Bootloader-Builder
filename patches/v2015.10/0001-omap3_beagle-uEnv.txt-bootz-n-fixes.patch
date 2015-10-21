@@ -433,7 +433,7 @@ index 6dc6515..3ebaa26 100644
 +				"echo loading ${bootdir}/${rdfile} ...; "\
 +				"run loadrd;" \
 +				"if test -n ${netinstall_enable}; then " \
-+					"run args_netinstall;" \
++					"run args_netinstall; run message;" \
 +					"echo debug: [${bootargs}] ... ;" \
 +					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
 +					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
