@@ -907,8 +907,8 @@ at91sam9x5ek () {
 	board="at91sam9x5ek_mmc"
 	build_uboot_eabi
 
-	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
-	build_at91bootstrap_all
+#	at91bootstrap_config="at91sam9x5eksd_uboot_defconfig"
+#	build_at91bootstrap_all
 }
 
 Bananapi () {
@@ -1041,6 +1041,10 @@ sama5d4_xplained () {
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
 
+Sinovoip_BPI_M2 () {
+	board="Sinovoip_BPI_M2" ; always_mainline
+}
+
 udoo () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -1089,6 +1093,7 @@ sama5d3xek
 sama5d3_xplained
 sama5d4ek
 sama5d4_xplained
+Sinovoip_BPI_M2
 udoo
 vf610twr
 wandboard
