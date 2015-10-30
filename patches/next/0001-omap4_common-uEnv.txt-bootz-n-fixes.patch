@@ -10,26 +10,6 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  include/configs/ti_omap4_common.h |  44 +++++-------
  3 files changed, 156 insertions(+), 39 deletions(-)
 
-diff --git a/common/image.c b/common/image.c
-index e607109..c33749d 100644
---- a/common/image.c
-+++ b/common/image.c
-@@ -908,15 +908,6 @@ int boot_get_ramdisk(int argc, char * const argv[], bootm_headers_t *images,
- 	*rd_start = 0;
- 	*rd_end = 0;
- 
--#ifdef CONFIG_ANDROID_BOOT_IMAGE
--	/*
--	 * Look for an Android boot image.
--	 */
--	buf = map_sysmem(images->os.start, 0);
--	if (genimg_get_format(buf) == IMAGE_FORMAT_ANDROID)
--		select = argv[0];
--#endif
--
- 	if (argc >= 2)
- 		select = argv[1];
- 
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
 index 6dc6515..3ebaa26 100644
 --- a/include/configs/ti_armv7_common.h

@@ -112,26 +112,6 @@ index 3b0a9e7..b885b93 100644
  	twl4030_power_init();
  	switch (get_board_revision()) {
  	case REVISION_XM_AB:
-diff --git a/common/image.c b/common/image.c
-index e607109..c33749d 100644
---- a/common/image.c
-+++ b/common/image.c
-@@ -908,15 +908,6 @@ int boot_get_ramdisk(int argc, char * const argv[], bootm_headers_t *images,
- 	*rd_start = 0;
- 	*rd_end = 0;
- 
--#ifdef CONFIG_ANDROID_BOOT_IMAGE
--	/*
--	 * Look for an Android boot image.
--	 */
--	buf = map_sysmem(images->os.start, 0);
--	if (genimg_get_format(buf) == IMAGE_FORMAT_ANDROID)
--		select = argv[0];
--#endif
--
- 	if (argc >= 2)
- 		select = argv[1];
- 
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
 index bf986f8..87276c0 100644
 --- a/include/configs/omap3_beagle.h
