@@ -61,15 +61,17 @@ wget_dl="wget -c --directory-prefix=${DIR}/dl/"
 
 dl_gcc_generic () {
 	site="https://releases.linaro.org"
-	if [ ! -f ${DIR}/dl/${datestamp} ] ; then
+	archive_site="https://releases.linaro.org/archive"
+	WGET="wget -c --directory-prefix=${DIR}/dl/"
+	if [ ! -f "${DIR}/dl/${datestamp}" ] ; then
 		echo "Installing: ${toolchain_name}"
 		echo "-----------------------------"
-		${wget_dl} ${site}/${version}/${filename}
-		if [ -d ${DIR}/dl/${directory} ] ; then
-			rm -rf ${DIR}/dl/${directory} || true
+		${WGET} "${site}/${version}/${filename}" || ${WGET} "${archive_site}/${version}/${filename}"
+		if [ -d "${DIR}/dl/${directory}" ] ; then
+			rm -rf "${DIR}/dl/${directory}" || true
 		fi
-		tar xf ${DIR}/dl/${filename} -C ${DIR}/dl/
-		touch ${DIR}/dl/${datestamp}
+		tar -xf "${DIR}/dl/${filename}" -C "${DIR}/dl/"
+		touch "${DIR}/dl/${datestamp}"
 	fi
 
 	if [ "x${ARCH}" = "xarmv7l" ] ; then
@@ -85,22 +87,6 @@ dl_gcc_generic () {
 }
 
 #NOTE: ignore formatting, as this is just: meld build.sh ../stable-kernel/scripts/gcc.sh
-gcc_arm_embedded_4_8 () {
-		#https://releases.linaro.org/14.04/components/toolchain/binaries/gcc-linaro-arm-none-eabi-4.8-2014.04_linux.tar.xz
-		#
-		gcc_version="4.8"
-		release="2014.04"
-		toolchain_name="gcc-linaro-arm-none-eabi"
-		version="14.04/components/toolchain/binaries"
-		directory="${toolchain_name}-${gcc_version}-${release}_linux"
-		filename="${directory}.tar.xz"
-		datestamp="${release}-${toolchain_name}"
-
-		binary="bin/arm-none-eabi-"
-
-	dl_gcc_generic
-}
-
 gcc_arm_embedded_4_9 () {
 		#
 		#https://releases.linaro.org/15.05/components/toolchain/binaries/arm-eabi/gcc-linaro-4.9-2015.05-x86_64_arm-eabi.tar.xz
@@ -121,20 +107,22 @@ gcc_arm_embedded_4_9 () {
 	dl_gcc_generic
 }
 
-
-gcc_linaro_gnueabihf_4_8 () {
+gcc_arm_embedded_5 () {
 		#
-		#https://releases.linaro.org/14.04/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux.tar.xz
+		#https://releases.linaro.org/components/toolchain/binaries/5.1-2015.08/arm-eabi/gcc-linaro-5.1-2015.08-x86_64_arm-eabi.tar.xz
 		#
-		gcc_version="4.8"
-		release="2014.04"
-		toolchain_name="gcc-linaro-arm-linux-gnueabihf"
-		version="14.04/components/toolchain/binaries"
-		directory="${toolchain_name}-${gcc_version}-${release}_linux"
-		filename="${directory}.tar.xz"
-		datestamp="${release}-${toolchain_name}"
 
-		binary="bin/arm-linux-gnueabihf-"
+		gcc_version="5.1"
+		release="15.08"
+		target="arm-eabi"
+
+		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
+		filename="gcc-linaro-${gcc_version}-20${release}-x86_64_arm-eabi.tar.xz"
+		directory="gcc-linaro-${gcc_version}-20${release}-x86_64_arm-eabi"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/arm-eabi-"
 
 	dl_gcc_generic
 }
@@ -149,6 +137,26 @@ gcc_linaro_gnueabihf_4_9 () {
 		target="arm-linux-gnueabihf"
 
 		version="${release}/components/toolchain/binaries/${target}"
+		filename="gcc-linaro-${gcc_version}-20${release}-x86_64_${target}.tar.xz"
+		directory="gcc-linaro-${gcc_version}-20${release}-x86_64_${target}"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/${target}-"
+
+	dl_gcc_generic
+}
+
+gcc_linaro_gnueabihf_5 () {
+		#
+		#https://releases.linaro.org/components/toolchain/binaries/5.1-2015.08/arm-linux-gnueabihf/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabihf.tar.xz
+		#
+
+		gcc_version="5.1"
+		release="15.08"
+		target="arm-linux-gnueabihf"
+
+		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
 		filename="gcc-linaro-${gcc_version}-20${release}-x86_64_${target}.tar.xz"
 		directory="gcc-linaro-${gcc_version}-20${release}-x86_64_${target}"
 
@@ -827,6 +835,7 @@ build_uboot_eabi () {
 	uboot_config="${board}_defconfig"
 	gcc_arm_embedded_4_9
 	build_uboot_stable
+	gcc_arm_embedded_5
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -835,6 +844,7 @@ build_uboot_gnueabihf () {
 	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
+	gcc_linaro_gnueabihf_5
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -878,6 +888,7 @@ am335x_boneblack_flasher () {
 	uboot_config="am335x_evm_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
+	gcc_linaro_gnueabihf_5
 	build_uboot_testing
 	build_uboot_latest
 }
