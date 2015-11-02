@@ -1,6 +1,6 @@
-From d9fd44a53c0c1c22c6280bb56e613703490df644 Mon Sep 17 00:00:00 2001
+From e4f61b3e547fb0e89614013dea7e363b2a6336af Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 30 Oct 2015 16:41:08 -0500
+Date: Mon, 2 Nov 2015 15:14:36 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -335,7 +335,7 @@ index 93d18e4..3d2d89e 100644
  	.priv_auto_alloc_size = sizeof(struct gpio_bank),
  };
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index d58816d..baa2f95 100644
+index d58816d..e46d475 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -346,16 +346,15 @@ index d58816d..baa2f95 100644
  
  /* Don't override the distro default bootdelay */
  #undef CONFIG_BOOTDELAY
-@@ -72,10 +73,15 @@
- #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+@@ -73,9 +74,14 @@
  
  #define BOOTENV_DEV_LEGACY_MMC(devtypeu, devtypel, instance) \
+ 	"bootcmd_" #devtypel #instance "=" \
 +	"gpio clear 56; " \
 +	"gpio clear 55; " \
 +	"gpio clear 54; " \
 +	"gpio set 53; " \
 +	"setenv interface mmc; " \
- 	"bootcmd_" #devtypel #instance "=" \
  	"setenv mmcdev " #instance"; "\
 -	"setenv bootpart " #instance":2 ; "\
 -	"run mmcboot\0"
