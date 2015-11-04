@@ -682,7 +682,7 @@ build_u_boot () {
 			make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET}
 			echo "-----------------------------"
 			if [ "x${board}" = "xfirefly-rk3288" ] ; then
-				./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot.rk3288
+				./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
 				echo "-----------------------------"
 			fi
 
@@ -748,11 +748,15 @@ build_u_boot () {
 			fi
 
 			#SPL: RockChip rk3288
-			#./firefly-rk3288/tools/mkimage -T rksd -d firefly-rk3288/spl/u-boot-spl-dtb.bin out
-			#sudo dd if=out of=/dev/sdc
-			#sudo dd if=firefly-rk3288/u-boot-dtb.img of=/dev/sdc seek=256
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.rk3288 ] ; then
-				filename_search="u-boot.rk3288"
+			#./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
+			#sudo dd if=u-boot-spl.rk3288 of=/dev/sdc
+			#sudo dd if=u-boot-dtb.img of=/dev/sdc seek=256
+			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-spl.rk3288 ] ; then
+				filename_search="u-boot-spl.rk3288"
+				filename_id="deploy/${board}/SPL-${uboot_filename}.rk3288"
+				file_save
+
+				filename_search="u-boot-dtb.img"
 				filename_id="deploy/${board}/u-boot-${uboot_filename}.rk3288"
 				file_save
 				UBOOT_DONE=1
@@ -957,7 +961,14 @@ firefly_rk3288 () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="firefly-rk3288" ; build_uboot_gnueabihf
+	board="firefly-rk3288"
+#; build_uboot_gnueabihf
+	uboot_config="${board}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+#	gcc_linaro_gnueabihf_5
+#	build_uboot_testing
+#	build_uboot_latest
 }
 
 mx23_olinuxino () {
@@ -1090,6 +1101,7 @@ Bananapro
 #beagle_x15
 beagle_x15_ti
 cm_fx6
+firefly_rk3288
 mx23_olinuxino
 mx51evk
 mx53loco
