@@ -620,8 +620,9 @@ build_u_boot () {
 		#r15: really fix beagle usb/scsi boot...
 		#r16: netinstall fixes
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=a843d2b1a1efff638e03289e755674509ce2fa16
-		#r17: (pending)
-		RELEASE_VER="-r16" #bump on every change...
+		#r17: tristate lcd M0 -> M15
+		#r18: (pending)
+		RELEASE_VER="-r17" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -1087,6 +1088,9 @@ wandboard () {
 
 	board="wandboard" ; build_uboot_gnueabihf
 }
+
+beagle_x15_ti
+exit
 
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
