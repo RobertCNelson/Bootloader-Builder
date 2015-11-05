@@ -676,7 +676,7 @@ build_u_boot () {
 	fi
 
 	if [ ! "${pre_built}" ] ; then
-		if [ -f ./configs/${uboot_config} ] ; then
+		#if [ -f ./configs/${uboot_config} ] ; then
 			make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config}
 			echo "Building ${project}: ${uboot_filename}"
 			echo "-----------------------------"
@@ -782,7 +782,7 @@ build_u_boot () {
 				file_save
 				UBOOT_DONE=1
 			fi
-		fi
+		#fi
 	else
 		echo "-----------------------------"
 		echo "Skipping Binary Build: as [${uboot_filename}] was previously built."
