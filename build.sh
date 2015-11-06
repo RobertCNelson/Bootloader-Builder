@@ -967,9 +967,9 @@ firefly_rk3288 () {
 	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
-	gcc_linaro_gnueabihf_5
-	build_uboot_testing
-	build_uboot_latest
+#	gcc_linaro_gnueabihf_5
+#	build_uboot_testing
+#	build_uboot_latest
 }
 
 mx23_olinuxino () {
