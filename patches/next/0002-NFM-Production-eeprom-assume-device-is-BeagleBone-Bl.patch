@@ -1,6 +1,6 @@
-From 01cc1bfffb70c0ba65ccb5bfc9029ee1def0c003 Mon Sep 17 00:00:00 2001
+From 93fbbdf6976228329f8a8847616568ecace2b24e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 30 Oct 2015 16:46:08 -0500
+Date: Fri, 6 Nov 2015 14:08:58 -0600
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -94,7 +94,7 @@ index 79ed02f..0d9c66c 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index baa2f95..74eecca 100644
+index d7e077d..0c13426 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -104,6 +104,8 @@
@@ -107,5 +107,5 @@ index baa2f95..74eecca 100644
  
  #include <config_distro_bootcmd.h>
 -- 
-2.6.1
+2.6.2
 

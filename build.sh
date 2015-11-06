@@ -345,8 +345,9 @@ build_u_boot () {
 		#r9: omap, we arent' ready for partuuid...
 		#r10: revert 1fec3c5d832d6e0cac10135179016b0640f1a863
 		#r11: omap-netinstall
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: add support for Arrow BeagleBone Black Industrial
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -621,8 +622,9 @@ build_u_boot () {
 		#r16: netinstall fixes
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=a843d2b1a1efff638e03289e755674509ce2fa16
 		#r17: tristate lcd M0 -> M15
-		#r18: (pending)
-		RELEASE_VER="-r17" #bump on every change...
+		#r18: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=aada4952fe4e4e4ca726f2e319e5eb6de08ecccd
+		#r19: (pending)
+		RELEASE_VER="-r18" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -676,113 +678,111 @@ build_u_boot () {
 	fi
 
 	if [ ! "${pre_built}" ] ; then
-		#if [ -f ./configs/${uboot_config} ] ; then
-			make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config}
-			echo "Building ${project}: ${uboot_filename}"
+		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config}
+		echo "Building ${project}: ${uboot_filename}"
+		echo "-----------------------------"
+		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET}
+		echo "-----------------------------"
+		if [ "x${board}" = "xfirefly-rk3288" ] ; then
+			./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
 			echo "-----------------------------"
-			make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET}
-			echo "-----------------------------"
-			if [ "x${board}" = "xfirefly-rk3288" ] ; then
-				./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
-				echo "-----------------------------"
-			fi
+		fi
 
-			unset UBOOT_DONE
-			#Freescale targets just need u-boot.imx from u-boot
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.imx ] ; then
-				filename_search="u-boot.imx"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.imx"
-				file_save
-				UBOOT_DONE=1
-			fi
+		unset UBOOT_DONE
+		#Freescale targets just need u-boot.imx from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.imx ] ; then
+			filename_search="u-boot.imx"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.imx"
+			file_save
+			UBOOT_DONE=1
+		fi
 
-			#Freescale mx23 targets just need u-boot.sb from u-boot
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.sb ] ; then
-				filename_search="u-boot.sb"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.sb"
-				file_save
-				UBOOT_DONE=1
-			fi
+		#Freescale mx23 targets just need u-boot.sb from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.sb ] ; then
+			filename_search="u-boot.sb"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.sb"
+			file_save
+			UBOOT_DONE=1
+		fi
 
-			#SPL based targets, need MLO and u-boot.img from u-boot
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
-				filename_search="MLO"
-				filename_id="deploy/${board}/MLO-${uboot_filename}"
-				file_save
+		#SPL based targets, need MLO and u-boot.img from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
+			filename_search="MLO"
+			filename_id="deploy/${board}/MLO-${uboot_filename}"
+			file_save
 
-				filename_search="u-boot.img"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-				file_save
-				UBOOT_DONE=1
-			fi
+			filename_search="u-boot.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
 
-			#SPL (i.mx6) targets, need SPL and u-boot.img from u-boot
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/SPL ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
-				filename_search="SPL"
-				filename_id="deploy/${board}/SPL-${uboot_filename}"
-				file_save
+		#SPL (i.mx6) targets, need SPL and u-boot.img from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/SPL ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
+			filename_search="SPL"
+			filename_id="deploy/${board}/SPL-${uboot_filename}"
+			file_save
 
-				filename_search="u-boot.img"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-				file_save
-				UBOOT_DONE=1
-			fi
+			filename_search="u-boot.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
 
-			#SPL: sunxi
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-sunxi-with-spl.bin ] ; then
-				filename_search="u-boot-sunxi-with-spl.bin"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.sunxi"
-				file_save
-				UBOOT_DONE=1
-			fi
+		#SPL: sunxi
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-sunxi-with-spl.bin ] ; then
+			filename_search="u-boot-sunxi-with-spl.bin"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.sunxi"
+			file_save
+			UBOOT_DONE=1
+		fi
 
-			#SPL: Atmel
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/boot.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
-				filename_search="boot.bin"
-				filename_id="deploy/${board}/boot-${uboot_filename}.bin"
-				file_save
+		#SPL: Atmel
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/boot.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
+			filename_search="boot.bin"
+			filename_id="deploy/${board}/boot-${uboot_filename}.bin"
+			file_save
 
-				filename_search="u-boot.img"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-				file_save
-				UBOOT_DONE=1
-			fi
+			filename_search="u-boot.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
 
-			#SPL: RockChip rk3288
-			#./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
-			#sudo dd if=u-boot-spl.rk3288 of=/dev/sdc
-			#sudo dd if=u-boot-dtb.img of=/dev/sdc seek=256
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-spl.rk3288 ] ; then
-				filename_search="u-boot-spl.rk3288"
-				filename_id="deploy/${board}/SPL-${uboot_filename}.rk3288"
-				file_save
+		#SPL: RockChip rk3288
+		#./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
+		#sudo dd if=u-boot-spl.rk3288 of=/dev/sdc
+		#sudo dd if=u-boot-dtb.img of=/dev/sdc seek=256
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-spl.rk3288 ] ; then
+			filename_search="u-boot-spl.rk3288"
+			filename_id="deploy/${board}/SPL-${uboot_filename}.rk3288"
+			file_save
 
-				filename_search="u-boot-dtb.img"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.rk3288"
-				file_save
-				UBOOT_DONE=1
-			fi
+			filename_search="u-boot-dtb.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.rk3288"
+			file_save
+			UBOOT_DONE=1
+		fi
 
-			#SPL: Samsung (old Atmel)
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
-				filename_search="spl/u-boot-spl.bin"
-				filename_id="deploy/${board}/u-boot-spl-${uboot_filename}.bin"
-				file_save
+		#SPL: Samsung (old Atmel)
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
+			filename_search="spl/u-boot-spl.bin"
+			filename_id="deploy/${board}/u-boot-spl-${uboot_filename}.bin"
+			file_save
 
-				filename_search="u-boot.img"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-				file_save
-				UBOOT_DONE=1
-			fi
+			filename_search="u-boot.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
 
-			#Just u-boot.bin
-			if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.bin ] ; then
-				filename_search="u-boot.bin"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.bin"
-				file_save
-				UBOOT_DONE=1
-			fi
-		#fi
+		#Just u-boot.bin
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.bin ] ; then
+			filename_search="u-boot.bin"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.bin"
+			file_save
+			UBOOT_DONE=1
+		fi
 	else
 		echo "-----------------------------"
 		echo "Skipping Binary Build: as [${uboot_filename}] was previously built."
@@ -967,9 +967,9 @@ firefly_rk3288 () {
 	uboot_config="${board}_defconfig"
 	gcc_linaro_gnueabihf_4_9
 	build_uboot_stable
-#	gcc_linaro_gnueabihf_5
-#	build_uboot_testing
-#	build_uboot_latest
+	gcc_linaro_gnueabihf_5
+	build_uboot_testing
+	build_uboot_latest
 }
 
 mx23_olinuxino () {
@@ -1064,7 +1064,13 @@ sama5d4_xplained () {
 }
 
 Sinovoip_BPI_M2 () {
-	board="Sinovoip_BPI_M2" ; always_mainline
+	board="Sinovoip_BPI_M2"
+#	board="Sinovoip_BPI_M2" ; always_mainline
+#	gcc_linaro_gnueabihf_4_9
+#	build_uboot_stable
+	gcc_linaro_gnueabihf_5
+	build_uboot_testing
+	build_uboot_latest
 }
 
 udoo () {
@@ -1088,9 +1094,6 @@ wandboard () {
 
 	board="wandboard" ; build_uboot_gnueabihf
 }
-
-beagle_x15_ti
-exit
 
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
