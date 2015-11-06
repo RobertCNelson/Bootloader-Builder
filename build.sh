@@ -1032,7 +1032,14 @@ sama5d2_xplained () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
+#	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
+	board="sama5d2_xplained_mmc"
+	uboot_config="${board}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+#	gcc_linaro_gnueabihf_5
+#	build_uboot_testing
+#	build_uboot_latest
 }
 
 sama5d3xek () {
