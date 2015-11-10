@@ -623,8 +623,9 @@ build_u_boot () {
 		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=a843d2b1a1efff638e03289e755674509ce2fa16
 		#r17: tristate lcd M0 -> M15
 		#r18: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=aada4952fe4e4e4ca726f2e319e5eb6de08ecccd
-		#r19: (pending)
-		RELEASE_VER="-r18" #bump on every change...
+		#r19: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f3171e0a0d41bc79f819a1b85563ef7c643bf59b
+		#r20: (pending)
+		RELEASE_VER="-r19" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -945,7 +946,7 @@ beagle_x15_ti () {
 	cleanup
 
 	board="beagle_x15_ti"
-	uboot_config="beagle_x15_config"
+	uboot_config="am57xx_evm_config"
 	gcc_linaro_gnueabihf_4_9
 	GIT_SHA="v2015.07"
 	build_u_boot
