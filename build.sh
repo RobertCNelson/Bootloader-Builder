@@ -866,6 +866,12 @@ build_uboot_gnueabihf () {
 	build_uboot_latest
 }
 
+build_uboot_gnueabihf_only_stable () {
+	uboot_config="${board}_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+}
+
 always_mainline () {
 	cleanup
 	if [ ! "x${uboot_testing}" = "x" ] ; then
@@ -964,14 +970,7 @@ firefly_rk3288 () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="firefly-rk3288"
-#; build_uboot_gnueabihf
-	uboot_config="${board}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-#	gcc_linaro_gnueabihf_5
-#	build_uboot_testing
-#	build_uboot_latest
+	board="firefly-rk3288" ; build_uboot_gnueabihf_only_stable
 }
 
 mx23_olinuxino () {
@@ -1006,7 +1005,7 @@ omap3_beagle () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="omap3_beagle" ; build_uboot_gnueabihf
+	board="omap3_beagle" ; build_uboot_gnueabihf_only_stable
 }
 
 omap4_panda () {
@@ -1034,14 +1033,7 @@ sama5d2_xplained () {
 	cleanup
 	#transitioned_to_testing="true"
 
-#	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
-	board="sama5d2_xplained_mmc"
-	uboot_config="${board}_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-#	gcc_linaro_gnueabihf_5
-#	build_uboot_testing
-#	build_uboot_latest
+	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf_only_stable
 }
 
 sama5d3xek () {
