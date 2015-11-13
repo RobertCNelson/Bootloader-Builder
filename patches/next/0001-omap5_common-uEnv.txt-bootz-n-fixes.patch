@@ -1,20 +1,19 @@
-From b0618bce97265457c71b36dd9eb522191c7681dd Mon Sep 17 00:00:00 2001
+From 2c8f900dd7b988bf99303b46ec97caaa9f0f942d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 21 Oct 2015 10:38:10 -0500
+Date: Fri, 13 Nov 2015 11:17:14 -0600
 Subject: [PATCH] ti_omap5_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- common/image.c                    |   9 ---
- include/configs/ti_armv7_common.h | 142 +++++++++++++++++++++++++++++++++++++-
+ include/configs/ti_armv7_common.h | 154 +++++++++++++++++++++++++++++++++++++-
  include/configs/ti_omap5_common.h |  25 ++++---
- 3 files changed, 154 insertions(+), 22 deletions(-)
+ 2 files changed, 166 insertions(+), 13 deletions(-)
 
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 6dc6515..3ebaa26 100644
+index 7810dd6..ee7b009 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -61,11 +61,159 @@
+@@ -60,11 +60,159 @@
  #define DEFAULT_MMC_TI_ARGS \
  	"mmcdev=0\0" \
  	"mmcrootfstype=ext4 rootwait\0" \
@@ -176,12 +175,12 @@ index 6dc6515..3ebaa26 100644
 +		"fi;\0" \
  
  /*
-  * Default to a quick boot delay.
+  * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index 189ea7e..0da6165 100644
+index 5acbc92..9ef3f09 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
-@@ -81,16 +81,16 @@
+@@ -85,16 +85,16 @@
  	"partitions=" PARTS_DEFAULT "\0" \
  	"optargs=\0" \
  	"dofastboot=0\0" \
@@ -203,7 +202,7 @@ index 189ea7e..0da6165 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"if run loadbootenv; then " \
  				"echo Loaded environment from ${bootenv};" \
-@@ -118,7 +118,10 @@
+@@ -122,7 +122,10 @@
  			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -215,7 +214,7 @@ index 189ea7e..0da6165 100644
  	DFUARGS \
  	NETARGS \
  
-@@ -130,11 +133,13 @@
+@@ -134,11 +137,13 @@
  		"echo Booting into fastboot ...; fastboot 0;" \
  	"fi;" \
  	"run findfdt; " \
@@ -234,5 +233,5 @@ index 189ea7e..0da6165 100644
  #endif
  
 -- 
-2.6.1
+2.6.2
 

@@ -1,20 +1,19 @@
-From e1b14180888370f37fecb500000c82172bf9e21e Mon Sep 17 00:00:00 2001
+From dc35be75f2a211af3d0af521189f2721095dbc19 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 21 Oct 2015 10:34:44 -0500
+Date: Fri, 13 Nov 2015 11:15:39 -0600
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- common/image.c                    |   9 ---
- include/configs/ti_armv7_common.h | 142 +++++++++++++++++++++++++++++++++++++-
- include/configs/ti_omap4_common.h |  44 +++++-------
- 3 files changed, 156 insertions(+), 39 deletions(-)
+ include/configs/ti_armv7_common.h | 154 +++++++++++++++++++++++++++++++++++++-
+ include/configs/ti_omap4_common.h |  44 +++++------
+ 2 files changed, 168 insertions(+), 30 deletions(-)
 
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 6dc6515..3ebaa26 100644
+index 7810dd6..ee7b009 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -61,11 +61,159 @@
+@@ -60,11 +60,159 @@
  #define DEFAULT_MMC_TI_ARGS \
  	"mmcdev=0\0" \
  	"mmcrootfstype=ext4 rootwait\0" \
@@ -176,9 +175,9 @@ index 6dc6515..3ebaa26 100644
 +		"fi;\0" \
  
  /*
-  * Default to a quick boot delay.
+  * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 1cd7dae..b34e538 100644
+index 741f71f..35b5ce6 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -46,7 +46,8 @@
@@ -191,7 +190,7 @@ index 1cd7dae..b34e538 100644
  #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
  #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
  #define CONFIG_SYS_DEFAULT_LPDDR2_TIMINGS
-@@ -91,14 +92,15 @@
+@@ -95,14 +96,15 @@
  	"bootfile=zImage\0" \
  	"usbtty=cdc_acm\0" \
  	"vram=16M\0" \
@@ -211,7 +210,7 @@ index 1cd7dae..b34e538 100644
  	"mmcboot=echo Booting from mmc${mmcdev} ...; " \
  		"run args_mmc; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
-@@ -118,31 +120,19 @@
+@@ -122,31 +124,19 @@
  			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -254,5 +253,5 @@ index 1cd7dae..b34e538 100644
  /*
   * Defines for SPL
 -- 
-2.6.1
+2.6.2
 

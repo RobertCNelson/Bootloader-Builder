@@ -680,10 +680,10 @@ build_u_boot () {
 	fi
 
 	if [ ! "${pre_built}" ] ; then
-		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config}
+		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
 		echo "Building ${project}: ${uboot_filename}"
 		echo "-----------------------------"
-		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET}
+		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET} > /dev/null
 		echo "-----------------------------"
 		if [ "x${board}" = "xfirefly-rk3288" ] ; then
 			./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
