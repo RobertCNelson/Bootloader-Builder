@@ -1007,7 +1007,7 @@ omap3_beagle () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="omap3_beagle" ; build_uboot_gnueabihf
+	board="omap3_beagle" ; build_uboot_gnueabihf_only_stable
 }
 
 omap4_panda () {
