@@ -972,7 +972,7 @@ firefly_rk3288 () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="firefly-rk3288" ; build_uboot_gnueabihf
+	board="firefly-rk3288" ; build_uboot_gnueabihf_only_stable
 }
 
 mx23_olinuxino () {
