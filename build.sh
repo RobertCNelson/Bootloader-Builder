@@ -446,6 +446,7 @@ build_u_boot () {
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		at91sam9x5ek_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		beagle_x15)
@@ -530,6 +531,7 @@ build_u_boot () {
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		at91sam9x5ek_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		beagle_x15)
@@ -970,7 +972,7 @@ firefly_rk3288 () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="firefly-rk3288" ; build_uboot_gnueabihf_only_stable
+	board="firefly-rk3288" ; build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
@@ -1005,7 +1007,7 @@ omap3_beagle () {
 	cleanup
 	#transitioned_to_testing="true"
 
-	board="omap3_beagle" ; build_uboot_gnueabihf_only_stable
+	board="omap3_beagle" ; build_uboot_gnueabihf
 }
 
 omap4_panda () {
