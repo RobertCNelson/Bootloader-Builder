@@ -627,8 +627,9 @@ build_u_boot () {
 		#r18: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=aada4952fe4e4e4ca726f2e319e5eb6de08ecccd
 		#r19: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f3171e0a0d41bc79f819a1b85563ef7c643bf59b
 		#r20: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8b4300ee790938671f93df484d3371e3a594d19c
-		#r21: (pending)
-		RELEASE_VER="-r20" #bump on every change...
+		#r21: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=90c6ccc4970d0b783e5fcc42377ff5fc2402bb57
+		#r22: (pending)
+		RELEASE_VER="-r21" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -925,6 +926,21 @@ am43xx_evm () {
 	board="am43xx_evm" ; build_uboot_gnueabihf
 }
 
+am57xx_evm () {
+	cleanup
+	#transitioned_to_testing="true"
+
+#	board="am57xx_evm" ; build_uboot_gnueabihf
+
+	board="am57xx_evm"
+	uboot_config="am57xx_evm_defconfig"
+#	gcc_linaro_gnueabihf_4_9
+#	build_uboot_stable
+	gcc_linaro_gnueabihf_5
+#	build_uboot_testing
+	build_uboot_latest
+}
+
 at91sam9x5ek () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -1105,10 +1121,10 @@ A20_OLinuXino_MICRO
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
+am57xx_evm
 at91sam9x5ek
 Bananapi
 Bananapro
-#beagle_x15
 beagle_x15_ti
 cm_fx6
 firefly_rk3288
