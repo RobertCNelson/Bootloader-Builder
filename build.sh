@@ -1121,7 +1121,7 @@ A20_OLinuXino_MICRO
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
-am57xx_evm
+#am57xx_evm
 at91sam9x5ek
 Bananapi
 Bananapro
