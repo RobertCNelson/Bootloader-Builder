@@ -975,7 +975,15 @@ cm_fx6 () {
 firefly_rk3288 () {
 	cleanup
 	#transitioned_to_testing="true"
-	board="firefly-rk3288" ; build_uboot_gnueabihf_only_stable
+#	board="firefly-rk3288" ; build_uboot_gnueabihf
+
+	board="firefly-rk3288"
+	uboot_config="firefly-rk3288_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+	gcc_linaro_gnueabihf_5
+#	build_uboot_testing
+	build_uboot_latest
 }
 
 mx23_olinuxino () {
