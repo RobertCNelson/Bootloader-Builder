@@ -117,11 +117,11 @@ gcc_arm_embedded_4_9 () {
 
 gcc_arm_embedded_5 () {
 		#
-		#https://releases.linaro.org/components/toolchain/binaries/5.1-2015.08/arm-eabi/gcc-linaro-5.1-2015.08-x86_64_arm-eabi.tar.xz
+		#https://releases.linaro.org/components/toolchain/binaries/5.2-2015.11/arm-eabi/gcc-linaro-5.2-2015.11-x86_64_arm-eabi.tar.xz
 		#
 
-		gcc_version="5.1"
-		release="15.08"
+		gcc_version="5.2"
+		release="15.11"
 		target="arm-eabi"
 
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
@@ -157,11 +157,11 @@ gcc_linaro_gnueabihf_4_9 () {
 
 gcc_linaro_gnueabihf_5 () {
 		#
-		#https://releases.linaro.org/components/toolchain/binaries/5.1-2015.08/arm-linux-gnueabihf/gcc-linaro-5.1-2015.08-x86_64_arm-linux-gnueabihf.tar.xz
+		#https://releases.linaro.org/components/toolchain/binaries/5.2-2015.11/arm-linux-gnueabihf/gcc-linaro-5.2-2015.11-x86_64_arm-linux-gnueabihf.tar.xz
 		#
 
-		gcc_version="5.1"
-		release="15.08"
+		gcc_version="5.2"
+		release="15.11"
 		target="arm-linux-gnueabihf"
 
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
@@ -629,8 +629,9 @@ build_u_boot () {
 		#r20: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8b4300ee790938671f93df484d3371e3a594d19c
 		#r21: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=90c6ccc4970d0b783e5fcc42377ff5fc2402bb57
 		#r22: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=189c59c9a2f105b62ab2e195deeef18962cc8b67
-		#r23: (pending)
-		RELEASE_VER="-r22" #bump on every change...
+		#r23: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=110dfa44a2ea96e353d24ef4d21fa7756dcbba41
+		#r24: (pending)
+		RELEASE_VER="-r23" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
