@@ -1,14 +1,14 @@
-From cdcebabf83de5a33a94aade15cab6fa500a49e74 Mon Sep 17 00:00:00 2001
+From 1d269531c5aeaac28c6f6113c313b8573f9b691f Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 3 Sep 2015 12:26:23 -0500
+Date: Tue, 1 Dec 2015 11:13:03 -0600
 Subject: [PATCH] sama5d3_xplained: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/atmel/sama5d3_xplained/sama5d3_xplained.c | 81 +++++++++++++++++++++++++
- include/configs/at91-sama5_common.h             |  6 +-
+ include/configs/at91-sama5_common.h             |  8 +--
  include/configs/sama5d3_xplained.h              | 15 +++++
- 3 files changed, 99 insertions(+), 3 deletions(-)
+ 3 files changed, 100 insertions(+), 4 deletions(-)
 
 diff --git a/board/atmel/sama5d3_xplained/sama5d3_xplained.c b/board/atmel/sama5d3_xplained/sama5d3_xplained.c
 index 7a01149..0ab1953 100644
@@ -117,10 +117,10 @@ index 7a01149..0ab1953 100644
  }
  
 diff --git a/include/configs/at91-sama5_common.h b/include/configs/at91-sama5_common.h
-index de5f12e..bea4624 100644
+index 9db4a4f..e47e138 100644
 --- a/include/configs/at91-sama5_common.h
 +++ b/include/configs/at91-sama5_common.h
-@@ -36,7 +36,7 @@
+@@ -35,7 +35,7 @@
  /* general purpose I/O */
  #define CONFIG_AT91_GPIO
  
@@ -129,7 +129,7 @@ index de5f12e..bea4624 100644
  
  /*
   * BOOTP options
-@@ -64,12 +64,12 @@
+@@ -71,12 +71,12 @@
  #define CONFIG_BOOTCOMMAND	"if test ! -n ${dtb_name}; then "	\
  				    "setenv dtb_name at91-${board_name}.dtb; " \
  				"fi; "					\
@@ -138,8 +138,9 @@ index de5f12e..bea4624 100644
  				"fatload mmc 0:1 0x22000000 zImage; "	\
  				"bootz 0x22000000 - 0x21000000"
  #define CONFIG_BOOTARGS							\
- 	"console=ttyS0,115200 earlyprintk "				\
+-	"console=ttyS0,115200 earlyprintk "				\
 -	"root=/dev/mmcblk0p2 rw rootwait"
++	"console=ttyS0,115200 "				\
 +	"root=/dev/mmcblk0p2 ro rootwait"
  #else
  #define CONFIG_BOOTARGS							\
@@ -171,5 +172,5 @@ index 73de62c..5b44b5e 100644
  #define CONFIG_MACB
  #define CONFIG_RMII
 -- 
-2.5.1
+2.6.2
 

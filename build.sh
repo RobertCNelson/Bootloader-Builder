@@ -582,6 +582,10 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		sama5d4_xplained_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		udoo)
 			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
@@ -1037,7 +1041,15 @@ rpi_2 () {
 sama5d2_xplained () {
 	cleanup
 	#transitioned_to_testing="true"
-	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf_only_stable
+#	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf_only_stable
+
+	board="sama5d2_xplained_mmc"
+	uboot_config="sama5d2_xplained_mmc_defconfig"
+	gcc_linaro_gnueabihf_4_9
+	build_uboot_stable
+	gcc_linaro_gnueabihf_5
+#	build_uboot_testing
+	build_uboot_latest
 }
 
 sama5d3xek () {
