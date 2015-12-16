@@ -942,7 +942,7 @@ am57xx_evm () {
 #	gcc_linaro_gnueabihf_4_9
 #	build_uboot_stable
 	gcc_linaro_gnueabihf_5
-#	build_uboot_testing
+	build_uboot_testing
 	build_uboot_latest
 }
 
@@ -981,17 +981,7 @@ cm_fx6 () {
 }
 
 firefly_rk3288 () {
-	cleanup
-	#transitioned_to_testing="true"
-#	board="firefly-rk3288" ; build_uboot_gnueabihf
-
-	board="firefly-rk3288"
-	uboot_config="firefly-rk3288_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-	gcc_linaro_gnueabihf_5
-#	build_uboot_testing
-	build_uboot_latest
+	board="firefly-rk3288" ; always_mainline
 }
 
 mx23_olinuxino () {
@@ -1042,16 +1032,8 @@ rpi_2 () {
 
 sama5d2_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
-#	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf_only_stable
-
-	board="sama5d2_xplained_mmc"
-	uboot_config="sama5d2_xplained_mmc_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
-	gcc_linaro_gnueabihf_5
-#	build_uboot_testing
-	build_uboot_latest
+	transitioned_to_testing="true"
+	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3xek () {
