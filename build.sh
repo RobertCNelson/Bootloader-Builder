@@ -1004,19 +1004,19 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
 }
 
 mx53loco () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx53loco" ; build_uboot_gnueabihf
 }
 
 mx6qsabresd () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
 
@@ -1082,7 +1082,7 @@ Sinovoip_BPI_M2 () {
 
 udoo () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="udoo" ; build_uboot_gnueabihf
 	cleanup
 }
@@ -1095,7 +1095,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
