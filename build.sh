@@ -651,6 +651,10 @@ build_u_boot () {
 		BUILDTARGET="u-boot.sb"
 	fi
 
+	if [ "x${board}" = "xsocfpga_de0_nano_soc" ] ; then
+		BUILDTARGET="u-boot-with-spl-dtb.sfp"
+	fi
+
 	if [ -f "${DIR}/stop.after.patch" ] ; then
 		echo "-----------------------------"
 		pwd
@@ -714,6 +718,14 @@ build_u_boot () {
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.sb ] ; then
 			filename_search="u-boot.sb"
 			filename_id="deploy/${board}/u-boot-${uboot_filename}.sb"
+			file_save
+			UBOOT_DONE=1
+		fi
+
+		#Altera Cyclone V SE
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-with-spl-dtb.sfp ] ; then
+			filename_search="u-boot-with-spl-dtb.sfp"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.sfp"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -1060,6 +1072,10 @@ sama5d4_xplained () {
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
 
+socfpga_de0_nano_soc () {
+	board="socfpga_de0_nano_soc" ; always_mainline
+}
+
 Sinovoip_BPI_M2 () {
 	board="Sinovoip_BPI_M2" ; always_mainline
 }
@@ -1096,7 +1112,7 @@ Bananapi
 Bananapro
 beagle_x15_ti
 cm_fx6
-firefly_rk3288
+#firefly_rk3288
 mx23_olinuxino
 mx51evk
 mx53loco
@@ -1110,6 +1126,7 @@ sama5d3xek
 sama5d3_xplained
 sama5d4ek
 sama5d4_xplained
+socfpga_de0_nano_soc
 Sinovoip_BPI_M2
 udoo
 vf610twr
