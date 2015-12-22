@@ -1028,13 +1028,13 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="omap4_panda" ; build_uboot_gnueabihf
 }
 
 omap5_uevm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
