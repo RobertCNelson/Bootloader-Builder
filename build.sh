@@ -696,13 +696,10 @@ build_u_boot () {
 
 	if [ ! "${pre_built}" ] ; then
 		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
-		echo "Building ${project}: ${uboot_filename}"
-		echo "-----------------------------"
+		echo "Building ${project}: ${uboot_filename}:"
 		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET} > /dev/null
-		echo "-----------------------------"
 		if [ "x${board}" = "xfirefly-rk3288" ] ; then
-			./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
-			echo "-----------------------------"
+			./tools/mkimage -n rk3288 -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
 		fi
 
 		unset UBOOT_DONE
@@ -808,6 +805,7 @@ build_u_boot () {
 			file_save
 			UBOOT_DONE=1
 		fi
+		echo "-----------------------------"
 	else
 		echo "-----------------------------"
 		echo "Skipping Binary Build: as [${uboot_filename}] was previously built."
@@ -940,22 +938,11 @@ am335x_boneblack_flasher () {
 
 am43xx_evm () {
 	cleanup
-	#transitioned_to_testing="true"
-	board="am43xx_evm" ; build_uboot_gnueabihf
+	board="am43xx_evm" ; always_mainline
 }
 
 am57xx_evm () {
-	cleanup
-	#transitioned_to_testing="true"
-#	board="am57xx_evm" ; build_uboot_gnueabihf
-
-	board="am57xx_evm"
-	uboot_config="am57xx_evm_defconfig"
-#	gcc_linaro_gnueabihf_4_9
-#	build_uboot_stable
-	gcc_linaro_gnueabihf_5
-	build_uboot_testing
-	build_uboot_latest
+	board="am57xx_evm" ; always_mainline
 }
 
 at91sam9x5ek () {
@@ -1038,6 +1025,10 @@ omap5_uevm () {
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
+orangepi_pc () {
+	board="orangepi_pc" ; always_mainline
+}
+
 rpi_2 () {
 	board="rpi_2" ; always_mainline
 }
@@ -1106,13 +1097,13 @@ A20_OLinuXino_MICRO
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
-#am57xx_evm
+am57xx_evm
 at91sam9x5ek
 Bananapi
 Bananapro
 beagle_x15_ti
 cm_fx6
-#firefly_rk3288
+firefly_rk3288
 mx23_olinuxino
 mx51evk
 mx53loco
@@ -1120,6 +1111,7 @@ mx6qsabresd
 omap3_beagle
 omap4_panda
 omap5_uevm
+orangepi_pc
 rpi_2
 sama5d2_xplained
 sama5d3xek
