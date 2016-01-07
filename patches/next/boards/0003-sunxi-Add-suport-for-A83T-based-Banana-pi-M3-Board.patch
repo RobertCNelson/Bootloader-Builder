@@ -1,0 +1,155 @@
+From 38dbbc998b121b78a3fb333b02538ad6f0291786 Mon Sep 17 00:00:00 2001
+From: Vishnu Patekar <vishnupatekar0510@gmail.com>
+Date: Thu, 7 Jan 2016 00:11:35 +0800
+Subject: [PATCH 3/3] sunxi: Add suport for A83T based Banana-pi M3 Board
+
+Add dts and defconfig for Banana-pi M3 board.
+
+It has 2G LPDDR3, UART, ethernet, USB, HDMI, USB Sata, MIPI DSI,
+ mic, BLE 4.0, AP6212 Wifi , etc on it.
+It is paired with AXP813 PMIC which is almost same as AXP818.
+
+Signed-off-by: Vishnu Patekar <vishnupatekar0510@gmail.com>
+---
+ arch/arm/dts/Makefile                        |  3 +-
+ arch/arm/dts/sun8i-a83t-bananapi-m3-v1.2.dts | 64 ++++++++++++++++++++++++++++
+ board/sunxi/MAINTAINERS                      |  5 +++
+ configs/Bananapi_m3_defconfig                | 25 +++++++++++
+ 4 files changed, 96 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/dts/sun8i-a83t-bananapi-m3-v1.2.dts
+ create mode 100644 configs/Bananapi_m3_defconfig
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 0bcd316..2ab0926 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -178,7 +178,8 @@ dtb-$(CONFIG_MACH_SUN8I_A33) += \
+ 	sun8i-a33-q8-tablet.dtb \
+ 	sun8i-a33-sinlinx-sina33.dtb
+ dtb-$(CONFIG_MACH_SUN8I_A83T) += \
+-	sun8i-a83t-allwinner-h8homlet-v2.dtb
++	sun8i-a83t-allwinner-h8homlet-v2.dtb \
++	sun8i-a83t-bananapi-m3-v1.2.dtb
+ dtb-$(CONFIG_MACH_SUN8I_H3) += \
+ 	sun8i-h3-orangepi-pc.dtb \
+ 	sun8i-h3-orangepi-plus.dtb
+diff --git a/arch/arm/dts/sun8i-a83t-bananapi-m3-v1.2.dts b/arch/arm/dts/sun8i-a83t-bananapi-m3-v1.2.dts
+new file mode 100644
+index 0000000..91ff3a9
+--- /dev/null
++++ b/arch/arm/dts/sun8i-a83t-bananapi-m3-v1.2.dts
+@@ -0,0 +1,64 @@
++/*
++ * Copyright 2015 Vishnu Patekar
++ * Vishnu Patekar <vishnupatekar0510@gmail.com>
++ *
++ * This file is dual-licensed: you can use it either under the terms
++ * of the GPL or the X11 license, at your option. Note that this dual
++ * licensing only applies to this file, and not this project as a
++ * whole.
++ *
++ *  a) This file is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This file is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ * Or, alternatively,
++ *
++ *  b) Permission is hereby granted, free of charge, to any person
++ *     obtaining a copy of this software and associated documentation
++ *     files (the "Software"), to deal in the Software without
++ *     restriction, including without limitation the rights to use,
++ *     copy, modify, merge, publish, distribute, sublicense, and/or
++ *     sell copies of the Software, and to permit persons to whom the
++ *     Software is furnished to do so, subject to the following
++ *     conditions:
++ *
++ *     The above copyright notice and this permission notice shall be
++ *     included in all copies or substantial portions of the Software.
++ *
++ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ *     OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++/dts-v1/;
++#include "sun8i-a83t.dtsi"
++
++/ {
++	model = "Allwinner A83T BananaPi M3 Board v1.2";
++	compatible = "bananapi,m3v1.2", "allwinner,sun8i-a83t";
++
++	aliases {
++		serial0 = &uart0;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++};
++
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_pins_b>;
++	status = "okay";
++};
+diff --git a/board/sunxi/MAINTAINERS b/board/sunxi/MAINTAINERS
+index 131c341..575847a 100644
+--- a/board/sunxi/MAINTAINERS
++++ b/board/sunxi/MAINTAINERS
+@@ -84,6 +84,11 @@ M:	Paul Kocialkowski <contact@paulk.fr>
+ S:	Maintained
+ F:	configs/Ampe_A76_defconfig
+ 
++BANANA PI M3 A83T BOARD
++M:	VishnuPatekar <vishnupatekar0510@gmail.com>
++S:	Maintained
++F:	configs/Bananapi_m3_defconfig
++
+ COLOMBUS BOARD
+ M:	Maxime Ripard <maxime.ripard@free-electrons.com>
+ S:	Maintained
+diff --git a/configs/Bananapi_m3_defconfig b/configs/Bananapi_m3_defconfig
+new file mode 100644
+index 0000000..b0aff9a
+--- /dev/null
++++ b/configs/Bananapi_m3_defconfig
+@@ -0,0 +1,25 @@
++CONFIG_ARM=y
++CONFIG_ARCH_SUNXI=y
++CONFIG_MACH_SUN8I_A83T=y
++CONFIG_DRAM_CLK=480
++CONFIG_DRAM_ZQ=15355
++CONFIG_DRAM_ODT_EN=y
++CONFIG_SYS_EXTRA_OPTIONS="DRAM_TYPE=7"
++#CONFIG_USB0_VBUS_PIN="AXP0-VBUS-ENABLE"
++#CONFIG_USB0_VBUS_DET="AXP0-VBUS-DETECT"
++CONFIG_AXP_GPIO=y
++#CONFIG_USB_MUSB_HOST=y
++CONFIG_DEFAULT_DEVICE_TREE="sun8i-a83t-bananapi-m3-v1.2"
++# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
++CONFIG_SPL=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++# CONFIG_CMD_FPGA is not set
++CONFIG_AXP_DCDC1_VOLT=3000
++CONFIG_AXP_DCDC2_VOLT=900
++CONFIG_AXP_DCDC3_VOLT=900
++CONFIG_AXP_DCDC4_VOLT=0
++CONFIG_AXP_DCDC5_VOLT=1200
++CONFIG_AXP_ALDO2_VOLT=0
++CONFIG_AXP_ALDO3_VOLT=0
++CONFIG_AXP_DLDO4_VOLT=0
+-- 
+2.6.4
+

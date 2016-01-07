@@ -453,6 +453,11 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		Bananapi_m3)
+			${git} "${p_dir}/boards/0001-sunxi-groundwork-to-support-new-dram-type-for-A83T.patch"
+			${git} "${p_dir}/boards/0002-sunxi-add-support-for-LPDDR3-for-A83T.patch"
+			${git} "${p_dir}/boards/0003-sunxi-Add-suport-for-A83T-based-Banana-pi-M3-Board.patch"
+			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
@@ -537,6 +542,11 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		Bananapi_m3)
+			${git} "${p_dir}/boards/0001-sunxi-groundwork-to-support-new-dram-type-for-A83T.patch"
+			${git} "${p_dir}/boards/0002-sunxi-add-support-for-LPDDR3-for-A83T.patch"
+			${git} "${p_dir}/boards/0003-sunxi-Add-suport-for-A83T-based-Banana-pi-M3-Board.patch"
 			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
@@ -955,6 +965,10 @@ Bananapi () {
 	board="Bananapi" ; always_mainline
 }
 
+Bananapi_m3 () {
+	board="Bananapi_m3" ; always_mainline
+}
+
 Bananapro () {
 	board="Bananapro" ; always_mainline
 }
@@ -1100,6 +1114,7 @@ am43xx_evm
 am57xx_evm
 at91sam9x5ek
 Bananapi
+Bananapi_m3
 Bananapro
 beagle_x15_ti
 cm_fx6
