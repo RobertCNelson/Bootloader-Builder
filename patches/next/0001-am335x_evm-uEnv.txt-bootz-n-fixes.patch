@@ -1,54 +1,16 @@
-From 1ef49a27578c94293be34d4b9d6b4abffa061702 Mon Sep 17 00:00:00 2001
+From 3a1f36e96d757a66c7e5aef3a84e1734861b5fab Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 6 Jan 2016 21:11:54 -0600
+Date: Tue, 12 Jan 2016 08:45:37 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- arch/arm/cpu/armv7/am33xx/board.c |  25 +++-
  board/ti/am335x/board.c           |  18 +++
  configs/am335x_evm_defconfig      |   1 -
  include/configs/am335x_evm.h      |  44 ++++---
  include/configs/ti_armv7_common.h | 249 +++++++++++++++++++++++++++++++++++++-
- 5 files changed, 318 insertions(+), 19 deletions(-)
+ 4 files changed, 294 insertions(+), 18 deletions(-)
 
-diff --git a/arch/arm/cpu/armv7/am33xx/board.c b/arch/arm/cpu/armv7/am33xx/board.c
-index 466348f..b8da241 100644
---- a/arch/arm/cpu/armv7/am33xx/board.c
-+++ b/arch/arm/cpu/armv7/am33xx/board.c
-@@ -64,8 +64,31 @@ U_BOOT_DEVICES(am33xx_uarts) = {
- #   endif
- #  endif
- };
--#endif
- 
-+#ifdef CONFIG_DM_GPIO
-+static const struct omap_gpio_platdata am33xx_gpio[] = {
-+	{ 0, AM33XX_GPIO0_BASE },
-+	{ 1, AM33XX_GPIO1_BASE },
-+	{ 2, AM33XX_GPIO2_BASE },
-+	{ 3, AM33XX_GPIO3_BASE },
-+#ifdef CONFIG_AM43XX
-+	{ 4, AM33XX_GPIO4_BASE },
-+	{ 5, AM33XX_GPIO5_BASE },
-+#endif
-+};
-+ 
-+U_BOOT_DEVICES(am33xx_gpios) = {
-+	{ "gpio_omap", &am33xx_gpio[0] },
-+	{ "gpio_omap", &am33xx_gpio[1] },
-+	{ "gpio_omap", &am33xx_gpio[2] },
-+	{ "gpio_omap", &am33xx_gpio[3] },
-+#ifdef CONFIG_AM43XX
-+	{ "gpio_omap", &am33xx_gpio[4] },
-+	{ "gpio_omap", &am33xx_gpio[5] },
-+#endif
-+};
-+#endif
-+#endif
- 
- #ifndef CONFIG_DM_GPIO
- static const struct gpio_bank gpio_bank_am33xx[] = {
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index f56d17e..49d95cf 100644
 --- a/board/ti/am335x/board.c
