@@ -430,8 +430,9 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: fix omap3-beagle
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1024,7 +1025,7 @@ mx6qsabresd () {
 omap3_beagle () {
 	cleanup
 	#transitioned_to_testing="true"
-	board="omap3_beagle" ; build_uboot_gnueabihf_only_stable
+	board="omap3_beagle" ; build_uboot_gnueabihf
 }
 
 omap4_panda () {
