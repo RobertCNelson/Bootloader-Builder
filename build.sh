@@ -432,8 +432,9 @@ build_u_boot () {
 		#r1: initial release
 		#r2: fix omap3-beagle
 		#r3: fix omap3-beagle
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: really fix omap3-beagle
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
