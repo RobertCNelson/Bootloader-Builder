@@ -431,8 +431,9 @@ build_u_boot () {
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: fix omap3-beagle
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: fix omap3-beagle
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
