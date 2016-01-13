@@ -433,8 +433,9 @@ build_u_boot () {
 		#r2: fix omap3-beagle
 		#r3: fix omap3-beagle
 		#r4: really fix omap3-beagle
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: fix am335x_evm
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -932,18 +933,18 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
 
 am335x_boneblack_flasher () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
-	gcc_linaro_gnueabihf_4_9
-	build_uboot_stable
+#	gcc_linaro_gnueabihf_4_9
+#	build_uboot_stable
 	gcc_linaro_gnueabihf_5
 	build_uboot_testing
 	build_uboot_latest
