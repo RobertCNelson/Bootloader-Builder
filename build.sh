@@ -1026,7 +1026,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
 
