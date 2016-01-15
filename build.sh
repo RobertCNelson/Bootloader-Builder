@@ -394,6 +394,9 @@ build_u_boot () {
 			${git} "${p_dir}/boards/0002-sunxi-add-support-for-LPDDR3-for-A83T.patch"
 			${git} "${p_dir}/boards/0003-sunxi-Add-suport-for-A83T-based-Banana-pi-M3-Board.patch"
 			;;
+		ls1021atwr_sdcard_qspi)
+			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
+			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
@@ -483,6 +486,9 @@ build_u_boot () {
 			${git} "${p_dir}/boards/0001-sunxi-groundwork-to-support-new-dram-type-for-A83T.patch"
 			${git} "${p_dir}/boards/0002-sunxi-add-support-for-LPDDR3-for-A83T.patch"
 			${git} "${p_dir}/boards/0003-sunxi-Add-suport-for-A83T-based-Banana-pi-M3-Board.patch"
+			;;
+		ls1021atwr_sdcard_qspi)
+			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
@@ -577,6 +583,9 @@ build_u_boot () {
 			${git} "${p_dir}/boards/0001-sunxi-groundwork-to-support-new-dram-type-for-A83T.patch"
 			${git} "${p_dir}/boards/0002-sunxi-add-support-for-LPDDR3-for-A83T.patch"
 			${git} "${p_dir}/boards/0003-sunxi-Add-suport-for-A83T-based-Banana-pi-M3-Board.patch"
+			;;
+		ls1021atwr_sdcard_qspi)
+			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
@@ -826,6 +835,14 @@ build_u_boot () {
 			UBOOT_DONE=1
 		fi
 
+		#ls1021a targets just need u-boot.imx from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-with-spl-pbl.bin ] ; then
+			filename_search="u-boot-with-spl-pbl.bin"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.ls1021a"
+			file_save
+			UBOOT_DONE=1
+		fi
+
 		#SPL: Samsung (old Atmel)
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
 			filename_search="spl/u-boot-spl.bin"
@@ -1025,6 +1042,12 @@ firefly_rk3288 () {
 	board="firefly-rk3288" ; always_mainline
 }
 
+ls1021atwr () {
+	cleanup
+	#transitioned_to_testing="true"
+	board="ls1021atwr_sdcard_qspi" ; build_uboot_gnueabihf
+}
+
 mx23_olinuxino () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -1147,6 +1170,7 @@ Bananapro
 beagle_x15_ti
 cm_fx6
 firefly_rk3288
+ls1021atwr
 mx23_olinuxino
 mx51evk
 mx53loco
