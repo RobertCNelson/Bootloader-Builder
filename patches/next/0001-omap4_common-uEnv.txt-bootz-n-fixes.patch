@@ -1,16 +1,16 @@
-From c308d8a56a75b25a9b05e51d04a036cd0a03efdd Mon Sep 17 00:00:00 2001
+From 640cf0029f85e36b5d173a5fe7a88241d06855fd Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 18 Jan 2016 11:23:56 -0600
+Date: Mon, 18 Jan 2016 11:52:12 -0600
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/ti_armv7_common.h | 154 +++++++++++++++++++++++++++++++++++++-
+ include/configs/ti_armv7_common.h | 155 +++++++++++++++++++++++++++++++++++++-
  include/configs/ti_omap4_common.h |  22 ++++--
- 2 files changed, 165 insertions(+), 11 deletions(-)
+ 2 files changed, 165 insertions(+), 12 deletions(-)
 
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 199612b..1a7c181 100644
+index 199612b..d8b700f 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -60,11 +60,159 @@
@@ -176,6 +176,13 @@ index 199612b..1a7c181 100644
  
  /*
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
+@@ -283,6 +431,5 @@
+ #endif
+ 
+ #include <config_distro_defaults.h>
+-#define CONFIG_CMD_EXT4_WRITE
+ 
+ #endif	/* __CONFIG_TI_ARMV7_COMMON_H__ */
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
 index 8b6c065..b1cde81 100644
 --- a/include/configs/ti_omap4_common.h
