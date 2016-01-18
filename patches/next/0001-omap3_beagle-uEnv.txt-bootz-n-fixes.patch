@@ -1,14 +1,14 @@
-From 5e0375db9f247b1da357121f52877d13cefe23bc Mon Sep 17 00:00:00 2001
+From 9e83e3c2367df91b51089e54fa6aa68a92fe044c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 12 Jan 2016 17:22:44 -0600
+Date: Mon, 18 Jan 2016 10:29:57 -0600
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/beagle/beagle.c          |  38 +++++++--
  include/configs/omap3_beagle.h    | 151 ++++++++--------------------------
- include/configs/ti_armv7_common.h | 165 ++++++++++++++++++++++++++++++++++++--
- 3 files changed, 225 insertions(+), 129 deletions(-)
+ include/configs/ti_armv7_common.h | 166 +++++++++++++++++++++++++++++++++++---
+ 3 files changed, 225 insertions(+), 130 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index ff317ef..8c1639b 100644
@@ -284,7 +284,7 @@ index 65f08a1..b46c5d6 100644
  /*
   * OMAP3 has 12 GP timers, they can be driven by the system clock
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 2087eb1..7c2fa93 100644
+index 199612b..7c2fa93 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -60,11 +60,165 @@
@@ -468,13 +468,14 @@ index 2087eb1..7c2fa93 100644
  /* General parts of the framework, required. */
  #define CONFIG_SPL_I2C_SUPPORT
  #define CONFIG_SPL_LIBCOMMON_SUPPORT
-@@ -282,6 +433,4 @@
+@@ -282,7 +433,4 @@
  #define NETARGS ""
  #endif
  
 -#include <config_distro_defaults.h>
+-#define CONFIG_CMD_EXT4_WRITE
 -
  #endif	/* __CONFIG_TI_ARMV7_COMMON_H__ */
 -- 
-2.6.4
+2.7.0.rc3
 
