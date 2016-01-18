@@ -1,16 +1,16 @@
-From dc35be75f2a211af3d0af521189f2721095dbc19 Mon Sep 17 00:00:00 2001
+From c308d8a56a75b25a9b05e51d04a036cd0a03efdd Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 13 Nov 2015 11:15:39 -0600
+Date: Mon, 18 Jan 2016 11:23:56 -0600
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  include/configs/ti_armv7_common.h | 154 +++++++++++++++++++++++++++++++++++++-
- include/configs/ti_omap4_common.h |  44 +++++------
- 2 files changed, 168 insertions(+), 30 deletions(-)
+ include/configs/ti_omap4_common.h |  22 ++++--
+ 2 files changed, 165 insertions(+), 11 deletions(-)
 
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 7810dd6..ee7b009 100644
+index 199612b..1a7c181 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -60,11 +60,159 @@
@@ -177,7 +177,7 @@ index 7810dd6..ee7b009 100644
  /*
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 741f71f..35b5ce6 100644
+index 8b6c065..b1cde81 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -46,7 +46,8 @@
@@ -190,7 +190,20 @@ index 741f71f..35b5ce6 100644
  #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
  #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
  #define CONFIG_SYS_DEFAULT_LPDDR2_TIMINGS
-@@ -95,14 +96,15 @@
+@@ -84,9 +85,10 @@
+  */
+ #define BOOTENV_DEV_LEGACY_MMC(devtypeu, devtypel, instance) \
+ 	"bootcmd_" #devtypel #instance "=" \
++	"setenv interface mmc; " \
+ 	"setenv mmcdev " #instance"; "\
+-	"setenv bootpart " #instance":2 ; "\
+-	"run mmcboot\0"
++	"setenv bootpart " #instance":1 ; "\
++	"run boot\0"
+ 
+ #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
+ 	#devtypel #instance " "
+@@ -118,14 +120,15 @@
  	"bootfile=zImage\0" \
  	"usbtty=cdc_acm\0" \
  	"vram=16M\0" \
@@ -210,7 +223,7 @@ index 741f71f..35b5ce6 100644
  	"mmcboot=echo Booting from mmc${mmcdev} ...; " \
  		"run args_mmc; " \
  		"bootz ${loadaddr} - ${fdtaddr}\0" \
-@@ -122,31 +124,19 @@
+@@ -145,7 +148,10 @@
  			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -219,39 +232,9 @@ index 741f71f..35b5ce6 100644
 +	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load ${interface} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
 +	EEWIKI_BOOT \
 +	EEWIKI_UNAME_BOOT \
-+
- 
- #define CONFIG_BOOTCOMMAND \
- 	"run findfdt; " \
--	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"echo SD/MMC found on device ${mmcdev};" \
--		"if run loadbootscript; then " \
--			"run bootscript; " \
--		"else " \
--			"if run loadbootenv; then " \
--				"run importbootenv; " \
--			"fi;" \
--			"if test -n ${uenvcmd}; then " \
--				"echo Running uenvcmd ...;" \
--				"run uenvcmd;" \
--			"fi;" \
--		"fi;" \
--		"if run loadimage; then " \
--			"run loadfdt;" \
--			"run mmcboot; " \
--		"fi; " \
--		"if run loaduimage; then " \
--			"run uimageboot;" \
--		"fi; " \
--	"fi"
-+	"setenv interface mmc; " \
-+	"setenv mmcblk 0; " \
-+	"setenv mmcdev 0; " \
-+	"run boot;" \
-+	""
+ 	BOOTENV
  
  /*
-  * Defines for SPL
 -- 
-2.6.2
+2.7.0.rc3
 
