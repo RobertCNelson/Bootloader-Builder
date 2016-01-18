@@ -1,6 +1,6 @@
-From ee2359d0b7a7ebef6c175fd1fa42870acbca8117 Mon Sep 17 00:00:00 2001
+From b5fd972874ceadcac73a2e4a10a38ad4b452d1fa Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 13 Jan 2016 11:08:20 -0600
+Date: Mon, 18 Jan 2016 08:48:27 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -8,8 +8,8 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/board.c           |  18 +++
  configs/am335x_evm_defconfig      |   5 +-
  include/configs/am335x_evm.h      |  44 ++++---
- include/configs/ti_armv7_common.h | 256 +++++++++++++++++++++++++++++++++++++-
- 4 files changed, 303 insertions(+), 20 deletions(-)
+ include/configs/ti_armv7_common.h | 249 +++++++++++++++++++++++++++++++++++++-
+ 4 files changed, 298 insertions(+), 18 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index f56d17e..49d95cf 100644
@@ -57,7 +57,7 @@ index 27cb881..8699953 100644
  # CONFIG_CMD_FLASH is not set
  CONFIG_CMD_GPIO=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index c51db8c..e3402c4 100644
+index cf6a606..d381a9c 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -66,9 +66,9 @@ index c51db8c..e3402c4 100644
  #include <configs/ti_am335x_common.h>
 +#define CONFIG_ENV_IS_NOWHERE
  
- /* Don't override the distro default bootdelay */
- #undef CONFIG_BOOTDELAY
-@@ -73,9 +74,14 @@
+ #ifndef CONFIG_SPL_BUILD
+ #ifndef CONFIG_FIT
+@@ -69,9 +70,14 @@
  
  #define BOOTENV_DEV_LEGACY_MMC(devtypeu, devtypel, instance) \
  	"bootcmd_" #devtypel #instance "=" \
@@ -85,7 +85,7 @@ index c51db8c..e3402c4 100644
  
  #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
  	#devtypel #instance " "
-@@ -128,19 +134,24 @@
+@@ -124,19 +130,24 @@
  		"root=${spiroot} " \
  		"rootfstype=${spirootfstype}\0" \
  	"bootenv=uEnv.txt\0" \
@@ -117,7 +117,7 @@ index c51db8c..e3402c4 100644
  	"mmcloados=run args_mmc; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -155,8 +166,8 @@
+@@ -151,8 +162,8 @@
  		"else " \
  			"bootz; " \
  		"fi;\0" \
@@ -128,7 +128,7 @@ index c51db8c..e3402c4 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"if run loadbootscript; then " \
  				"run bootscript;" \
-@@ -184,12 +195,14 @@
+@@ -180,12 +191,14 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -146,7 +146,7 @@ index c51db8c..e3402c4 100644
  			"fi; " \
  		"fi; " \
  		"if test $board_name = A33515BB; then " \
-@@ -198,6 +211,9 @@
+@@ -194,6 +207,9 @@
  			"setenv fdtfile am335x-evmsk.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -157,10 +157,10 @@ index c51db8c..e3402c4 100644
  	NETARGS \
  	DFUARGS \
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 2087eb1..973b1e2 100644
+index 199612b..1d5c611 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -60,11 +60,259 @@
+@@ -60,11 +60,254 @@
  #define DEFAULT_MMC_TI_ARGS \
  	"mmcdev=0\0" \
  	"mmcrootfstype=ext4 rootwait\0" \
@@ -415,21 +415,9 @@ index 2087eb1..973b1e2 100644
 +				"bootz ${loadaddr} - ${fdtaddr}; " \
 +			"fi;" \
 +		"fi;\0" \
-+
-+/*
-+ * Default to a quick boot delay.
-+ */
-+#define CONFIG_BOOTDELAY		3
  
  /*
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
-@@ -282,6 +530,4 @@
- #define NETARGS ""
- #endif
- 
--#include <config_distro_defaults.h>
--
- #endif	/* __CONFIG_TI_ARMV7_COMMON_H__ */
 -- 
-2.6.4
+2.7.0.rc3
 
