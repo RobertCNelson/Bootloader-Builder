@@ -1155,20 +1155,12 @@ wandboard () {
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
-A10_OLinuXino_Lime
-A20_OLinuXino_Lime
-A20_OLinuXino_Lime2
-A20_OLinuXino_MICRO
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
 am57xx_evm
 at91sam9x5ek
-Bananapi
-Bananapi_m3
-Bananapro
 beagle_x15_ti
-cm_fx6
 firefly_rk3288
 ls1021atwr
 mx23_olinuxino
@@ -1178,16 +1170,27 @@ mx6qsabresd
 omap3_beagle
 omap4_panda
 omap5_uevm
-orangepi_pc
-rpi_2
 sama5d2_xplained
 sama5d3xek
 sama5d3_xplained
 sama5d4ek
 sama5d4_xplained
-socfpga_de0_nano_soc
-Sinovoip_BPI_M2
 udoo
 vf610twr
 wandboard
+
+#devices with no patches...
+A10_OLinuXino_Lime
+A20_OLinuXino_Lime
+A20_OLinuXino_Lime2
+A20_OLinuXino_MICRO
+Bananapi
+Bananapi_m3
+Bananapro
+cm_fx6
+orangepi_pc
+rpi_2
+Sinovoip_BPI_M2
+socfpga_de0_nano_soc
+
 #

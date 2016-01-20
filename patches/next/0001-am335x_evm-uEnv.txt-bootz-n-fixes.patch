@@ -1,15 +1,15 @@
-From b5fd972874ceadcac73a2e4a10a38ad4b452d1fa Mon Sep 17 00:00:00 2001
+From 9c7939167e7aa5c72b379fcf025481b1c88b7131 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 18 Jan 2016 08:48:27 -0600
+Date: Wed, 20 Jan 2016 15:25:22 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c           |  18 +++
- configs/am335x_evm_defconfig      |   5 +-
+ configs/am335x_evm_defconfig      |   1 -
  include/configs/am335x_evm.h      |  44 ++++---
  include/configs/ti_armv7_common.h | 249 +++++++++++++++++++++++++++++++++++++-
- 4 files changed, 298 insertions(+), 18 deletions(-)
+ 4 files changed, 294 insertions(+), 18 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index f56d17e..49d95cf 100644
@@ -41,21 +41,17 @@ index f56d17e..49d95cf 100644
  	hw_watchdog_init();
  #endif
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
-index 27cb881..8699953 100644
+index 7753ab5..8699953 100644
 --- a/configs/am335x_evm_defconfig
 +++ b/configs/am335x_evm_defconfig
-@@ -3,7 +3,10 @@ CONFIG_TARGET_AM335X_EVM=y
+@@ -3,7 +3,6 @@ CONFIG_TARGET_AM335X_EVM=y
  CONFIG_SPL_STACK_R_ADDR=0x82000000
  CONFIG_SPL=y
  CONFIG_SPL_STACK_R=y
 -CONFIG_SYS_EXTRA_OPTIONS="NAND"
-+CONFIG_AUTOBOOT_KEYED=y
-+CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
-+CONFIG_AUTOBOOT_DELAY_STR="d"
-+CONFIG_AUTOBOOT_STOP_STR=" "
- # CONFIG_CMD_IMLS is not set
- # CONFIG_CMD_FLASH is not set
- CONFIG_CMD_GPIO=y
+ CONFIG_AUTOBOOT_KEYED=y
+ CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
+ CONFIG_AUTOBOOT_DELAY_STR="d"
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
 index cf6a606..d381a9c 100644
 --- a/include/configs/am335x_evm.h
