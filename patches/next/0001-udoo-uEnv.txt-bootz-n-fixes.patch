@@ -1,6 +1,6 @@
-From 255c21b9c14a7b24fe61bbf05ada6f1a5556ebb9 Mon Sep 17 00:00:00 2001
+From 62233fea179b447617c6ab7a352cff1702e156b0 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 8 Sep 2015 10:18:51 -0500
+Date: Wed, 20 Jan 2016 18:54:20 -0600
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 116 insertions(+), 17 deletions(-)
 
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
-index 8ec073d..145ac3d 100644
+index 3d0cafa..48a2796 100644
 --- a/include/configs/udoo.h
 +++ b/include/configs/udoo.h
 @@ -68,17 +68,21 @@
@@ -48,11 +48,11 @@ index 8ec073d..145ac3d 100644
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
  	"loadbootscript=" \
- 		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
--	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+-	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+-	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
@@ -187,5 +187,5 @@ index 8ec073d..145ac3d 100644
  /* Print Buffer Size */
  #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
 -- 
-2.5.1
+2.7.0.rc3
 
