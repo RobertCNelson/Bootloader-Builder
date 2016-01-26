@@ -366,8 +366,9 @@ build_u_boot () {
 		#r3: fix omap3-beagle
 		#r4: really fix omap3-beagle
 		#r5: fix am335x_evm
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: bring back cape= override (hint rcn-ee don't eol this!!!)
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
