@@ -390,11 +390,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		Bananapi_m3)
-			${git} "${p_dir}/boards/0001-sunxi-groundwork-to-support-new-dram-type-for-A83T.patch"
-			${git} "${p_dir}/boards/0002-sunxi-add-support-for-LPDDR3-for-A83T.patch"
-			${git} "${p_dir}/boards/0003-sunxi-Add-suport-for-A83T-based-Banana-pi-M3-Board.patch"
-			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
@@ -482,11 +477,6 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		Bananapi_m3)
-			${git} "${p_dir}/boards/0001-sunxi-groundwork-to-support-new-dram-type-for-A83T.patch"
-			${git} "${p_dir}/boards/0002-sunxi-add-support-for-LPDDR3-for-A83T.patch"
-			${git} "${p_dir}/boards/0003-sunxi-Add-suport-for-A83T-based-Banana-pi-M3-Board.patch"
 			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
@@ -579,11 +569,6 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		Bananapi_m3)
-			${git} "${p_dir}/boards/0001-sunxi-groundwork-to-support-new-dram-type-for-A83T.patch"
-			${git} "${p_dir}/boards/0002-sunxi-add-support-for-LPDDR3-for-A83T.patch"
-			${git} "${p_dir}/boards/0003-sunxi-Add-suport-for-A83T-based-Banana-pi-M3-Board.patch"
 			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
@@ -957,6 +942,13 @@ always_mainline () {
 	build_uboot_gnueabihf
 }
 
+always_rc () {
+	cleanup
+	uboot_config="${board}_defconfig"
+	gcc_linaro_gnueabihf_5
+	build_uboot_latest
+}
+
 A10_OLinuXino_Lime () {
 	board="A10-OLinuXino-Lime" ; always_mainline
 }
@@ -1009,10 +1001,6 @@ at91sam9x5ek () {
 
 Bananapi () {
 	board="Bananapi" ; always_mainline
-}
-
-Bananapi_m3 () {
-	board="Bananapi_m3" ; always_mainline
 }
 
 Bananapro () {
@@ -1137,6 +1125,11 @@ Sinovoip_BPI_M2 () {
 	board="Sinovoip_BPI_M2" ; always_mainline
 }
 
+Sinovoip_BPI_M3 () {
+#	board="Sinovoip_BPI_M3" ; always_mainline
+	board="Sinovoip_BPI_M3" ; always_rc
+}
+
 udoo () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -1186,12 +1179,12 @@ A20_OLinuXino_Lime
 A20_OLinuXino_Lime2
 A20_OLinuXino_MICRO
 Bananapi
-Bananapi_m3
 Bananapro
 cm_fx6
 orangepi_pc
 rpi_2
 Sinovoip_BPI_M2
+Sinovoip_BPI_M3
 socfpga_de0_nano_soc
 
 #
