@@ -1089,9 +1089,8 @@ rpi_2 () {
 
 sama5d2_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
-#	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
-	board="sama5d2_xplained_mmc" ; always_rc
+	transitioned_to_testing="true"
+	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3xek () {
@@ -1127,8 +1126,7 @@ Sinovoip_BPI_M2 () {
 }
 
 Sinovoip_BPI_M3 () {
-#	board="Sinovoip_BPI_M3" ; always_mainline
-	board="Sinovoip_BPI_M3" ; always_rc
+	board="Sinovoip_BPI_M3" ; always_mainline
 }
 
 udoo () {
