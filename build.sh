@@ -687,7 +687,7 @@ build_u_boot () {
 	fi
 
 	if [ "x${board}" = "xsocfpga_de0_nano_soc" ] ; then
-		BUILDTARGET="u-boot-with-spl-dtb.sfp"
+		BUILDTARGET="u-boot-with-spl.sfp"
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
@@ -755,8 +755,8 @@ build_u_boot () {
 		fi
 
 		#Altera Cyclone V SE
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-with-spl-dtb.sfp ] ; then
-			filename_search="u-boot-with-spl-dtb.sfp"
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-with-spl.sfp ] ; then
+			filename_search="u-boot-with-spl.sfp"
 			filename_id="deploy/${board}/u-boot-${uboot_filename}.sfp"
 			file_save
 			UBOOT_DONE=1
