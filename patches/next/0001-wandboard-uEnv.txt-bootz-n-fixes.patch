@@ -1,15 +1,31 @@
-From f67b5146bb83012dc8fc5db002fefdf7b3a56806 Mon Sep 17 00:00:00 2001
+From f97cabd0b4cf7f8816af555a61be5d842c65fe8c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 17 Nov 2015 10:43:40 -0600
+Date: Thu, 4 Feb 2016 21:32:15 -0600
 Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
+ configs/wandboard_defconfig |   4 ++
  include/configs/wandboard.h | 123 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 122 insertions(+), 1 deletion(-)
+ 2 files changed, 126 insertions(+), 1 deletion(-)
 
+diff --git a/configs/wandboard_defconfig b/configs/wandboard_defconfig
+index f2c9cd2..26175cb 100644
+--- a/configs/wandboard_defconfig
++++ b/configs/wandboard_defconfig
+@@ -3,6 +3,10 @@ CONFIG_ARCH_MX6=y
+ CONFIG_TARGET_WANDBOARD=y
+ CONFIG_SPL=y
+ CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=arch/arm/imx-common/spl_sd.cfg,MX6QDL"
++CONFIG_AUTOBOOT_KEYED=y
++CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
++CONFIG_AUTOBOOT_DELAY_STR="d"
++CONFIG_AUTOBOOT_STOP_STR=" "
+ # CONFIG_CMD_IMLS is not set
+ # CONFIG_CMD_FLASH is not set
+ CONFIG_CMD_GPIO=y
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
-index 4c8e9e9..aad585f 100644
+index 8fb0abc..809e582 100644
 --- a/include/configs/wandboard.h
 +++ b/include/configs/wandboard.h
 @@ -94,10 +94,16 @@
@@ -150,7 +166,7 @@ index 4c8e9e9..aad585f 100644
 +			"fi;" \
 +		"fi;\0" \
  	"kernel_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
- 	"pxe_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
+ 	"pxefile_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
  	"ramdisk_addr_r=0x13000000\0" \
 @@ -165,6 +279,13 @@
  
@@ -167,5 +183,5 @@ index 4c8e9e9..aad585f 100644
  
  #include <config_distro_bootcmd.h>
 -- 
-2.6.2
+2.7.0
 
