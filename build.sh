@@ -673,8 +673,9 @@ build_u_boot () {
 		#r24: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=30d3ba04dd090d5fa9c4103cf620d74c2edd47e2
 		#r25: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5922e09363b1449ba558fd1dfcd527c71119d0ee
 		#r26: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f59368c4aaf7faf3799409f90d156a4f5f68e821
-		#r27: (pending)
-		RELEASE_VER="-r26" #bump on every change...
+		#r27: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e2a6f4edd83e2767e15bf3b0ac00d54f237a71e1
+		#r28: (pending)
+		RELEASE_VER="-r27" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
