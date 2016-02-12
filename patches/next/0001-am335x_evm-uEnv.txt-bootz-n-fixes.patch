@@ -1,15 +1,16 @@
-From 48ed493b7d25b5708d77c9d418fbe725071a8507 Mon Sep 17 00:00:00 2001
+From 729fd9cc7ce0d7e93d409fe6b27e63e36214affe Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 25 Jan 2016 20:01:01 -0600
+Date: Fri, 12 Feb 2016 13:38:48 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c           |  18 +++
+ board/ti/am335x/mux.c             |   8 ++
  configs/am335x_evm_defconfig      |   1 -
  include/configs/am335x_evm.h      |  44 ++++---
  include/configs/ti_armv7_common.h | 255 +++++++++++++++++++++++++++++++++++++-
- 4 files changed, 300 insertions(+), 18 deletions(-)
+ 5 files changed, 308 insertions(+), 18 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index f56d17e..49d95cf 100644
@@ -40,6 +41,32 @@ index f56d17e..49d95cf 100644
  #if defined(CONFIG_HW_WATCHDOG)
  	hw_watchdog_init();
  #endif
+diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
+index 79ed02f..8128b55 100644
+--- a/board/ti/am335x/mux.c
++++ b/board/ti/am335x/mux.c
+@@ -236,6 +236,13 @@ static struct module_pin_mux bone_norcape_pin_mux[] = {
+ };
+ #endif
+ 
++static struct module_pin_mux bbb_p9_15_pin_mux[] = {
++	/* P9.15 shared pin */
++	{OFFSET(gpmc_a0), MODE(0) | PULLUDDIS},
++	{OFFSET(gpmc_csn3), (MODE(3) | RXACTIVE | PULLUP_EN)},
++	{-1},
++};
++
+ #if defined(CONFIG_NOR_BOOT)
+ void enable_norboot_pin_mux(void)
+ {
+@@ -363,6 +370,7 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
+ 		configure_module_pin_mux(bone_norcape_pin_mux);
+ #else
+ 		configure_module_pin_mux(mmc1_pin_mux);
++		configure_module_pin_mux(bbb_p9_15_pin_mux);
+ #endif
+ 	} else {
+ 		puts("Unknown board, cannot configure pinmux.");
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
 index 7753ab5..8699953 100644
 --- a/configs/am335x_evm_defconfig
@@ -421,5 +448,5 @@ index 199612b..491f822 100644
  /*
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
 -- 
-2.7.0.rc3
+2.7.0
 
