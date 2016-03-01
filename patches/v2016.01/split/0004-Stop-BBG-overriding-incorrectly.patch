@@ -1,0 +1,25 @@
+From ac58e1b63199a81c144008ba1d7cffef72420b85 Mon Sep 17 00:00:00 2001
+From: SanCloud <github@sancloud.co.uk>
+Date: Tue, 1 Mar 2016 13:01:15 +0000
+Subject: [PATCH 4/5] Stop BBG overriding incorrectly
+
+---
+ board/ti/am335x/board.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
+index e6c5ed6..3324d24 100644
+--- a/board/ti/am335x/board.c
++++ b/board/ti/am335x/board.c
+@@ -523,7 +523,7 @@ int board_late_init(void)
+ 	setenv("board_name", safe_string);
+ 
+ 	/* BeagleBone Green has 0x1a at [0], they are free to increment 'a' */
+-	if ( (header.version[0] != 0x30) && (header.version[0] & (1 << 4)) ) {
++	if ( (header.version[0] != 0x30) && ( (header.version[0] & 0xF0) == 0x10 ) ) {
+ 		setenv("board_rev", "BBG1");
+ 	} else {
+ 		strncpy(safe_string, (char *)header.version, sizeof(header.version));
+-- 
+1.9.1
+

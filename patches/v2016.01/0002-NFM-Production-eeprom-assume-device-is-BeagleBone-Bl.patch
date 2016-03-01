@@ -1,6 +1,6 @@
-From 93fbbdf6976228329f8a8847616568ecace2b24e Mon Sep 17 00:00:00 2001
+From cfb23c6a7281483772b86885fc3619b77412900c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 6 Nov 2015 14:08:58 -0600
+Date: Tue, 1 Mar 2016 13:40:35 -0600
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -12,7 +12,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index caceaec..e7e1631 100644
+index bdeb8e4..a7c0937 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -43,6 +43,11 @@ DECLARE_GLOBAL_DATA_PTR;
@@ -63,24 +63,24 @@ index caceaec..e7e1631 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -642,10 +647,10 @@ int board_eth_init(bd_t *bis)
+@@ -643,10 +648,10 @@ int board_eth_init(bd_t *bis)
  	}
  
  	if (read_eeprom(&header) < 0)
 -		puts("Could not get board ID.\n");
 +		puts("Could not get board ID, assuming BeagleBone Black.\n");
  
- 	if (board_is_bone(&header) || board_is_bone_lt(&header) ||
+ 	if (board_is_bone(&header) || (board_is_bone_lt(&header) && !board_is_bone_lt_enhanced(&header)) ||
 -	    board_is_idk(&header)) {
 +	    board_is_idk(&header) || board_is_blank_bone_lt()) {
  		writel(MII_MODE_ENABLE, &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_MII;
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 79ed02f..0d9c66c 100644
+index e12d769..a4ba3dd 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -365,7 +365,10 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
+@@ -371,7 +371,10 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
  		configure_module_pin_mux(mmc1_pin_mux);
  #endif
  	} else {
@@ -94,7 +94,7 @@ index 79ed02f..0d9c66c 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index d7e077d..0c13426 100644
+index 9643912..a145f9c 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -104,6 +104,8 @@
@@ -107,5 +107,5 @@ index d7e077d..0c13426 100644
  
  #include <config_distro_bootcmd.h>
 -- 
-2.6.2
+2.7.0
 

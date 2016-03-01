@@ -367,8 +367,9 @@ build_u_boot () {
 		#r4: really fix omap3-beagle
 		#r5: fix am335x_evm
 		#r6: am335x_evm: bring back cape= override (hint rcn-ee don't eol this!!!)
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: add am335x-boneenhanced
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -456,8 +457,9 @@ build_u_boot () {
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: omap5_uevm: stray key on serial protect...
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: add am335x-boneenhanced
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
