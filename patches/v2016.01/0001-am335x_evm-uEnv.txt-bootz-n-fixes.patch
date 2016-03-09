@@ -1,6 +1,6 @@
-From 13613de190ad836045925367b58d624ec4248881 Mon Sep 17 00:00:00 2001
+From 436ad9505ae7f8b8fd94dab8873e39ba5f466575 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 7 Mar 2016 18:51:24 -0600
+Date: Wed, 9 Mar 2016 09:31:05 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,9 +10,9 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/mux.c             |  10 +-
  common/spl/spl.c                  |   7 +
  configs/am335x_evm_defconfig      |   5 +-
- include/configs/am335x_evm.h      |  46 +++++--
+ include/configs/am335x_evm.h      |  58 ++++++---
  include/configs/ti_armv7_common.h | 262 +++++++++++++++++++++++++++++++++++++-
- 7 files changed, 341 insertions(+), 24 deletions(-)
+ 7 files changed, 352 insertions(+), 25 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index f56d17e..e5608ac 100644
@@ -148,7 +148,7 @@ index 27cb881..8699953 100644
  # CONFIG_CMD_FLASH is not set
  CONFIG_CMD_GPIO=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index c51db8c..9643912 100644
+index c51db8c..2f29f4d 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -219,27 +219,38 @@ index c51db8c..9643912 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"if run loadbootscript; then " \
  				"run bootscript;" \
-@@ -184,12 +195,16 @@
+@@ -184,12 +195,26 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
 -			"setenv fdtfile am335x-bone.dtb; fi; " \
 +			"setenv fdtfile am335x-bone.dtb; setenv fdtbase am335x-bone; fi; " \
  		"if test $board_name = A335BNLT; then " \
- 			"if test $board_rev = BBG1; then " \
+-			"if test $board_rev = BBG1; then " \
 -				"setenv fdtfile am335x-bonegreen.dtb; " \
++			"if test $board_rev = BLA0; then " \
++				"setenv fdtfile am335x-boneblue.dtb; setenv fdtbase am335x-boneblue; " \
++			"elif test $board_rev = BBG1; then " \
 +				"setenv fdtfile am335x-bonegreen.dtb; setenv fdtbase am335x-bonegreen; " \
++			"elif test $board_rev = GW1A; then " \
++				"setenv fdtfile am335x-bonegreen-wireless.dtb; setenv fdtbase am335x-bonegreen-wireless; " \
 +			"elif test $board_rev = AIA0; then " \
 +				"setenv fdtfile am335x-abbbi.dtb; setenv fdtbase am335x-abbbi; " \
++			"elif test $board_rev = EIA0; then " \
++				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
 +			"elif test $board_rev = SE0A; then " \
-+				"setenv fdtfile am335x-boneenhanced.dtb; setenv fdtbase am335x-boneenhanced; " \
++				"setenv fdtfile am335x-sancloud-bbe.dtb; setenv fdtbase am335x-sancloud-bbe; " \
++			"elif test $board_rev = ME06; then " \
++				"setenv fdtfile am335x-bonegreen.dtb; setenv fdtbase am335x-bonegreen; " \
++			"elif test $board_rev = GH01; then " \
++				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
  			"else " \
 -				"setenv fdtfile am335x-boneblack.dtb; " \
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
  			"fi; " \
  		"fi; " \
  		"if test $board_name = A33515BB; then " \
-@@ -198,6 +213,9 @@
+@@ -198,6 +223,9 @@
  			"setenv fdtfile am335x-evmsk.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \

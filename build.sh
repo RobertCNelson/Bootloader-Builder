@@ -370,8 +370,9 @@ build_u_boot () {
 		#r7: add am335x-boneenhanced
 		#r8: fix am335x-boneenhanced
 		#r9: dont break rev c...
-		#r10: (pending)
-		RELEASE_VER="-r9" #bump on every change...
+		#r10: add a few more..
+		#r11: (pending)
+		RELEASE_VER="-r10" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -678,8 +679,9 @@ build_u_boot () {
 		#r25: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5922e09363b1449ba558fd1dfcd527c71119d0ee
 		#r26: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f59368c4aaf7faf3799409f90d156a4f5f68e821
 		#r27: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e2a6f4edd83e2767e15bf3b0ac00d54f237a71e1
-		#r28: (pending)
-		RELEASE_VER="-r27" #bump on every change...
+		#r28: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=374be76b829d6c97a4212a3b471c4a8eb9701e88
+		#r29: (pending)
+		RELEASE_VER="-r28" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
