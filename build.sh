@@ -267,101 +267,6 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_old}"
 	if [ "${old}" ] ; then
 		#r1: initial release
-		#r2: udoo/wand: enable CONFIG_SPL_EXT_SUPPORT
-		#r3: udoo/wand: disable CONFIG_SPL_X_SUPPORT, want to use raw...
-		#r4: am335x_evm: fix gpio...
-		#r5: omap3, disable thumb2...
-		#r6: fix tftp with revert (fixed in master)
-		#r7: am335x_evm: we are not yet ready...
-		#r8: omap, we arent' ready for partuuid...
-		#r9: omap, we arent' ready for partuuid...
-		#r10: revert 1fec3c5d832d6e0cac10135179016b0640f1a863
-		#r11: omap-netinstall
-		#r12: add support for Arrow BeagleBone Black Industrial
-		#r13: (pending)
-		RELEASE_VER="-r12" #bump on every change...
-		#halt_patching_uboot
-
-		case "${board}" in
-		am335x_evm)
-			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		am335x_boneblack)
-			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
-			;;
-		at91sam9x5ek_mmc)
-			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		beagle_x15)
-			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		mx23_olinuxino)
-			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		mx51evk)
-			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		mx53loco)
-			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		mx6qsabresd)
-			echo "patch -p1 < \"${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		omap3_beagle)
-			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		omap4_panda)
-			echo "patch -p1 < \"${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		omap5_uevm)
-			echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		sama5d2_xplained_mmc)
-#			patch -p1 < "${p_dir}/board/0001-arm-atmel-Add-SAMA5D2-Xplained-board.patch"
-#			patch -p1 < "${p_dir}/board/0002-gpio-atmel-Add-the-PIO4-driver-support.patch"
-#			patch -p1 < "${p_dir}/board/0003-mmc-atmel-Add-atmel-sdhci-support.patch"
-#			patch -p1 < "${p_dir}/board/0004-arm-at91-Change-the-Chip-ID-registers-addresses.patch"
-#			patch -p1 < "${p_dir}/board/0005-arm-at91-clock-Add-the-generated-clock-support.patch"
-#			git add .
-#			git commit -a -m 'sama5d2_xplained fixes' -s
-#			git format-patch -1 -o "${p_dir}/"
-
-			echo "patch -p1 < \"${p_dir}/0001-sama5d2_xplained-fixes.patch\""
-			${git} "${p_dir}/0001-sama5d2_xplained-fixes.patch"
-			;;
-		sama5d3xek_mmc)
-			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		sama5d3_xplained_mmc)
-			${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		sama5d4ek_mmc)
-			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		udoo)
-			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		vf610twr)
-			echo "patch -p1 < \"${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		wandboard)
-			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		esac
-	fi
-
-	p_dir="${DIR}/patches/${uboot_stable}"
-	if [ "${stable}" ] ; then
-		#r1: initial release
 		#r2: fix omap3-beagle
 		#r3: fix omap3-beagle
 		#r4: really fix omap3-beagle
@@ -456,8 +361,8 @@ build_u_boot () {
 		esac
 	fi
 
-	p_dir="${DIR}/patches/${uboot_testing}"
-	if [ "${testing}" ] ; then
+	p_dir="${DIR}/patches/${uboot_stable}"
+	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: omap5_uevm: stray key on serial protect...
 		#r3: add am335x-boneenhanced
@@ -465,6 +370,98 @@ build_u_boot () {
 		#r5: fix: panda
 		#r6: (pending)
 		RELEASE_VER="-r5" #bump on every change...
+		#halt_patching_uboot
+
+		case "${board}" in
+		am335x_evm)
+			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		am335x_boneblack)
+			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			;;
+		at91sam9x5ek_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		beagle_x15)
+			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		ls1021atwr_sdcard_qspi)
+			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
+			;;
+		mx23_olinuxino)
+			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx51evk)
+			echo "patch -p1 < \"${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx53loco)
+			echo "patch -p1 < \"${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx6qsabresd)
+			echo "patch -p1 < \"${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap3_beagle)
+			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap4_panda)
+			echo "patch -p1 < \"${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		omap5_uevm)
+			echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d2_xplained_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-sama5d2_xplained-fixes.patch\""
+			${git} "${p_dir}/0001-sama5d2_xplained-fixes.patch"
+			;;
+		sama5d3xek_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-sama5d3xek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d3_xplained_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-sama5d3_xplained-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d4ek_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-sama5d4ek-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		sama5d4_xplained_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		udoo)
+			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		vf610twr)
+			echo "patch -p1 < \"${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		wandboard)
+			echo "patch -p1 < \"${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		esac
+	fi
+
+	p_dir="${DIR}/patches/${uboot_testing}"
+	if [ "${testing}" ] ; then
+		#r1: initial release
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1014,7 +1011,7 @@ am57xx_evm () {
 
 at91sam9x5ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="at91sam9x5ek_mmc" ; build_uboot_eabi
 }
 
@@ -1028,7 +1025,7 @@ Bananapro () {
 
 beagle_x15 () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="beagle_x15" ; build_uboot_gnueabihf
 }
 
@@ -1052,49 +1049,49 @@ firefly_rk3288 () {
 
 ls1021atwr () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="ls1021atwr_sdcard_qspi" ; build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
 
 mx51evk () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
 }
 
 mx53loco () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="mx53loco" ; build_uboot_gnueabihf
 }
 
 mx6qsabresd () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
 
 omap3_beagle () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
 
 omap4_panda () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="omap4_panda" ; build_uboot_gnueabihf
 }
 
 omap5_uevm () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
@@ -1108,31 +1105,31 @@ rpi_2 () {
 
 sama5d2_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3xek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4ek () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="sama5d4ek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
 
@@ -1150,20 +1147,20 @@ Sinovoip_BPI_M3 () {
 
 udoo () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="udoo" ; build_uboot_gnueabihf
 	cleanup
 }
 
 vf610twr () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="vf610twr" ; build_uboot_gnueabihf
 }
 
 wandboard () {
 	cleanup
-	transitioned_to_testing="true"
+	#transitioned_to_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
