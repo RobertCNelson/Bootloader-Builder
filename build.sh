@@ -462,8 +462,9 @@ build_u_boot () {
 		#r2: omap5_uevm: stray key on serial protect...
 		#r3: add am335x-boneenhanced
 		#r4: fix: mx51evk
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: fix: panda
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1027,7 +1028,7 @@ Bananapro () {
 
 beagle_x15 () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="beagle_x15" ; build_uboot_gnueabihf
 }
 
@@ -1081,13 +1082,13 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
 
 omap4_panda () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="omap4_panda" ; build_uboot_gnueabihf
 }
 
