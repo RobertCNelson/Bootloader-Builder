@@ -756,6 +756,14 @@ build_u_boot () {
 			UBOOT_DONE=1
 		fi
 
+		#Freescale targets just need u-boot-dtb.imx from u-boot
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-dtb.imx ] ; then
+			filename_search="u-boot-dtb.imx"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.imx"
+			file_save
+			UBOOT_DONE=1
+		fi
+
 		#Freescale mx23 targets just need u-boot.sb from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.sb ] ; then
 			filename_search="u-boot.sb"
@@ -1005,7 +1013,7 @@ am57xx_evm () {
 
 at91sam9x5ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="at91sam9x5ek_mmc" ; build_uboot_eabi
 }
 
@@ -1043,13 +1051,13 @@ firefly_rk3288 () {
 
 ls1021atwr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="ls1021atwr_sdcard_qspi" ; build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
 
@@ -1061,13 +1069,13 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx53loco" ; build_uboot_gnueabihf
 }
 
 mx6qsabresd () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
 
@@ -1105,25 +1113,25 @@ sama5d2_xplained () {
 
 sama5d3xek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="sama5d4ek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
 
@@ -1141,20 +1149,20 @@ Sinovoip_BPI_M3 () {
 
 udoo () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="udoo" ; build_uboot_gnueabihf
 	cleanup
 }
 
 vf610twr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="vf610twr" ; build_uboot_gnueabihf
 }
 
 wandboard () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
