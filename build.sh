@@ -461,8 +461,9 @@ build_u_boot () {
 		#r1: initial release
 		#r2: omap5_uevm: stray key on serial protect...
 		#r3: add am335x-boneenhanced
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: fix: mx51evk
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1054,7 +1055,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
 }
 

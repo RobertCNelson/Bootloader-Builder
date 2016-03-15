@@ -1,6 +1,6 @@
-From a2ab6ea4e25886d97089196531f5e8cedecc01fd Mon Sep 17 00:00:00 2001
+From 1f122e65ab6b5e188bee4ca0dae1edb1c03c97b4 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 12 Feb 2016 13:40:07 -0600
+Date: Tue, 1 Mar 2016 14:10:49 -0600
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -12,7 +12,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 19 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 49d95cf..dd0e4d2 100644
+index bdeb8e4..a7c0937 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -43,6 +43,11 @@ DECLARE_GLOBAL_DATA_PTR;
@@ -70,17 +70,17 @@ index 49d95cf..dd0e4d2 100644
 -		puts("Could not get board ID.\n");
 +		puts("Could not get board ID, assuming BeagleBone Black.\n");
  
- 	if (board_is_bone(&header) || board_is_bone_lt(&header) ||
+ 	if (board_is_bone(&header) || (board_is_bone_lt(&header) && !board_is_bone_lt_enhanced(&header)) ||
 -	    board_is_idk(&header)) {
 +	    board_is_idk(&header) || board_is_blank_bone_lt()) {
  		writel(MII_MODE_ENABLE, &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_MII;
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 8128b55..31f11cd 100644
+index efeabd7..b84ad8a 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -373,7 +373,11 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
+@@ -379,7 +379,11 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
  		configure_module_pin_mux(bbb_p9_15_pin_mux);
  #endif
  	} else {
@@ -95,7 +95,7 @@ index 8128b55..31f11cd 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 788a36c..46f3a20 100644
+index 908235e..41a2b56 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -100,6 +100,8 @@
