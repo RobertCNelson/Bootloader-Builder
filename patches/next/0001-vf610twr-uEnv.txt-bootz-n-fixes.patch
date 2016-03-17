@@ -1,6 +1,6 @@
-From b2d8726c8bb1cd68e163ea209c71a78db740c880 Mon Sep 17 00:00:00 2001
+From ea3bb1c044c832284e13d4e2cee1aded4db4dabd Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 21 Oct 2015 11:12:37 -0500
+Date: Thu, 17 Mar 2016 10:19:15 -0500
 Subject: [PATCH] vf610twr: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,10 +9,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 67 insertions(+), 18 deletions(-)
 
 diff --git a/include/configs/vf610twr.h b/include/configs/vf610twr.h
-index 7f4260a..b95c223 100644
+index 0809fbb..d7e7229 100644
 --- a/include/configs/vf610twr.h
 +++ b/include/configs/vf610twr.h
-@@ -82,6 +82,9 @@
+@@ -80,6 +80,9 @@
  #define CONFIG_CMD_MMC
  #define CONFIG_GENERIC_MMC
  #define CONFIG_CMD_FAT
@@ -22,7 +22,7 @@ index 7f4260a..b95c223 100644
  #define CONFIG_DOS_PARTITION
  
  #define CONFIG_CMD_PING
-@@ -114,7 +117,7 @@
+@@ -110,7 +113,7 @@
  #define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
  #define CONFIG_SYS_SPD_BUS_NUM		0
  
@@ -31,7 +31,7 @@ index 7f4260a..b95c223 100644
  
  #define CONFIG_SYS_LOAD_ADDR		0x82000000
  
-@@ -145,13 +148,16 @@
+@@ -141,13 +144,16 @@
  	MEM_LAYOUT_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
@@ -50,7 +50,7 @@ index 7f4260a..b95c223 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -166,15 +172,41 @@
+@@ -162,15 +168,41 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -97,7 +97,7 @@ index 7f4260a..b95c223 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -212,19 +244,35 @@
+@@ -208,19 +240,35 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -143,13 +143,13 @@ index 7f4260a..b95c223 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-@@ -280,5 +328,6 @@
+@@ -275,5 +323,6 @@
+ #endif
  
- #define CONFIG_OF_LIBFDT
  #define CONFIG_CMD_BOOTZ
 +#define CONFIG_SUPPORT_RAW_INITRD
  
  #endif
 -- 
-2.6.1
+2.7.0
 
