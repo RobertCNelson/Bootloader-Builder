@@ -1,6 +1,6 @@
-From c2b72519b26c27f91dea7eec278a270519bc9039 Mon Sep 17 00:00:00 2001
+From 1ca94b2f8bbcae3ca60c4ddc84bb499679ec27bd Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 15 Mar 2016 16:03:16 -0500
+Date: Thu, 17 Mar 2016 14:27:03 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -96,7 +96,7 @@ index 44b78b0..2c9ab82 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index d4987b9..1aa3788 100644
+index b73c143..6b89005 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -97,6 +97,8 @@
@@ -105,9 +105,9 @@ index d4987b9..1aa3788 100644
  	"run findfdt; " \
 +	"setenv fdtfile am335x-boneblack.dtb; "\
 +	"setenv fdtbase am335x-boneblack; "\
+ 	"run envboot; " \
  	"run distro_bootcmd"
  
- #include <config_distro_bootcmd.h>
 -- 
 2.7.0
 
