@@ -368,8 +368,9 @@ build_u_boot () {
 		#r3: add am335x-boneenhanced
 		#r4: fix: mx51evk
 		#r5: fix: panda
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: enable CONFIG_PHY_ATHEROS/CONFIG_PHY_VITESSE
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1173,8 +1174,8 @@ beagle_x15_ti
 firefly_rk3288
 ls1021atwr
 mx23_olinuxino
-#mx51evk
-#mx53loco
+mx51evk
+mx53loco
 mx6qsabresd
 omap3_beagle
 omap4_panda
