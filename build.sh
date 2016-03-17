@@ -1174,7 +1174,7 @@ firefly_rk3288
 ls1021atwr
 mx23_olinuxino
 #mx51evk
-mx53loco
+#mx53loco
 mx6qsabresd
 omap3_beagle
 omap4_panda
