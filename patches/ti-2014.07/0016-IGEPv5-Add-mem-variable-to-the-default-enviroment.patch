@@ -1,0 +1,24 @@
+From 03b7670ee6baf1914b90d383eb7d082be4c4ef34 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Mon, 20 Jan 2014 16:44:47 +0100
+Subject: [PATCH 16/17] IGEPv5: Add mem variable to the default enviroment
+
+---
+ include/configs/ti_omap5_common.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
+index a9c6364..d67c79c 100644
+--- a/include/configs/ti_omap5_common.h
++++ b/include/configs/ti_omap5_common.h
+@@ -155,6 +155,7 @@
+ 	"mmcroot=/dev/mmcblk0p2 rw\0" \
+ 	"mmcrootfstype=ext4 rootwait\0" \
+ 	"mmcargs=setenv bootargs console=${console} " \
++		"${kernel_mem} " \
+ 		"${optargs} " \
+ 		"vram=${vram} " \
+ 		"root=${mmcroot} " \
+-- 
+2.7.0
+

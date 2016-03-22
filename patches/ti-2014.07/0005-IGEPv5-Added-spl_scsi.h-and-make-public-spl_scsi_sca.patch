@@ -1,0 +1,46 @@
+From 3ad14c5429d5d6df1e29094d6e8d1b7271173590 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Thu, 16 Jan 2014 15:28:43 +0100
+Subject: [PATCH 05/17] IGEPv5: Added spl_scsi.h and make public spl_scsi_scan
+ function
+
+---
+ board/isee/igep0050/spl_scsi.c |  1 +
+ board/isee/igep0050/spl_scsi.h | 13 +++++++++++++
+ 2 files changed, 14 insertions(+)
+ create mode 100644 board/isee/igep0050/spl_scsi.h
+
+diff --git a/board/isee/igep0050/spl_scsi.c b/board/isee/igep0050/spl_scsi.c
+index 1a478c3..cb2f01a 100644
+--- a/board/isee/igep0050/spl_scsi.c
++++ b/board/isee/igep0050/spl_scsi.c
+@@ -13,6 +13,7 @@
+ #include <asm/processor.h>
+ #include <scsi.h>
+ #include <image.h>
++#include "spl_scsi.h"
+ 
+ #ifdef CONFIG_SCSI_DEV_LIST
+ #define SCSI_DEV_LIST CONFIG_SCSI_DEV_LIST
+diff --git a/board/isee/igep0050/spl_scsi.h b/board/isee/igep0050/spl_scsi.h
+new file mode 100644
+index 0000000..a68ff3a
+--- /dev/null
++++ b/board/isee/igep0050/spl_scsi.h
+@@ -0,0 +1,13 @@
++/*
++ * (C) Copyright 2013
++ * ISEE 2007 SL
++ * Manel Caro     <mcaro@iseebcn.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++#ifndef __IGEPv5_SPL_SCSI_H__
++#define __IGEPv5_SPL_SCSI_H__
++
++void spl_scsi_scan(int mode);
++
++#endif
+-- 
+2.7.0
+

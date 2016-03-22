@@ -1,0 +1,26 @@
+From e9db6c4337e7fa1015a800f8f180be33bbf41edb Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Tue, 7 Jan 2014 18:03:47 +0100
+Subject: [PATCH 02/17] IGEPv5: Added SPL SATA boot support
+
+---
+ arch/arm/cpu/armv7/omap-common/boot-common.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/cpu/armv7/omap-common/boot-common.c b/arch/arm/cpu/armv7/omap-common/boot-common.c
+index 7b16a50..7e99c08 100644
+--- a/arch/arm/cpu/armv7/omap-common/boot-common.c
++++ b/arch/arm/cpu/armv7/omap-common/boot-common.c
+@@ -111,6 +111,9 @@ void spl_board_init(void)
+ #ifdef CONFIG_AM33XX
+ 	am33xx_spl_board_init();
+ #endif
++#ifdef CONFIG_OMAP5_IGEPv5
++	igepv5_spl_board_init();
++#endif
+ }
+ 
+ int board_mmc_init(bd_t *bis)
+-- 
+2.7.0
+

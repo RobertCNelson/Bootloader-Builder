@@ -1,0 +1,101 @@
+From bfc74eeab7366c75619b13f92545238e6be349e9 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Mon, 20 Jan 2014 16:13:40 +0100
+Subject: [PATCH 15/17] IGEPv5: Create new enviroment variable kernel_mem and
+ regenerate the MAC address if is used the default enviroment
+
+---
+ board/isee/igep0050/board.c               |  4 ++--
+ board/isee/igep0050/board_configuration.c | 20 +++++++++++++++++++-
+ board/isee/igep0050/board_configuration.h |  2 +-
+ 3 files changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/board/isee/igep0050/board.c b/board/isee/igep0050/board.c
+index 511fa45..f9f7a5b 100644
+--- a/board/isee/igep0050/board.c
++++ b/board/isee/igep0050/board.c
+@@ -207,9 +207,9 @@ int misc_init_r(void)
+ #endif
+ 
+ 	if (!getenv("usbethaddr")) {
+-        eth_setenv_enetaddr("usbethaddr", getBoardMacAddr());
++		eth_setenv_enetaddr("usbethaddr", getBoardMacAddr());
+ 	}
+-
++	setenv("kernel_mem", getKernelMem());
+ 	return 0;
+ }
+ 
+diff --git a/board/isee/igep0050/board_configuration.c b/board/isee/igep0050/board_configuration.c
+index 66d84ee..c80c478 100644
+--- a/board/isee/igep0050/board_configuration.c
++++ b/board/isee/igep0050/board_configuration.c
+@@ -159,7 +159,7 @@ int check_magic (void)
+     return (magic_id != IGEPv5_MAGIC_ID);
+ }
+ 
+-void set_factory_reset (void)
++void set_factory_defaults (void)
+ {
+     unsigned int reg;
+ 
+@@ -175,7 +175,11 @@ void set_factory_reset (void)
+     igepv5_config.device_mac[3] = readl(reg + 0x8) & 0xff;
+     igepv5_config.device_mac[4] = readl(reg) & 0xff;
+     igepv5_config.device_mac[5] = (readl(reg) >> 8) & 0xff;
++}
+ 
++void set_factory_reset (void)
++{
++    set_factory_defaults();
+     // Calculate crc32
+     igepv5_config.crc32 = crc32(0, (const unsigned char*) &igepv5_config, sizeof(struct igepv5_eeprom_config));
+     // Save Buffer in eeprom
+@@ -203,6 +207,7 @@ void init_igepv5_board_configuration (int set_default)
+     org_bus_num = i2c_get_bus_num();
+ 
+     if(check_eeprom() != 0){
++	set_factory_defaults();
+ 	printf("eeprom not found, using defaults\n");
+         goto error;
+     }
+@@ -215,6 +220,7 @@ void init_igepv5_board_configuration (int set_default)
+     // Check eeprom magic
+     if(check_magic() != 0) {
+         /* use default configuration */
++	set_factory_defaults();
+         printf("eeprom check magic failed, using defaults\n");
+         goto error;
+     }
+@@ -292,3 +298,15 @@ const unsigned char* getBoardMacAddr (void)
+ {
+     return igepv5_config.device_mac;
+ }
++
++const char* getKernelMem (void)
++{
++    u32 reg = get_lisa_configuration()->dmm_lisa_map_2;
++    reg >>= 8;
++    reg &= 0x00000003;
++    if(reg == 1)
++        return "mem=1008M@0x80000000";
++    else if(reg == 3)
++        return "mem=2032M@0x80000000 mem=2048M@0x300000000";
++    return "";
++}
+diff --git a/board/isee/igep0050/board_configuration.h b/board/isee/igep0050/board_configuration.h
+index 48be04c..1c2286b 100644
+--- a/board/isee/igep0050/board_configuration.h
++++ b/board/isee/igep0050/board_configuration.h
+@@ -10,7 +10,7 @@ struct dmm_lisa_map_regs* get_lisa_configuration (void);
+ void igepv5_print_banner (void);
+ const unsigned char* getBoardMacAddr (void);
+ void init_igepv5_board_configuration (int set_default);
+-
++const char* getKernelMem (void);
+ 
+ 
+ 
+-- 
+2.7.0
+

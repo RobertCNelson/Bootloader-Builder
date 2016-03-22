@@ -1,0 +1,29 @@
+From 2c647e283354a45e02fa7f424bb4ff563fa4c20d Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Thu, 16 Jan 2014 16:44:25 +0100
+Subject: [PATCH 08/17] IGEPv5: Modify DMM_LISA_MAP2_1G data comments
+
+---
+ board/isee/igep0050/board_configuration.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/board/isee/igep0050/board_configuration.h b/board/isee/igep0050/board_configuration.h
+index d8c269d..b86a3f0 100644
+--- a/board/isee/igep0050/board_configuration.h
++++ b/board/isee/igep0050/board_configuration.h
+@@ -283,10 +283,10 @@ All other values are reserved.
+ 									(LISA_MAP_2_SDRC_ADDRSPC << 16) | (LISA_MAP_2_SDRC_MAP << 8) | LISA_MAP_2_SDRC_ADDR
+ 
+ #define LISA_MAP_2_SYS_ADDR_1G 		0x80    /* SYS_ADDR: 0x80000000*/
+-#define LISA_MAP_2_SYS_SIZE_1G		6       /* SYS_SIZE: 0x7: 2-GiB section */
++#define LISA_MAP_2_SYS_SIZE_1G		6       /* SYS_SIZE: 0x6: 1-GiB section */
+ #define LISA_MAP_2_SDRC_INTL_1G		0       /* SDRC_INTL: 0x1: 128-byte interleaving */
+ #define LISA_MAP_2_SDRC_ADDRSPC_1G	0       /* SDRC_ADDRSPC = 0x00000000 */
+-#define LISA_MAP_2_SDRC_MAP_1G 		1       /* SDRC_MAP: 0x3: Mapped on EMIF1 and EMIF2 (interleaved) */
++#define LISA_MAP_2_SDRC_MAP_1G 		1       /* SDRC_MAP: 0x1: Mapped on EMIF1 (no interleaved) */
+ #define LISA_MAP_2_SDRC_ADDR_1G		0x00    /* SDRC_ADDR = 0x00000000 */
+ 
+ #define DMM_LISA_MAP2_1G			(LISA_MAP_2_SYS_ADDR_1G << 24) | (LISA_MAP_2_SYS_SIZE_1G << 20) | (LISA_MAP_2_SDRC_INTL_1G << 18) | \
+-- 
+2.7.0
+

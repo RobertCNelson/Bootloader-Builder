@@ -1,0 +1,60 @@
+From e460736940043c79d4f346ea0340edca273c2af1 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Mon, 20 Jan 2014 15:42:00 +0100
+Subject: [PATCH 14/17] IGEPv5: Default DDR3 Memory configuration set to 1 GiB,
+ disable CS1
+
+---
+ board/isee/igep0050/board_configuration.h | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/board/isee/igep0050/board_configuration.h b/board/isee/igep0050/board_configuration.h
+index b86a3f0..48be04c 100644
+--- a/board/isee/igep0050/board_configuration.h
++++ b/board/isee/igep0050/board_configuration.h
+@@ -66,7 +66,11 @@ All other values are reserved.
+ #define IBANK					3			/* 3 = 8 banks */
+ #define EBANK_CS0_ENABLE		0
+ #define EBANK_CS0_CS1_ENABLE	1
++#ifdef IGEPv5_MEMORY_4G
+ #define EBANK					EBANK_CS0_CS1_ENABLE	/* External chip select setup. Defines whether SDRAM accesses will use 1 or 2 chip select lines. Set to 0 to use NCS0 only. Set to 1 to use NCS[1:0] */
++#else
++#define EBANK					EBANK_CS0_ENABLE	/* External chip select setup. Defines whether SDRAM accesses will use 1 or 2 chip select lines. Set to 0 to use NCS0 only. Set to 1 to use NCS[1:0] */
++#endif
+ #define PAGESIZE				2			/* 1024 word page - 10 column bits */
+ 
+ #define SDRAM_CONFIG_1			(SDRAM_TYPE << 29) | (IBANK_POS << 27) | (DDR_TERM << 24) | \
+@@ -125,8 +129,11 @@ All other values are reserved.
+ #define T_SDRAM_TIM3			(T_PDLL_UL << 28) | (T_CSTA << 24) | (T_CKESR << 21) | (T_ZQ_ZQCS << 15) | (T_TDQSCKMAX << 13) | (T_RFC << 4) | T_RAS_MAX
+ 
+ /* Register zq_config = EMIF_SDRAM_OUTPUT_IMPEDANCE_CALIBRATION_CONFIG (0x4C0000C8) */
+-
++#ifdef IGEPv5_MEMORY_4G
+ #define ZQ_CS1EN				1	/* Writing a 1 enables ZQ calibration for CS1. */
++#else
++#define ZQ_CS1EN				0	/* Writing a 1 enables ZQ calibration for CS1. */
++#endif
+ #define ZQ_CS0EN 				1	/* Writing a 1 enables ZQ calibration for CS0. */
+ #define ZQ_DUALCALEN 			0	/* ZQ Dual Calibration enable. Allows both ranks to be ZQ calibrated simultaneously.
+ 									   Setting this bit requires both chip selects to have a separate calibration resistor per device. */
+@@ -273,7 +280,7 @@ All other values are reserved.
+ 									(LISA_MAP_1_SDRC_ADDRSPC << 16) | (LISA_MAP_1_SDRC_MAP << 8) | LISA_MAP_1_SDRC_ADDR
+ 
+ #define LISA_MAP_2_SYS_ADDR 		0x80    /* SYS_ADDR: 0x80000000*/
+-#define LISA_MAP_2_SYS_SIZE		    7       /* SYS_SIZE: 0x7: 2-GiB section */
++#define LISA_MAP_2_SYS_SIZE		7       /* SYS_SIZE: 0x7: 2-GiB section */
+ #define LISA_MAP_2_SDRC_INTL		3       /* SDRC_INTL: 0x1: 128-byte interleaving */
+ #define LISA_MAP_2_SDRC_ADDRSPC		0       /* SDRC_ADDRSPC = 0x00000000 */
+ #define LISA_MAP_2_SDRC_MAP 		3       /* SDRC_MAP: 0x3: Mapped on EMIF1 and EMIF2 (interleaved) */
+@@ -294,7 +301,7 @@ All other values are reserved.
+ 
+ 
+ #define LISA_MAP_3_SYS_ADDR 		0xFF    /* SYS_ADDR: 0xFF000000*/
+-#define LISA_MAP_3_SYS_SIZE		    0       /* SYS_SIZE: 0x0: 16-MiB section */
++#define LISA_MAP_3_SYS_SIZE		0       /* SYS_SIZE: 0x0: 16-MiB section */
+ #define LISA_MAP_3_SDRC_INTL		0       /* SDRC_INTL: 0x0: No interleaving */
+ #define LISA_MAP_3_SDRC_ADDRSPC		2
+ #define LISA_MAP_3_SDRC_MAP 		1       /* SDRC_MAP: 0x3: Mapped on EMIF1 and EMIF2 (interleaved) */
+-- 
+2.7.0
+

@@ -690,6 +690,34 @@ build_u_boot () {
 
 	fi
 
+	if [ "x${board}" = "xomap5_igep0050" ] ; then
+		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2014.07
+		#r1: first pass
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
+
+		p_dir="${DIR}/patches/ti-2014.07"
+
+		${git} "${p_dir}/0001-IGEPv5-Added-IGEPv5-board-support.patch"
+		${git} "${p_dir}/0002-IGEPv5-Added-SPL-SATA-boot-support.patch"
+		${git} "${p_dir}/0003-IGEPv5-Add-GPIO-Expander-tca641x-support.patch"
+		${git} "${p_dir}/0004-IGEPv5-Added-SMSC-LAN7500-driver.patch"
+		${git} "${p_dir}/0005-IGEPv5-Added-spl_scsi.h-and-make-public-spl_scsi_sca.patch"
+		${git} "${p_dir}/0006-IGEPv5-Added-eeprom-configuration-support.patch"
+		${git} "${p_dir}/0007-IGEPv5-Modify-lisa_regs-structure-added-ma_hm_interl.patch"
+		${git} "${p_dir}/0008-IGEPv5-Modify-DMM_LISA_MAP2_1G-data-comments.patch"
+		${git} "${p_dir}/0009-IGEPv5-Get-memory-config-size-reading-from-the-lisa-.patch"
+		${git} "${p_dir}/0010-OMAP5-Rework-boot-try-boot-from-SATA-disk.patch"
+		${git} "${p_dir}/0011-IGEPv5-Default-DDR3-Memory-configuration-set-to-1-Gi.patch"
+		${git} "${p_dir}/0012-IGEPv5-Memory-setup-Change-the-define-name.patch"
+		${git} "${p_dir}/0013-IGEPv5-Modify-not-found-eeprom-message.patch"
+		${git} "${p_dir}/0014-IGEPv5-Default-DDR3-Memory-configuration-set-to-1-Gi.patch"
+		${git} "${p_dir}/0015-IGEPv5-Create-new-enviroment-variable-kernel_mem-and.patch"
+		${git} "${p_dir}/0016-IGEPv5-Add-mem-variable-to-the-default-enviroment.patch"
+		${git} "${p_dir}/0017-IGEPv5-read-and-pass-to-the-kernel-the-smsc75xx-mac-.patch"
+		${git} "${p_dir}/0018-IGEPv5-fixes.patch"
+	fi
+
 	unset BUILDTARGET
 	if [ "x${board}" = "xmx23_olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
@@ -1090,6 +1118,16 @@ omap4_panda () {
 	board="omap4_panda" ; build_uboot_gnueabihf
 }
 
+omap5_igep0050 () {
+	cleanup
+
+	board="omap5_igep0050"
+	uboot_config="omap5_igep0050_config"
+	gcc_linaro_gnueabihf_4_9
+	GIT_SHA="v2014.07"
+	build_u_boot
+}
+
 omap5_uevm () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -1179,6 +1217,7 @@ mx53loco
 mx6qsabresd
 omap3_beagle
 omap4_panda
+omap5_igep0050
 omap5_uevm
 sama5d2_xplained
 sama5d3xek

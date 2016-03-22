@@ -1,0 +1,99 @@
+From 73b3df986b706f2ce80f7c54ead18278b83ef748 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Mon, 20 Jan 2014 13:25:26 +0100
+Subject: [PATCH 10/17] OMAP5: Rework boot try boot from SATA disk
+
+---
+ include/configs/ti_omap5_common.h | 43 +++++++++++++++++++++++----------------
+ 1 file changed, 25 insertions(+), 18 deletions(-)
+
+diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
+index 1a88dfb..a9c6364 100644
+--- a/include/configs/ti_omap5_common.h
++++ b/include/configs/ti_omap5_common.h
+@@ -142,7 +142,7 @@
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	DEFAULT_LINUX_BOOT_ENV \
+ 	"console=" CONSOLEDEV ",115200n8\0" \
+-	"fdtfile=undefined\0" \
++	"fdtfile=omap5-igep0050.dtb\0" \
+ 	"bootpart=0:2\0" \
+ 	"bootdir=/boot\0" \
+ 	"bootfile=zImage\0" \
+@@ -150,6 +150,7 @@
+ 	"vram=16M\0" \
+ 	"partitions=" PARTS_DEFAULT "\0" \
+ 	"optargs=\0" \
++	"bootdev=mmc\0"\
+ 	"mmcdev=0\0" \
+ 	"mmcroot=/dev/mmcblk0p2 rw\0" \
+ 	"mmcrootfstype=ext4 rootwait\0" \
+@@ -163,14 +164,14 @@
+ 		"root=/dev/nfs " \
+ 		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
+ 		"ip=dhcp\0" \
+-	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
++	"loadbootscript=fatload ${bootdev} ${mmcdev} ${loadaddr} boot.scr\0" \
+ 	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
+ 		"source ${loadaddr}\0" \
+ 	"bootenv=uEnv.txt\0" \
+-	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"loadbootenv=fatload ${bootdev} ${mmcdev} ${loadaddr} ${bootenv}\0" \
+ 	"importbootenv=echo Importing environment from mmc${mmcdev} ...; " \
+ 		"env import -t ${loadaddr} ${filesize}\0" \
+-	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
++	"loadimage=load ${bootdev} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
+ 	"mmcboot=mmc dev ${mmcdev}; " \
+ 		"if mmc rescan; then " \
+ 			"echo SD/MMC found on device ${mmcdev};" \
+@@ -196,27 +197,33 @@
+ 		"tftp ${fdtaddr} ${fdtfile}; " \
+ 		"run netargs; " \
+ 		"bootz ${loadaddr} - ${fdtaddr}\0" \
+-	"findfdt="\
+-		"if test $board_name = omap5_uevm; then " \
+-			"setenv fdtfile omap5-uevm.dtb; fi; " \
+-		"if test $board_name = dra7xx; then " \
+-			"setenv fdtfile dra7-evm.dtb; fi;" \
+-		"if test $board_name = dra72x; then " \
+-			"setenv fdtfile dra72-evm.dtb; fi;" \
+-		"if test $board_name = beagle_x15; then " \
+-			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
+-		"if test $fdtfile = undefined; then " \
+-			"echo WARNING: Could not determine device tree to use; fi; \0" \
+-	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile};\0" \
++	"scsiboot=if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if test -n $uenvcmd; then " \
++			"echo Running uenvcmd ...;" \
++			"run uenvcmd;" \
++		"fi;" \
++		"if run loadimage; then " \
++			"run loadfdt; " \
++			"echo Booting from scsi${mmcdev} ...; " \
++			"run mmcargs; " \
++			"bootz ${loadaddr} - ${fdtaddr}; " \
++		"fi;\0" \
++	"loadfdt=load ${bootdev} ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile};\0" \
+ 	NANDARGS \
+ 	DFUARGS \
+ 
+ #define CONFIG_BOOTCOMMAND \
+-	"run findfdt; " \
+ 	"run mmcboot;" \
++	"setenv bootdev scsi;" \
++	"setenv mmcroot /dev/sda2 rw;" \
++	"run scsiboot;" \
++	"setenv bootdev mmc;" \
+ 	"setenv mmcdev 1; " \
+ 	"setenv bootpart 1:2; " \
+-	"setenv mmcroot /dev/mmcblk0p2 rw; " \
++	"setenv mmcroot /dev/mmcblk1p2 rw; " \
+ 	"run mmcboot;" \
+ 	NANDBOOT \
+ 
+-- 
+2.7.0
+

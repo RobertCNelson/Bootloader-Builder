@@ -1,0 +1,33 @@
+From cd74eb9e28dd412bb3cff572f66542babe1593e2 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Mon, 20 Jan 2014 15:41:24 +0100
+Subject: [PATCH 13/17] IGEPv5: Modify not found eeprom message
+
+---
+ board/isee/igep0050/board_configuration.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/board/isee/igep0050/board_configuration.c b/board/isee/igep0050/board_configuration.c
+index 677db01..66d84ee 100644
+--- a/board/isee/igep0050/board_configuration.c
++++ b/board/isee/igep0050/board_configuration.c
+@@ -188,7 +188,7 @@ int check_eeprom (void)
+     i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED, CONFIG_SYS_OMAP24_I2C_SLAVE);
+ 	/* Check if baseboard eeprom is available */
+ 	if (i2c_probe(CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR)) {
+-		printf("Could not probe the EEPROM at 0x%x\n",
++		debug("Could not probe the EEPROM at 0x%x\n",
+ 		       CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR);
+ 		return -1;
+ 	}
+@@ -203,6 +203,7 @@ void init_igepv5_board_configuration (int set_default)
+     org_bus_num = i2c_get_bus_num();
+ 
+     if(check_eeprom() != 0){
++	printf("eeprom not found, using defaults\n");
+         goto error;
+     }
+ 
+-- 
+2.7.0
+

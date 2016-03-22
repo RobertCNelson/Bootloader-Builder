@@ -1,0 +1,1320 @@
+From 1def45ade01c6d6bdbff369c076eb53407e84ae5 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Tue, 7 Jan 2014 18:02:34 +0100
+Subject: [PATCH 01/17] IGEPv5: Added IGEPv5 board support
+
+---
+ board/isee/igep0050/Makefile     |   9 +
+ board/isee/igep0050/board.c      | 246 ++++++++++++++++
+ board/isee/igep0050/mux_data.h   | 299 +++++++++++++++++++
+ board/isee/igep0050/spl_scsi.c   | 604 +++++++++++++++++++++++++++++++++++++++
+ boards.cfg                       |   1 +
+ include/configs/omap5_igep0050.h |  98 +++++++
+ 6 files changed, 1257 insertions(+)
+ create mode 100644 board/isee/igep0050/Makefile
+ create mode 100644 board/isee/igep0050/board.c
+ create mode 100644 board/isee/igep0050/mux_data.h
+ create mode 100644 board/isee/igep0050/spl_scsi.c
+ create mode 100644 include/configs/omap5_igep0050.h
+
+diff --git a/board/isee/igep0050/Makefile b/board/isee/igep0050/Makefile
+new file mode 100644
+index 0000000..3ad68fc
+--- /dev/null
++++ b/board/isee/igep0050/Makefile
+@@ -0,0 +1,9 @@
++#
++# (C) Copyright 2000, 2001, 2002
++# Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++#
++# SPDX-License-Identifier:	GPL-2.0+
++#
++
++obj-y	:= board.o
++obj-y += spl_scsi.o
+diff --git a/board/isee/igep0050/board.c b/board/isee/igep0050/board.c
+new file mode 100644
+index 0000000..afa38a4
+--- /dev/null
++++ b/board/isee/igep0050/board.c
+@@ -0,0 +1,246 @@
++/*
++ * (C) Copyright 2010
++ * Texas Instruments Incorporated, <www.ti.com>
++ * Aneesh V       <aneesh@ti.com>
++ * Steve Sakoman  <steve@sakoman.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++#include <common.h>
++#include <palmas.h>
++#include <asm/arch/sys_proto.h>
++#include <asm/arch/mmc_host_def.h>
++#include <tca642x.h>
++
++#include "mux_data.h"
++
++#if defined(CONFIG_USB_EHCI) || defined(CONFIG_USB_XHCI_OMAP)
++#include <usb.h>
++#include <asm/gpio.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/ehci.h>
++#include <asm/ehci-omap.h>
++#include <asm/arch/sata.h>
++
++#define DIE_ID_REG_BASE     (OMAP54XX_L4_CORE_BASE + 0x2000)
++#define DIE_ID_REG_OFFSET	0x200
++
++#endif
++
++DECLARE_GLOBAL_DATA_PTR;
++
++const struct omap_sysinfo sysinfo = {
++	"Board: OMAP5432 uEVM\n"
++};
++
++/**
++ * @brief tca641x_init - uEVM default values for the GPIO expander
++ * input reg, output reg, polarity reg, configuration reg
++ */
++struct tca642x_bank_info tca642x_init[] = {
++	{ .input_reg = 0x00,
++	  .output_reg = 0xFF,
++	  .polarity_reg = 0x00,
++	  .configuration_reg = 0x00 },
++	{ .input_reg = 0x00,
++	  .output_reg = 0xFF,
++	  .polarity_reg = 0x00,
++	  .configuration_reg = 0x00 },
++};
++/**
++ * @brief board_init
++ *
++ * @return 0
++ */
++int board_init(void)
++{
++	gpmc_init();
++	gd->bd->bi_arch_number = MACH_TYPE_OMAP5_SEVM;
++	gd->bd->bi_boot_params = (0x80000000 + 0x100); /* boot param addr */
++
++	tca642x_set_inital_state(CONFIG_SYS_I2C_TCA642X_ADDR, tca642x_init);
++
++	return 0;
++}
++
++int board_late_init(void)
++{
++	omap_sata_init();
++	scsi_scan(1);
++	return 0;
++}
++
++int board_eth_init(bd_t *bis)
++{
++	return 0;
++}
++
++void igepv5_spl_board_init (void)
++{
++#ifdef CONFIG_SPL_SATA_SUPPORT
++	omap_sata_init();
++	spl_scsi_scan(1);
++#endif*/
++}
++
++#if defined(CONFIG_USB_EHCI) || defined(CONFIG_USB_XHCI_OMAP)
++static void enable_host_clocks(void)
++{
++	int auxclk;
++	int hs_clk_ctrl_val = (OPTFCLKEN_HSIC60M_P3_CLK |
++				OPTFCLKEN_HSIC480M_P3_CLK |
++				OPTFCLKEN_HSIC60M_P2_CLK |
++				OPTFCLKEN_HSIC480M_P2_CLK |
++				OPTFCLKEN_UTMI_P3_CLK | OPTFCLKEN_UTMI_P2_CLK);
++
++	/* Enable port 2 and 3 clocks*/
++	setbits_le32((*prcm)->cm_l3init_hsusbhost_clkctrl, hs_clk_ctrl_val);
++
++	/* Enable port 2 and 3 usb host ports tll clocks*/
++	setbits_le32((*prcm)->cm_l3init_hsusbtll_clkctrl,
++			(OPTFCLKEN_USB_CH1_CLK_ENABLE | OPTFCLKEN_USB_CH2_CLK_ENABLE));
++#ifdef CONFIG_USB_XHCI_OMAP
++	/* Enable the USB OTG Super speed clocks */
++	setbits_le32((*prcm)->cm_l3init_usb_otg_ss_clkctrl,
++			(OPTFCLKEN_REFCLK960M | OTG_SS_CLKCTRL_MODULEMODE_HW));
++#endif
++
++	auxclk = readl((*prcm)->scrm_auxclk1);
++	/* Request auxilary clock */
++	auxclk |= AUXCLK_ENABLE_MASK;
++	writel(auxclk, (*prcm)->scrm_auxclk1);
++}
++#endif
++
++/**
++ * @brief misc_init_r - Configure EVM board specific configurations
++ * such as power configurations, ethernet initialization as phase2 of
++ * boot sequence
++ *
++ * @return 0
++ */
++int misc_init_r(void)
++{
++	int reg;
++	uint8_t device_mac[6];
++
++#ifdef CONFIG_PALMAS_POWER
++	palmas_init_settings();
++#endif
++
++	if (!getenv("usbethaddr")) {
++		reg = DIE_ID_REG_BASE + DIE_ID_REG_OFFSET;
++
++		/*
++		 * create a fake MAC address from the processor ID code.
++		 * first byte is 0x02 to signify locally administered.
++		 */
++		device_mac[0] = 0x02;
++		device_mac[1] = readl(reg + 0x10) & 0xff;
++		device_mac[2] = readl(reg + 0xC) & 0xff;
++		device_mac[3] = readl(reg + 0x8) & 0xff;
++		device_mac[4] = readl(reg) & 0xff;
++		device_mac[5] = (readl(reg) >> 8) & 0xff;
++
++		eth_setenv_enetaddr("usbethaddr", device_mac);
++	}
++
++	return 0;
++}
++
++void set_muxconf_regs_essential(void)
++{
++	do_set_mux((*ctrl)->control_padconf_core_base,
++		   core_padconf_array_essential,
++		   sizeof(core_padconf_array_essential) /
++		   sizeof(struct pad_conf_entry));
++
++	do_set_mux((*ctrl)->control_padconf_wkup_base,
++		   wkup_padconf_array_essential,
++		   sizeof(wkup_padconf_array_essential) /
++		   sizeof(struct pad_conf_entry));
++}
++
++void set_muxconf_regs_non_essential(void)
++{
++	do_set_mux((*ctrl)->control_padconf_core_base,
++		   core_padconf_array_non_essential,
++		   sizeof(core_padconf_array_non_essential) /
++		   sizeof(struct pad_conf_entry));
++
++	do_set_mux((*ctrl)->control_padconf_wkup_base,
++		   wkup_padconf_array_non_essential,
++		   sizeof(wkup_padconf_array_non_essential) /
++		   sizeof(struct pad_conf_entry));
++}
++
++#if !defined(CONFIG_SPL_BUILD) && defined(CONFIG_GENERIC_MMC)
++int board_mmc_init(bd_t *bis)
++{
++	omap_mmc_init(0, 0, 0, -1, -1);
++	omap_mmc_init(1, 0, 0, -1, -1);
++	return 0;
++}
++#endif
++
++#ifdef CONFIG_USB_EHCI
++static struct omap_usbhs_board_data usbhs_bdata = {
++	.port_mode[0] = OMAP_USBHS_PORT_MODE_UNUSED,
++	.port_mode[1] = OMAP_EHCI_PORT_MODE_HSIC,
++	.port_mode[2] = OMAP_EHCI_PORT_MODE_HSIC,
++};
++
++int ehci_hcd_init(int index, enum usb_init_type init,
++		struct ehci_hccr **hccr, struct ehci_hcor **hcor)
++{
++	int ret;
++
++	enable_host_clocks();
++
++	ret = omap_ehci_hcd_init(index, &usbhs_bdata, hccr, hcor);
++	if (ret < 0) {
++		puts("Failed to initialize ehci\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++int ehci_hcd_stop(void)
++{
++	int ret;
++
++	ret = omap_ehci_hcd_stop();
++	return ret;
++}
++
++void usb_hub_reset_devices(int port)
++{
++	/* The LAN9730 needs to be reset after the port power has been set. */
++/*	if (port == 3) {
++		gpio_direction_output(CONFIG_OMAP_EHCI_PHY3_RESET_GPIO, 0);
++		udelay(10);
++		gpio_direction_output(CONFIG_OMAP_EHCI_PHY3_RESET_GPIO, 1);
++	} */
++}
++#endif
++
++#ifdef CONFIG_USB_XHCI_OMAP
++/**
++ * @brief board_usb_init - Configure EVM board specific configurations
++ * for the LDO's and clocks for the USB blocks.
++ *
++ * @return 0
++ */
++int board_usb_init(int index, enum usb_init_type init)
++{
++	int ret;
++#ifdef CONFIG_PALMAS_USB_SS_PWR
++	ret = palmas_enable_ss_ldo();
++#endif
++
++	enable_host_clocks();
++
++	return 0;
++}
++#endif
+diff --git a/board/isee/igep0050/mux_data.h b/board/isee/igep0050/mux_data.h
+new file mode 100644
+index 0000000..c7887da
+--- /dev/null
++++ b/board/isee/igep0050/mux_data.h
+@@ -0,0 +1,299 @@
++/*
++ * (C) Copyright 2010
++ * Texas Instruments Incorporated, <www.ti.com>
++ *
++ *	Sricharan R		<r.sricharan@ti.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++#ifndef _IGEP0050_MUX_DATA_H
++#define _IGEP0050_MUX_DATA_H
++
++#include <asm/arch/mux_omap5.h>
++
++const struct pad_conf_entry core_padconf_array_essential[] = {
++
++	{EMMC_CLK, (PTU | IEN | M0)}, /*  EMMC_CLK   */
++	{EMMC_CMD, (PTU | IEN | M0)}, /*  EMMC_CMD   */
++	{EMMC_DATA0, (PTU | IEN | M0)}, /*  EMMC_DATA0 */
++	{EMMC_DATA1, (PTU | IEN | M0)}, /*  EMMC_DATA1 */
++	{EMMC_DATA2, (PTU | IEN | M0)}, /*  EMMC_DATA2 */
++	{EMMC_DATA3, (PTU | IEN | M0)}, /*  EMMC_DATA3 */
++	{EMMC_DATA4, (PTU | IEN | M0)}, /*  EMMC_DATA4 */
++	{EMMC_DATA5, (PTU | IEN | M0)}, /*  EMMC_DATA5 */
++	{EMMC_DATA6, (PTU | IEN | M0)}, /*  EMMC_DATA6 */
++	{EMMC_DATA7, (PTU | IEN | M0)}, /*  EMMC_DATA7 */
++	{SDCARD_CLK, (PTU | IEN | M0)}, /*  SDCARD_CLK  */
++	{SDCARD_CMD, (PTU | IEN | M0)}, /*  SDCARD_CMD  */
++	{SDCARD_DATA0, (PTU | IEN | M0)}, /*  SDCARD_DATA0*/
++	{SDCARD_DATA1, (PTU | IEN | M0)}, /*  SDCARD_DATA1*/
++	{SDCARD_DATA2, (PTU | IEN | M0)}, /*  SDCARD_DATA2*/
++	{SDCARD_DATA3, (PTU | IEN | M0)}, /*  SDCARD_DATA3*/
++	{UART3_RX_IRRX, (PTU | IEN | M0)}, /*  UART3_RX_IRRX    */
++	{UART3_TX_IRTX, (M0)},    /*  UART3_TX_IRTX    */
++	{USBB1_HSIC_STROBE, (PTU | IEN | M0)},    /*  USBB1_HSIC_STROBE */
++	{USBB1_HSIC_DATA, (PTU | IEN | M0)},    /*  USBB1_HSIC_DATA */
++	{USBB2_HSIC_STROBE, (PTU | IEN | M0)},    /*  USBB2_HSIC_STROBE */
++	{USBB2_HSIC_DATA, (PTU | IEN | M0)},    /*  USBB2_HSIC_DATA  */
++	{USBB3_HSIC_STROBE, (PTU | IEN | M0)},    /*  USBB3_HSIC_STROBE*/
++	{USBB3_HSIC_DATA, (PTU | IEN | M0)},    /*  USBB3_HSIC_DATA  */
++	{USBD0_HS_DP, (IEN | M0)},	/*  USBD0_HS_DP */
++	{USBD0_HS_DM, (IEN | M0)},	/*  USBD0_HS_DM */
++	{USBD0_SS_RX, (IEN | M0)},	/*  USBD0_SS_RX */
++	{I2C3_SCL, (IEN | M0)}, /* I2C5_SCL */
++	{I2C3_SDA, (IEN | M0)}, /* I2C5_SDA */
++	{I2C4_SCL, (IEN | M0)}, /* I2C5_SCL */
++	{I2C4_SDA, (IEN | M0)}, /* I2C5_SDA */
++	{I2C5_SCL, (IEN | M0)}, /* I2C5_SCL */
++	{I2C5_SDA, (IEN | M0)}, /* I2C5_SDA */
++	{HSI2_ACWAKE, (PTU | M6)},    /*  HSI2_ACWAKE : GPMC_25 - USBH_nReset2, gpio3 79 */
++	{HSI2_CAFLAG, (PTU | M6)},    /*  HSI2_CAFLAG : USBH_nReset - gpio3 80*/
++	{HSI2_CAWAKE,  (PTU | M6)},    /* HSI2_CAWAKE : GPMC_24 - Lan Enable - gpio 78*/
++	{C2C_DATA14, (PTU |IEN | M6)},    /*  C2C_DATA14 : GPMC 22 : GPIO4_119 msata_detect*/
++	/*{C2C_DATA15, (PTU | M6)},*/    /*  C2C_DATA15 : GPMC 23 : GPIO4_120 msata_1v8*/
++};
++
++const struct pad_conf_entry wkup_padconf_array_essential[] = {
++
++	{SR_PMIC_SCL, (PTU | IEN | M0)}, /* SR_PMIC_SCL */
++	{SR_PMIC_SDA, (PTU | IEN | M0)}, /* SR_PMIC_SDA */
++	{SYS_32K, (IEN | M0)}, /*  SYS_32K     */
++	{FREF_CLK1_OUT, (PTD | IEN | M0)},    /*  FREF_CLK1_OUT  */
++	{LLIB_WAKEREQIN, (PTU | M6)},    /*  GPIO1_15 - Lan Reset */
++};
++
++const struct pad_conf_entry core_padconf_array_non_essential[] = {
++
++	{C2C_DATAIN0, (IEN | M0)},    /*  C2C_DATAIN0   */
++	{C2C_DATAIN1, (IEN | M0)},    /*  C2C_DATAIN1   */
++	{C2C_DATAIN2, (IEN | M0)},    /*  C2C_DATAIN2   */
++	{C2C_DATAIN3, (IEN | M0)},    /*  C2C_DATAIN3   */
++	{C2C_DATAIN4, (IEN | M0)},    /*  C2C_DATAIN4   */
++	{C2C_DATAIN5, (IEN | M0)},    /*  C2C_DATAIN5   */
++	{C2C_DATAIN6, (IEN | M0)},    /*  C2C_DATAIN6   */
++	{C2C_DATAIN7, (IEN | M0)},    /*  C2C_DATAIN7   */
++	{C2C_CLKIN1,  (IEN | M0)},    /*  C2C_CLKIN1    */
++	{C2C_CLKIN0,  (IEN | M0)},    /*  C2C_CLKIN0    */
++	{C2C_CLKOUT0, (M0)},    /*  C2C_CLKOUT0   */
++	{C2C_CLKOUT1, (M0)},    /*  C2C_CLKOUT1   */
++	{C2C_DATAOUT0, (M0)},    /*  C2C_DATAOUT0  */
++	{C2C_DATAOUT1, (M0)},    /*  C2C_DATAOUT1  */
++	{C2C_DATAOUT2, (M0)},    /*  C2C_DATAOUT2  */
++	{C2C_DATAOUT3, (M0)},    /*  C2C_DATAOUT3  */
++	{C2C_DATAOUT4, (M0)},    /*  C2C_DATAOUT4  */
++	{C2C_DATAOUT5, (M0)},    /*  C2C_DATAOUT5  */
++	{C2C_DATAOUT6, (M0)},    /*  C2C_DATAOUT6  */
++	{C2C_DATAOUT7, (M0)},    /*  C2C_DATAOUT7  */
++	{C2C_DATA8, (IEN | M0)},    /*  C2C_DATA8     */
++	{C2C_DATA9, (IEN | M0)},    /*  C2C_DATA9     */
++	{C2C_DATA10, (IEN | M0)},    /*  C2C_DATA10    */
++	{C2C_DATA11, (IEN | M0)},    /*  C2C_DATA11    */
++	{C2C_DATA12, (IEN | M0)},    /*  C2C_DATA12    */
++	{C2C_DATA13, (IEN | M0)},    /*  C2C_DATA13    */
++	{C2C_DATA14, (IEN | M0)},    /*  C2C_DATA14    */
++	{C2C_DATA15, (IEN | M0)},    /*  C2C_DATA15    */
++	{LLIB_WAKEREQOUT, (PTU | IEN | M6)},    /*  GPIO2_32      */
++	{LLIA_WAKEREQOUT, (M1)},    /*  C2C_WAKEREQOUT */
++	{HSI1_ACREADY, (PTD | M6)},    /*  GPIO3_64  */
++	{HSI1_CAREADY, (PTD | M6)},    /*  GPIO3_65  */
++	{HSI1_ACWAKE,  (PTD | IEN | M6)},    /*  GPIO3_66  */
++	{HSI1_CAWAKE,  (PTU | IEN | M6)},    /*  GPIO3_67  */
++	{HSI1_ACFLAG,  (PTD | IEN | M6)},    /*  GPIO3_68  */
++	{HSI1_ACDATA,  (PTD | M6)},    /*  GPIO3_69  */
++	{HSI1_CAFLAG,  (M6)},    /*  GPIO3_70  */
++	{HSI1_CADATA,  (M6)},    /*  GPIO3_71  */
++	{UART1_TX, (M0)},    /*  UART1_TX  */
++	{UART1_CTS, (PTU | IEN | M0)},    /*  UART1_CTS */
++	{UART1_RX, (PTU | IEN | M0)},    /*  UART1_RX  */
++	{UART1_RTS, (M0)},    /*  UART1_RTS */
++	{HSI2_CAREADY, (IEN | M0)},    /*  HSI2_CAREADY */
++	{HSI2_ACREADY, (OFF_EN | M0)},    /*  HSI2_ACREADY */
++	{HSI2_CAWAKE, (IEN | PTD | M0)},    /*  HSI2_CAWAKE  */
++	{HSI2_ACWAKE, (M0)},    /*  HSI2_ACWAKE  */
++	{HSI2_CAFLAG, (IEN | PTD | M0)},    /*  HSI2_CAFLAG  */
++	{HSI2_CADATA, (IEN | PTD | M0)},    /*  HSI2_CADATA  */
++	{HSI2_ACFLAG, (M0)},    /*  HSI2_ACFLAG  */
++	{HSI2_ACDATA, (M0)},    /*  HSI2_ACDATA  */
++	{UART2_RTS, (IEN | M1)},    /*  MCSPI3_SOMI  */
++	{UART2_CTS, (IEN | M1)},    /*  MCSPI3_CS0   */
++	{UART2_RX, (IEN | M1)},    /*  MCSPI3_SIMO  */
++	{UART2_TX, (IEN | M1)},    /*  MCSPI3_CLK   */
++	{TIMER10_PWM_EVT, (IEN | M0)},    /*  TIMER10_PWM_EVT  */
++	{DSIPORTA_TE0, (IEN | M0)},    /*  DSIPORTA_TE0     */
++	{DSIPORTA_LANE0X, (IEN | M0)},    /*  DSIPORTA_LANE0X  */
++	{DSIPORTA_LANE0Y, (IEN | M0)},    /*  DSIPORTA_LANE0Y  */
++	{DSIPORTA_LANE1X, (IEN | M0)},    /*  DSIPORTA_LANE1X  */
++	{DSIPORTA_LANE1Y, (IEN | M0)},    /*  DSIPORTA_LANE1Y  */
++	{DSIPORTA_LANE2X, (IEN | M0)},    /*  DSIPORTA_LANE2X  */
++	{DSIPORTA_LANE2Y, (IEN | M0)},    /*  DSIPORTA_LANE2Y  */
++	{DSIPORTA_LANE3X, (IEN | M0)},    /*  DSIPORTA_LANE3X  */
++	{DSIPORTA_LANE3Y, (IEN | M0)},    /*  DSIPORTA_LANE3Y  */
++	{DSIPORTA_LANE4X, (IEN | M0)},    /*  DSIPORTA_LANE4X  */
++	{DSIPORTA_LANE4Y, (IEN | M0)},    /*  DSIPORTA_LANE4Y  */
++	{TIMER9_PWM_EVT, (IEN | M0)},    /*  TIMER9_PWM_EVT   */
++	{DSIPORTC_TE0, (IEN | M0)},    /*  DSIPORTC_TE0     */
++	{DSIPORTC_LANE0X, (IEN | M0)},    /*  DSIPORTC_LANE0X  */
++	{DSIPORTC_LANE0Y, (IEN | M0)},    /*  DSIPORTC_LANE0Y  */
++	{DSIPORTC_LANE1X, (IEN | M0)},    /*  DSIPORTC_LANE1X  */
++	{DSIPORTC_LANE1Y, (IEN | M0)},    /*  DSIPORTC_LANE1Y  */
++	{DSIPORTC_LANE2X, (IEN | M0)},    /*  DSIPORTC_LANE2X  */
++	{DSIPORTC_LANE2Y, (IEN | M0)},    /*  DSIPORTC_LANE2Y  */
++	{DSIPORTC_LANE3X, (IEN | M0)},    /*  DSIPORTC_LANE3X  */
++	{DSIPORTC_LANE3Y, (IEN | M0)},    /*  DSIPORTC_LANE3Y  */
++	{DSIPORTC_LANE4X, (IEN | M0)},    /*  DSIPORTC_LANE4X  */
++	{DSIPORTC_LANE4Y, (IEN | M0)},    /*  DSIPORTC_LANE4Y  */
++	{RFBI_HSYNC0, (M4)},    /*  KBD_COL5   */
++	{RFBI_TE_VSYNC0, (PTD | M6)},    /*  GPIO6_161  */
++	{RFBI_RE, (M4)},    /*  KBD_COL4   */
++	{RFBI_A0, (PTD | IEN | M6)},    /*  GPIO6_165  */
++	{RFBI_DATA8, (M4)},    /*  KBD_COL3   */
++	{RFBI_DATA9, (PTD | M6)},    /*  GPIO6_175  */
++	{RFBI_DATA10, (PTD | M6)},    /*  GPIO6_176  */
++	{RFBI_DATA11, (PTD | M6)},    /*  GPIO6_177  */
++	{RFBI_DATA12, (PTD | M6)},    /*  GPIO6_178  */
++	{RFBI_DATA13, (PTU | IEN | M6)},    /*  GPIO6_179  */
++	{RFBI_DATA14, (M4)},    /*  KBD_COL7   */
++	{RFBI_DATA15, (M4)},    /*  KBD_COL6   */
++	{GPIO6_182, (M6)},    /*  GPIO6_182  */
++	{GPIO6_183, (PTD | M6)},    /*  GPIO6_183  */
++	{GPIO6_184, (M4)},    /*  KBD_COL2   */
++	{GPIO6_185, (PTD | IEN | M6)},    /*  GPIO6_185  */
++	{GPIO6_186, (PTD | M6)},    /*  GPIO6_186  */
++	{GPIO6_187, (PTU | IEN | M4)},    /*  KBD_ROW2   */
++	{RFBI_DATA0, (PTD | M6)},    /*  GPIO6_166  */
++	{RFBI_DATA1, (PTD | M6)},    /*  GPIO6_167  */
++	{RFBI_DATA2, (PTD | M6)},    /*  GPIO6_168  */
++	{RFBI_DATA3, (PTD | IEN | M6)},    /*  GPIO6_169  */
++	{RFBI_DATA4, (IEN | M6)},    /*  GPIO6_170  */
++	{RFBI_DATA5, (IEN | M6)},    /*  GPIO6_171  */
++	{RFBI_DATA6, (PTD | M6)},    /*  GPIO6_172  */
++	{RFBI_DATA7, (PTD | M6)},    /*  GPIO6_173  */
++	{RFBI_CS0, (PTD | IEN | M6)},    /*  GPIO6_163  */
++	{RFBI_WE, (PTD | M6)},    /*  GPIO6_162  */
++	{MCSPI2_CS0, (M0)},    /*  MCSPI2_CS0 */
++	{MCSPI2_CLK, (IEN | M0)},    /*  MCSPI2_CLK */
++	{MCSPI2_SIMO, (IEN | M0)},    /*  MCSPI2_SIMO*/
++	{MCSPI2_SOMI, (PTU | IEN | M0)},    /*  MCSPI2_SOMI*/
++	{I2C4_SCL, (IEN | M0)},    /*  I2C4_SCL   */
++	{I2C4_SDA, (IEN | M0)},    /*  I2C4_SDA   */
++	{HDMI_CEC, (IEN | M0)},    /*  HDMI_CEC   */
++	{HDMI_HPD, (PTD | IEN | M0)},    /*  HDMI_HPD   */
++	{HDMI_DDC_SCL, (IEN | M0)},    /*  HDMI_DDC_SCL */
++	{HDMI_DDC_SDA, (IEN | M0)},    /*  HDMI_DDC_SDA */
++	{CSIPORTA_LANE0X, (IEN | M0)},    /*  CSIPORTA_LANE0X  */
++	{CSIPORTA_LANE0Y, (IEN | M0)},    /*  CSIPORTA_LANE0Y  */
++	{CSIPORTA_LANE1Y, (IEN | M0)},    /*  CSIPORTA_LANE1Y  */
++	{CSIPORTA_LANE1X, (IEN | M0)},    /*  CSIPORTA_LANE1X  */
++	{CSIPORTA_LANE2Y, (IEN | M0)},    /*  CSIPORTA_LANE2Y  */
++	{CSIPORTA_LANE2X, (IEN | M0)},    /*  CSIPORTA_LANE2X  */
++	{CSIPORTA_LANE3X, (IEN | M0)},    /*  CSIPORTA_LANE3X  */
++	{CSIPORTA_LANE3Y, (IEN | M0)},    /*  CSIPORTA_LANE3Y  */
++	{CSIPORTA_LANE4X, (IEN | M0)},    /*  CSIPORTA_LANE4X  */
++	{CSIPORTA_LANE4Y, (IEN | M0)},    /*  CSIPORTA_LANE4Y  */
++	{CSIPORTB_LANE0X, (IEN | M0)},    /*  CSIPORTB_LANE0X  */
++	{CSIPORTB_LANE0Y, (IEN | M0)},    /*  CSIPORTB_LANE0Y  */
++	{CSIPORTB_LANE1Y, (IEN | M0)},    /*  CSIPORTB_LANE1Y  */
++	{CSIPORTB_LANE1X, (IEN | M0)},    /*  CSIPORTB_LANE1X  */
++	{CSIPORTB_LANE2Y, (IEN | M0)},    /*  CSIPORTB_LANE2Y  */
++	{CSIPORTB_LANE2X, (IEN | M0)},    /*  CSIPORTB_LANE2X  */
++	{CSIPORTC_LANE0Y, (IEN | M0)},    /*  CSIPORTC_LANE0Y  */
++	{CSIPORTC_LANE0X, (IEN | M0)},    /*  CSIPORTC_LANE0X  */
++	{CSIPORTC_LANE1Y, (IEN | M0)},    /*  CSIPORTC_LANE1Y  */
++	{CSIPORTC_LANE1X, (IEN | M0)},    /*  CSIPORTC_LANE1X  */
++	{CAM_SHUTTER, (M0)},    /*  CAM_SHUTTER      */
++	{CAM_STROBE, (M0)},    /*  CAM_STROBE       */
++	{CAM_GLOBALRESET, (IEN | M0)},    /*  CAM_GLOBALRESET  */
++	{TIMER11_PWM_EVT, (PTD | M6)},    /*  GPIO8_227  */
++	{TIMER5_PWM_EVT, (PTD | M6)},    /*  GPIO8_228  */
++	{TIMER6_PWM_EVT, (PTD | M6)},    /*  GPIO8_229  */
++	{TIMER8_PWM_EVT,      (PTU | M6)},    /*  GPIO8_230  */
++	{I2C3_SCL, (IEN | M0)},    /*  I2C3_SCL   */
++	{I2C3_SDA, (IEN | M0)},    /*  I2C3_SDA   */
++	{GPIO8_233, (IEN | M2)},    /*  TIMER8_PWM_EVT   */
++	{ABE_CLKS, (IEN | M0)},    /*  ABE_CLKS  */
++	{ABEDMIC_DIN1, (IEN | M0)},    /*  ABEDMIC_DIN1 */
++	{ABEDMIC_DIN2, (IEN | M0)},    /*  ABEDMIC_DIN2 */
++	{ABEDMIC_DIN3, (IEN | M0)},    /*  ABEDMIC_DIN3 */
++	{ABEDMIC_CLK1, (M0)},    /*  ABEDMIC_CLK1 */
++	{ABEDMIC_CLK2, (IEN | M1)},    /*  ABEMCBSP1_FSX */
++	{ABEDMIC_CLK3, (M1)},    /*  ABEMCBSP1_DX  */
++	{ABESLIMBUS1_CLOCK, (IEN | M1)},    /*  ABEMCBSP1_CLKX   */
++	{ABESLIMBUS1_DATA, (IEN | M1)},    /*  ABEMCBSP1_DR */
++	{ABEMCBSP2_DR, (IEN | M0)},    /*  ABEMCBSP2_DR */
++	{ABEMCBSP2_DX, (M0)},    /*  ABEMCBSP2_DX */
++	{ABEMCBSP2_FSX, (IEN | M0)},    /*  ABEMCBSP2_FSX  */
++	{ABEMCBSP2_CLKX, (IEN | M0)},    /*  ABEMCBSP2_CLKX */
++	{ABEMCPDM_UL_DATA, (PTD | IEN | OFF_EN | OFF_PD | OFF_IN | M0)},    /*  ABEMCPDM_UL_DATA */
++	{ABEMCPDM_DL_DATA, (PTD | IEN | OFF_EN | OFF_PD | OFF_IN | M0)},    /*  ABEMCPDM_DL_DATA */
++	{ABEMCPDM_FRAME, (PTU | IEN | OFF_EN | OFF_PD | OFF_IN | M0)},    /*  ABEMCPDM_FRAME   */
++	{ABEMCPDM_LB_CLK, (PTD | IEN | OFF_EN | OFF_PD | OFF_IN | M0)},    /*  ABEMCPDM_LB_CLK  */
++	{WLSDIO_CLK, (PTU | IEN | M0)},    /*  WLSDIO_CLK  */
++	{WLSDIO_CMD, (PTU | IEN | M0)},    /*  WLSDIO_CMD  */
++	{WLSDIO_DATA0, (PTU | IEN | M0)},    /*  WLSDIO_DATA0*/
++	{WLSDIO_DATA1, (PTU | IEN | M0)},    /*  WLSDIO_DATA1*/
++	{WLSDIO_DATA2, (PTU | IEN | M0)},    /*  WLSDIO_DATA2*/
++	{WLSDIO_DATA3, (PTU | IEN | M0)},    /*  WLSDIO_DATA3*/
++	{UART5_RX, (PTU | IEN | M0)},    /*  UART5_RX    */
++	{UART5_TX, (M0)},    /*  UART5_TX    */
++	{UART5_CTS, (PTU | IEN | M0)},    /*  UART5_CTS   */
++	{UART5_RTS, (M0)},    /*  UART5_RTS   */
++	{I2C2_SCL, (IEN | M0)},    /*  I2C2_SCL    */
++	{I2C2_SDA, (IEN | M0)},    /*  I2C2_SDA    */
++	{MCSPI1_CLK, (M6)},    /*  GPIO5_140   */
++	{MCSPI1_SOMI, (IEN | M6)},    /*  GPIO5_141   */
++	{MCSPI1_SIMO, (PTD | M6)},    /*  GPIO5_142   */
++	{MCSPI1_CS0, (PTD | M6)},    /*  GPIO5_143   */
++	{MCSPI1_CS1, (PTD | IEN | M6)},    /*  GPIO5_144   */
++	{I2C5_SCL, (IEN | M0)},    /*  I2C5_SCL    */
++	{I2C5_SDA, (IEN | M0)},    /*  I2C5_SDA    */
++	{PERSLIMBUS2_CLOCK, (PTD | M6)},    /*  GPIO5_145   */
++	{PERSLIMBUS2_DATA, (PTD | IEN | M6)},    /*  GPIO5_146   */
++	{UART6_TX, (PTU | IEN | M6)},    /*  GPIO5_149   */
++	{UART6_RX, (PTU | IEN | M6)},    /*  GPIO5_150   */
++	{UART6_CTS, (PTU | IEN | M6)},    /*  GPIO5_151   */
++	{UART6_RTS, (PTU | M0)},    /* UART6_RTS   */
++	{UART3_CTS_RCTX, (PTU | IEN | M6)},    /*  GPIO5_153   */
++	{UART3_RTS_IRSD, (PTU | IEN | M1)},    /*  HDQ_SIO     */
++	{I2C1_PMIC_SCL, (PTU | IEN | M0)},    /*  I2C1_PMIC_SCL  */
++	{I2C1_PMIC_SDA, (PTU | IEN | M0)},    /*  I2C1_PMIC_SDA  */
++
++};
++
++const struct pad_conf_entry wkup_padconf_array_non_essential[] = {
++
++/*
++ * This pad keeps C2C Module always enabled.
++ * Putting this in safe mode do not cause the issue.
++ * C2C driver could enable this mux setting if needed.
++ */
++	{LLIA_WAKEREQIN, (M7)},    /*  SAFE MODE  */
++	/* {LLIB_WAKEREQIN, (M7)}, */    /*  SAFE MODE  */
++	{DRM_EMU0, (PTU | IEN | M0)},    /*  DRM_EMU0    */
++	{DRM_EMU1, (PTU | IEN | M0)},    /*  DRM_EMU1    */
++	{JTAG_NTRST, (IEN | M0)},    /*  JTAG_NTRST  */
++	{JTAG_TCK, (IEN | M0)},    /*  JTAG_TCK    */
++	{JTAG_RTCK, (M0)},    /*  JTAG_RTCK   */
++	{JTAG_TMSC, (IEN | M0)},    /*  JTAG_TMSC   */
++	{JTAG_TDI, (IEN | M0)},    /*  JTAG_TDI    */
++	{JTAG_TDO, (M0)},    /*  JTAG_TDO    */
++	{FREF_CLK_IOREQ, (IEN | M0)},    /*  FREF_CLK_IOREQ */
++	{FREF_CLK0_OUT, (M0)},    /*  FREF_CLK0_OUT  */
++	{FREF_CLK1_OUT, (M0)},    /*  FREF_CLK1_OUT  */
++	{FREF_CLK2_OUT, (M0)},    /*  FREF_CLK2_OUT  */
++	{FREF_CLK2_REQ, (PTU | IEN | M6)},    /*  GPIO1_WK9      */
++	{FREF_CLK1_REQ, (PTD | IEN | M6)},    /*  GPIO1_WK8      */
++	{SYS_NRESPWRON, (IEN | M0)},    /*  SYS_NRESPWRON  */
++	{SYS_NRESWARM, (PTU | IEN | M0)},    /*  SYS_NRESWARM   */
++	{SYS_PWR_REQ, (M0)},    /*  SYS_PWR_REQ    */
++	{SYS_NIRQ1, (PTU | IEN | M0)},    /*  SYS_NIRQ1      */
++	{SYS_NIRQ2, (PTU | IEN | M0)},    /*  SYS_NIRQ2      */
++	{SYS_BOOT0, (IEN | M0)},    /*  SYS_BOOT0      */
++	{SYS_BOOT1, (IEN | M0)},    /*  SYS_BOOT1      */
++	{SYS_BOOT2, (IEN | M0)},    /*  SYS_BOOT2      */
++	{SYS_BOOT3, (IEN | M0)},    /*  SYS_BOOT3      */
++	{SYS_BOOT4, (IEN | M0)},    /*  SYS_BOOT4      */
++	{SYS_BOOT5, (IEN | M0)},    /*  SYS_BOOT5      */
++
++};
++
++#endif /* _EVM4430_MUX_DATA_H */
+diff --git a/board/isee/igep0050/spl_scsi.c b/board/isee/igep0050/spl_scsi.c
+new file mode 100644
+index 0000000..1a478c3
+--- /dev/null
++++ b/board/isee/igep0050/spl_scsi.c
+@@ -0,0 +1,604 @@
++/*
++ * (C) Copyright 2001
++ * Denis Peter, MPL AG Switzerland
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++/*
++ * SCSI support.
++ */
++#include <common.h>
++#include <command.h>
++#include <asm/processor.h>
++#include <scsi.h>
++#include <image.h>
++
++#ifdef CONFIG_SCSI_DEV_LIST
++#define SCSI_DEV_LIST CONFIG_SCSI_DEV_LIST
++#else
++#ifdef CONFIG_SCSI_SYM53C8XX
++#define SCSI_VEND_ID	0x1000
++#ifndef CONFIG_SCSI_DEV_ID
++#define SCSI_DEV_ID		0x0001
++#else
++#define SCSI_DEV_ID		CONFIG_SCSI_DEV_ID
++#endif
++#elif defined CONFIG_SATA_ULI5288
++
++#define SCSI_VEND_ID 0x10b9
++#define SCSI_DEV_ID  0x5288
++
++#elif !defined(CONFIG_SCSI_AHCI_PLAT)
++#error no scsi device defined
++#endif
++#define SCSI_DEV_LIST {SCSI_VEND_ID, SCSI_DEV_ID}
++#endif
++
++static ccb tempccb;	/* temporary scsi command buffer */
++
++static unsigned char tempbuff[512]; /* temporary data buffer */
++
++static int scsi_max_devs; /* number of highest available scsi device */
++
++static int scsi_curr_dev; /* current device */
++
++static block_dev_desc_t scsi_dev_desc[CONFIG_SYS_SCSI_MAX_DEVICE];
++
++/********************************************************************************
++ *  forward declerations of some Setup Routines
++ */
++void spl_scsi_setup_test_unit_ready(ccb * pccb);
++void spl_scsi_setup_read6(ccb * pccb, unsigned long start, unsigned short blocks);
++void spl_scsi_setup_read_ext(ccb * pccb, unsigned long start, unsigned short blocks);
++static void spl_scsi_setup_write_ext(ccb *pccb, unsigned long start,
++			  unsigned short blocks);
++void spl_scsi_setup_inquiry(ccb * pccb);
++void spl_scsi_ident_cpy (unsigned char *dest, unsigned char *src, unsigned int len);
++
++
++static int spl_scsi_read_capacity(ccb *pccb, lbaint_t *capacity,
++			      unsigned long *blksz);
++static ulong spl_scsi_read(int device, lbaint_t blknr, lbaint_t blkcnt,
++		       void *buffer);
++static ulong spl_scsi_write(int device, lbaint_t blknr,
++			lbaint_t blkcnt, const void *buffer);
++
++
++/*********************************************************************************
++ * (re)-scan the scsi bus and reports scsi device info
++ * to the user if mode = 1
++ */
++void spl_scsi_scan(int mode)
++{
++	unsigned char i,perq,modi,lun;
++	lbaint_t capacity;
++	unsigned long blksz;
++	ccb* pccb=(ccb *)&tempccb;
++
++	if(mode==1) {
++		printf("scanning bus for devices...\n");
++	}
++	for(i=0;i<CONFIG_SYS_SCSI_MAX_DEVICE;i++) {
++		scsi_dev_desc[i].target=0xff;
++		scsi_dev_desc[i].lun=0xff;
++		scsi_dev_desc[i].lba=0;
++		scsi_dev_desc[i].blksz=0;
++		scsi_dev_desc[i].log2blksz =
++			LOG2_INVALID(typeof(scsi_dev_desc[i].log2blksz));
++		scsi_dev_desc[i].type=DEV_TYPE_UNKNOWN;
++		scsi_dev_desc[i].vendor[0]=0;
++		scsi_dev_desc[i].product[0]=0;
++		scsi_dev_desc[i].revision[0]=0;
++		scsi_dev_desc[i].removable = false;
++		scsi_dev_desc[i].if_type=IF_TYPE_SCSI;
++		scsi_dev_desc[i].dev=i;
++		scsi_dev_desc[i].part_type=PART_TYPE_UNKNOWN;
++		scsi_dev_desc[i].block_read=spl_scsi_read;
++		scsi_dev_desc[i].block_write = spl_scsi_write;
++	}
++	scsi_max_devs=0;
++	for(i=0;i<CONFIG_SYS_SCSI_MAX_SCSI_ID;i++) {
++		pccb->target=i;
++		for(lun=0;lun<CONFIG_SYS_SCSI_MAX_LUN;lun++) {
++			pccb->lun=lun;
++			pccb->pdata=(unsigned char *)&tempbuff;
++			pccb->datalen=512;
++			spl_scsi_setup_inquiry(pccb);
++			if (scsi_exec(pccb) != true) {
++				if(pccb->contr_stat==SCSI_SEL_TIME_OUT) {
++					debug ("Selection timeout ID %d\n",pccb->target);
++					continue; /* selection timeout => assuming no device present */
++				}
++				scsi_print_error(pccb);
++				continue;
++			}
++			perq=tempbuff[0];
++			modi=tempbuff[1];
++			if((perq & 0x1f)==0x1f) {
++				continue; /* skip unknown devices */
++			}
++			if((modi&0x80)==0x80) /* drive is removable */
++				scsi_dev_desc[scsi_max_devs].removable=true;
++			/* get info for this device */
++			spl_scsi_ident_cpy((unsigned char *)&scsi_dev_desc[scsi_max_devs].vendor[0],
++				       &tempbuff[8], 8);
++			spl_scsi_ident_cpy((unsigned char *)&scsi_dev_desc[scsi_max_devs].product[0],
++				       &tempbuff[16], 16);
++			spl_scsi_ident_cpy((unsigned char *)&scsi_dev_desc[scsi_max_devs].revision[0],
++				       &tempbuff[32], 4);
++			scsi_dev_desc[scsi_max_devs].target=pccb->target;
++			scsi_dev_desc[scsi_max_devs].lun=pccb->lun;
++
++			pccb->datalen=0;
++			spl_scsi_setup_test_unit_ready(pccb);
++			if (scsi_exec(pccb) != true) {
++				if (scsi_dev_desc[scsi_max_devs].removable == true) {
++					scsi_dev_desc[scsi_max_devs].type=perq;
++					goto removable;
++				}
++				scsi_print_error(pccb);
++				continue;
++			}
++			if (spl_scsi_read_capacity(pccb, &capacity, &blksz)) {
++				scsi_print_error(pccb);
++				continue;
++			}
++			scsi_dev_desc[scsi_max_devs].lba=capacity;
++			scsi_dev_desc[scsi_max_devs].blksz=blksz;
++			scsi_dev_desc[scsi_max_devs].log2blksz =
++				LOG2(scsi_dev_desc[scsi_max_devs].blksz);
++			scsi_dev_desc[scsi_max_devs].type=perq;
++			init_part(&scsi_dev_desc[scsi_max_devs]);
++removable:
++			if(mode==1) {
++				printf ("  Device %d: ", scsi_max_devs);
++				dev_print(&scsi_dev_desc[scsi_max_devs]);
++			} /* if mode */
++			scsi_max_devs++;
++		} /* next LUN */
++	}
++	if(scsi_max_devs>0)
++		scsi_curr_dev=0;
++	else
++		scsi_curr_dev = -1;
++
++	printf("Found %d device(s).\n", scsi_max_devs);
++	// setenv_ulong("scsidevs", scsi_max_devs);
++}
++
++int spl_scsi_get_disk_count(void)
++{
++	return scsi_max_devs;
++}
++
++
++
++#ifdef CONFIG_PARTITIONS
++block_dev_desc_t * spl_scsi_get_dev(int dev)
++{
++	return (dev < CONFIG_SYS_SCSI_MAX_DEVICE) ? &scsi_dev_desc[dev] : NULL;
++}
++#endif
++
++#ifdef __notdef
++/******************************************************************************
++ * scsi boot command intepreter. Derived from diskboot
++ */
++int spl_do_scsiboot (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++	return common_diskboot(cmdtp, "scsi", argc, argv);
++}
++
++/*********************************************************************************
++ * scsi command intepreter
++ */
++int spl_do_scsi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++	switch (argc) {
++	case 0:
++	case 1:
++		return CMD_RET_USAGE;
++
++	case 2:
++			if (strncmp(argv[1],"res",3) == 0) {
++				printf("\nReset SCSI\n");
++				scsi_bus_reset();
++				scsi_scan(1);
++				return 0;
++			}
++			if (strncmp(argv[1],"inf",3) == 0) {
++				int i;
++				for (i=0; i<CONFIG_SYS_SCSI_MAX_DEVICE; ++i) {
++					if(scsi_dev_desc[i].type==DEV_TYPE_UNKNOWN)
++						continue; /* list only known devices */
++					printf ("SCSI dev. %d:  ", i);
++					dev_print(&scsi_dev_desc[i]);
++				}
++				return 0;
++			}
++			if (strncmp(argv[1],"dev",3) == 0) {
++				if ((scsi_curr_dev < 0) || (scsi_curr_dev >= CONFIG_SYS_SCSI_MAX_DEVICE)) {
++					printf("\nno SCSI devices available\n");
++					return 1;
++				}
++				printf ("\n    Device %d: ", scsi_curr_dev);
++				dev_print(&scsi_dev_desc[scsi_curr_dev]);
++				return 0;
++			}
++			if (strncmp(argv[1],"scan",4) == 0) {
++				scsi_scan(1);
++				return 0;
++			}
++			if (strncmp(argv[1],"part",4) == 0) {
++				int dev, ok;
++				for (ok=0, dev=0; dev<CONFIG_SYS_SCSI_MAX_DEVICE; ++dev) {
++					if (scsi_dev_desc[dev].type!=DEV_TYPE_UNKNOWN) {
++						ok++;
++						if (dev)
++							printf("\n");
++						debug ("print_part of %x\n",dev);
++							print_part(&scsi_dev_desc[dev]);
++					}
++				}
++				if (!ok)
++					printf("\nno SCSI devices available\n");
++				return 1;
++			}
++			return CMD_RET_USAGE;
++	case 3:
++			if (strncmp(argv[1],"dev",3) == 0) {
++				int dev = (int)simple_strtoul(argv[2], NULL, 10);
++				printf ("\nSCSI device %d: ", dev);
++				if (dev >= CONFIG_SYS_SCSI_MAX_DEVICE) {
++					printf("unknown device\n");
++					return 1;
++				}
++				printf ("\n    Device %d: ", dev);
++				dev_print(&scsi_dev_desc[dev]);
++				if(scsi_dev_desc[dev].type == DEV_TYPE_UNKNOWN) {
++					return 1;
++				}
++				scsi_curr_dev = dev;
++				printf("... is now current device\n");
++				return 0;
++			}
++			if (strncmp(argv[1],"part",4) == 0) {
++				int dev = (int)simple_strtoul(argv[2], NULL, 10);
++				if(scsi_dev_desc[dev].type != DEV_TYPE_UNKNOWN) {
++					print_part(&scsi_dev_desc[dev]);
++				}
++				else {
++					printf ("\nSCSI device %d not available\n", dev);
++				}
++				return 1;
++			}
++			return CMD_RET_USAGE;
++    default:
++			/* at least 4 args */
++			if (strcmp(argv[1],"read") == 0) {
++				ulong addr = simple_strtoul(argv[2], NULL, 16);
++				ulong blk  = simple_strtoul(argv[3], NULL, 16);
++				ulong cnt  = simple_strtoul(argv[4], NULL, 16);
++				ulong n;
++				printf ("\nSCSI read: device %d block # %ld, count %ld ... ",
++						scsi_curr_dev, blk, cnt);
++				n = spl_scsi_read(scsi_curr_dev, blk, cnt, (ulong *)addr);
++				printf ("%ld blocks read: %s\n",n,(n==cnt) ? "OK" : "ERROR");
++				return 0;
++			} else if (strcmp(argv[1], "write") == 0) {
++				ulong addr = simple_strtoul(argv[2], NULL, 16);
++				ulong blk = simple_strtoul(argv[3], NULL, 16);
++				ulong cnt = simple_strtoul(argv[4], NULL, 16);
++				ulong n;
++				printf("\nSCSI write: device %d block # %ld, "
++				       "count %ld ... ",
++				       scsi_curr_dev, blk, cnt);
++				n = scsi_write(scsi_curr_dev, blk, cnt,
++					       (ulong *)addr);
++				printf("%ld blocks written: %s\n", n,
++				       (n == cnt) ? "OK" : "ERROR");
++				return 0;
++			}
++	} /* switch */
++	return CMD_RET_USAGE;
++}
++#endif
++
++/****************************************************************************************
++ * scsi_read
++ */
++
++#define SCSI_MAX_READ_BLK 0xFFFF /* almost the maximum amount of the scsi_ext command.. */
++
++static ulong spl_scsi_read(int device, lbaint_t blknr, lbaint_t blkcnt,
++		       void *buffer)
++{
++	lbaint_t start, blks;
++	uintptr_t buf_addr;
++	unsigned short smallblks;
++	ccb* pccb=(ccb *)&tempccb;
++	device&=0xff;
++	/* Setup  device
++	 */
++	pccb->target=scsi_dev_desc[device].target;
++	pccb->lun=scsi_dev_desc[device].lun;
++	buf_addr=(unsigned long)buffer;
++	start=blknr;
++	blks=blkcnt;
++	debug("\nscsi_read: dev %d startblk " LBAF
++	      ", blccnt " LBAF " buffer %lx\n",
++	      device, start, blks, (unsigned long)buffer);
++	do {
++		pccb->pdata=(unsigned char *)buf_addr;
++		if(blks>SCSI_MAX_READ_BLK) {
++			pccb->datalen=scsi_dev_desc[device].blksz * SCSI_MAX_READ_BLK;
++			smallblks=SCSI_MAX_READ_BLK;
++			spl_scsi_setup_read_ext(pccb,start,smallblks);
++			start+=SCSI_MAX_READ_BLK;
++			blks-=SCSI_MAX_READ_BLK;
++		}
++		else {
++			pccb->datalen=scsi_dev_desc[device].blksz * blks;
++			smallblks=(unsigned short) blks;
++			spl_scsi_setup_read_ext(pccb,start,smallblks);
++			start+=blks;
++			blks=0;
++		}
++		debug("scsi_read_ext: startblk " LBAF
++		      ", blccnt %x buffer %lx\n",
++		      start, smallblks, buf_addr);
++		if (scsi_exec(pccb) != true) {
++			scsi_print_error(pccb);
++			blkcnt-=blks;
++			break;
++		}
++		buf_addr+=pccb->datalen;
++	} while(blks!=0);
++	debug("scsi_read_ext: end startblk " LBAF
++	      ", blccnt %x buffer %lx\n", start, smallblks, buf_addr);
++	return(blkcnt);
++}
++
++/*******************************************************************************
++ * scsi_write
++ */
++
++/* Almost the maximum amount of the scsi_ext command.. */
++#define SCSI_MAX_WRITE_BLK 0xFFFF
++
++static ulong spl_scsi_write(int device, lbaint_t blknr,
++			lbaint_t blkcnt, const void *buffer)
++{
++	lbaint_t start, blks;
++	uintptr_t buf_addr;
++	unsigned short smallblks;
++	ccb* pccb = (ccb *)&tempccb;
++	device &= 0xff;
++	/* Setup  device
++	 */
++	pccb->target = scsi_dev_desc[device].target;
++	pccb->lun = scsi_dev_desc[device].lun;
++	buf_addr = (unsigned long)buffer;
++	start = blknr;
++	blks = blkcnt;
++	debug("\n%s: dev %d startblk " LBAF ", blccnt " LBAF " buffer %lx\n",
++	      __func__, device, start, blks, (unsigned long)buffer);
++	do {
++		pccb->pdata = (unsigned char *)buf_addr;
++		if (blks > SCSI_MAX_WRITE_BLK) {
++			pccb->datalen = (scsi_dev_desc[device].blksz *
++					 SCSI_MAX_WRITE_BLK);
++			smallblks = SCSI_MAX_WRITE_BLK;
++			spl_scsi_setup_write_ext(pccb, start, smallblks);
++			start += SCSI_MAX_WRITE_BLK;
++			blks -= SCSI_MAX_WRITE_BLK;
++		} else {
++			pccb->datalen = scsi_dev_desc[device].blksz * blks;
++			smallblks = (unsigned short)blks;
++			spl_scsi_setup_write_ext(pccb, start, smallblks);
++			start += blks;
++			blks = 0;
++		}
++		debug("%s: startblk " LBAF ", blccnt %x buffer %lx\n",
++		      __func__, start, smallblks, buf_addr);
++		if (scsi_exec(pccb) != true) {
++			scsi_print_error(pccb);
++			blkcnt -= blks;
++			break;
++		}
++		buf_addr += pccb->datalen;
++	} while (blks != 0);
++	debug("%s: end startblk " LBAF ", blccnt %x buffer %lx\n",
++	      __func__, start, smallblks, buf_addr);
++	return blkcnt;
++}
++
++/* copy src to dest, skipping leading and trailing blanks
++ * and null terminate the string
++ */
++void spl_scsi_ident_cpy (unsigned char *dest, unsigned char *src, unsigned int len)
++{
++	int start,end;
++
++	start=0;
++	while(start<len) {
++		if(src[start]!=' ')
++			break;
++		start++;
++	}
++	end=len-1;
++	while(end>start) {
++		if(src[end]!=' ')
++			break;
++		end--;
++	}
++	for( ; start<=end; start++) {
++		*dest++=src[start];
++	}
++	*dest='\0';
++}
++
++
++/* Trim trailing blanks, and NUL-terminate string
++ */
++void spl_scsi_trim_trail (unsigned char *str, unsigned int len)
++{
++	unsigned char *p = str + len - 1;
++
++	while (len-- > 0) {
++		*p-- = '\0';
++		if (*p != ' ') {
++			return;
++		}
++	}
++}
++
++int spl_scsi_read_capacity(ccb *pccb, lbaint_t *capacity, unsigned long *blksz)
++{
++	*capacity = 0;
++
++	memset(pccb->cmd, 0, sizeof(pccb->cmd));
++	pccb->cmd[0] = SCSI_RD_CAPAC10;
++	pccb->cmd[1] = pccb->lun << 5;
++	pccb->cmdlen = 10;
++	pccb->msgout[0] = SCSI_IDENTIFY; /* NOT USED */
++
++	pccb->datalen = 8;
++	if (scsi_exec(pccb) != true)
++		return 1;
++
++	*capacity = ((lbaint_t)pccb->pdata[0] << 24) |
++		    ((lbaint_t)pccb->pdata[1] << 16) |
++		    ((lbaint_t)pccb->pdata[2] << 8)  |
++		    ((lbaint_t)pccb->pdata[3]);
++
++	if (*capacity != 0xffffffff) {
++		/* Read capacity (10) was sufficient for this drive. */
++		*blksz = ((unsigned long)pccb->pdata[4] << 24) |
++			 ((unsigned long)pccb->pdata[5] << 16) |
++			 ((unsigned long)pccb->pdata[6] << 8)  |
++			 ((unsigned long)pccb->pdata[7]);
++		return 0;
++	}
++
++	/* Read capacity (10) was insufficient. Use read capacity (16). */
++
++	memset(pccb->cmd, 0, sizeof(pccb->cmd));
++	pccb->cmd[0] = SCSI_RD_CAPAC16;
++	pccb->cmd[1] = 0x10;
++	pccb->cmdlen = 16;
++	pccb->msgout[0] = SCSI_IDENTIFY; /* NOT USED */
++
++	pccb->datalen = 16;
++	if (scsi_exec(pccb) != true)
++		return 1;
++
++	*capacity = ((uint64_t)pccb->pdata[0] << 56) |
++		    ((uint64_t)pccb->pdata[1] << 48) |
++		    ((uint64_t)pccb->pdata[2] << 40) |
++		    ((uint64_t)pccb->pdata[3] << 32) |
++		    ((uint64_t)pccb->pdata[4] << 24) |
++		    ((uint64_t)pccb->pdata[5] << 16) |
++		    ((uint64_t)pccb->pdata[6] << 8)  |
++		    ((uint64_t)pccb->pdata[7]);
++
++	*blksz = ((uint64_t)pccb->pdata[8]  << 56) |
++		 ((uint64_t)pccb->pdata[9]  << 48) |
++		 ((uint64_t)pccb->pdata[10] << 40) |
++		 ((uint64_t)pccb->pdata[11] << 32) |
++		 ((uint64_t)pccb->pdata[12] << 24) |
++		 ((uint64_t)pccb->pdata[13] << 16) |
++		 ((uint64_t)pccb->pdata[14] << 8)  |
++		 ((uint64_t)pccb->pdata[15]);
++
++	return 0;
++}
++
++
++/************************************************************************************
++ * Some setup (fill-in) routines
++ */
++void spl_scsi_setup_test_unit_ready(ccb * pccb)
++{
++	pccb->cmd[0]=SCSI_TST_U_RDY;
++	pccb->cmd[1]=pccb->lun<<5;
++	pccb->cmd[2]=0;
++	pccb->cmd[3]=0;
++	pccb->cmd[4]=0;
++	pccb->cmd[5]=0;
++	pccb->cmdlen=6;
++	pccb->msgout[0]=SCSI_IDENTIFY; /* NOT USED */
++}
++
++void spl_scsi_setup_read_ext(ccb * pccb, unsigned long start, unsigned short blocks)
++{
++	pccb->cmd[0]=SCSI_READ10;
++	pccb->cmd[1]=pccb->lun<<5;
++	pccb->cmd[2]=((unsigned char) (start>>24))&0xff;
++	pccb->cmd[3]=((unsigned char) (start>>16))&0xff;
++	pccb->cmd[4]=((unsigned char) (start>>8))&0xff;
++	pccb->cmd[5]=((unsigned char) (start))&0xff;
++	pccb->cmd[6]=0;
++	pccb->cmd[7]=((unsigned char) (blocks>>8))&0xff;
++	pccb->cmd[8]=(unsigned char) blocks & 0xff;
++	pccb->cmd[6]=0;
++	pccb->cmdlen=10;
++	pccb->msgout[0]=SCSI_IDENTIFY; /* NOT USED */
++	debug ("scsi_setup_read_ext: cmd: %02X %02X startblk %02X%02X%02X%02X blccnt %02X%02X\n",
++		pccb->cmd[0],pccb->cmd[1],
++		pccb->cmd[2],pccb->cmd[3],pccb->cmd[4],pccb->cmd[5],
++		pccb->cmd[7],pccb->cmd[8]);
++}
++
++void spl_scsi_setup_write_ext(ccb *pccb, unsigned long start, unsigned short blocks)
++{
++	pccb->cmd[0] = SCSI_WRITE10;
++	pccb->cmd[1] = pccb->lun << 5;
++	pccb->cmd[2] = ((unsigned char) (start>>24)) & 0xff;
++	pccb->cmd[3] = ((unsigned char) (start>>16)) & 0xff;
++	pccb->cmd[4] = ((unsigned char) (start>>8)) & 0xff;
++	pccb->cmd[5] = ((unsigned char) (start)) & 0xff;
++	pccb->cmd[6] = 0;
++	pccb->cmd[7] = ((unsigned char) (blocks>>8)) & 0xff;
++	pccb->cmd[8] = (unsigned char)blocks & 0xff;
++	pccb->cmd[9] = 0;
++	pccb->cmdlen = 10;
++	pccb->msgout[0] = SCSI_IDENTIFY;  /* NOT USED */
++	debug("%s: cmd: %02X %02X startblk %02X%02X%02X%02X blccnt %02X%02X\n",
++	      __func__,
++	      pccb->cmd[0], pccb->cmd[1],
++	      pccb->cmd[2], pccb->cmd[3], pccb->cmd[4], pccb->cmd[5],
++	      pccb->cmd[7], pccb->cmd[8]);
++}
++
++void spl_scsi_setup_read6(ccb * pccb, unsigned long start, unsigned short blocks)
++{
++	pccb->cmd[0]=SCSI_READ6;
++	pccb->cmd[1]=pccb->lun<<5 | (((unsigned char)(start>>16))&0x1f);
++	pccb->cmd[2]=((unsigned char) (start>>8))&0xff;
++	pccb->cmd[3]=((unsigned char) (start))&0xff;
++	pccb->cmd[4]=(unsigned char) blocks & 0xff;
++	pccb->cmd[5]=0;
++	pccb->cmdlen=6;
++	pccb->msgout[0]=SCSI_IDENTIFY; /* NOT USED */
++	debug ("scsi_setup_read6: cmd: %02X %02X startblk %02X%02X blccnt %02X\n",
++		pccb->cmd[0],pccb->cmd[1],
++		pccb->cmd[2],pccb->cmd[3],pccb->cmd[4]);
++}
++
++
++void spl_scsi_setup_inquiry(ccb * pccb)
++{
++	pccb->cmd[0]=SCSI_INQUIRY;
++	pccb->cmd[1]=pccb->lun<<5;
++	pccb->cmd[2]=0;
++	pccb->cmd[3]=0;
++	if(pccb->datalen>255)
++		pccb->cmd[4]=255;
++	else
++		pccb->cmd[4]=(unsigned char)pccb->datalen;
++	pccb->cmd[5]=0;
++	pccb->cmdlen=6;
++	pccb->msgout[0]=SCSI_IDENTIFY; /* NOT USED */
++}
+diff --git a/boards.cfg b/boards.cfg
+index a703103..ae48d71 100644
+--- a/boards.cfg
++++ b/boards.cfg
+@@ -260,6 +260,7 @@ Active  arm         armv7          am33xx      BuR             tseries
+ Active  arm         armv7          am33xx      compulab        cm_t335             cm_t335                               -                                                                                                                                 Igor Grinberg <grinberg@compulab.co.il>
+ Active  arm         armv7          am33xx      gumstix         pepper              pepper                                -                                                                                                                                 Ash Charles <ash@gumstix.com>
+ Active  arm         armv7          am33xx      isee            igep0033            am335x_igep0033                       -                                                                                                                                 Enric Balletbo i Serra <eballetbo@iseebcn.com>
++Active  arm         armv7          omap5       isee            igep0050            omap5_igep0050                       -                                                                                                                                 Enric Balletbo i Serra <eballetbo@iseebcn.com>
+ Active  arm         armv7          am33xx      phytec          pcm051              pcm051_rev1                           pcm051:REV1                                                                                                                       Lars Poeschel <poeschel@lemonage.de>
+ Active  arm         armv7          am33xx      phytec          pcm051              pcm051_rev3                           pcm051:REV3                                                                                                                       Lars Poeschel <poeschel@lemonage.de>
+ Active  arm         armv7          am33xx      siemens         draco               draco                                 -                                                                                                                                 Roger Meier <r.meier@siemens.com>
+diff --git a/include/configs/omap5_igep0050.h b/include/configs/omap5_igep0050.h
+new file mode 100644
+index 0000000..a10eafd
+--- /dev/null
++++ b/include/configs/omap5_igep0050.h
+@@ -0,0 +1,98 @@
++/*
++ * (C) Copyright 2013
++ * Texas Instruments Incorporated.
++ * Sricharan R	  <r.sricharan@ti.com>
++ *
++ * Configuration settings for the TI EVM5430 board.
++ * See omap5_common.h for omap5 common settings.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#ifndef __CONFIG_IGEP0050_H
++#define __CONFIG_IGEP0050_H
++
++/* Define the default GPT table for eMMC */
++#define PARTS_DEFAULT \
++	"uuid_disk=${uuid_gpt_disk};" \
++	"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}"
++
++#include <configs/ti_omap5_common.h>
++
++#define CONFIG_OMAP5_IGEPv5
++
++#define CONFIG_CONS_INDEX		3
++#define CONFIG_SYS_NS16550_COM3		UART3_BASE
++#define CONFIG_BAUDRATE			115200
++
++/* MMC ENV related defines */
++#define CONFIG_ENV_IS_IN_MMC
++#define CONFIG_SYS_MMC_ENV_DEV		1	/* SLOT2: eMMC(1) */
++#define CONFIG_ENV_OFFSET		0xE0000
++#define CONFIG_ENV_OFFSET_REDUND	(CONFIG_ENV_OFFSET + CONFIG_ENV_SIZE)
++#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
++#define CONFIG_CMD_SAVEENV
++
++/* Enhance our eMMC support / experience. */
++#define CONFIG_CMD_GPT
++#define CONFIG_EFI_PARTITION
++#define CONFIG_PARTITION_UUIDS
++#define CONFIG_CMD_PART
++
++/* Required support for the TCA642X GPIO we have on the uEVM */
++#define CONFIG_TCA642X
++#define CONFIG_TCA641X			/* Modify TCA642X driver to be used with TCA641x */
++#define CONFIG_CMD_TCA642X
++#define CONFIG_SYS_I2C_TCA642X_BUS_NUM 3
++#define CONFIG_SYS_I2C_TCA642X_ADDR 0x21
++
++/* USB UHH support options */
++#define CONFIG_CMD_USB
++#define CONFIG_USB_HOST
++#define CONFIG_USB_EHCI
++#define CONFIG_USB_EHCI_OMAP
++#define CONFIG_USB_STORAGE
++#define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS 3
++#define CONFIG_EHCI_HCD_INIT_AFTER_RESET
++
++#define CONFIG_OMAP_EHCI_PHY2_RESET_GPIO 80
++#define CONFIG_OMAP_EHCI_PHY3_RESET_GPIO 79
++
++#define CONFIG_OMAP_USBLAN_ENABLE_GPIO	 78
++#define CONFIG_OMAP_USBLAN_RESET_GPIO	 15
++
++#define CONFIG_SYS_I2C_USB0_3503_BUS_NUM 	4
++#define CONFIG_SYS_I2C_USB0_3503_ADDR 		0x08
++#define CONFIG_SYS_I2C_USB1_3503_BUS_NUM 	2
++#define CONFIG_SYS_I2C_USB1_3503_ADDR 		0x08
++
++/* Implement SPL board init for OMAP5 IGEPv5 */
++#define CONFIG_SPL_BOARD_INIT
++
++/* Enabled commands */
++#define CONFIG_CMD_PING
++#define CONFIG_CMD_DHCP		/* DHCP Support			*/
++#define CONFIG_CMD_NET		/* bootp, tftpboot, rarpboot	*/
++#define CONFIG_CMD_NFS		/* NFS support			*/
++
++/* USB Networking options */
++#define CONFIG_USB_HOST_ETHER
++#define CONFIG_USB_ETHER_SMSC75XX
++
++#define CONSOLEDEV		"ttyO2"
++
++/* Max time to hold reset on this board, see doc/README.omap-reset-time */
++#define CONFIG_OMAP_PLATFORM_RESET_TIME_MAX_USEC	16296
++
++#define CONFIG_SPL_SATA_SUPPORT
++#define CONFIG_BOARD_LATE_INIT
++#define CONFIG_CMD_SCSI
++#define CONFIG_LIBATA
++#define CONFIG_SCSI_AHCI
++#define CONFIG_SCSI_AHCI_PLAT
++#define CONFIG_SYS_SCSI_MAX_SCSI_ID	1
++#define CONFIG_SYS_SCSI_MAX_LUN		1
++#define CONFIG_SYS_SCSI_MAX_DEVICE	(CONFIG_SYS_SCSI_MAX_SCSI_ID * \
++						CONFIG_SYS_SCSI_MAX_LUN)
++
++#endif /* __CONFIG_OMAP5_EVM_H */
+-- 
+2.7.0
+

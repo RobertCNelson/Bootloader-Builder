@@ -1,0 +1,53 @@
+From 4d377676838fc7b754852fae997ea6cdb2a676a7 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Thu, 16 Jan 2014 16:45:13 +0100
+Subject: [PATCH 09/17] IGEPv5: Get memory config size reading from the lisa
+ configuration structure
+
+---
+ board/isee/igep0050/board_configuration.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/board/isee/igep0050/board_configuration.c b/board/isee/igep0050/board_configuration.c
+index 3512dc2..b8006fe 100644
+--- a/board/isee/igep0050/board_configuration.c
++++ b/board/isee/igep0050/board_configuration.c
+@@ -97,7 +97,7 @@ struct igepv5_eeprom_config igepv5_config = {
+     .lisa_regs = {
+         .dmm_lisa_map_0 = DMM_LISA_MAP0,
+         .dmm_lisa_map_1 = DMM_LISA_MAP1,
+-        .dmm_lisa_map_2 = DMM_LISA_MAP2,    /* DMM_LISA_MAP2 = 4 GiB (is_ma_hm_interleave=1), DMM_LISA_MAP2_1G = 2 GiB (is_ma_hm_interleave=0)*/
++        .dmm_lisa_map_2 = DMM_LISA_MAP2,    /* DMM_LISA_MAP2 = 4 GiB (is_ma_hm_interleave=1), DMM_LISA_MAP2_1G = 1 GiB (is_ma_hm_interleave=0)*/
+         .dmm_lisa_map_3 = DMM_LISA_MAP3,
+         .is_ma_present	= 0x1,
+         .is_ma_hm_interleave = 0x1,
+@@ -253,12 +253,25 @@ struct dmm_lisa_map_regs* get_lisa_configuration ()
+ 	return &igepv5_config.lisa_regs;
+ }
+ 
++const char* get_memory_from_config (void)
++{
++    u32 reg = get_lisa_configuration()->dmm_lisa_map_2;
++    reg >>= 8;
++    reg &= 0x00000003;
++    if(reg == 1)
++        return "1GiB";
++    else if(reg == 3)
++        return "4GiB";
++    return "0GiB";
++}
++
+ void igepv5_print_banner (void)
+ {
+-    printf("Board Name: %s (%s-%s) Rev: %s - Serial: %u Manufacturing date: %s\n", \
++    printf("Board Name: %s (%s-%s-%s) Rev: %s - Serial: %u Manufacturing date: %s\n", \
+                                     igepv5_config.board_name, \
+                                     igepv5_config.board_model, \
+                                     igepv5_config.board_version, \
++                                    get_memory_from_config(), \
+                                     igepv5_config.board_revision, \
+                                     igepv5_config.board_serial_no, \
+                                     igepv5_config.manf_date
+-- 
+2.7.0
+

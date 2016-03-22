@@ -1,0 +1,66 @@
+From b332975b27b97286bad2abfd21c815fe9f027b09 Mon Sep 17 00:00:00 2001
+From: Manel Caro <mcaro@iseebcn.com>
+Date: Thu, 16 Jan 2014 16:29:51 +0100
+Subject: [PATCH 07/17] IGEPv5: Modify lisa_regs structure, added
+ ma_hm_interleave variable
+
+---
+ arch/arm/include/asm/emif.h               |  1 +
+ board/isee/igep0050/board_configuration.c |  5 +++--
+ board/isee/igep0050/board_configuration.h | 11 +++++++++++
+ 3 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/include/asm/emif.h b/arch/arm/include/asm/emif.h
+index b00dece..6d60fbf 100644
+--- a/arch/arm/include/asm/emif.h
++++ b/arch/arm/include/asm/emif.h
+@@ -756,6 +756,7 @@ struct dmm_lisa_map_regs {
+ 	u32 dmm_lisa_map_2;
+ 	u32 dmm_lisa_map_3;
+ 	u8 is_ma_present;
++	u8 is_ma_hm_interleave;
+ };
+ 
+ #define CS0	0
+diff --git a/board/isee/igep0050/board_configuration.c b/board/isee/igep0050/board_configuration.c
+index 3ac7af6..3512dc2 100644
+--- a/board/isee/igep0050/board_configuration.c
++++ b/board/isee/igep0050/board_configuration.c
+@@ -97,9 +97,10 @@ struct igepv5_eeprom_config igepv5_config = {
+     .lisa_regs = {
+         .dmm_lisa_map_0 = DMM_LISA_MAP0,
+         .dmm_lisa_map_1 = DMM_LISA_MAP1,
+-        .dmm_lisa_map_2 = DMM_LISA_MAP2,
++        .dmm_lisa_map_2 = DMM_LISA_MAP2,    /* DMM_LISA_MAP2 = 4 GiB (is_ma_hm_interleave=1), DMM_LISA_MAP2_1G = 2 GiB (is_ma_hm_interleave=0)*/
+         .dmm_lisa_map_3 = DMM_LISA_MAP3,
+-        .is_ma_present	= 0x1
++        .is_ma_present	= 0x1,
++        .is_ma_hm_interleave = 0x1,
+     }
+ };
+ 
+diff --git a/board/isee/igep0050/board_configuration.h b/board/isee/igep0050/board_configuration.h
+index eac4fae..d8c269d 100644
+--- a/board/isee/igep0050/board_configuration.h
++++ b/board/isee/igep0050/board_configuration.h
+@@ -282,6 +282,17 @@ All other values are reserved.
+ #define DMM_LISA_MAP2				(LISA_MAP_2_SYS_ADDR << 24) | (LISA_MAP_2_SYS_SIZE << 20) | (LISA_MAP_2_SDRC_INTL << 18) | \
+ 									(LISA_MAP_2_SDRC_ADDRSPC << 16) | (LISA_MAP_2_SDRC_MAP << 8) | LISA_MAP_2_SDRC_ADDR
+ 
++#define LISA_MAP_2_SYS_ADDR_1G 		0x80    /* SYS_ADDR: 0x80000000*/
++#define LISA_MAP_2_SYS_SIZE_1G		6       /* SYS_SIZE: 0x7: 2-GiB section */
++#define LISA_MAP_2_SDRC_INTL_1G		0       /* SDRC_INTL: 0x1: 128-byte interleaving */
++#define LISA_MAP_2_SDRC_ADDRSPC_1G	0       /* SDRC_ADDRSPC = 0x00000000 */
++#define LISA_MAP_2_SDRC_MAP_1G 		1       /* SDRC_MAP: 0x3: Mapped on EMIF1 and EMIF2 (interleaved) */
++#define LISA_MAP_2_SDRC_ADDR_1G		0x00    /* SDRC_ADDR = 0x00000000 */
++
++#define DMM_LISA_MAP2_1G			(LISA_MAP_2_SYS_ADDR_1G << 24) | (LISA_MAP_2_SYS_SIZE_1G << 20) | (LISA_MAP_2_SDRC_INTL_1G << 18) | \
++									(LISA_MAP_2_SDRC_ADDRSPC_1G << 16) | (LISA_MAP_2_SDRC_MAP_1G << 8) | LISA_MAP_2_SDRC_ADDR_1G
++
++
+ #define LISA_MAP_3_SYS_ADDR 		0xFF    /* SYS_ADDR: 0xFF000000*/
+ #define LISA_MAP_3_SYS_SIZE		    0       /* SYS_SIZE: 0x0: 16-MiB section */
+ #define LISA_MAP_3_SDRC_INTL		0       /* SDRC_INTL: 0x0: No interleaving */
+-- 
+2.7.0
+
