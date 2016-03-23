@@ -1,0 +1,2721 @@
+From 05524dd3f7916021a4ff92cd609479907afbae2e Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 22 Mar 2016 20:19:58 -0500
+Subject: [PATCH] igepv: 4gb
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ arch/arm/cpu/armv7/omap-common/boot-common.c |    3 -
+ board/isee/igep0050/Makefile                 |    1 -
+ board/isee/igep0050/board.c                  |  108 +-
+ board/isee/igep0050/board_configuration.c    |    8 -
+ board/isee/igep0050/spl_scsi.c               |  605 -----------
+ board/isee/igep0050/spl_scsi.h               |   13 -
+ drivers/usb/eth/Makefile                     |    1 -
+ drivers/usb/eth/smsc75xx.c                   | 1482 --------------------------
+ drivers/usb/eth/usb_ether.c                  |    7 -
+ include/configs/omap5_igep0050.h             |   12 +-
+ include/configs/ti_armv7_common.h            |  163 +++
+ include/configs/ti_omap5_common.h            |   40 +-
+ include/usb_ether.h                          |    6 -
+ 13 files changed, 272 insertions(+), 2177 deletions(-)
+ delete mode 100644 board/isee/igep0050/spl_scsi.c
+ delete mode 100644 board/isee/igep0050/spl_scsi.h
+ delete mode 100644 drivers/usb/eth/smsc75xx.c
+
+diff --git a/arch/arm/cpu/armv7/omap-common/boot-common.c b/arch/arm/cpu/armv7/omap-common/boot-common.c
+index 7e99c08..7b16a50 100644
+--- a/arch/arm/cpu/armv7/omap-common/boot-common.c
++++ b/arch/arm/cpu/armv7/omap-common/boot-common.c
+@@ -111,9 +111,6 @@ void spl_board_init(void)
+ #ifdef CONFIG_AM33XX
+ 	am33xx_spl_board_init();
+ #endif
+-#ifdef CONFIG_OMAP5_IGEPv5
+-	igepv5_spl_board_init();
+-#endif
+ }
+ 
+ int board_mmc_init(bd_t *bis)
+diff --git a/board/isee/igep0050/Makefile b/board/isee/igep0050/Makefile
+index c44cf1b..8cf62db 100644
+--- a/board/isee/igep0050/Makefile
++++ b/board/isee/igep0050/Makefile
+@@ -6,5 +6,4 @@
+ #
+ 
+ obj-y	:= board.o
+-obj-y += spl_scsi.o
+ obj-y += board_configuration.o
+diff --git a/board/isee/igep0050/board.c b/board/isee/igep0050/board.c
+index ea56d10..405ccff 100644
+--- a/board/isee/igep0050/board.c
++++ b/board/isee/igep0050/board.c
+@@ -7,23 +7,32 @@
+  */
+ #include <common.h>
+ #include <palmas.h>
++#include <asm/arch/omap.h>
+ #include <asm/arch/sys_proto.h>
+ #include <asm/arch/mmc_host_def.h>
+ #include <tca642x.h>
++#include <usb.h>
++#include <linux/usb/gadget.h>
++#include <dwc3-uboot.h>
++#include <dwc3-omap-uboot.h>
++#include <ti-usb-phy-uboot.h>
+ #include <asm/emif.h>
+-#include <scsi.h>
+ #include "board_configuration.h"
+-#include "spl_scsi.h"
+ 
+ #include "mux_data.h"
+ 
+ #if defined(CONFIG_USB_EHCI) || defined(CONFIG_USB_XHCI_OMAP)
++#include <sata.h>
+ #include <usb.h>
+ #include <asm/gpio.h>
+ #include <asm/arch/clock.h>
+ #include <asm/arch/ehci.h>
+ #include <asm/ehci-omap.h>
+ #include <asm/arch/sata.h>
++
++#define DIE_ID_REG_BASE     (OMAP54XX_L4_CORE_BASE + 0x2000)
++#define DIE_ID_REG_OFFSET	0x200
++
+ #endif
+ 
+ #define PUSH_BUTTON_GPIO            118
+@@ -82,6 +91,78 @@ void init_user_leds (void)
+     tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0,  0xE, 0);
+ }
+ 
++#ifdef CONFIG_USB_DWC3
++static struct dwc3_device usb_otg_ss = {
++	.maximum_speed = USB_SPEED_SUPER,
++	.base = OMAP5XX_USB_OTG_SS_BASE,
++	.needs_fifo_resize = false,
++	.index = 0,
++};
++
++static struct dwc3_omap_device usb_otg_ss_glue = {
++	.base = (void *)OMAP5XX_USB_OTG_SS_GLUE_BASE,
++	.utmi_mode = DWC3_OMAP_UTMI_MODE_SW,
++	.index = 0,
++};
++
++static struct ti_usb_phy_device usb_phy_device = {
++	.pll_ctrl_base = (void *)OMAP5XX_USB3_PHY_PLL_CTRL,
++	.usb2_phy_power = (void *)OMAP5XX_USB2_PHY_POWER,
++	.usb3_phy_power = (void *)OMAP5XX_USB3_PHY_POWER,
++	.index = 0,
++};
++
++int board_usb_init(int index, enum usb_init_type init)
++{
++	switch (index) {
++	case 0:
++		if (init == USB_INIT_DEVICE) {
++			usb_otg_ss.dr_mode = USB_DR_MODE_PERIPHERAL;
++			usb_otg_ss_glue.vbus_id_status = OMAP_DWC3_VBUS_VALID;
++		} else {
++			usb_otg_ss.dr_mode = USB_DR_MODE_HOST;
++			usb_otg_ss_glue.vbus_id_status = OMAP_DWC3_ID_GROUND;
++		}
++
++		enable_usb_clocks(index);
++		ti_usb_phy_uboot_init(&usb_phy_device);
++		dwc3_omap_uboot_init(&usb_otg_ss_glue);
++		dwc3_uboot_init(&usb_otg_ss);
++		break;
++	default:
++		printf("Invalid Controller Index\n");
++	}
++
++	return 0;
++}
++
++int board_usb_cleanup(int index, enum usb_init_type init)
++{
++	switch (index) {
++	case 0:
++		ti_usb_phy_uboot_exit(index);
++		dwc3_uboot_exit(index);
++		dwc3_omap_uboot_exit(index);
++		disable_usb_clocks(index);
++		break;
++	default:
++		printf("Invalid Controller Index\n");
++	}
++	return 0;
++}
++
++int usb_gadget_handle_interrupts(int index)
++{
++	u32 status;
++
++	status = dwc3_omap_uboot_interrupt_status(index);
++	if (status)
++		dwc3_uboot_handle_interrupt(index);
++
++	return 0;
++}
++#endif
++
+ /**
+  * @brief board_init
+  *
+@@ -92,23 +173,22 @@ int board_init(void)
+ 	gpmc_init();
+ 	gd->bd->bi_arch_number = MACH_TYPE_OMAP5_SEVM;
+ 	gd->bd->bi_boot_params = (0x80000000 + 0x100); /* boot param addr */
+-    /* The initial State put the yellow color to on*/
++	/* The initial State put the yellow color to on*/
+ 	tca642x_set_inital_state(CONFIG_SYS_I2C_TCA642X_ADDR, tca642x_init);
+ 	/* We off all leds, then only power supply led is on */
+ 	init_user_leds();
+ 	/* Now we put push button RED -> on */
+-    set_user_button_leds(t_push_red);
+-    /* Get Board Configuration from eeprom */
+-    init_igepv5_board_configuration(0);
+-    /* Show hello banner */
+-    igepv5_print_banner();
++	set_user_button_leds(t_push_red);
++	/* Get Board Configuration from eeprom */
++	init_igepv5_board_configuration(0);
++	/* Show hello banner */
++	igepv5_print_banner();
+ 	return 0;
+ }
+ 
+ int board_late_init(void)
+ {
+-	omap_sata_init();
+-	scsi_scan(1);
++	init_sata(0);
+ 	return 0;
+ }
+ 
+@@ -117,14 +197,6 @@ int board_eth_init(bd_t *bis)
+ 	return 0;
+ }
+ 
+-void igepv5_spl_board_init (void)
+-{
+-#ifdef CONFIG_SPL_SATA_SUPPORT
+-	omap_sata_init();
+-	spl_scsi_scan(1);
+-#endif
+-}
+-
+ #ifdef CONFIG_SPL_BUILD
+ /* s_init - SPL */
+ void board_s_init(void)
+diff --git a/board/isee/igep0050/board_configuration.c b/board/isee/igep0050/board_configuration.c
+index c80c478..cbbaa39 100644
+--- a/board/isee/igep0050/board_configuration.c
++++ b/board/isee/igep0050/board_configuration.c
+@@ -97,18 +97,10 @@ struct igepv5_eeprom_config igepv5_config = {
+     .lisa_regs = {
+         .dmm_lisa_map_0 = DMM_LISA_MAP0,
+         .dmm_lisa_map_1 = DMM_LISA_MAP1,
+-#ifdef IGEPv5_MEMORY_4G
+         .dmm_lisa_map_2 = DMM_LISA_MAP2,    /* DMM_LISA_MAP2 = 4 GiB (is_ma_hm_interleave=1), DMM_LISA_MAP2_1G = 1 GiB (is_ma_hm_interleave=0)*/
+-#else
+-	.dmm_lisa_map_2 = DMM_LISA_MAP2_1G,    /* DMM_LISA_MAP2 = 4 GiB (is_ma_hm_interleave=1), DMM_LISA_MAP2_1G = 1 GiB (is_ma_hm_interleave=0)*/
+-#endif
+         .dmm_lisa_map_3 = DMM_LISA_MAP3,
+         .is_ma_present	= 0x1,
+-#ifdef IGEPv5_MEMORY_4G
+         .is_ma_hm_interleave = 0x1,
+-#else
+-	.is_ma_hm_interleave = 0x0,
+-#endif
+     }
+ };
+ 
+diff --git a/board/isee/igep0050/spl_scsi.c b/board/isee/igep0050/spl_scsi.c
+deleted file mode 100644
+index cb2f01a..0000000
+--- a/board/isee/igep0050/spl_scsi.c
++++ /dev/null
+@@ -1,605 +0,0 @@
+-/*
+- * (C) Copyright 2001
+- * Denis Peter, MPL AG Switzerland
+- *
+- * SPDX-License-Identifier:	GPL-2.0+
+- */
+-
+-/*
+- * SCSI support.
+- */
+-#include <common.h>
+-#include <command.h>
+-#include <asm/processor.h>
+-#include <scsi.h>
+-#include <image.h>
+-#include "spl_scsi.h"
+-
+-#ifdef CONFIG_SCSI_DEV_LIST
+-#define SCSI_DEV_LIST CONFIG_SCSI_DEV_LIST
+-#else
+-#ifdef CONFIG_SCSI_SYM53C8XX
+-#define SCSI_VEND_ID	0x1000
+-#ifndef CONFIG_SCSI_DEV_ID
+-#define SCSI_DEV_ID		0x0001
+-#else
+-#define SCSI_DEV_ID		CONFIG_SCSI_DEV_ID
+-#endif
+-#elif defined CONFIG_SATA_ULI5288
+-
+-#define SCSI_VEND_ID 0x10b9
+-#define SCSI_DEV_ID  0x5288
+-
+-#elif !defined(CONFIG_SCSI_AHCI_PLAT)
+-#error no scsi device defined
+-#endif
+-#define SCSI_DEV_LIST {SCSI_VEND_ID, SCSI_DEV_ID}
+-#endif
+-
+-static ccb tempccb;	/* temporary scsi command buffer */
+-
+-static unsigned char tempbuff[512]; /* temporary data buffer */
+-
+-static int scsi_max_devs; /* number of highest available scsi device */
+-
+-static int scsi_curr_dev; /* current device */
+-
+-static block_dev_desc_t scsi_dev_desc[CONFIG_SYS_SCSI_MAX_DEVICE];
+-
+-/********************************************************************************
+- *  forward declerations of some Setup Routines
+- */
+-void spl_scsi_setup_test_unit_ready(ccb * pccb);
+-void spl_scsi_setup_read6(ccb * pccb, unsigned long start, unsigned short blocks);
+-void spl_scsi_setup_read_ext(ccb * pccb, unsigned long start, unsigned short blocks);
+-static void spl_scsi_setup_write_ext(ccb *pccb, unsigned long start,
+-			  unsigned short blocks);
+-void spl_scsi_setup_inquiry(ccb * pccb);
+-void spl_scsi_ident_cpy (unsigned char *dest, unsigned char *src, unsigned int len);
+-
+-
+-static int spl_scsi_read_capacity(ccb *pccb, lbaint_t *capacity,
+-			      unsigned long *blksz);
+-static ulong spl_scsi_read(int device, lbaint_t blknr, lbaint_t blkcnt,
+-		       void *buffer);
+-static ulong spl_scsi_write(int device, lbaint_t blknr,
+-			lbaint_t blkcnt, const void *buffer);
+-
+-
+-/*********************************************************************************
+- * (re)-scan the scsi bus and reports scsi device info
+- * to the user if mode = 1
+- */
+-void spl_scsi_scan(int mode)
+-{
+-	unsigned char i,perq,modi,lun;
+-	lbaint_t capacity;
+-	unsigned long blksz;
+-	ccb* pccb=(ccb *)&tempccb;
+-
+-	if(mode==1) {
+-		printf("scanning bus for devices...\n");
+-	}
+-	for(i=0;i<CONFIG_SYS_SCSI_MAX_DEVICE;i++) {
+-		scsi_dev_desc[i].target=0xff;
+-		scsi_dev_desc[i].lun=0xff;
+-		scsi_dev_desc[i].lba=0;
+-		scsi_dev_desc[i].blksz=0;
+-		scsi_dev_desc[i].log2blksz =
+-			LOG2_INVALID(typeof(scsi_dev_desc[i].log2blksz));
+-		scsi_dev_desc[i].type=DEV_TYPE_UNKNOWN;
+-		scsi_dev_desc[i].vendor[0]=0;
+-		scsi_dev_desc[i].product[0]=0;
+-		scsi_dev_desc[i].revision[0]=0;
+-		scsi_dev_desc[i].removable = false;
+-		scsi_dev_desc[i].if_type=IF_TYPE_SCSI;
+-		scsi_dev_desc[i].dev=i;
+-		scsi_dev_desc[i].part_type=PART_TYPE_UNKNOWN;
+-		scsi_dev_desc[i].block_read=spl_scsi_read;
+-		scsi_dev_desc[i].block_write = spl_scsi_write;
+-	}
+-	scsi_max_devs=0;
+-	for(i=0;i<CONFIG_SYS_SCSI_MAX_SCSI_ID;i++) {
+-		pccb->target=i;
+-		for(lun=0;lun<CONFIG_SYS_SCSI_MAX_LUN;lun++) {
+-			pccb->lun=lun;
+-			pccb->pdata=(unsigned char *)&tempbuff;
+-			pccb->datalen=512;
+-			spl_scsi_setup_inquiry(pccb);
+-			if (scsi_exec(pccb) != true) {
+-				if(pccb->contr_stat==SCSI_SEL_TIME_OUT) {
+-					debug ("Selection timeout ID %d\n",pccb->target);
+-					continue; /* selection timeout => assuming no device present */
+-				}
+-				scsi_print_error(pccb);
+-				continue;
+-			}
+-			perq=tempbuff[0];
+-			modi=tempbuff[1];
+-			if((perq & 0x1f)==0x1f) {
+-				continue; /* skip unknown devices */
+-			}
+-			if((modi&0x80)==0x80) /* drive is removable */
+-				scsi_dev_desc[scsi_max_devs].removable=true;
+-			/* get info for this device */
+-			spl_scsi_ident_cpy((unsigned char *)&scsi_dev_desc[scsi_max_devs].vendor[0],
+-				       &tempbuff[8], 8);
+-			spl_scsi_ident_cpy((unsigned char *)&scsi_dev_desc[scsi_max_devs].product[0],
+-				       &tempbuff[16], 16);
+-			spl_scsi_ident_cpy((unsigned char *)&scsi_dev_desc[scsi_max_devs].revision[0],
+-				       &tempbuff[32], 4);
+-			scsi_dev_desc[scsi_max_devs].target=pccb->target;
+-			scsi_dev_desc[scsi_max_devs].lun=pccb->lun;
+-
+-			pccb->datalen=0;
+-			spl_scsi_setup_test_unit_ready(pccb);
+-			if (scsi_exec(pccb) != true) {
+-				if (scsi_dev_desc[scsi_max_devs].removable == true) {
+-					scsi_dev_desc[scsi_max_devs].type=perq;
+-					goto removable;
+-				}
+-				scsi_print_error(pccb);
+-				continue;
+-			}
+-			if (spl_scsi_read_capacity(pccb, &capacity, &blksz)) {
+-				scsi_print_error(pccb);
+-				continue;
+-			}
+-			scsi_dev_desc[scsi_max_devs].lba=capacity;
+-			scsi_dev_desc[scsi_max_devs].blksz=blksz;
+-			scsi_dev_desc[scsi_max_devs].log2blksz =
+-				LOG2(scsi_dev_desc[scsi_max_devs].blksz);
+-			scsi_dev_desc[scsi_max_devs].type=perq;
+-			init_part(&scsi_dev_desc[scsi_max_devs]);
+-removable:
+-			if(mode==1) {
+-				printf ("  Device %d: ", scsi_max_devs);
+-				dev_print(&scsi_dev_desc[scsi_max_devs]);
+-			} /* if mode */
+-			scsi_max_devs++;
+-		} /* next LUN */
+-	}
+-	if(scsi_max_devs>0)
+-		scsi_curr_dev=0;
+-	else
+-		scsi_curr_dev = -1;
+-
+-	printf("Found %d device(s).\n", scsi_max_devs);
+-	// setenv_ulong("scsidevs", scsi_max_devs);
+-}
+-
+-int spl_scsi_get_disk_count(void)
+-{
+-	return scsi_max_devs;
+-}
+-
+-
+-
+-#ifdef CONFIG_PARTITIONS
+-block_dev_desc_t * spl_scsi_get_dev(int dev)
+-{
+-	return (dev < CONFIG_SYS_SCSI_MAX_DEVICE) ? &scsi_dev_desc[dev] : NULL;
+-}
+-#endif
+-
+-#ifdef __notdef
+-/******************************************************************************
+- * scsi boot command intepreter. Derived from diskboot
+- */
+-int spl_do_scsiboot (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+-{
+-	return common_diskboot(cmdtp, "scsi", argc, argv);
+-}
+-
+-/*********************************************************************************
+- * scsi command intepreter
+- */
+-int spl_do_scsi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+-{
+-	switch (argc) {
+-	case 0:
+-	case 1:
+-		return CMD_RET_USAGE;
+-
+-	case 2:
+-			if (strncmp(argv[1],"res",3) == 0) {
+-				printf("\nReset SCSI\n");
+-				scsi_bus_reset();
+-				scsi_scan(1);
+-				return 0;
+-			}
+-			if (strncmp(argv[1],"inf",3) == 0) {
+-				int i;
+-				for (i=0; i<CONFIG_SYS_SCSI_MAX_DEVICE; ++i) {
+-					if(scsi_dev_desc[i].type==DEV_TYPE_UNKNOWN)
+-						continue; /* list only known devices */
+-					printf ("SCSI dev. %d:  ", i);
+-					dev_print(&scsi_dev_desc[i]);
+-				}
+-				return 0;
+-			}
+-			if (strncmp(argv[1],"dev",3) == 0) {
+-				if ((scsi_curr_dev < 0) || (scsi_curr_dev >= CONFIG_SYS_SCSI_MAX_DEVICE)) {
+-					printf("\nno SCSI devices available\n");
+-					return 1;
+-				}
+-				printf ("\n    Device %d: ", scsi_curr_dev);
+-				dev_print(&scsi_dev_desc[scsi_curr_dev]);
+-				return 0;
+-			}
+-			if (strncmp(argv[1],"scan",4) == 0) {
+-				scsi_scan(1);
+-				return 0;
+-			}
+-			if (strncmp(argv[1],"part",4) == 0) {
+-				int dev, ok;
+-				for (ok=0, dev=0; dev<CONFIG_SYS_SCSI_MAX_DEVICE; ++dev) {
+-					if (scsi_dev_desc[dev].type!=DEV_TYPE_UNKNOWN) {
+-						ok++;
+-						if (dev)
+-							printf("\n");
+-						debug ("print_part of %x\n",dev);
+-							print_part(&scsi_dev_desc[dev]);
+-					}
+-				}
+-				if (!ok)
+-					printf("\nno SCSI devices available\n");
+-				return 1;
+-			}
+-			return CMD_RET_USAGE;
+-	case 3:
+-			if (strncmp(argv[1],"dev",3) == 0) {
+-				int dev = (int)simple_strtoul(argv[2], NULL, 10);
+-				printf ("\nSCSI device %d: ", dev);
+-				if (dev >= CONFIG_SYS_SCSI_MAX_DEVICE) {
+-					printf("unknown device\n");
+-					return 1;
+-				}
+-				printf ("\n    Device %d: ", dev);
+-				dev_print(&scsi_dev_desc[dev]);
+-				if(scsi_dev_desc[dev].type == DEV_TYPE_UNKNOWN) {
+-					return 1;
+-				}
+-				scsi_curr_dev = dev;
+-				printf("... is now current device\n");
+-				return 0;
+-			}
+-			if (strncmp(argv[1],"part",4) == 0) {
+-				int dev = (int)simple_strtoul(argv[2], NULL, 10);
+-				if(scsi_dev_desc[dev].type != DEV_TYPE_UNKNOWN) {
+-					print_part(&scsi_dev_desc[dev]);
+-				}
+-				else {
+-					printf ("\nSCSI device %d not available\n", dev);
+-				}
+-				return 1;
+-			}
+-			return CMD_RET_USAGE;
+-    default:
+-			/* at least 4 args */
+-			if (strcmp(argv[1],"read") == 0) {
+-				ulong addr = simple_strtoul(argv[2], NULL, 16);
+-				ulong blk  = simple_strtoul(argv[3], NULL, 16);
+-				ulong cnt  = simple_strtoul(argv[4], NULL, 16);
+-				ulong n;
+-				printf ("\nSCSI read: device %d block # %ld, count %ld ... ",
+-						scsi_curr_dev, blk, cnt);
+-				n = spl_scsi_read(scsi_curr_dev, blk, cnt, (ulong *)addr);
+-				printf ("%ld blocks read: %s\n",n,(n==cnt) ? "OK" : "ERROR");
+-				return 0;
+-			} else if (strcmp(argv[1], "write") == 0) {
+-				ulong addr = simple_strtoul(argv[2], NULL, 16);
+-				ulong blk = simple_strtoul(argv[3], NULL, 16);
+-				ulong cnt = simple_strtoul(argv[4], NULL, 16);
+-				ulong n;
+-				printf("\nSCSI write: device %d block # %ld, "
+-				       "count %ld ... ",
+-				       scsi_curr_dev, blk, cnt);
+-				n = scsi_write(scsi_curr_dev, blk, cnt,
+-					       (ulong *)addr);
+-				printf("%ld blocks written: %s\n", n,
+-				       (n == cnt) ? "OK" : "ERROR");
+-				return 0;
+-			}
+-	} /* switch */
+-	return CMD_RET_USAGE;
+-}
+-#endif
+-
+-/****************************************************************************************
+- * scsi_read
+- */
+-
+-#define SCSI_MAX_READ_BLK 0xFFFF /* almost the maximum amount of the scsi_ext command.. */
+-
+-static ulong spl_scsi_read(int device, lbaint_t blknr, lbaint_t blkcnt,
+-		       void *buffer)
+-{
+-	lbaint_t start, blks;
+-	uintptr_t buf_addr;
+-	unsigned short smallblks;
+-	ccb* pccb=(ccb *)&tempccb;
+-	device&=0xff;
+-	/* Setup  device
+-	 */
+-	pccb->target=scsi_dev_desc[device].target;
+-	pccb->lun=scsi_dev_desc[device].lun;
+-	buf_addr=(unsigned long)buffer;
+-	start=blknr;
+-	blks=blkcnt;
+-	debug("\nscsi_read: dev %d startblk " LBAF
+-	      ", blccnt " LBAF " buffer %lx\n",
+-	      device, start, blks, (unsigned long)buffer);
+-	do {
+-		pccb->pdata=(unsigned char *)buf_addr;
+-		if(blks>SCSI_MAX_READ_BLK) {
+-			pccb->datalen=scsi_dev_desc[device].blksz * SCSI_MAX_READ_BLK;
+-			smallblks=SCSI_MAX_READ_BLK;
+-			spl_scsi_setup_read_ext(pccb,start,smallblks);
+-			start+=SCSI_MAX_READ_BLK;
+-			blks-=SCSI_MAX_READ_BLK;
+-		}
+-		else {
+-			pccb->datalen=scsi_dev_desc[device].blksz * blks;
+-			smallblks=(unsigned short) blks;
+-			spl_scsi_setup_read_ext(pccb,start,smallblks);
+-			start+=blks;
+-			blks=0;
+-		}
+-		debug("scsi_read_ext: startblk " LBAF
+-		      ", blccnt %x buffer %lx\n",
+-		      start, smallblks, buf_addr);
+-		if (scsi_exec(pccb) != true) {
+-			scsi_print_error(pccb);
+-			blkcnt-=blks;
+-			break;
+-		}
+-		buf_addr+=pccb->datalen;
+-	} while(blks!=0);
+-	debug("scsi_read_ext: end startblk " LBAF
+-	      ", blccnt %x buffer %lx\n", start, smallblks, buf_addr);
+-	return(blkcnt);
+-}
+-
+-/*******************************************************************************
+- * scsi_write
+- */
+-
+-/* Almost the maximum amount of the scsi_ext command.. */
+-#define SCSI_MAX_WRITE_BLK 0xFFFF
+-
+-static ulong spl_scsi_write(int device, lbaint_t blknr,
+-			lbaint_t blkcnt, const void *buffer)
+-{
+-	lbaint_t start, blks;
+-	uintptr_t buf_addr;
+-	unsigned short smallblks;
+-	ccb* pccb = (ccb *)&tempccb;
+-	device &= 0xff;
+-	/* Setup  device
+-	 */
+-	pccb->target = scsi_dev_desc[device].target;
+-	pccb->lun = scsi_dev_desc[device].lun;
+-	buf_addr = (unsigned long)buffer;
+-	start = blknr;
+-	blks = blkcnt;
+-	debug("\n%s: dev %d startblk " LBAF ", blccnt " LBAF " buffer %lx\n",
+-	      __func__, device, start, blks, (unsigned long)buffer);
+-	do {
+-		pccb->pdata = (unsigned char *)buf_addr;
+-		if (blks > SCSI_MAX_WRITE_BLK) {
+-			pccb->datalen = (scsi_dev_desc[device].blksz *
+-					 SCSI_MAX_WRITE_BLK);
+-			smallblks = SCSI_MAX_WRITE_BLK;
+-			spl_scsi_setup_write_ext(pccb, start, smallblks);
+-			start += SCSI_MAX_WRITE_BLK;
+-			blks -= SCSI_MAX_WRITE_BLK;
+-		} else {
+-			pccb->datalen = scsi_dev_desc[device].blksz * blks;
+-			smallblks = (unsigned short)blks;
+-			spl_scsi_setup_write_ext(pccb, start, smallblks);
+-			start += blks;
+-			blks = 0;
+-		}
+-		debug("%s: startblk " LBAF ", blccnt %x buffer %lx\n",
+-		      __func__, start, smallblks, buf_addr);
+-		if (scsi_exec(pccb) != true) {
+-			scsi_print_error(pccb);
+-			blkcnt -= blks;
+-			break;
+-		}
+-		buf_addr += pccb->datalen;
+-	} while (blks != 0);
+-	debug("%s: end startblk " LBAF ", blccnt %x buffer %lx\n",
+-	      __func__, start, smallblks, buf_addr);
+-	return blkcnt;
+-}
+-
+-/* copy src to dest, skipping leading and trailing blanks
+- * and null terminate the string
+- */
+-void spl_scsi_ident_cpy (unsigned char *dest, unsigned char *src, unsigned int len)
+-{
+-	int start,end;
+-
+-	start=0;
+-	while(start<len) {
+-		if(src[start]!=' ')
+-			break;
+-		start++;
+-	}
+-	end=len-1;
+-	while(end>start) {
+-		if(src[end]!=' ')
+-			break;
+-		end--;
+-	}
+-	for( ; start<=end; start++) {
+-		*dest++=src[start];
+-	}
+-	*dest='\0';
+-}
+-
+-
+-/* Trim trailing blanks, and NUL-terminate string
+- */
+-void spl_scsi_trim_trail (unsigned char *str, unsigned int len)
+-{
+-	unsigned char *p = str + len - 1;
+-
+-	while (len-- > 0) {
+-		*p-- = '\0';
+-		if (*p != ' ') {
+-			return;
+-		}
+-	}
+-}
+-
+-int spl_scsi_read_capacity(ccb *pccb, lbaint_t *capacity, unsigned long *blksz)
+-{
+-	*capacity = 0;
+-
+-	memset(pccb->cmd, 0, sizeof(pccb->cmd));
+-	pccb->cmd[0] = SCSI_RD_CAPAC10;
+-	pccb->cmd[1] = pccb->lun << 5;
+-	pccb->cmdlen = 10;
+-	pccb->msgout[0] = SCSI_IDENTIFY; /* NOT USED */
+-
+-	pccb->datalen = 8;
+-	if (scsi_exec(pccb) != true)
+-		return 1;
+-
+-	*capacity = ((lbaint_t)pccb->pdata[0] << 24) |
+-		    ((lbaint_t)pccb->pdata[1] << 16) |
+-		    ((lbaint_t)pccb->pdata[2] << 8)  |
+-		    ((lbaint_t)pccb->pdata[3]);
+-
+-	if (*capacity != 0xffffffff) {
+-		/* Read capacity (10) was sufficient for this drive. */
+-		*blksz = ((unsigned long)pccb->pdata[4] << 24) |
+-			 ((unsigned long)pccb->pdata[5] << 16) |
+-			 ((unsigned long)pccb->pdata[6] << 8)  |
+-			 ((unsigned long)pccb->pdata[7]);
+-		return 0;
+-	}
+-
+-	/* Read capacity (10) was insufficient. Use read capacity (16). */
+-
+-	memset(pccb->cmd, 0, sizeof(pccb->cmd));
+-	pccb->cmd[0] = SCSI_RD_CAPAC16;
+-	pccb->cmd[1] = 0x10;
+-	pccb->cmdlen = 16;
+-	pccb->msgout[0] = SCSI_IDENTIFY; /* NOT USED */
+-
+-	pccb->datalen = 16;
+-	if (scsi_exec(pccb) != true)
+-		return 1;
+-
+-	*capacity = ((uint64_t)pccb->pdata[0] << 56) |
+-		    ((uint64_t)pccb->pdata[1] << 48) |
+-		    ((uint64_t)pccb->pdata[2] << 40) |
+-		    ((uint64_t)pccb->pdata[3] << 32) |
+-		    ((uint64_t)pccb->pdata[4] << 24) |
+-		    ((uint64_t)pccb->pdata[5] << 16) |
+-		    ((uint64_t)pccb->pdata[6] << 8)  |
+-		    ((uint64_t)pccb->pdata[7]);
+-
+-	*blksz = ((uint64_t)pccb->pdata[8]  << 56) |
+-		 ((uint64_t)pccb->pdata[9]  << 48) |
+-		 ((uint64_t)pccb->pdata[10] << 40) |
+-		 ((uint64_t)pccb->pdata[11] << 32) |
+-		 ((uint64_t)pccb->pdata[12] << 24) |
+-		 ((uint64_t)pccb->pdata[13] << 16) |
+-		 ((uint64_t)pccb->pdata[14] << 8)  |
+-		 ((uint64_t)pccb->pdata[15]);
+-
+-	return 0;
+-}
+-
+-
+-/************************************************************************************
+- * Some setup (fill-in) routines
+- */
+-void spl_scsi_setup_test_unit_ready(ccb * pccb)
+-{
+-	pccb->cmd[0]=SCSI_TST_U_RDY;
+-	pccb->cmd[1]=pccb->lun<<5;
+-	pccb->cmd[2]=0;
+-	pccb->cmd[3]=0;
+-	pccb->cmd[4]=0;
+-	pccb->cmd[5]=0;
+-	pccb->cmdlen=6;
+-	pccb->msgout[0]=SCSI_IDENTIFY; /* NOT USED */
+-}
+-
+-void spl_scsi_setup_read_ext(ccb * pccb, unsigned long start, unsigned short blocks)
+-{
+-	pccb->cmd[0]=SCSI_READ10;
+-	pccb->cmd[1]=pccb->lun<<5;
+-	pccb->cmd[2]=((unsigned char) (start>>24))&0xff;
+-	pccb->cmd[3]=((unsigned char) (start>>16))&0xff;
+-	pccb->cmd[4]=((unsigned char) (start>>8))&0xff;
+-	pccb->cmd[5]=((unsigned char) (start))&0xff;
+-	pccb->cmd[6]=0;
+-	pccb->cmd[7]=((unsigned char) (blocks>>8))&0xff;
+-	pccb->cmd[8]=(unsigned char) blocks & 0xff;
+-	pccb->cmd[6]=0;
+-	pccb->cmdlen=10;
+-	pccb->msgout[0]=SCSI_IDENTIFY; /* NOT USED */
+-	debug ("scsi_setup_read_ext: cmd: %02X %02X startblk %02X%02X%02X%02X blccnt %02X%02X\n",
+-		pccb->cmd[0],pccb->cmd[1],
+-		pccb->cmd[2],pccb->cmd[3],pccb->cmd[4],pccb->cmd[5],
+-		pccb->cmd[7],pccb->cmd[8]);
+-}
+-
+-void spl_scsi_setup_write_ext(ccb *pccb, unsigned long start, unsigned short blocks)
+-{
+-	pccb->cmd[0] = SCSI_WRITE10;
+-	pccb->cmd[1] = pccb->lun << 5;
+-	pccb->cmd[2] = ((unsigned char) (start>>24)) & 0xff;
+-	pccb->cmd[3] = ((unsigned char) (start>>16)) & 0xff;
+-	pccb->cmd[4] = ((unsigned char) (start>>8)) & 0xff;
+-	pccb->cmd[5] = ((unsigned char) (start)) & 0xff;
+-	pccb->cmd[6] = 0;
+-	pccb->cmd[7] = ((unsigned char) (blocks>>8)) & 0xff;
+-	pccb->cmd[8] = (unsigned char)blocks & 0xff;
+-	pccb->cmd[9] = 0;
+-	pccb->cmdlen = 10;
+-	pccb->msgout[0] = SCSI_IDENTIFY;  /* NOT USED */
+-	debug("%s: cmd: %02X %02X startblk %02X%02X%02X%02X blccnt %02X%02X\n",
+-	      __func__,
+-	      pccb->cmd[0], pccb->cmd[1],
+-	      pccb->cmd[2], pccb->cmd[3], pccb->cmd[4], pccb->cmd[5],
+-	      pccb->cmd[7], pccb->cmd[8]);
+-}
+-
+-void spl_scsi_setup_read6(ccb * pccb, unsigned long start, unsigned short blocks)
+-{
+-	pccb->cmd[0]=SCSI_READ6;
+-	pccb->cmd[1]=pccb->lun<<5 | (((unsigned char)(start>>16))&0x1f);
+-	pccb->cmd[2]=((unsigned char) (start>>8))&0xff;
+-	pccb->cmd[3]=((unsigned char) (start))&0xff;
+-	pccb->cmd[4]=(unsigned char) blocks & 0xff;
+-	pccb->cmd[5]=0;
+-	pccb->cmdlen=6;
+-	pccb->msgout[0]=SCSI_IDENTIFY; /* NOT USED */
+-	debug ("scsi_setup_read6: cmd: %02X %02X startblk %02X%02X blccnt %02X\n",
+-		pccb->cmd[0],pccb->cmd[1],
+-		pccb->cmd[2],pccb->cmd[3],pccb->cmd[4]);
+-}
+-
+-
+-void spl_scsi_setup_inquiry(ccb * pccb)
+-{
+-	pccb->cmd[0]=SCSI_INQUIRY;
+-	pccb->cmd[1]=pccb->lun<<5;
+-	pccb->cmd[2]=0;
+-	pccb->cmd[3]=0;
+-	if(pccb->datalen>255)
+-		pccb->cmd[4]=255;
+-	else
+-		pccb->cmd[4]=(unsigned char)pccb->datalen;
+-	pccb->cmd[5]=0;
+-	pccb->cmdlen=6;
+-	pccb->msgout[0]=SCSI_IDENTIFY; /* NOT USED */
+-}
+diff --git a/board/isee/igep0050/spl_scsi.h b/board/isee/igep0050/spl_scsi.h
+deleted file mode 100644
+index a68ff3a..0000000
+--- a/board/isee/igep0050/spl_scsi.h
++++ /dev/null
+@@ -1,13 +0,0 @@
+-/*
+- * (C) Copyright 2013
+- * ISEE 2007 SL
+- * Manel Caro     <mcaro@iseebcn.com>
+- *
+- * SPDX-License-Identifier:	GPL-2.0+
+- */
+-#ifndef __IGEPv5_SPL_SCSI_H__
+-#define __IGEPv5_SPL_SCSI_H__
+-
+-void spl_scsi_scan(int mode);
+-
+-#endif
+diff --git a/drivers/usb/eth/Makefile b/drivers/usb/eth/Makefile
+index 51e2b00..94551c4 100644
+--- a/drivers/usb/eth/Makefile
++++ b/drivers/usb/eth/Makefile
+@@ -10,4 +10,3 @@ obj-y += asix.o
+ endif
+ obj-$(CONFIG_USB_ETHER_MCS7830) += mcs7830.o
+ obj-$(CONFIG_USB_ETHER_SMSC95XX) += smsc95xx.o
+-obj-$(CONFIG_USB_ETHER_SMSC75XX) += smsc75xx.o
+diff --git a/drivers/usb/eth/smsc75xx.c b/drivers/usb/eth/smsc75xx.c
+deleted file mode 100644
+index 4971996..0000000
+--- a/drivers/usb/eth/smsc75xx.c
++++ /dev/null
+@@ -1,1482 +0,0 @@
+-/*
+- * Copyright (c) 2011 The Chromium OS Authors.
+- * Copyright (C) 2009 NVIDIA, Corporation
+- *
+- * SPDX-License-Identifier:	GPL-2.0+
+- */
+-
+-// #define DEBUG
+-
+-#include <asm/unaligned.h>
+-#include <common.h>
+-#include <usb.h>
+-#include <linux/mii.h>
+-#include "usb_ether.h"
+-#include <malloc.h>
+-
+-/* SMSC LAN75xx based USB 2.0 Ethernet Devices */
+-
+-/* Tx command words */
+-#define TX_CMD_A_FIRST_SEG_		0x00002000
+-#define TX_CMD_A_LAST_SEG_		0x00001000
+-
+-/* Rx status word */
+-#define RX_STS_FL_			0x3FFF0000	/* Frame Length */
+-#define RX_STS_ES_			0x00008000	/* Error Summary */
+-
+-/* SCSRs */
+-// #define ID_REV				0x00
+-
+-// #define INT_STS				0x0C
+-
+-#define TX_CFG				0x10
+-#define TX_CFG_ON_			0x00000004
+-
+-//#define HW_CFG				0x14
+-#define HW_CFG_BIR_			0x00000080
+-#define HW_CFG_RXDOFF_		0x00000600
+-#define HW_CFG_MEF_			0x00000010
+-#define HW_CFG_BCE_			0x00000004
+-#define HW_CFG_LRST_		0x00000002
+-
+-#ifdef __notdef
+-#define HW_CFG_LEDB			(0x00000100)
+-#define HW_CFG_BIR			(0x00000080)
+-#define HW_CFG_SBP			(0x00000040)
+-#define HW_CFG_IME			(0x00000020)
+-#define HW_CFG_MEF			(0x00000010)
+-#define HW_CFG_ETC			(0x00000008)
+-#define HW_CFG_BCE			(0x00000004)
+-#define HW_CFG_LRST			(0x00000002)
+-#define HW_CFG_SRST			(0x00000001)
+-#endif
+-
+-#define PM_CTRL				0x0014
+-#define PM_CTL_PHY_RST_		0x00000010
+-
+-#define AFC_CFG				0x2C
+-
+-/*
+- * Hi watermark = 15.5Kb (~10 mtu pkts)
+- * low watermark = 3k (~2 mtu pkts)
+- * backpressure duration = ~ 350us
+- * Apply FC on any frame.
+- */
+-#define AFC_CFG_DEFAULT			0x00F830A1
+-
+-// #define E2P_CMD					0x40
+-#define E2P_CMD_BUSY_			0x80000000
+-#define E2P_CMD_READ_			0x00000000
+-#define E2P_CMD_TIMEOUT_		0x00000400
+-#define E2P_CMD_LOADED_			0x00000200
+-#define E2P_CMD_ADDR_			0x000001FF
+-
+-#define E2P_DATA				0x34
+-
+-#define BURST_CAP				0x38
+-
+-#define INT_EP_CTL				0x38
+-#define INT_EP_CTL_PHY_INT_		0x00008000
+-
+-#define BULK_IN_DLY				0x3C
+-
+-/* MAC CSRs */
+-#define MAC_CR					0x100
+-#define MAC_CR_MCPAS_			0x00080000
+-#define MAC_CR_PRMS_			0x00040000
+-#define MAC_CR_HPFILT_			0x00002000
+-#define MAC_CR_TXEN_			0x00000008
+-#define MAC_CR_RXEN_			0x00000004
+-
+-#define ADDRH					0x118
+-#define ADDRL					0x11C
+-
+-#define MII_ADDR				0x120
+-#define MII_WRITE_				0x02
+-#define MII_BUSY_				0x01
+-#define MII_READ_				0x00 /* ~of MII Write bit */
+-
+-// #define MII_DATA				0x124
+-
+-#define FLOW					0x0A0
+-
+-#define VLAN1				0x120
+-
+-#define COE_CR				0x130
+-#define Tx_COE_EN_			0x00010000
+-#define Rx_COE_EN_			0x00000001
+-
+-/* Vendor-specific PHY Definitions */
+-// #define PHY_INT_SRC			29
+-
+-// #define PHY_INT_MASK			30
+-#define PHY_INT_MASK_ANEG_COMP_		((u16)0x0040)
+-#define PHY_INT_MASK_LINK_DOWN_		((u16)0x0010)
+-#define PHY_INT_MASK_DEFAULT_		(PHY_INT_MASK_ANEG_COMP_ | \
+-					 PHY_INT_MASK_LINK_DOWN_)
+-
+-/* USB Vendor Requests */
+-#define USB_VENDOR_REQUEST_WRITE_REGISTER	0xA0
+-#define USB_VENDOR_REQUEST_READ_REGISTER	0xA1
+-
+-/* Some extra defines */
+-#define ETH_P_8021Q	0x8100          /* 802.1Q VLAN Extended Header  */
+-
+-#define MAX_RX_FIFO_SIZE			(20 * 1024)
+-#define MAX_TX_FIFO_SIZE			(12 * 1024)
+-#define SMSC_CHIPNAME				"smsc75xx"
+-#define SMSC_DRIVER_VERSION			"1.0.0"
+-#define HS_USB_PKT_SIZE				(512)
+-#define FS_USB_PKT_SIZE				(64)
+-#define DEFAULT_HS_BURST_CAP_SIZE	(16 * 1024 + 5 * HS_USB_PKT_SIZE)
+-#define DEFAULT_FS_BURST_CAP_SIZE	(6 * 1024 + 33 * FS_USB_PKT_SIZE)
+-#define DEFAULT_BULK_IN_DELAY		(0x00002000)
+-#define MAX_SINGLE_PACKET_SIZE		(9000)
+-#define LAN75XX_EEPROM_MAGIC		(0x7500)
+-#define EEPROM_MAC_OFFSET			(0x01)
+-#define DEFAULT_TX_CSUM_ENABLE		(true)
+-#define DEFAULT_RX_CSUM_ENABLE		(true)
+-#define DEFAULT_TSO_ENABLE			(true)
+-#define SMSC75XX_INTERNAL_PHY_ID	(1)
+-#define smsc75xx_INTERNAL_PHY_ID	SMSC75XX_INTERNAL_PHY_ID
+-#define SMSC75XX_TX_OVERHEAD		(8)
+-#define MAX_RX_FIFO_SIZE			(20 * 1024)
+-#define MAX_TX_FIFO_SIZE			(12 * 1024)
+-#define USB_VENDOR_ID_SMSC			(0x0424)
+-#define USB_PRODUCT_ID_LAN7500		(0x7500)
+-#define USB_PRODUCT_ID_LAN7505		(0x7505)
+-#define RXW_PADDING					2
+-
+-
+-/* local defines */
+-#define smsc75xx_BASE_NAME "sms"
+-#define USB_CTRL_SET_TIMEOUT 5000
+-#define USB_CTRL_GET_TIMEOUT 5000
+-#define USB_BULK_SEND_TIMEOUT 5000
+-#define USB_BULK_RECV_TIMEOUT 5000
+-
+-#define AX_RX_URB_SIZE 2048
+-#define PHY_CONNECT_TIMEOUT 5000
+-
+-#define TURBO_MODE
+-
+-/* Defines */
+-#define MII_ACCESS					(0x120)
+-#define MII_ACCESS_PHY_ADDR			(0x0000F800)
+-#define MII_ACCESS_PHY_ADDR_SHIFT	(11)
+-#define MII_ACCESS_REG_ADDR			(0x000007C0)
+-#define MII_ACCESS_REG_ADDR_SHIFT	(6)
+-#define MII_ACCESS_READ				(0x00000000)
+-#define MII_ACCESS_WRITE			(0x00000002)
+-#define MII_ACCESS_BUSY				(0x00000001)
+-
+-#define MII_DATA					(0x124)
+-#define MII_DATA_MASK				(0x0000FFFF)
+-
+-#define RX_ADDRH					(0x118)
+-#define RX_ADDRH_MASK				(0x0000FFFF)
+-#define RX_ADDRL					(0x11C)
+-
+-/* Mode Control/Status Register */
+-#define PHY_MODE_CTRL_STS			(17)
+-#define MODE_CTRL_STS_EDPWRDOWN		((u16)0x2000)
+-#define MODE_CTRL_STS_ENERGYON		((u16)0x0002)
+-
+-#define PHY_INT_SRC					(29)
+-#define PHY_INT_SRC_ENERGY_ON		((u16)0x0080)
+-#define PHY_INT_SRC_ANEG_COMP		((u16)0x0040)
+-#define PHY_INT_SRC_REMOTE_FAULT	((u16)0x0020)
+-#define PHY_INT_SRC_LINK_DOWN		((u16)0x0010)
+-#define PHY_INT_SRC_CLEAR_ALL		((u16)0xffff)
+-
+-#define PHY_INT_MASK				(30)
+-#define PHY_INT_MASK_ENERGY_ON		((u16)0x0080)
+-#define PHY_INT_MASK_ANEG_COMP		((u16)0x0040)
+-#define PHY_INT_MASK_REMOTE_FAULT	((u16)0x0020)
+-#define PHY_INT_MASK_LINK_DOWN		((u16)0x0010)
+-#define PHY_INT_MASK_DEFAULT		(PHY_INT_MASK_ANEG_COMP | \
+-									PHY_INT_MASK_LINK_DOWN)
+-
+-#define PHY_SPECIAL					(31)
+-#define PHY_SPECIAL_SPD				((u16)0x001C)
+-#define PHY_SPECIAL_SPD_10HALF		((u16)0x0004)
+-#define PHY_SPECIAL_SPD_10FULL		((u16)0x0014)
+-#define PHY_SPECIAL_SPD_100HALF		((u16)0x0008)
+-#define PHY_SPECIAL_SPD_100FULL		((u16)0x0018)
+-
+-#define ADDR_FILTX					(0x300)
+-#define ADDR_FILTX_FB_VALID			(0x80000000)
+-#define ADDR_FILTX_FB_TYPE			(0x40000000)
+-#define ADDR_FILTX_FB_ADDRHI		(0x0000FFFF)
+-#define ADDR_FILTX_SB_ADDRLO		(0xFFFFFFFF)
+-
+-#define RFE_CTL						(0x0060)
+-#define RFE_CTL_TCPUDP_CKM			(0x00001000)
+-#define RFE_CTL_IP_CKM				(0x00000800)
+-#define RFE_CTL_AB					(0x00000400)
+-#define RFE_CTL_AM					(0x00000200)
+-#define RFE_CTL_AU					(0x00000100)
+-#define RFE_CTL_VS					(0x00000080)
+-#define RFE_CTL_UF					(0x00000040)
+-#define RFE_CTL_VF					(0x00000020)
+-#define RFE_CTL_SPF					(0x00000010)
+-#define RFE_CTL_MHF					(0x00000008)
+-#define RFE_CTL_DHF					(0x00000004)
+-#define RFE_CTL_DPF					(0x00000002)
+-#define RFE_CTL_RST_RF				(0x00000001)
+-
+-#define PMT_CTL						(0x0014)
+-#define PMT_CTL_PHY_PWRUP			(0x00000400)
+-#define PMT_CTL_RES_CLR_WKP_EN		(0x00000100)
+-#define PMT_CTL_DEV_RDY				(0x00000080)
+-#define PMT_CTL_SUS_MODE			(0x00000060)
+-#define PMT_CTL_SUS_MODE_0			(0x00000000)
+-#define PMT_CTL_SUS_MODE_1			(0x00000020)
+-#define PMT_CTL_SUS_MODE_2			(0x00000040)
+-#define PMT_CTL_SUS_MODE_3			(0x00000060)
+-#define PMT_CTL_PHY_RST				(0x00000010)
+-#define PMT_CTL_WOL_EN				(0x00000008)
+-#define PMT_CTL_ED_EN				(0x00000004)
+-#define PMT_CTL_WUPS				(0x00000003)
+-#define PMT_CTL_WUPS_NO				(0x00000000)
+-#define PMT_CTL_WUPS_ED				(0x00000001)
+-#define PMT_CTL_WUPS_WOL			(0x00000002)
+-#define PMT_CTL_WUPS_MULTI			(0x00000003)
+-
+-#define HW_CFG				(0x0010)
+-#define HW_CFG_SMDET_STS		(0x00008000)
+-#define HW_CFG_SMDET_EN			(0x00004000)
+-#define HW_CFG_EEM			(0x00002000)
+-#define HW_CFG_RST_PROTECT		(0x00001000)
+-#define HW_CFG_PORT_SWAP		(0x00000800)
+-#define HW_CFG_PHY_BOOST		(0x00000600)
+-#define HW_CFG_PHY_BOOST_NORMAL		(0x00000000)
+-#define HW_CFG_PHY_BOOST_4		(0x00002000)
+-#define HW_CFG_PHY_BOOST_8		(0x00004000)
+-#define HW_CFG_PHY_BOOST_12		(0x00006000)
+-#define HW_CFG_LEDB			(0x00000100)
+-#define HW_CFG_BIR			(0x00000080)
+-#define HW_CFG_SBP			(0x00000040)
+-#define HW_CFG_IME			(0x00000020)
+-#define HW_CFG_MEF			(0x00000010)
+-#define HW_CFG_ETC			(0x00000008)
+-#define HW_CFG_BCE			(0x00000004)
+-#define HW_CFG_LRST			(0x00000002)
+-#define HW_CFG_SRST			(0x00000001)
+-
+-#define FCT_RX_CTL			(0x0090)
+-#define FCT_RX_CTL_EN			(0x80000000)
+-#define FCT_RX_CTL_RST			(0x40000000)
+-#define FCT_RX_CTL_SBF			(0x02000000)
+-#define FCT_RX_CTL_OVERFLOW		(0x01000000)
+-#define FCT_RX_CTL_FRM_DROP		(0x00800000)
+-#define FCT_RX_CTL_RX_NOT_EMPTY		(0x00400000)
+-#define FCT_RX_CTL_RX_EMPTY		(0x00200000)
+-#define FCT_RX_CTL_RX_DISABLED		(0x00100000)
+-#define FCT_RX_CTL_RXUSED		(0x0000FFFF)
+-
+-#define FCT_TX_CTL			(0x0094)
+-#define FCT_TX_CTL_EN			(0x80000000)
+-#define FCT_TX_CTL_RST			(0x40000000)
+-#define FCT_TX_CTL_TX_NOT_EMPTY		(0x00400000)
+-#define FCT_TX_CTL_TX_EMPTY		(0x00200000)
+-#define FCT_TX_CTL_TX_DISABLED		(0x00100000)
+-#define FCT_TX_CTL_TXUSED		(0x0000FFFF)
+-
+-#define FCT_RX_FIFO_END			(0x0098)
+-#define FCT_RX_FIFO_END_MASK		(0x0000007F)
+-
+-#define FCT_TX_FIFO_END			(0x009C)
+-#define FCT_TX_FIFO_END_MASK		(0x0000003F)
+-
+-#define FCT_FLOW			(0x00A0)
+-#define FCT_FLOW_THRESHOLD_OFF		(0x00007F00)
+-#define FCT_FLOW_THRESHOLD_OFF_SHIFT	(8)
+-#define FCT_FLOW_THRESHOLD_ON		(0x0000007F)
+-
+-#define ID_REV				(0x0000)
+-
+-#define FPGA_REV			(0x0004)
+-
+-#define BOND_CTL			(0x0008)
+-
+-#define INT_STS				(0x000C)
+-#define INT_STS_RDFO_INT		(0x00400000)
+-#define INT_STS_TXE_INT			(0x00200000)
+-#define INT_STS_MACRTO_INT		(0x00100000)
+-#define INT_STS_TX_DIS_INT		(0x00080000)
+-#define INT_STS_RX_DIS_INT		(0x00040000)
+-#define INT_STS_PHY_INT_		(0x00020000)
+-#define INT_STS_MAC_ERR_INT		(0x00008000)
+-#define INT_STS_TDFU			(0x00004000)
+-#define INT_STS_TDFO			(0x00002000)
+-#define INT_STS_GPIOS			(0x00000FFF)
+-#define INT_STS_CLEAR_ALL		(0xFFFFFFFF)
+-
+-#define E2P_CMD				(0x0040)
+-#define E2P_CMD_BUSY			(0x80000000)
+-#define E2P_CMD_MASK			(0x70000000)
+-#define E2P_CMD_READ			(0x00000000)
+-#define E2P_CMD_EWDS			(0x10000000)
+-#define E2P_CMD_EWEN			(0x20000000)
+-#define E2P_CMD_WRITE			(0x30000000)
+-#define E2P_CMD_WRAL			(0x40000000)
+-#define E2P_CMD_ERASE			(0x50000000)
+-#define E2P_CMD_ERAL			(0x60000000)
+-#define E2P_CMD_RELOAD			(0x70000000)
+-#define E2P_CMD_TIMEOUT			(0x00000400)
+-#define E2P_CMD_LOADED			(0x00000200)
+-#define E2P_CMD_ADDR			(0x000001FF)
+-
+-#define LED_GPIO_CFG			(0x0018)
+-#define LED_GPIO_CFG_LED2_FUN_SEL	(0x80000000)
+-#define LED_GPIO_CFG_LED10_FUN_SEL	(0x40000000)
+-#define LED_GPIO_CFG_LEDGPIO_EN		(0x0000F000)
+-#define LED_GPIO_CFG_LEDGPIO_EN_0	(0x00001000)
+-#define LED_GPIO_CFG_LEDGPIO_EN_1	(0x00002000)
+-#define LED_GPIO_CFG_LEDGPIO_EN_2	(0x00004000)
+-#define LED_GPIO_CFG_LEDGPIO_EN_3	(0x00008000)
+-#define LED_GPIO_CFG_GPBUF		(0x00000F00)
+-#define LED_GPIO_CFG_GPBUF_0		(0x00000100)
+-#define LED_GPIO_CFG_GPBUF_1		(0x00000200)
+-#define LED_GPIO_CFG_GPBUF_2		(0x00000400)
+-#define LED_GPIO_CFG_GPBUF_3		(0x00000800)
+-#define LED_GPIO_CFG_GPDIR		(0x000000F0)
+-#define LED_GPIO_CFG_GPDIR_0		(0x00000010)
+-#define LED_GPIO_CFG_GPDIR_1		(0x00000020)
+-#define LED_GPIO_CFG_GPDIR_2		(0x00000040)
+-#define LED_GPIO_CFG_GPDIR_3		(0x00000080)
+-#define LED_GPIO_CFG_GPDATA		(0x0000000F)
+-#define LED_GPIO_CFG_GPDATA_0		(0x00000001)
+-#define LED_GPIO_CFG_GPDATA_1		(0x00000002)
+-#define LED_GPIO_CFG_GPDATA_2		(0x00000004)
+-#define LED_GPIO_CFG_GPDATA_3		(0x00000008)
+-
+-/* Interrupt Endpoint status word bitfields */
+-#define INT_ENP_RDFO_INT		((u32)BIT(22))
+-#define INT_ENP_TXE_INT			((u32)BIT(21))
+-#define INT_ENP_TX_DIS_INT		((u32)BIT(19))
+-#define INT_ENP_RX_DIS_INT		((u32)BIT(18))
+-#define INT_ENP_PHY_INT			((u32)BIT(17))
+-#define INT_ENP_MAC_ERR_INT		((u32)BIT(15))
+-#define INT_ENP_RX_FIFO_DATA_INT	((u32)BIT(12))
+-
+-/* MAC CSRs */
+-#define MAC_CR				(0x100)
+-#define MAC_CR_ADP			(0x00002000)
+-#define MAC_CR_ADD			(0x00001000)
+-#define MAC_CR_ASD			(0x00000800)
+-#define MAC_CR_INT_LOOP			(0x00000400)
+-#define MAC_CR_BOLMT			(0x000000C0)
+-#define MAC_CR_FDPX			(0x00000008)
+-#define MAC_CR_CFG			(0x00000006)
+-#define MAC_CR_CFG_10			(0x00000000)
+-#define MAC_CR_CFG_100			(0x00000002)
+-#define MAC_CR_CFG_1000			(0x00000004)
+-#define MAC_CR_RST			(0x00000001)
+-
+-#define MAC_RX				(0x104)
+-#define MAC_RX_MAX_SIZE			(0x3FFF0000)
+-#define MAC_RX_MAX_SIZE_SHIFT		(16)
+-#define MAC_RX_FCS_STRIP		(0x00000010)
+-#define MAC_RX_FSE			(0x00000004)
+-#define MAC_RX_RXD			(0x00000002)
+-#define MAC_RX_RXEN			(0x00000001)
+-
+-#define MAC_TX				(0x108)
+-#define MAC_TX_BFCS			(0x00000004)
+-#define MAC_TX_TXD			(0x00000002)
+-#define MAC_TX_TXEN			(0x00000001)
+-
+-/* Tx command words */
+-#define TX_CMD_A_LSO			(0x08000000)
+-#define TX_CMD_A_IPE			(0x04000000)
+-#define TX_CMD_A_TPE			(0x02000000)
+-#define TX_CMD_A_IVTG			(0x01000000)
+-#define TX_CMD_A_RVTG			(0x00800000)
+-#define TX_CMD_A_FCS			(0x00400000)
+-#define TX_CMD_A_LEN			(0x000FFFFF)
+-
+-#define TX_CMD_B_MSS			(0x3FFF0000)
+-#define TX_CMD_B_MSS_SHIFT		(16)
+-#define TX_MSS_MIN			((u16)8)
+-#define TX_CMD_B_VTAG			(0x0000FFFF)
+-
+-/* Rx command words */
+-#define RX_CMD_A_ICE			(0x80000000)
+-#define RX_CMD_A_TCE			(0x40000000)
+-#define RX_CMD_A_IPV			(0x20000000)
+-#define RX_CMD_A_PID			(0x18000000)
+-#define RX_CMD_A_PID_NIP		(0x00000000)
+-#define RX_CMD_A_PID_TCP		(0x08000000)
+-#define RX_CMD_A_PID_UDP		(0x10000000)
+-#define RX_CMD_A_PID_PP			(0x18000000)
+-#define RX_CMD_A_PFF			(0x04000000)
+-#define RX_CMD_A_BAM			(0x02000000)
+-#define RX_CMD_A_MAM			(0x01000000)
+-#define RX_CMD_A_FVTG			(0x00800000)
+-#define RX_CMD_A_RED			(0x00400000)
+-#define RX_CMD_A_RWT			(0x00200000)
+-#define RX_CMD_A_RUNT			(0x00100000)
+-#define RX_CMD_A_LONG			(0x00080000)
+-#define RX_CMD_A_RXE			(0x00040000)
+-#define RX_CMD_A_DRB			(0x00020000)
+-#define RX_CMD_A_FCS			(0x00010000)
+-#define RX_CMD_A_UAM			(0x00008000)
+-#define RX_CMD_A_LCSM			(0x00004000)
+-#define RX_CMD_A_LEN			(0x00003FFF)
+-
+-#define RX_CMD_B_CSUM			(0xFFFF0000)
+-#define RX_CMD_B_CSUM_SHIFT		(16)
+-#define RX_CMD_B_VTAG			(0x0000FFFF)
+-
+-
+-/* local vars */
+-static int curr_eth_dev; /* index for name of next device detected */
+-
+-/* driver private */
+-struct smsc75xx_private {
+-	size_t rx_urb_size;  	/* maximum USB URB size */
+-	u32 mac_cr;  			/* MAC control register value */
+-	int have_hwaddr;  		/* 1 if we have a hardware MAC address */
+-};
+-
+-/*
+- * smsc75xx infrastructure commands
+- */
+-static int smsc75xx_write_reg(struct ueth_data *dev, u32 index, u32 data)
+-{
+-	int len;
+-	ALLOC_CACHE_ALIGN_BUFFER(u32, tmpbuf, 1);
+-
+-	cpu_to_le32s(&data);
+-	tmpbuf[0] = data;
+-
+-	len = usb_control_msg(dev->pusb_dev, usb_sndctrlpipe(dev->pusb_dev, 0),
+-		USB_VENDOR_REQUEST_WRITE_REGISTER,
+-		USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-		00, index, tmpbuf, sizeof(data), USB_CTRL_SET_TIMEOUT);
+-	if (len != sizeof(data)) {
+-		debug("smsc75xx_write_reg failed: index=%d, data=%d, len=%d",
+-		      index, data, len);
+-		return -1;
+-	}
+-	return 0;
+-}
+-
+-static int smsc75xx_read_reg(struct ueth_data *dev, u32 index, u32 *data)
+-{
+-	int len;
+-	ALLOC_CACHE_ALIGN_BUFFER(u32, tmpbuf, 1);
+-
+-	len = usb_control_msg(dev->pusb_dev, usb_rcvctrlpipe(dev->pusb_dev, 0),
+-		USB_VENDOR_REQUEST_READ_REGISTER,
+-		USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-		00, index, tmpbuf, sizeof(data), USB_CTRL_GET_TIMEOUT);
+-	*data = tmpbuf[0];
+-	if (len != sizeof(data)) {
+-		debug("smsc75xx_read_reg failed: index=%d, len=%d",
+-		      index, len);
+-		return -1;
+-	}
+-	le32_to_cpus(data);
+-	return 0;
+-}
+-
+-/* Loop until the read is completed with timeout */
+-static int smsc75xx_phy_wait_not_busy (struct ueth_data *dev)
+-{
+-	unsigned long start_time = get_timer(0);
+-	u32 val;
+-
+-	do {
+-		smsc75xx_read_reg(dev, MII_ACCESS, &val);
+-		if (!(val & MII_ACCESS_BUSY))
+-			return 0;
+-	} while (get_timer(start_time) < 1 * 1000 * 1000);
+-
+-	return -1;
+-}
+-
+-static int smsc75xx_wait_ready(struct ueth_data *dev)
+-{
+-	int timeout = 0;
+-
+-	do {
+-		u32 buf;
+-		int ret;
+-		ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
+-		if (ret < 0) {
+-			debug("Failed to read PMT_CTL: %d\n", ret);
+-			return ret;
+-		}
+-		if (buf & PMT_CTL_DEV_RDY)
+-			return 0;
+-
+-		udelay(10 * 1000);
+-		timeout++;
+-	} while (timeout < 100);
+-
+-	debug("timeout waiting for device ready\n");
+-	return -1;
+-}
+-
+-
+-static int smsc75xx_mdio_read(struct ueth_data *dev, int phy_id, int idx)
+-{
+-	u32 val, addr;
+-	int ret;
+-
+-	/* confirm MII not busy */
+-	if (smsc75xx_phy_wait_not_busy(dev)) {
+-		debug("MII is busy in smsc75xx_mdio_read\n");
+-		return -1;
+-	}
+-	phy_id &= 0x1f;
+-	idx &= 0x1f;
+-	addr = ((phy_id << MII_ACCESS_PHY_ADDR_SHIFT) & MII_ACCESS_PHY_ADDR)
+-		| ((idx << MII_ACCESS_REG_ADDR_SHIFT) & MII_ACCESS_REG_ADDR)
+-		| MII_ACCESS_READ | MII_ACCESS_BUSY;
+-
+-	ret = smsc75xx_write_reg(dev, MII_ACCESS, addr);
+-	if (ret < 0) {
+-		debug("Error writing MII_ACCESS\n");
+-		return -1;
+-	}
+-
+-	ret = smsc75xx_phy_wait_not_busy(dev);
+-	if (ret < 0) {
+-		debug("Timed out reading MII reg %02X\n", idx);
+-		return -1;
+-	}
+-
+-	ret = smsc75xx_read_reg(dev, MII_DATA, &val);
+-	if (ret < 0) {
+-		debug("Error reading MII_DATA\n");
+-		return -1;
+-	}
+-
+-	return (u16)(val & 0xFFFF);
+-}
+-
+-static void smsc75xx_mdio_write(struct ueth_data *dev, int phy_id, int idx,
+-				int regval)
+-{
+-	u32 val, addr;
+-	int ret;
+-
+-	/* confirm MII not busy */
+-	if (smsc75xx_phy_wait_not_busy(dev)) {
+-		debug("MII is busy in smsc75xx_mdio_write\n");
+-		return;
+-	}
+-
+-	val = regval;
+-	ret = smsc75xx_write_reg(dev, MII_DATA, val);
+-	if (ret < 0) {
+-		debug("Error writing MII_DATA\n");
+-		return;
+-	}
+-
+-	phy_id &= 0x1f;
+-	idx &= 0x1f;
+-	addr = ((phy_id << MII_ACCESS_PHY_ADDR_SHIFT) & MII_ACCESS_PHY_ADDR)
+-		| ((idx << MII_ACCESS_REG_ADDR_SHIFT) & MII_ACCESS_REG_ADDR)
+-		| MII_ACCESS_WRITE | MII_ACCESS_BUSY;
+-	ret = smsc75xx_write_reg(dev, MII_ACCESS, addr);
+-	if (ret < 0) {
+-		debug("Error writing MII_ACCESS\n");
+-		return;
+-	}
+-
+-	ret = smsc75xx_phy_wait_not_busy(dev);
+-	if (ret < 0) {
+-		debug("Timed out writing MII reg %02X\n", idx);
+-		return;
+-	}
+-}
+-
+-#ifdef __notdef
+-static int smsc75xx_eeprom_confirm_not_busy(struct ueth_data *dev)
+-{
+-	unsigned long start_time = get_timer(0);
+-	u32 val;
+-
+-	do {
+-		smsc75xx_read_reg(dev, E2P_CMD, &val);
+-		if (!(val & E2P_CMD_BUSY_))
+-			return 0;
+-		udelay(40);
+-	} while (get_timer(start_time) < 1 * 1000 * 1000);
+-
+-	debug("EEPROM is busy\n");
+-	return -1;
+-}
+-
+-static int smsc75xx_wait_eeprom(struct ueth_data *dev)
+-{
+-	unsigned long start_time = get_timer(0);
+-	u32 val;
+-
+-	do {
+-		smsc75xx_read_reg(dev, E2P_CMD, &val);
+-		if (!(val & E2P_CMD_BUSY_) || (val & E2P_CMD_TIMEOUT_))
+-			break;
+-		udelay(40);
+-	} while (get_timer(start_time) < 1 * 1000 * 1000);
+-
+-	if (val & (E2P_CMD_TIMEOUT_ | E2P_CMD_BUSY_)) {
+-		debug("EEPROM read operation timeout\n");
+-		return -1;
+-	}
+-	return 0;
+-}
+-
+-static int smsc75xx_read_eeprom(struct ueth_data *dev, u32 offset, u32 length,
+-				u8 *data)
+-{
+-	u32 val;
+-	int i, ret;
+-
+-	ret = smsc75xx_eeprom_confirm_not_busy(dev);
+-	if (ret)
+-		return ret;
+-
+-	for (i = 0; i < length; i++) {
+-		val = E2P_CMD_BUSY_ | E2P_CMD_READ_ | (offset & E2P_CMD_ADDR_);
+-		smsc75xx_write_reg(dev, E2P_CMD, val);
+-
+-		ret = smsc75xx_wait_eeprom(dev);
+-		if (ret < 0)
+-			return ret;
+-
+-		smsc75xx_read_reg(dev, E2P_DATA, &val);
+-		data[i] = val & 0xFF;
+-		offset++;
+-	}
+-	return 0;
+-}
+-#endif
+-
+-/*
+- * mii_nway_restart - restart NWay (autonegotiation) for this interface
+- *
+- * Returns 0 on success, negative on error.
+- */
+-static int mii_nway_restart(struct ueth_data *dev)
+-{
+-	int bmcr;
+-	int r = -1;
+-
+-	/* if autoneg is off, it's an error */
+-	bmcr = smsc75xx_mdio_read(dev, dev->phy_id, MII_BMCR);
+-
+-	if (bmcr & BMCR_ANENABLE) {
+-		bmcr |= BMCR_ANRESTART;
+-		smsc75xx_mdio_write(dev, dev->phy_id, MII_BMCR, bmcr);
+-		r = 0;
+-	}
+-	return r;
+-}
+-
+-static int smsc75xx_phy_initialize(struct ueth_data *dev)
+-{
+-	int bmcr,ret, timeout = 0;
+-	smsc75xx_mdio_write(dev, dev->phy_id, MII_BMCR, BMCR_RESET);
+-	do {
+-		udelay(10 * 1000);
+-		bmcr = smsc75xx_mdio_read(dev, dev->phy_id, MII_BMCR);
+-		if (bmcr < 0) {
+-			debug("Error reading MII_BMCR: 0x%u\n", bmcr);
+-			return bmcr;
+-		}
+-		timeout++;
+-	} while ((bmcr & BMCR_RESET) && (timeout < 100));
+-	if(timeout >= 100){
+-		debug("smsc75xx_phy_initialize() BMCR_RESET timeout\n");
+-		return -1;
+-	}
+-	smsc75xx_mdio_write(dev, dev->phy_id, MII_ADVERTISE,
+-		ADVERTISE_ALL | ADVERTISE_CSMA | ADVERTISE_PAUSE_CAP |
+-		ADVERTISE_PAUSE_ASYM);
+-	smsc75xx_mdio_write(dev, dev->phy_id, MII_CTRL1000, ADVERTISE_1000FULL);
+-
+-	/* read and write to clear phy interrupt status */
+-	ret = smsc75xx_mdio_read(dev, dev->phy_id, PHY_INT_SRC);
+-	if (ret < 0) {
+-		debug( "Error reading PHY_INT_SRC\n");
+-		return ret;
+-	}
+-	smsc75xx_mdio_write(dev, dev->phy_id, PHY_INT_SRC, 0xffff);
+-
+-	smsc75xx_mdio_write(dev, dev->phy_id, PHY_INT_MASK, PHY_INT_MASK_DEFAULT);
+-	mii_nway_restart(dev);
+-
+-	debug("phy initialised successfully\n");
+-
+-	return 0;
+-}
+-
+-static int smsc75xx_init_mac_address(struct eth_device *eth,
+-		struct ueth_data *dev)
+-{
+-#ifdef __notdef
+-	/* try reading mac address from EEPROM */
+-	if (smsc75xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
+-			eth->enetaddr) == 0) {
+-		if (is_valid_ether_addr(eth->enetaddr)) {
+-			/* eeprom values are valid so use them */
+-			debug("MAC address read from EEPROM\n");
+-			return 0;
+-		}
+-	}
+-#endif
+-	/*
+-	 * No eeprom, or eeprom values are invalid. Generating a random MAC
+-	 * address is not safe. Just return an error.
+-	 */
+-	return -1;
+-}
+-
+-static int smsc75xx_write_hwaddr(struct eth_device *eth)
+-{
+-	struct ueth_data *dev = (struct ueth_data *)eth->priv;
+-	struct smsc75xx_private *priv = dev->dev_priv;
+-	u32 addr_lo = __get_unaligned_le32(&eth->enetaddr[0]);
+-	u32 addr_hi = __get_unaligned_le16(&eth->enetaddr[4]);
+-	int ret;
+-
+-	/* set hardware address */
+-	debug("** %s()\n", __func__);
+-	ret = smsc75xx_write_reg(dev, RX_ADDRH, addr_hi);
+-	if(ret < 0)
+-		return ret;
+-	ret = smsc75xx_write_reg(dev, RX_ADDRL, addr_lo);
+-	if(ret < 0)
+-		return ret;
+-
+-	addr_hi |= ADDR_FILTX_FB_VALID;
+-	ret = smsc75xx_write_reg(dev, ADDR_FILTX, addr_hi);
+-	if(ret < 0)
+-		return ret;
+-	ret = smsc75xx_write_reg(dev, ADDR_FILTX + 4, addr_lo);
+-	if (ret < 0)
+-		return ret;
+-
+-	debug("MAC %pM\n", eth->enetaddr);
+-	priv->have_hwaddr = 1;
+-	return 0;
+-}
+-
+-/* Enable or disable Tx & Rx checksum offload engines */
+-static int smsc75xx_set_csums(struct ueth_data *dev,
+-		int use_tx_csum, int use_rx_csum)
+-{
+-	u32 read_buf;
+-	int ret = smsc75xx_read_reg(dev, RFE_CTL, &read_buf);
+-	if (ret < 0)
+-		return ret;
+-	debug("smsc75xx_set_csums() >> RFE_CTL = 0x%08x\n", read_buf);
+-
+-#warning "left implement tx checksum"
+-
+-#ifdef __notdef
+-	if (use_tx_csum)
+-		read_buf |= Tx_COE_EN_;
+-	else
+-		read_buf &= ~Tx_COE_EN_;
+-#endif
+-	if (use_rx_csum)
+-		read_buf |= RFE_CTL_TCPUDP_CKM | RFE_CTL_IP_CKM;
+-	else
+-		read_buf &= ~(RFE_CTL_TCPUDP_CKM | RFE_CTL_IP_CKM);
+-
+-	ret = smsc75xx_write_reg(dev, RFE_CTL, read_buf);
+-	if(ret < 0){
+-		debug("RFE_CTL: checksum write failed\n");
+-		return -1;
+-	}
+-	return 0;
+-}
+-
+-static void smsc75xx_set_multicast(struct ueth_data *dev)
+-{
+-	struct smsc75xx_private *priv = dev->dev_priv;
+-
+-	/* No multicast in u-boot */
+-	priv->mac_cr &= ~(MAC_CR_PRMS_ | MAC_CR_MCPAS_ | MAC_CR_HPFILT_);
+-}
+-
+-/*
+- * smsc75xx callbacks
+- */
+-static int smsc75xx_init(struct eth_device *eth, bd_t *bd)
+-{
+-	int ret;
+-	u32 write_buf;
+-	u32 read_buf;
+-	u32 buf;
+-	u32 burst_cap;
+-	int timeout;
+-	struct ueth_data *dev = (struct ueth_data *)eth->priv;
+-	struct smsc75xx_private *priv = (struct smsc75xx_private *)dev->dev_priv;
+-#define TIMEOUT_RESOLUTION 50	/* ms */
+-	int link_detected;
+-
+-	debug("** %s()\n", __func__);
+-	dev->phy_id = smsc75xx_INTERNAL_PHY_ID; /* fixed phy id */
+-
+-	ret = smsc75xx_wait_ready(dev);
+-	if (ret < 0) {
+-		debug("device not ready in smsc75xx_reset\n");
+-		return ret;
+-	}
+-	/* Start lite Reset */
+-	ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
+-	if (ret < 0) {
+-		debug( "Failed to read HW_CFG: %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= HW_CFG_LRST;
+-	ret = smsc75xx_write_reg(dev, HW_CFG, buf);
+-	if (ret < 0) {
+-		debug("Failed to write HW_CFG: %d\n", ret);
+-		return ret;
+-	}
+-
+-	timeout = 0;
+-	do {
+-		udelay(10 * 1000);
+-		ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
+-		if (ret < 0) {
+-			debug("Failed to read HW_CFG: %d\n", ret);
+-			return ret;
+-		}
+-		timeout++;
+-	} while ((buf & HW_CFG_LRST) && (timeout < 100));
+-
+-	if (timeout >= 100) {
+-		debug("timeout on completion of Lite Reset\n");
+-		return -1;
+-	}
+-
+-	debug("Lite reset complete, resetting PHY (1)\n");
+-
+-	/* PHY Reset */
+-	ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read PMT_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= PMT_CTL_PHY_RST;
+-
+-	ret = smsc75xx_write_reg(dev, PMT_CTL, buf);
+-	if (ret < 0) {
+-		debug("Failed to write PMT_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	timeout = 0;
+-	do {
+-		udelay(10 * 1000);
+-		ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
+-		if (ret < 0) {
+-			debug("Failed to read PMT_CTL: %d\n", ret);
+-			return ret;
+-		}
+-		timeout++;
+-	} while ((buf & PMT_CTL_PHY_RST) && (timeout < 100));
+-
+-	if (timeout >= 100) {
+-		debug("timeout waiting for PHY Reset\n");
+-		return -1;
+-	}
+-	debug("PHY reset complete\n");
+-
+-	if (!priv->have_hwaddr && smsc75xx_init_mac_address(eth, dev) == 0)
+-		priv->have_hwaddr = 1;
+-
+-	if (!priv->have_hwaddr) {
+-		puts("Error: smsc75xx: No MAC address set - set usbethaddr\n");
+-		return -1;
+-	}
+-
+-	if (smsc75xx_write_hwaddr(eth) < 0)
+-		return -1;
+-
+-	ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
+-	if (ret < 0){
+-		debug("Read Value from HW_CFG: failed %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= HW_CFG_BIR;
+-	ret = smsc75xx_write_reg(dev, HW_CFG, buf);
+-	if (ret < 0){
+-		debug("Write HW_CFG_BIR failed %d\n", ret);
+-		return ret;
+-	}
+-
+-	ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
+-	if (ret < 0){
+-		debug("Read Value from HW_CFG: failed %d\n", ret);
+-		return ret;
+-	}
+-
+-	debug("Read Value from HW_CFG after writing "
+-			"HW_CFG_BIR: 0x%08x\n", buf);
+-
+-#ifdef TURBO_MODE
+-	if (dev->pusb_dev->speed == USB_SPEED_HIGH) {
+-		burst_cap = DEFAULT_HS_BURST_CAP_SIZE / HS_USB_PKT_SIZE;
+-		priv->rx_urb_size = DEFAULT_HS_BURST_CAP_SIZE;
+-	} else {
+-		burst_cap = DEFAULT_FS_BURST_CAP_SIZE / FS_USB_PKT_SIZE;
+-		priv->rx_urb_size = DEFAULT_FS_BURST_CAP_SIZE;
+-	}
+-#else
+-	burst_cap = 0;
+-	priv->rx_urb_size = MAX_SINGLE_PACKET_SIZE;
+-#endif
+-	debug("rx_urb_size=%ld\n", (ulong)priv->rx_urb_size);
+-
+-	ret = smsc75xx_write_reg(dev, BURST_CAP, burst_cap);
+-	if (ret < 0)
+-		return ret;
+-
+-	ret = smsc75xx_read_reg(dev, BURST_CAP, &buf);
+-	if (ret < 0)
+-		return ret;
+-	debug("Read Value from BURST_CAP after writing: 0x%08x\n", buf);
+-
+-	buf = DEFAULT_BULK_IN_DELAY;
+-	ret = smsc75xx_write_reg(dev, BULK_IN_DLY, buf);
+-	if (ret < 0)
+-		return ret;
+-
+-	ret = smsc75xx_read_reg(dev, BULK_IN_DLY, &buf);
+-	if (ret < 0)
+-		return ret;
+-	debug("Read Value from BULK_IN_DLY after writing: "
+-			"0x%08x\n", read_buf);
+-#ifdef TURBO_MODE
+-	ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read HW_CFG: %d\n", ret);
+-		return ret;
+-	}
+-	debug("TURBO_MODE -> HW_CFG: 0x%08x\n", buf);
+-	buf |= (HW_CFG_MEF | HW_CFG_BCE);
+-	ret = smsc75xx_write_reg(dev, HW_CFG, buf);
+-	if (ret < 0) {
+-		debug("Failed to write HW_CFG: %d\n", ret);
+-		return ret;
+-	}
+-	ret = smsc75xx_read_reg(dev, HW_CFG, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read HW_CFG: %d\n", ret);
+-		return ret;
+-	}
+-	debug("TURBO_MODE ->HW_CFG: 0x%08x\n", buf);
+-#endif
+-
+-	/* set FIFO sizes */
+-	buf = (MAX_RX_FIFO_SIZE - 512) / 512;
+-	ret = smsc75xx_write_reg(dev, FCT_RX_FIFO_END, buf);
+-	if (ret < 0) {
+-		debug("Failed to write FCT_RX_FIFO_END: %d\n", ret);
+-		return ret;
+-	}
+-
+-	debug("FCT_RX_FIFO_END set to 0x%08x\n", buf);
+-
+-	buf = (MAX_TX_FIFO_SIZE - 512) / 512;
+-	ret = smsc75xx_write_reg(dev, FCT_TX_FIFO_END, buf);
+-	if (ret < 0) {
+-		debug("Failed to write FCT_TX_FIFO_END: %d\n", ret);
+-		return ret;
+-	}
+-	debug("FCT_TX_FIFO_END set to 0x%08x\n", buf);
+-
+-	ret = smsc75xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL);
+-	if (ret < 0) {
+-		debug("Failed to write INT_STS: %d\n", ret);
+-		return ret;
+-	}
+-
+-	ret = smsc75xx_read_reg(dev, ID_REV, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read ID_REV: %d\n", ret);
+-		return ret;
+-	}
+-
+-	debug("ID_REV = 0x%08x\n", buf);
+-
+-	ret = smsc75xx_read_reg(dev, E2P_CMD, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read E2P_CMD: %d\n", ret);
+-		return ret;
+-	}
+-
+-	/* only set default GPIO/LED settings if no EEPROM is detected */
+-	if (!(buf & E2P_CMD_LOADED)) {
+-		ret = smsc75xx_read_reg(dev, LED_GPIO_CFG, &buf);
+-		if (ret < 0) {
+-			debug("Failed to read LED_GPIO_CFG: %d\n", ret);
+-			return ret;
+-		}
+-		buf &= ~(LED_GPIO_CFG_LED2_FUN_SEL | LED_GPIO_CFG_LED10_FUN_SEL);
+-		buf |= LED_GPIO_CFG_LEDGPIO_EN | LED_GPIO_CFG_LED2_FUN_SEL;
+-		ret = smsc75xx_write_reg(dev, LED_GPIO_CFG, buf);
+-		if (ret < 0) {
+-			debug("Failed to write LED_GPIO_CFG: %d\n", ret);
+-			return ret;
+-		}
+-	}
+-
+-	ret = smsc75xx_write_reg(dev, FLOW, 0);
+-	if (ret < 0) {
+-		debug("Failed to write FLOW: %d\n", ret);
+-		return ret;
+-	}
+-
+-	ret = smsc75xx_write_reg(dev, FCT_FLOW, 0);
+-	if (ret < 0) {
+-		debug("Failed to write FCT_FLOW: %d\n", ret);
+-		return ret;
+-	}
+-
+-	/* Don't need rfe_ctl_lock during initialisation */
+-	ret = smsc75xx_read_reg(dev, RFE_CTL, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read RFE_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= RFE_CTL_AB | RFE_CTL_DPF;
+-
+-	ret = smsc75xx_write_reg(dev, RFE_CTL, buf);
+-	if (ret < 0) {
+-		debug("Failed to write RFE_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	ret = smsc75xx_read_reg(dev, RFE_CTL, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read RFE_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	debug("RFE_CTL set to 0x%08x\n", buf);
+-
+-	/* Disable checksum offload engines */
+-	ret = smsc75xx_set_csums(dev, 0, 0);
+-	if (ret < 0) {
+-		debug("Failed to set csum offload: %d\n", ret);
+-		return ret;
+-	}
+-
+-	smsc75xx_set_multicast(dev);
+-
+-	if (smsc75xx_phy_initialize(dev) < 0){
+-		debug("Failed to initialize PHY: %d\n", ret);
+-		return -1;
+-	}
+-
+-	ret = smsc75xx_read_reg(dev, INT_EP_CTL, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read INT_EP_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	/* enable PHY interrupts */
+-	buf |= INT_ENP_PHY_INT;
+-	ret = smsc75xx_write_reg(dev, INT_EP_CTL, buf);
+-	if (ret < 0) {
+-		debug("Failed to write INT_EP_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	/* allow mac to detect speed and duplex from phy */
+-	ret = smsc75xx_read_reg(dev, MAC_CR, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read MAC_CR: %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= (MAC_CR_ADD | MAC_CR_ASD);
+-	ret = smsc75xx_write_reg(dev, MAC_CR, buf);
+-	if (ret < 0) {
+-		debug("Failed to write MAC_CR: %d\n", ret);
+-		return ret;
+-	}
+-
+-	ret = smsc75xx_read_reg(dev, MAC_TX, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read MAC_TX: %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= MAC_TX_TXEN;
+-
+-	ret = smsc75xx_write_reg(dev, MAC_TX, buf);
+-	if (ret < 0) {
+-		debug("Failed to write MAC_TX: %d\n", ret);
+-		return ret;
+-	}
+-
+-	debug("MAC_TX set to 0x%08x\n", buf);
+-
+-	ret = smsc75xx_read_reg(dev, FCT_TX_CTL, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read FCT_TX_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= FCT_TX_CTL_EN;
+-	ret = smsc75xx_write_reg(dev, FCT_TX_CTL, buf);
+-	if (ret < 0) {
+-		debug("Failed to write FCT_TX_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	debug("FCT_TX_CTL set to 0x%08x\n", buf);
+-#warning "smsc75xx_set_rx_max_frame_length() not defined"
+-
+-#ifdef __notdef
+-	ret = smsc75xx_set_rx_max_frame_length(dev, dev->net->mtu + ETH_HLEN);
+-	if (ret < 0) {
+-		debug(dev->net, "Failed to set max rx frame length\n");
+-		return ret;
+-	}
+-#endif
+-	ret = smsc75xx_read_reg(dev, MAC_RX, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read MAC_RX: %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= MAC_RX_RXEN;
+-
+-	ret = smsc75xx_write_reg(dev, MAC_RX, buf);
+-	if (ret < 0) {
+-		debug("Failed to write MAC_RX: %d\n", ret);
+-		return ret;
+-	}
+-
+-	debug("MAC_RX set to 0x%08x\n", buf);
+-
+-	ret = smsc75xx_read_reg(dev, FCT_RX_CTL, &buf);
+-	if (ret < 0) {
+-		debug("Failed to read FCT_RX_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	buf |= FCT_RX_CTL_EN;
+-
+-	ret = smsc75xx_write_reg(dev, FCT_RX_CTL, buf);
+-	if (ret < 0) {
+-		debug("Failed to write FCT_RX_CTL: %d\n", ret);
+-		return ret;
+-	}
+-
+-	debug("FCT_RX_CTL set to 0x%08x\n", buf);
+-
+-	timeout = 0;
+-	do {
+-		link_detected = smsc75xx_mdio_read(dev, dev->phy_id, MII_BMSR)
+-			& BMSR_LSTATUS;
+-		if (!link_detected) {
+-			if (timeout == 0)
+-				printf("Waiting for Ethernet connection... ");
+-			udelay(TIMEOUT_RESOLUTION * 1000);
+-			timeout += TIMEOUT_RESOLUTION;
+-		}
+-	} while (!link_detected && timeout < PHY_CONNECT_TIMEOUT);
+-	if (link_detected) {
+-		if (timeout != 0)
+-			printf("done.\n");
+-	} else {
+-		printf("unable to connect.\n");
+-		return -1;
+-	}
+-	return 0;
+-}
+-
+-static int smsc75xx_send(struct eth_device *eth, void* packet, int length)
+-{
+-	struct ueth_data *dev = (struct ueth_data *)eth->priv;
+-	int err;
+-	int actual_len;
+-	u32 tx_cmd_a;
+-	u32 tx_cmd_b;
+-	ALLOC_CACHE_ALIGN_BUFFER(unsigned char, msg,
+-				 PKTSIZE + sizeof(tx_cmd_a) + sizeof(tx_cmd_b));
+-
+-	debug("** %s(), len %d, buf %#x\n", __func__, length, (int)msg);
+-	if (length > PKTSIZE)
+-		return -1;
+-
+-	// tx_cmd_a = (u32)length | TX_CMD_A_FIRST_SEG_ | TX_CMD_A_LAST_SEG_;
+-	tx_cmd_a = (u32)(length & TX_CMD_A_LEN) | TX_CMD_A_FCS;
+-	tx_cmd_b = 0;
+-	// tx_cmd_b = (u32)length;
+-	cpu_to_le32s(&tx_cmd_a);
+-	cpu_to_le32s(&tx_cmd_b);
+-
+-	/* prepend cmd_a and cmd_b */
+-	memcpy(msg, &tx_cmd_a, sizeof(tx_cmd_a));
+-	memcpy(msg + sizeof(tx_cmd_a), &tx_cmd_b, sizeof(tx_cmd_b));
+-	memcpy(msg + sizeof(tx_cmd_a) + sizeof(tx_cmd_b), (void *)packet,
+-	       length);
+-	err = usb_bulk_msg(dev->pusb_dev,
+-				usb_sndbulkpipe(dev->pusb_dev, dev->ep_out),
+-				(void *)msg,
+-				length + sizeof(tx_cmd_a) + sizeof(tx_cmd_b),
+-				&actual_len,
+-				USB_BULK_SEND_TIMEOUT);
+-	debug("Tx: len = %u, actual = %u, err = %d\n",
+-	      length + sizeof(tx_cmd_a) + sizeof(tx_cmd_b),
+-	      actual_len, err);
+-	return err;
+-}
+-
+-static int smsc75xx_recv(struct eth_device *eth)
+-{
+-	struct ueth_data *dev = (struct ueth_data *)eth->priv;
+-	DEFINE_CACHE_ALIGN_BUFFER(unsigned char, recv_buf, AX_RX_URB_SIZE);
+-	unsigned char *buf_ptr;
+-	int err;
+-	int actual_len;
+-	u32 packet_len;
+-	int cur_buf_align;
+-	int off = 0;
+-
+-	debug("** %s()\n", __func__);
+-	err = usb_bulk_msg(dev->pusb_dev,
+-				usb_rcvbulkpipe(dev->pusb_dev, dev->ep_in),
+-				(void *)recv_buf,
+-				AX_RX_URB_SIZE,
+-				&actual_len,
+-				USB_BULK_RECV_TIMEOUT);
+-	debug("Rx: len = %u, actual = %u, err = %d\n", AX_RX_URB_SIZE,
+-	      actual_len, err);
+-	if (err != 0) {
+-		debug("Rx: failed to receive\n");
+-		return -1;
+-	}
+-	if (actual_len > AX_RX_URB_SIZE) {
+-		debug("Rx: received too many bytes %d\n", actual_len);
+-		return -1;
+-	}
+-
+-	buf_ptr = recv_buf;
+-	while (actual_len > 0) {
+-		u32 rx_cmd_a, rx_cmd_b, align_count, size;
+-		memcpy(&rx_cmd_a, buf_ptr, sizeof(rx_cmd_a));
+-		le32_to_cpus(&rx_cmd_a);
+-		memcpy(&rx_cmd_b, buf_ptr+4, sizeof(rx_cmd_b));
+-		off = sizeof(rx_cmd_a) + sizeof(rx_cmd_b) + RXW_PADDING;
+-		packet_len = size = (rx_cmd_a & RX_CMD_A_LEN) - RXW_PADDING;
+-		align_count = (4 - ((size + RXW_PADDING) % 4)) % 4;
+-		debug("Rx: packet length: %d  align: %d\n", packet_len, align_count);
+-		NetReceive(buf_ptr + off, packet_len);
+-		/* Adjust for next iteration */
+-		actual_len -= off + packet_len;
+-		buf_ptr += off + packet_len;
+-		cur_buf_align = (int)buf_ptr - (int)recv_buf;
+-		actual_len -= align_count;
+-		buf_ptr += align_count;
+-	}
+-	return err;
+-}
+-
+-#ifdef __notdef
+-static int smsc75xx_recv(struct eth_device *eth)
+-{
+-	struct ueth_data *dev = (struct ueth_data *)eth->priv;
+-	DEFINE_CACHE_ALIGN_BUFFER(unsigned char, recv_buf, AX_RX_URB_SIZE);
+-	unsigned char *buf_ptr;
+-	int err;
+-	int actual_len;
+-	u32 packet_len;
+-	int cur_buf_align;
+-
+-	debug("** %s()\n", __func__);
+-	err = usb_bulk_msg(dev->pusb_dev,
+-				usb_rcvbulkpipe(dev->pusb_dev, dev->ep_in),
+-				(void *)recv_buf,
+-				AX_RX_URB_SIZE,
+-				&actual_len,
+-				USB_BULK_RECV_TIMEOUT);
+-	debug("Rx: len = %u, actual = %u, err = %d\n", AX_RX_URB_SIZE,
+-	      actual_len, err);
+-	if (err != 0) {
+-		debug("Rx: failed to receive\n");
+-		return -1;
+-	}
+-	if (actual_len > AX_RX_URB_SIZE) {
+-		debug("Rx: received too many bytes %d\n", actual_len);
+-		return -1;
+-	}
+-
+-	buf_ptr = recv_buf;
+-	while (actual_len > 0) {
+-		/*
+-		 * 1st 4 bytes contain the length of the actual data plus error
+-		 * info. Extract data length.
+-		 */
+-		if (actual_len < sizeof(packet_len)) {
+-			debug("Rx: incomplete packet length\n");
+-			return -1;
+-		}
+-		memcpy(&packet_len, buf_ptr, sizeof(packet_len));
+-		le32_to_cpus(&packet_len);
+-		if (packet_len & RX_STS_ES_) {
+-			debug("Rx: Error header=%#x", packet_len);
+-			return -1;
+-		}
+-		packet_len = ((packet_len & RX_STS_FL_) >> 16);
+-
+-		if (packet_len > actual_len - sizeof(packet_len)) {
+-			debug("Rx: too large packet: %d\n", packet_len);
+-			return -1;
+-		}
+-
+-		/* Notify net stack */
+-		NetReceive(buf_ptr + sizeof(packet_len), packet_len - 4);
+-
+-		/* Adjust for next iteration */
+-		actual_len -= sizeof(packet_len) + packet_len;
+-		buf_ptr += sizeof(packet_len) + packet_len;
+-		cur_buf_align = (int)buf_ptr - (int)recv_buf;
+-
+-		if (cur_buf_align & 0x03) {
+-			int align = 4 - (cur_buf_align & 0x03);
+-
+-			actual_len -= align;
+-			buf_ptr += align;
+-		}
+-	}
+-	return err;
+-}
+-#endif
+-
+-static void smsc75xx_halt(struct eth_device *eth)
+-{
+-	debug("** %s()\n", __func__);
+-}
+-
+-/*
+- * SMSC probing functions
+- */
+-void smsc75xx_eth_before_probe(void)
+-{
+-	curr_eth_dev = 0;
+-}
+-
+-struct smsc75xx_dongle {
+-	unsigned short vendor;
+-	unsigned short product;
+-};
+-
+-static const struct smsc75xx_dongle smsc75xx_dongles[] = {
+-	{ 0x0424, 0x7500 }, /* SMSC7500 USB Ethernet Device */
+-	{ 0x0000, 0x0000 }	/* END - Do not remove */
+-};
+-
+-/* Probe to see if a new device is actually an SMSC device */
+-int smsc75xx_eth_probe(struct usb_device *dev, unsigned int ifnum,
+-		      struct ueth_data *ss)
+-{
+-	struct usb_interface *iface;
+-	struct usb_interface_descriptor *iface_desc;
+-	int i;
+-
+-	/* let's examine the device now */
+-	iface = &dev->config.if_desc[ifnum];
+-	iface_desc = &dev->config.if_desc[ifnum].desc;
+-
+-	for (i = 0; smsc75xx_dongles[i].vendor != 0; i++) {
+-		if (dev->descriptor.idVendor == smsc75xx_dongles[i].vendor &&
+-		    dev->descriptor.idProduct == smsc75xx_dongles[i].product)
+-			/* Found a supported dongle */
+-			break;
+-	}
+-	if (smsc75xx_dongles[i].vendor == 0)
+-		return 0;
+-
+-	/* At this point, we know we've got a live one */
+-	debug("\n\nUSB Ethernet device detected\n");
+-	memset(ss, '\0', sizeof(struct ueth_data));
+-
+-	/* Initialize the ueth_data structure with some useful info */
+-	ss->ifnum = ifnum;
+-	ss->pusb_dev = dev;
+-	ss->subclass = iface_desc->bInterfaceSubClass;
+-	ss->protocol = iface_desc->bInterfaceProtocol;
+-
+-	/*
+-	 * We are expecting a minimum of 3 endpoints - in, out (bulk), and int.
+-	 * We will ignore any others.
+-	 */
+-	for (i = 0; i < iface_desc->bNumEndpoints; i++) {
+-		/* is it an BULK endpoint? */
+-		if ((iface->ep_desc[i].bmAttributes &
+-		     USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_BULK) {
+-			if (iface->ep_desc[i].bEndpointAddress & USB_DIR_IN)
+-				ss->ep_in =
+-					iface->ep_desc[i].bEndpointAddress &
+-					USB_ENDPOINT_NUMBER_MASK;
+-			else
+-				ss->ep_out =
+-					iface->ep_desc[i].bEndpointAddress &
+-					USB_ENDPOINT_NUMBER_MASK;
+-		}
+-
+-		/* is it an interrupt endpoint? */
+-		if ((iface->ep_desc[i].bmAttributes &
+-		    USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_INT) {
+-			ss->ep_int = iface->ep_desc[i].bEndpointAddress &
+-				USB_ENDPOINT_NUMBER_MASK;
+-			ss->irqinterval = iface->ep_desc[i].bInterval;
+-		}
+-	}
+-	debug("Endpoints In %d Out %d Int %d\n",
+-		  ss->ep_in, ss->ep_out, ss->ep_int);
+-
+-	/* Do some basic sanity checks, and bail if we find a problem */
+-	if (usb_set_interface(dev, iface_desc->bInterfaceNumber, 0) ||
+-	    !ss->ep_in || !ss->ep_out || !ss->ep_int) {
+-		debug("Problems with device\n");
+-		return 0;
+-	}
+-	dev->privptr = (void *)ss;
+-
+-	/* alloc driver private */
+-	ss->dev_priv = calloc(1, sizeof(struct smsc75xx_private));
+-	if (!ss->dev_priv)
+-		return 0;
+-
+-	return 1;
+-}
+-
+-int smsc75xx_eth_get_info(struct usb_device *dev, struct ueth_data *ss,
+-				struct eth_device *eth)
+-{
+-	debug("** %s()\n", __func__);
+-	if (!eth) {
+-		debug("%s: missing parameter.\n", __func__);
+-		return 0;
+-	}
+-	sprintf(eth->name, "%s%d", smsc75xx_BASE_NAME, curr_eth_dev++);
+-	eth->init = smsc75xx_init;
+-	eth->send = smsc75xx_send;
+-	eth->recv = smsc75xx_recv;
+-	eth->halt = smsc75xx_halt;
+-	eth->write_hwaddr = smsc75xx_write_hwaddr;
+-	eth->priv = ss;
+-	return 1;
+-}
+diff --git a/drivers/usb/eth/usb_ether.c b/drivers/usb/eth/usb_ether.c
+index 4b9d952..3780653 100644
+--- a/drivers/usb/eth/usb_ether.c
++++ b/drivers/usb/eth/usb_ether.c
+@@ -44,13 +44,6 @@ static const struct usb_eth_prob_dev prob_dev[] = {
+ 		.get_info = smsc95xx_eth_get_info,
+ 	},
+ #endif
+-#ifdef CONFIG_USB_ETHER_SMSC75XX
+-	{
+-		.before_probe = smsc75xx_eth_before_probe,
+-		.probe = smsc75xx_eth_probe,
+-		.get_info = smsc75xx_eth_get_info,
+-	},
+-#endif
+ 	{ },		/* END */
+ 	{ },		/* END */
+ };
+diff --git a/include/configs/omap5_igep0050.h b/include/configs/omap5_igep0050.h
+index ed0b5d1..91db631 100644
+--- a/include/configs/omap5_igep0050.h
++++ b/include/configs/omap5_igep0050.h
+@@ -22,15 +22,17 @@
+ #define CONFIG_OMAP5_IGEPv5
+ 
+ /* IGEPv5 Memory Configuration */
+-#undef IGEPv5_MEMORY_4G
++#define IGEPv5_MEMORY_4G
+ 
+ #define CONFIG_CONS_INDEX		3
+ #define CONFIG_SYS_NS16550_COM3		UART3_BASE
+ #define CONFIG_BAUDRATE			115200
+ 
++#define CONFIG_MISC_INIT_R
+ /* MMC ENV related defines */
+ #define CONFIG_ENV_IS_IN_MMC
+ #define CONFIG_SYS_MMC_ENV_DEV		1	/* SLOT2: eMMC(1) */
++#define CONFIG_ENV_SIZE			(128 << 10)
+ #define CONFIG_ENV_OFFSET		0xE0000
+ #define CONFIG_ENV_OFFSET_REDUND	(CONFIG_ENV_OFFSET + CONFIG_ENV_SIZE)
+ #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
+@@ -74,25 +76,19 @@
+ #define CONFIG_SYS_I2C_USB1_3503_BUS_NUM 	2
+ #define CONFIG_SYS_I2C_USB1_3503_ADDR 		0x08
+ 
+-/* Implement SPL board init for OMAP5 IGEPv5 */
+-#define CONFIG_SPL_BOARD_INIT
+-
+ /* Enabled commands */
+-#define CONFIG_CMD_PING
+ #define CONFIG_CMD_DHCP		/* DHCP Support			*/
+ #define CONFIG_CMD_NET		/* bootp, tftpboot, rarpboot	*/
+ #define CONFIG_CMD_NFS		/* NFS support			*/
+ 
+ /* USB Networking options */
+ #define CONFIG_USB_HOST_ETHER
+-#define CONFIG_USB_ETHER_SMSC75XX
+ 
+-#define CONSOLEDEV		"ttyO2"
++#define CONSOLEDEV		"ttyS2"
+ 
+ /* Max time to hold reset on this board, see doc/README.omap-reset-time */
+ #define CONFIG_OMAP_PLATFORM_RESET_TIME_MAX_USEC	16296
+ 
+-#define CONFIG_SPL_SATA_SUPPORT
+ #define CONFIG_BOARD_LATE_INIT
+ #define CONFIG_CMD_SCSI
+ #define CONFIG_LIBATA
+diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
+index 3a04279..23d9caa 100644
+--- a/include/configs/ti_armv7_common.h
++++ b/include/configs/ti_armv7_common.h
+@@ -65,6 +65,169 @@
+  */
+ #define CONFIG_BOOTDELAY		1
+ 
++#define DEFAULT_MMC_TI_ARGS \
++	"mmcdev=0\0" \
++	"mmcrootfstype=ext4 rootwait\0" \
++	"memory=mem=2032M@0x80000000 mem=2048M@0x300000000 smsc75xx.mac=0x2,0xa1,0x5,0xa4,0xf,0x40\0" \
++	"finduuid=part uuid ${interface} ${bootpart} uuid\0" \
++	"args_mmc=run finduuid;setenv bootargs console=${console} " \
++		"${optargs} " \
++		"${memory} " \
++		"root=PARTUUID=${uuid} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0" \
++	"args_mmc_old=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"${memory} " \
++		"root=${oldroot} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0" \
++	"args_mmc_uuid=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"${memory} " \
++		"root=UUID=${uuid} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0" \
++	"args_uenv_root=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"${memory} " \
++		"root=${uenv_root} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${musb} ${cmdline}\0" \
++	"args_netinstall=setenv bootargs ${netinstall_bootargs} " \
++		"${optargs} " \
++		"${memory} " \
++		"${cape_disable} " \
++		"${cape_enable} " \
++		"root=/dev/ram rw " \
++		"${cmdline}\0"
++
++#define EEWIKI_BOOT \
++	"boot=${interface} dev ${mmcdev}; " \
++		"if ${interface} rescan; then " \
++			"echo SD/MMC found on device ${mmcdev};" \
++			"setenv bootpart ${mmcdev}:1; " \
++			"echo Checking for: /uEnv.txt ...;" \
++			"if test -e ${interface} ${bootpart} /uEnv.txt; then " \
++				"load ${interface} ${bootpart} ${loadaddr} /uEnv.txt;" \
++				"env import -t ${loadaddr} ${filesize};" \
++				"echo Loaded environment from /uEnv.txt;" \
++				"echo Checking if uenvcmd is set ...;" \
++				"if test -n ${uenvcmd}; then " \
++					"echo Running uenvcmd ...;" \
++					"run uenvcmd;" \
++				"fi;" \
++			"fi; " \
++			"echo Checking for: /boot/uEnv.txt ...;" \
++			"for i in 1 2 3 4 5 6 7 ; do " \
++				"setenv mmcpart ${i};" \
++				"setenv bootpart ${mmcdev}:${mmcpart};" \
++				"if test -e ${interface} ${bootpart} /boot/uEnv.txt; then " \
++					"load ${interface} ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
++					"env import -t ${loadaddr} ${filesize};" \
++					"echo Loaded environment from /boot/uEnv.txt;" \
++					"if test -n ${dtb}; then " \
++						"setenv fdtfile ${dtb};" \
++						"echo Using: dtb=${fdtfile} ...;" \
++					"fi;" \
++					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
++					"if test -n ${uname_r}; then " \
++						"setenv oldroot /dev/mmcblk${mmcblk}p${mmcpart};" \
++						"echo Running uname_boot ...;" \
++						"run uname_boot;" \
++					"fi;" \
++				"fi;" \
++			"done;" \
++		"fi;\0" \
++
++#define EEWIKI_UNAME_BOOT \
++	"uname_boot="\
++		"setenv bootdir /boot; " \
++		"setenv bootfile vmlinuz-${uname_r}; " \
++		"if test -e ${interface} ${bootpart} ${bootdir}/${bootfile}; then " \
++			"echo loading ${bootdir}/${bootfile} ...; "\
++			"run loadimage;" \
++			"setenv fdtdir /boot/dtbs/${uname_r}; " \
++			"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++				"run loadfdt;" \
++			"else " \
++				"setenv fdtdir /usr/lib/linux-image-${uname_r}; " \
++				"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++					"run loadfdt;" \
++				"else " \
++					"setenv fdtdir /lib/firmware/${uname_r}/device-tree; " \
++					"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++						"run loadfdt;" \
++					"else " \
++						"setenv fdtdir /boot/dtb-${uname_r}; " \
++						"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++							"run loadfdt;" \
++						"else " \
++							"setenv fdtdir /boot/dtbs; " \
++							"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++								"run loadfdt;" \
++							"else " \
++								"setenv fdtdir /boot/dtb; " \
++								"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++									"run loadfdt;" \
++								"else " \
++									"setenv fdtdir /boot; " \
++									"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++										"run loadfdt;" \
++									"else " \
++										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
++										"run args_mmc;" \
++										"echo debug: [${bootargs}] ... ;" \
++										"echo debug: [bootz ${loadaddr}] ... ;" \
++										"bootz ${loadaddr}; " \
++									"fi;" \
++								"fi;" \
++							"fi;" \
++						"fi;" \
++					"fi;" \
++				"fi;" \
++			"fi; " \
++			"setenv rdfile initrd.img-${uname_r}; " \
++			"if test -e ${interface} ${bootpart} ${bootdir}/${rdfile}; then " \
++				"echo loading ${bootdir}/${rdfile} ...; "\
++				"run loadrd;" \
++				"if test -n ${netinstall_enable}; then " \
++					"run args_netinstall; run message;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++				"fi;" \
++				"if test -n ${uenv_root}; then " \
++					"run args_uenv_root;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++				"fi;" \
++				"if test -n ${uuid}; then " \
++					"run args_mmc_uuid;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++				"else " \
++					"run args_mmc_old;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++				"fi;" \
++			"else " \
++				"if test -n ${uenv_root}; then " \
++					"run args_uenv_root;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} - ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} - ${fdtaddr}; " \
++				"fi;" \
++				"run args_mmc_old;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} - ${fdtaddr}] ... ;" \
++				"bootz ${loadaddr} - ${fdtaddr}; " \
++			"fi;" \
++		"fi;\0" \
++
+ /*
+  * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
+  * we say (for simplicity) that we have 1 bank, always, even when
+diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
+index 4ca45e3..499eb08 100644
+--- a/include/configs/ti_omap5_common.h
++++ b/include/configs/ti_omap5_common.h
+@@ -50,6 +50,7 @@
+ #include <asm/arch/omap.h>
+ 
+ #include <configs/ti_armv7_common.h>
++#define CONFIG_SUPPORT_RAW_INITRD
+ 
+ #ifndef CONFIG_CM_T54
+ /* USB GADGET */
+@@ -65,13 +66,6 @@
+ #define CONFIG_G_DNL_VENDOR_NUM 0x0403
+ #define CONFIG_G_DNL_PRODUCT_NUM 0xBD00
+ #define CONFIG_USB_GADGET_DUALSPEED
+-
+-/* USB Device Firmware Update support */
+-#define CONFIG_DFU_FUNCTION
+-#define CONFIG_DFU_RAM
+-#define CONFIG_CMD_DFU
+-
+-#define CONFIG_DFU_MMC
+ #endif
+ 
+ /*
+@@ -141,6 +135,7 @@
+ #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	DEFAULT_LINUX_BOOT_ENV \
++	DEFAULT_MMC_TI_ARGS \
+ 	"console=" CONSOLEDEV ",115200n8\0" \
+ 	"fdtfile=omap5-igep0050.dtb\0" \
+ 	"bootpart=0:2\0" \
+@@ -151,12 +146,9 @@
+ 	"partitions=" PARTS_DEFAULT "\0" \
+ 	"optargs=\0" \
+ 	"bootdev=mmc\0"\
+-	"mmcdev=0\0" \
+ 	"mmcroot=/dev/mmcblk0p2 rw\0" \
+-	"mmcrootfstype=ext4 rootwait\0" \
+ 	"mmcargs=setenv bootargs console=${console} " \
+ 		"${kernel_mem} " \
+-		"smsc75xx.mac=${mac_addr} " \
+ 		"${optargs} " \
+ 		"vram=${vram} " \
+ 		"root=${mmcroot} " \
+@@ -166,16 +158,16 @@
+ 		"root=/dev/nfs " \
+ 		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
+ 		"ip=dhcp\0" \
+-	"loadbootscript=fatload ${bootdev} ${mmcdev} ${loadaddr} boot.scr\0" \
++	"loadbootscript=load ${interface} ${mmcdev} ${loadaddr} boot.scr\0" \
+ 	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
+ 		"source ${loadaddr}\0" \
+ 	"bootenv=uEnv.txt\0" \
+-	"loadbootenv=fatload ${bootdev} ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"loadbootenv=load ${interface} ${bootpart} ${loadaddr} ${bootenv}\0" \
+ 	"importbootenv=echo Importing environment from mmc${mmcdev} ...; " \
+ 		"env import -t ${loadaddr} ${filesize}\0" \
+-	"loadimage=load ${bootdev} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
+-	"mmcboot=mmc dev ${mmcdev}; " \
+-		"if mmc rescan; then " \
++	"loadimage=load ${interface} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
++	"mmcboot=${interface} dev ${mmcdev}; " \
++		"if ${interface} rescan; then " \
+ 			"echo SD/MMC found on device ${mmcdev};" \
+ 			"if run loadbootenv; then " \
+ 				"echo Loaded environment from ${bootenv};" \
+@@ -213,20 +205,18 @@
+ 			"run mmcargs; " \
+ 			"bootz ${loadaddr} - ${fdtaddr}; " \
+ 		"fi;\0" \
+-	"loadfdt=load ${bootdev} ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile};\0" \
++	"loadrd=load ${interface} ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
++	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load ${interface} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
++	EEWIKI_BOOT \
++	EEWIKI_UNAME_BOOT \
+ 	NANDARGS \
+ 	DFUARGS \
+ 
+ #define CONFIG_BOOTCOMMAND \
+-	"run mmcboot;" \
+-	"setenv bootdev scsi;" \
+-	"setenv mmcroot /dev/sda2 rw;" \
+-	"run scsiboot;" \
+-	"setenv bootdev mmc;" \
+-	"setenv mmcdev 1; " \
+-	"setenv bootpart 1:2; " \
+-	"setenv mmcroot /dev/mmcblk1p2 rw; " \
+-	"run mmcboot;" \
++	"setenv interface mmc; " \
++	"setenv mmcblk 0; " \
++	"setenv mmcdev 0; " \
++	"run boot;" \
+ 	NANDBOOT \
+ 
+ 
+diff --git a/include/usb_ether.h b/include/usb_ether.h
+index 8ba01d4..35700a2 100644
+--- a/include/usb_ether.h
++++ b/include/usb_ether.h
+@@ -61,10 +61,4 @@ int smsc95xx_eth_probe(struct usb_device *dev, unsigned int ifnum,
+ int smsc95xx_eth_get_info(struct usb_device *dev, struct ueth_data *ss,
+ 			struct eth_device *eth);
+ 
+-void smsc75xx_eth_before_probe(void);
+-int smsc75xx_eth_probe(struct usb_device *dev, unsigned int ifnum,
+-			struct ueth_data *ss);
+-int smsc75xx_eth_get_info(struct usb_device *dev, struct ueth_data *ss,
+-			struct eth_device *eth);
+-
+ #endif /* __USB_ETHER_H__ */
+-- 
+2.7.0
+
