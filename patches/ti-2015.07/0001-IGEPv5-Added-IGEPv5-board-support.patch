@@ -1,0 +1,1901 @@
+From f19f1cc9685a72c0fb61d37ded87cbcabc5e5f12 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 23 Mar 2016 10:59:30 -0500
+Subject: [PATCH 01/17] IGEPv5: Added IGEPv5 board support
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ arch/arm/cpu/armv7/omap5/Kconfig          |   4 +
+ arch/arm/include/asm/emif.h               |   1 +
+ board/isee/igep0050/Kconfig               |  12 +
+ board/isee/igep0050/Makefile              |   9 +
+ board/isee/igep0050/board.c               | 385 ++++++++++++++++++++++++++++++
+ board/isee/igep0050/board_configuration.c | 315 ++++++++++++++++++++++++
+ board/isee/igep0050/board_configuration.h | 313 ++++++++++++++++++++++++
+ board/isee/igep0050/mux_data.h            | 299 +++++++++++++++++++++++
+ configs/omap5_igep0050_defconfig          |   7 +
+ drivers/gpio/tca642x.c                    |  20 +-
+ include/configs/omap5_igep0050.h          | 100 ++++++++
+ include/configs/ti_armv7_common.h         | 174 +++++++++++++-
+ include/configs/ti_omap5_common.h         |  56 +----
+ 13 files changed, 1642 insertions(+), 53 deletions(-)
+ create mode 100644 board/isee/igep0050/Kconfig
+ create mode 100644 board/isee/igep0050/Makefile
+ create mode 100644 board/isee/igep0050/board.c
+ create mode 100644 board/isee/igep0050/board_configuration.c
+ create mode 100644 board/isee/igep0050/board_configuration.h
+ create mode 100644 board/isee/igep0050/mux_data.h
+ create mode 100644 configs/omap5_igep0050_defconfig
+ create mode 100644 include/configs/omap5_igep0050.h
+
+diff --git a/arch/arm/cpu/armv7/omap5/Kconfig b/arch/arm/cpu/armv7/omap5/Kconfig
+index 462edd6..2efab2a 100644
+--- a/arch/arm/cpu/armv7/omap5/Kconfig
++++ b/arch/arm/cpu/armv7/omap5/Kconfig
+@@ -10,6 +10,9 @@ config TARGET_CM_T54
+ config TARGET_OMAP5_UEVM
+ 	bool "TI OMAP5 uEVM board"
+ 
++config TARGET_OMAP5_IGEP0050
++	bool "OMAP5 IGEP0050 board"
++
+ config TARGET_DRA7XX_EVM
+ 	bool "TI DRA7XX"
+ 	select CREATE_BOARD_SYMLINK
+@@ -25,6 +28,7 @@ config SYS_SOC
+ 
+ source "board/compulab/cm_t54/Kconfig"
+ source "board/ti/omap5_uevm/Kconfig"
++source "board/isee/igep0050/Kconfig"
+ source "board/ti/dra7xx/Kconfig"
+ source "board/ti/am57xx/Kconfig"
+ 
+diff --git a/arch/arm/include/asm/emif.h b/arch/arm/include/asm/emif.h
+index b00dece..6d60fbf 100644
+--- a/arch/arm/include/asm/emif.h
++++ b/arch/arm/include/asm/emif.h
+@@ -756,6 +756,7 @@ struct dmm_lisa_map_regs {
+ 	u32 dmm_lisa_map_2;
+ 	u32 dmm_lisa_map_3;
+ 	u8 is_ma_present;
++	u8 is_ma_hm_interleave;
+ };
+ 
+ #define CS0	0
+diff --git a/board/isee/igep0050/Kconfig b/board/isee/igep0050/Kconfig
+new file mode 100644
+index 0000000..1790f47
+--- /dev/null
++++ b/board/isee/igep0050/Kconfig
+@@ -0,0 +1,12 @@
++if TARGET_OMAP5_IGEP0050
++
++config SYS_BOARD
++	default "igep0050"
++
++config SYS_VENDOR
++	default "isee"
++
++config SYS_CONFIG_NAME
++	default "omap5_igep0050"
++
++endif
+diff --git a/board/isee/igep0050/Makefile b/board/isee/igep0050/Makefile
+new file mode 100644
+index 0000000..8cf62db
+--- /dev/null
++++ b/board/isee/igep0050/Makefile
+@@ -0,0 +1,9 @@
++#
++# (C) Copyright 2000, 2001, 2002
++# Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++#
++# SPDX-License-Identifier:	GPL-2.0+
++#
++
++obj-y	:= board.o
++obj-y += board_configuration.o
+diff --git a/board/isee/igep0050/board.c b/board/isee/igep0050/board.c
+new file mode 100644
+index 0000000..2ccfb4d
+--- /dev/null
++++ b/board/isee/igep0050/board.c
+@@ -0,0 +1,385 @@
++/*
++ * (C) Copyright 2013
++ * ISEE 2007 SL
++ * Manel Caro     <mcaro@iseebcn.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++#include <common.h>
++#include <palmas.h>
++#include <asm/arch/omap.h>
++#include <asm/arch/sys_proto.h>
++#include <asm/arch/mmc_host_def.h>
++#include <tca642x.h>
++#include <usb.h>
++#include <linux/usb/gadget.h>
++#include <dwc3-uboot.h>
++#include <dwc3-omap-uboot.h>
++#include <ti-usb-phy-uboot.h>
++#include "board_configuration.h"
++
++#include "mux_data.h"
++
++#if defined(CONFIG_USB_EHCI) || defined(CONFIG_USB_XHCI_OMAP)
++#include <sata.h>
++#include <usb.h>
++#include <asm/gpio.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/ehci.h>
++#include <asm/ehci-omap.h>
++#include <asm/arch/sata.h>
++#define DIE_ID_REG_BASE     (OMAP54XX_L4_CORE_BASE + 0x2000)
++#define DIE_ID_REG_OFFSET	0x200
++
++#endif
++
++#define PUSH_BUTTON_GPIO            118
++#define FACTORY_CONFIG_RESET_SEC    3
++
++DECLARE_GLOBAL_DATA_PTR;
++
++const struct omap_sysinfo sysinfo = {
++	"Board: IGEPv5\n"
++};
++
++/**
++ * @brief tca641x_init - IGEPv5 default values for the GPIO expander
++ * input reg, output reg, polarity reg, configuration reg
++ */
++struct tca642x_bank_info tca642x_init[] = {
++	{ .input_reg = 0x00,
++	  .output_reg = 0xFF,
++	  .polarity_reg = 0x00,
++	  .configuration_reg = 0x00 },
++	{ .input_reg = 0x00,
++	  .output_reg = 0xFF,
++	  .polarity_reg = 0x00,
++	  .configuration_reg = 0x00 },
++};
++
++enum t_led_color { t_board_red, t_board_yellow, t_push_red, t_push_green, t_push_off };
++
++void set_user_button_leds (enum t_led_color color)
++{
++	switch(color){
++		case t_board_red:
++			tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0, 2, 0);
++			break;
++		case t_board_yellow:
++			tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0, 2, 1);
++			break;
++		case t_push_red:
++			tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0, 8, 8);
++			tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0, 4, 0);
++			break;
++		case t_push_green:
++			tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0, 4, 4);
++			tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0, 8, 0);
++			break;
++		case t_push_off:
++			tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0, 0xC, 0);
++			tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0, 0xC, 0);
++			break;
++	}
++}
++
++void init_user_leds (void)
++{
++	tca642x_set_dir(CONFIG_SYS_I2C_TCA642X_ADDR, 0 , 0xE, 0);
++	tca642x_set_val(CONFIG_SYS_I2C_TCA642X_ADDR, 0,  0xE, 0);
++}
++
++#ifdef CONFIG_USB_DWC3
++static struct dwc3_device usb_otg_ss = {
++	.maximum_speed = USB_SPEED_SUPER,
++	.base = OMAP5XX_USB_OTG_SS_BASE,
++	.tx_fifo_resize = false,
++	.index = 0,
++};
++
++static struct dwc3_omap_device usb_otg_ss_glue = {
++	.base = (void *)OMAP5XX_USB_OTG_SS_GLUE_BASE,
++	.utmi_mode = DWC3_OMAP_UTMI_MODE_SW,
++	.index = 0,
++};
++
++static struct ti_usb_phy_device usb_phy_device = {
++	.pll_ctrl_base = (void *)OMAP5XX_USB3_PHY_PLL_CTRL,
++	.usb2_phy_power = (void *)OMAP5XX_USB2_PHY_POWER,
++	.usb3_phy_power = (void *)OMAP5XX_USB3_PHY_POWER,
++	.index = 0,
++};
++
++int board_usb_init(int index, enum usb_init_type init)
++{
++	if (index) {
++		printf("Invalid Controller Index\n");
++		return -EINVAL;
++	}
++
++	if (init == USB_INIT_DEVICE) {
++		usb_otg_ss.dr_mode = USB_DR_MODE_PERIPHERAL;
++		usb_otg_ss_glue.vbus_id_status = OMAP_DWC3_VBUS_VALID;
++	} else {
++		usb_otg_ss.dr_mode = USB_DR_MODE_HOST;
++		usb_otg_ss_glue.vbus_id_status = OMAP_DWC3_ID_GROUND;
++	}
++
++	enable_usb_clocks(index);
++	ti_usb_phy_uboot_init(&usb_phy_device);
++	dwc3_omap_uboot_init(&usb_otg_ss_glue);
++	dwc3_uboot_init(&usb_otg_ss);
++
++	return 0;
++}
++
++int board_usb_cleanup(int index, enum usb_init_type init)
++{
++	if (index) {
++		printf("Invalid Controller Index\n");
++		return -EINVAL;
++	}
++
++	ti_usb_phy_uboot_exit(index);
++	dwc3_uboot_exit(index);
++	dwc3_omap_uboot_exit(index);
++	disable_usb_clocks(index);
++
++	return 0;
++}
++
++int usb_gadget_handle_interrupts(int index)
++{
++	u32 status;
++
++	status = dwc3_omap_uboot_interrupt_status(index);
++	if (status)
++		dwc3_uboot_handle_interrupt(index);
++
++	return 0;
++}
++#endif
++
++/**
++ * @brief board_init
++ *
++ * @return 0
++ */
++int board_init(void)
++{
++	gpmc_init();
++	gd->bd->bi_arch_number = MACH_TYPE_OMAP5_SEVM;
++	gd->bd->bi_boot_params = (0x80000000 + 0x100); /* boot param addr */
++	/* The initial State put the yellow color to on*/
++	tca642x_set_inital_state(CONFIG_SYS_I2C_TCA642X_ADDR, tca642x_init);
++	/* We off all leds, then only power supply led is on */
++	init_user_leds();
++	/* Now we put push button RED -> on */
++	set_user_button_leds(t_push_red);
++	/* Get Board Configuration from eeprom */
++	init_igepv5_board_configuration(0);
++	/* Show hello banner */
++	igepv5_print_banner();
++	return 0;
++}
++
++int board_late_init(void)
++{
++	init_sata(0);
++	return 0;
++}
++
++int board_eth_init(bd_t *bis)
++{
++	return 0;
++}
++
++#ifdef CONFIG_SPL_BUILD
++/* s_init - SPL */
++void board_s_init(void)
++{
++	int cfg_default = 0;
++	u32 count = 0;
++	while(gpio_get_value(PUSH_BUTTON_GPIO) == 0){
++		udelay(100000);
++		count++;
++		if(count == (FACTORY_CONFIG_RESET_SEC * 10)){
++			cfg_default = 1;
++			break;
++		}
++	}
++	if(cfg_default == 1){
++		printf("Factory Reset\n");
++	}
++	init_igepv5_board_configuration(cfg_default);
++}
++#endif
++
++#ifdef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
++void emif_get_reg_dump(u32 emif_nr, const struct emif_regs **regs)
++{
++	if(emif_nr == 1)
++		*regs = get_emif_configuration( EMIF0 );
++	else
++		*regs = get_emif_configuration( EMIF1 );
++}
++
++void emif_get_dmm_regs(const struct dmm_lisa_map_regs
++						**dmm_lisa_regs)
++{
++	*dmm_lisa_regs = get_lisa_configuration();
++}
++#endif
++
++#if defined(CONFIG_USB_EHCI) || defined(CONFIG_USB_XHCI_OMAP)
++static void enable_host_clocks(void)
++{
++	int auxclk;
++	int hs_clk_ctrl_val = (OPTFCLKEN_HSIC60M_P3_CLK |
++				OPTFCLKEN_HSIC480M_P3_CLK |
++				OPTFCLKEN_HSIC60M_P2_CLK |
++				OPTFCLKEN_HSIC480M_P2_CLK |
++				OPTFCLKEN_UTMI_P3_CLK | OPTFCLKEN_UTMI_P2_CLK);
++
++	/* Enable port 2 and 3 clocks*/
++	setbits_le32((*prcm)->cm_l3init_hsusbhost_clkctrl, hs_clk_ctrl_val);
++
++	/* Enable port 2 and 3 usb host ports tll clocks*/
++	setbits_le32((*prcm)->cm_l3init_hsusbtll_clkctrl,
++			(OPTFCLKEN_USB_CH1_CLK_ENABLE | OPTFCLKEN_USB_CH2_CLK_ENABLE));
++#ifdef CONFIG_USB_XHCI_OMAP
++	/* Enable the USB OTG Super speed clocks */
++	setbits_le32((*prcm)->cm_l3init_usb_otg_ss_clkctrl,
++			(OPTFCLKEN_REFCLK960M | OTG_SS_CLKCTRL_MODULEMODE_HW));
++#endif
++
++	auxclk = readl((*prcm)->scrm_auxclk1);
++	/* Request auxilary clock */
++	auxclk |= AUXCLK_ENABLE_MASK;
++	writel(auxclk, (*prcm)->scrm_auxclk1);
++}
++#endif
++
++/**
++ * @brief misc_init_r - Configure EVM board specific configurations
++ * such as power configurations, ethernet initialization as phase2 of
++ * boot sequence
++ *
++ * @return 0
++ */
++int misc_init_r(void)
++{
++	int reg;
++	u32 id[4];
++
++#ifdef CONFIG_PALMAS_POWER
++	palmas_init_settings();
++#endif
++
++	reg = DIE_ID_REG_BASE + DIE_ID_REG_OFFSET;
++
++	id[0] = readl(reg);
++	id[1] = readl(reg + 0x8);
++	id[2] = readl(reg + 0xC);
++	id[3] = readl(reg + 0x10);
++	usb_fake_mac_from_die_id(id);
++
++	return 0;
++}
++
++void set_muxconf_regs_essential(void)
++{
++	do_set_mux((*ctrl)->control_padconf_core_base,
++		   core_padconf_array_essential,
++		   sizeof(core_padconf_array_essential) /
++		   sizeof(struct pad_conf_entry));
++
++	do_set_mux((*ctrl)->control_padconf_wkup_base,
++		   wkup_padconf_array_essential,
++		   sizeof(wkup_padconf_array_essential) /
++		   sizeof(struct pad_conf_entry));
++}
++
++void set_muxconf_regs_non_essential(void)
++{
++	do_set_mux((*ctrl)->control_padconf_core_base,
++		   core_padconf_array_non_essential,
++		   sizeof(core_padconf_array_non_essential) /
++		   sizeof(struct pad_conf_entry));
++
++	do_set_mux((*ctrl)->control_padconf_wkup_base,
++		   wkup_padconf_array_non_essential,
++		   sizeof(wkup_padconf_array_non_essential) /
++		   sizeof(struct pad_conf_entry));
++}
++
++#if !defined(CONFIG_SPL_BUILD) && defined(CONFIG_GENERIC_MMC)
++int board_mmc_init(bd_t *bis)
++{
++	omap_mmc_init(0, 0, 0, -1, -1);
++	omap_mmc_init(1, 0, 0, -1, -1);
++	return 0;
++}
++#endif
++
++#ifdef CONFIG_USB_EHCI
++static struct omap_usbhs_board_data usbhs_bdata = {
++	.port_mode[0] = OMAP_USBHS_PORT_MODE_UNUSED,
++	.port_mode[1] = OMAP_EHCI_PORT_MODE_HSIC,
++	.port_mode[2] = OMAP_EHCI_PORT_MODE_HSIC,
++};
++
++int ehci_hcd_init(int index, enum usb_init_type init,
++		struct ehci_hccr **hccr, struct ehci_hcor **hcor)
++{
++	int ret;
++
++	enable_host_clocks();
++
++	ret = omap_ehci_hcd_init(index, &usbhs_bdata, hccr, hcor);
++	if (ret < 0) {
++		puts("Failed to initialize ehci\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++int ehci_hcd_stop(void)
++{
++	int ret;
++
++	ret = omap_ehci_hcd_stop();
++	return ret;
++}
++
++void usb_hub_reset_devices(int port)
++{
++	/* The LAN9730 needs to be reset after the port power has been set. */
++/*	if (port == 3) {
++		gpio_direction_output(CONFIG_OMAP_EHCI_PHY3_RESET_GPIO, 0);
++		udelay(10);
++		gpio_direction_output(CONFIG_OMAP_EHCI_PHY3_RESET_GPIO, 1);
++	} */
++}
++#endif
++
++#ifdef CONFIG_USB_XHCI_OMAP
++/**
++ * @brief board_usb_init - Configure EVM board specific configurations
++ * for the LDO's and clocks for the USB blocks.
++ *
++ * @return 0
++ */
++int board_usb_init(int index, enum usb_init_type init)
++{
++	int ret;
++#ifdef CONFIG_PALMAS_USB_SS_PWR
++	ret = palmas_enable_ss_ldo();
++#endif
++
++	enable_host_clocks();
++
++	return 0;
++}
++#endif
+diff --git a/board/isee/igep0050/board_configuration.c b/board/isee/igep0050/board_configuration.c
+new file mode 100644
+index 0000000..88b16c4
+--- /dev/null
++++ b/board/isee/igep0050/board_configuration.c
+@@ -0,0 +1,315 @@
++#include <common.h>
++#include <i2c.h>
++#include <asm/emif.h>
++#include <asm/arch/sys_proto.h>
++#include <linux/time.h>
++#include "board_configuration.h"
++
++#define DIE_ID_REG_BASE     (OMAP54XX_L4_CORE_BASE + 0x2000)
++#define DIE_ID_REG_OFFSET	0x200
++
++#define IGEPv5_MAGIC_ID     0x37014651
++
++/* Enable when building for 4GB */
++/* #define IGEPv5_MEMORY_4G */
++
++struct igepv5_test {
++	union {
++		u32 result;
++		u8 padding [256];
++	}v;
++};
++
++struct igepv5_eeprom_config {
++    u32 magic_id;                           /* eeprom magic id */
++    u32 crc32;                              /* eeprom crc32 with crc variable set to 0 */
++    /* board identification */
++    char board_name [20];                   /* board name */
++    char board_model [25];                  /* board model name */
++    char board_version [20];                /* board version */
++    char board_revision [20];
++	char board_manufacturer [30];           /* board manufacturer */
++	u32 board_serial_no;                    /* Serial Number */
++	char board_Assembly_OF[30];             /* Manufacturing OF */
++	char manf_date[20];
++	/* board setup */
++	unsigned char device_mac[6];            /* Ethernet Mac Address */
++	struct emif_regs emif0;                 /* emif0 configuration */
++	struct emif_regs emif1;                 /* emif1 configuration */
++	struct dmm_lisa_map_regs lisa_regs;     /* lisa map & MA Registers */
++	/* fab test result */
++	struct igepv5_test fabTestResult;
++}__attribute__((packet));
++
++struct igepv5_eeprom_config igepv5_config = {
++    .magic_id = IGEPv5_MAGIC_ID,
++    .crc32 = 0,
++    .board_name = "IGEPv5",
++    .board_model = "IGEP0050-FULL-NI",
++    .board_revision = "Engineering Sample",
++    .board_version = "RB0",
++    .board_manufacturer = "(c) ISEE (www.isee.biz)",
++    .board_serial_no = 0,
++    .manf_date = "10:38 10/11/2014",
++    .emif0 = {
++        .sdram_config_init              = SDRAM_CONFIG_1,
++        .sdram_config                   = SDRAM_CONFIG_1,
++        .sdram_config2			        = SDRAM_CONFIG_2,
++        .ref_ctrl                       = REFRESH_CONTROL,
++        .sdram_tim1                     = T_SDRAM_TIM1,
++        .sdram_tim2                     = T_SDRAM_TIM2,
++        .sdram_tim3                     = T_SDRAM_TIM3,
++        .read_idle_ctrl                 = 0x00050000,
++        .zq_config                      = ZQ_CONFIG,
++        .temp_alert_config              = 0x00000000,
++        .emif_ddr_phy_ctlr_1_init       = EMIF_DDR_PHY_CONTROL_1_INIT,
++        .emif_ddr_phy_ctlr_1            = EMIF_DDR_PHY_CONTROL_1,
++        .emif_ddr_ext_phy_ctrl_1        = 0x04040100,
++        .emif_ddr_ext_phy_ctrl_2        = 0x00000000,
++        .emif_ddr_ext_phy_ctrl_3        = 0x00000000,
++        .emif_ddr_ext_phy_ctrl_4        = 0x00000000,
++        .emif_ddr_ext_phy_ctrl_5        = 0x4350D435,
++        .emif_rd_wr_lvl_rmp_win         = 0x00000000,
++        .emif_rd_wr_lvl_rmp_ctl         = 0x80000000,
++        .emif_rd_wr_lvl_ctl             = 0x00000000,
++        .emif_rd_wr_exec_thresh         = 0x40000305
++    },
++    .emif1 = {
++        .sdram_config_init              = SDRAM_CONFIG_1,
++        .sdram_config                   = SDRAM_CONFIG_1,
++        .sdram_config2			        = SDRAM_CONFIG_2,
++        .ref_ctrl                       = REFRESH_CONTROL,
++        .sdram_tim1                     = T_SDRAM_TIM1,
++        .sdram_tim2                     = T_SDRAM_TIM2,
++        .sdram_tim3                     = T_SDRAM_TIM3,
++        .read_idle_ctrl                 = 0x00050000,
++        .zq_config                      = ZQ_CONFIG,
++        .temp_alert_config              = 0x00000000,
++        .emif_ddr_phy_ctlr_1_init       = EMIF_DDR_PHY_CONTROL_1_INIT,
++        .emif_ddr_phy_ctlr_1            = EMIF_DDR_PHY_CONTROL_1,
++        .emif_ddr_ext_phy_ctrl_1        = 0x04040100,
++        .emif_ddr_ext_phy_ctrl_2        = 0x00000000,
++        .emif_ddr_ext_phy_ctrl_3        = 0x00000000,
++        .emif_ddr_ext_phy_ctrl_4        = 0x00000000,
++        .emif_ddr_ext_phy_ctrl_5        = 0x4350D435,
++        .emif_rd_wr_lvl_rmp_win         = 0x00000000,
++        .emif_rd_wr_lvl_rmp_ctl         = 0x80000000,
++        .emif_rd_wr_lvl_ctl             = 0x00000000,
++        .emif_rd_wr_exec_thresh         = 0x40000305
++    },
++    .lisa_regs = {
++        .dmm_lisa_map_0 = DMM_LISA_MAP0,
++        .dmm_lisa_map_1 = DMM_LISA_MAP1,
++#ifdef IGEPv5_MEMORY_4G
++        .dmm_lisa_map_2 = DMM_LISA_MAP2,    /* DMM_LISA_MAP2 = 4 GiB (is_ma_hm_interleave=1), DMM_LISA_MAP2_1G = 1 GiB (is_ma_hm_interleave=0)*/
++#else
++	.dmm_lisa_map_2 = DMM_LISA_MAP2_1G,    /* DMM_LISA_MAP2 = 4 GiB (is_ma_hm_interleave=1), DMM_LISA_MAP2_1G = 1 GiB (is_ma_hm_interleave=0)*/
++#endif
++        .dmm_lisa_map_3 = DMM_LISA_MAP3,
++        .is_ma_present	= 0x1,
++#ifdef IGEPv5_MEMORY_4G
++        .is_ma_hm_interleave = 0x1,
++#else
++	.is_ma_hm_interleave = 0x0,
++#endif
++    }
++};
++
++int igepv5_write_setup (uint8_t s_addr, const char* data, u32 size)
++{
++    u32 i;
++    u32 remain = size % 32;
++    u32 blocks = size / 32;
++    for (i=0; i < blocks; i++){
++        if(i2c_write(CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR, s_addr + (i*32), 2, (uint8_t*) data + (i*32), 32)){
++            // printf("igepv5 write setup failed at: (%d) %d - %d\n", i, blocks, remain);
++            return -1;
++        }
++        udelay(5000);
++    }
++    if(remain > 0){
++        if(i2c_write(CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR, s_addr + (i*32), 2, (uint8_t*) data + (i*32), remain))
++            return -1;
++        else
++            udelay(5000);
++    }
++    return 0;
++}
++
++int igepv5_read_setup (uint8_t s_addr, char* data, u32 size)
++{
++    u32 i;
++    u32 remain = size % 32;
++    u32 blocks = size / 32;
++    for (i=0; i < blocks; i++){
++        if(i2c_read(CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR, s_addr + (i*32), 2, (uint8_t*) data + (i*32), 32)){
++            return -1;
++        }
++    }
++    if(remain > 0)
++        if(i2c_read(CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR, s_addr + (i*32), 2, (uint8_t*) data + (i*32), remain))
++            return -1;
++    return 0;
++}
++
++/* check eeprom magic */
++/* 0: ok and 1 : error */
++int check_magic (void)
++{
++    u32 magic_id = 0;
++    if(igepv5_read_setup(0, (char*) &magic_id, sizeof(magic_id)))
++        return -1;
++    return (magic_id != IGEPv5_MAGIC_ID);
++}
++
++void set_factory_defaults (void)
++{
++    unsigned int reg;
++
++    /* Generate the Mac Address */
++    reg = DIE_ID_REG_BASE + DIE_ID_REG_OFFSET;
++    /*
++    * create a fake MAC address from the processor ID code.
++    * first byte is 0x02 to signify locally administered.
++    */
++    igepv5_config.device_mac[0] = 0x02;
++    igepv5_config.device_mac[1] = readl(reg + 0x10) & 0xff;
++    igepv5_config.device_mac[2] = readl(reg + 0xC) & 0xff;
++    igepv5_config.device_mac[3] = readl(reg + 0x8) & 0xff;
++    igepv5_config.device_mac[4] = readl(reg) & 0xff;
++    igepv5_config.device_mac[5] = (readl(reg) >> 8) & 0xff;
++}
++
++void set_factory_reset (void)
++{
++	set_factory_defaults();
++    // Calculate crc32
++    igepv5_config.crc32 = crc32(0, (const unsigned char*) &igepv5_config, sizeof(struct igepv5_eeprom_config));
++    // Save Buffer in eeprom
++    if(!igepv5_write_setup (0, (char*) &igepv5_config, sizeof(struct igepv5_eeprom_config)))
++        printf("Reset factory done\n");
++}
++
++int check_eeprom (void)
++{
++    i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED, CONFIG_SYS_OMAP24_I2C_SLAVE);
++	/* Check if baseboard eeprom is available */
++	if (i2c_probe(CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR)) {
++		debug("Could not probe the EEPROM at 0x%x\n",
++		       CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR);
++		return -1;
++	}
++	return 0;
++}
++
++void init_igepv5_board_configuration (int set_default)
++{
++    u32 crc_value = 0;
++    u32 crc_save_value = 0;
++    int org_bus_num;
++    org_bus_num = i2c_get_bus_num();
++
++    if(check_eeprom() != 0){
++	set_factory_defaults();
++	printf("eeprom not found, using defaults\n");
++        goto error;
++    }
++
++    i2c_set_bus_num(CONFIG_SYS_I2C_IGEPV5_CFG_BUS_NUM);
++
++    if(set_default == 1)
++        set_factory_reset();
++
++    // Check eeprom magic
++    if(check_magic() != 0) {
++        /* use default configuration */
++	set_factory_defaults();
++        printf("eeprom check magic failed, using defaults\n");
++        goto error;
++    }
++
++    // Read eeprom configuration
++    if(igepv5_read_setup(0, (char*) &igepv5_config, sizeof(struct igepv5_eeprom_config))){
++        printf("eeprom read setup failed, try a reset factory\n");
++        hang();
++    }
++
++    // Verify crc32
++    crc_save_value = igepv5_config.crc32;
++    igepv5_config.crc32 = 0;
++    crc_value = crc32(0, (const unsigned char*) &igepv5_config, sizeof(struct igepv5_eeprom_config));
++    if(crc_save_value != crc_value){
++        printf("eeprom crc32 check failed, try a reset factory\n");
++        hang();
++    }
++
++error:
++    i2c_set_bus_num(org_bus_num);
++}
++
++/* Configuration interface */
++
++struct emif_regs* get_emif_configuration (enum emif_id t)
++{
++	struct emif_regs* regs = NULL;
++	switch(t){
++		case EMIF0:
++			regs = &igepv5_config.emif0;
++			break;
++		case EMIF1:
++			regs = &igepv5_config.emif1;
++			break;
++		default:
++			regs = &igepv5_config.emif0;
++			break;
++	}
++	return regs;
++}
++
++struct dmm_lisa_map_regs* get_lisa_configuration ()
++{
++	return &igepv5_config.lisa_regs;
++}
++
++const char* get_memory_from_config (void)
++{
++	u32 reg = get_lisa_configuration()->dmm_lisa_map_2;
++	reg >>= 8;
++	reg &= 0x00000003;
++	if(reg == 1)
++		return "1GiB";
++	else if(reg == 3)
++		return "4GiB";
++	return "0GiB";
++}
++
++void igepv5_print_banner (void)
++{
++    printf("Board Name: %s (%s-%s-%s) Rev: %s - Serial: %u Manufacturing date: %s\n", \
++                                    igepv5_config.board_name, \
++                                    igepv5_config.board_model, \
++                                    igepv5_config.board_version, \
++                                    get_memory_from_config(), \
++                                    igepv5_config.board_revision, \
++                                    igepv5_config.board_serial_no, \
++                                    igepv5_config.manf_date
++                                );
++    printf("Manufacturer: %s\n", igepv5_config.board_manufacturer);
++}
++
++const unsigned char* getBoardMacAddr (void)
++{
++    return igepv5_config.device_mac;
++}
++
++const char* getKernelMem (void)
++{
++	u32 reg = get_lisa_configuration()->dmm_lisa_map_2;
++	reg >>= 8;
++	reg &= 0x00000003;
++	if(reg == 1)
++		return "mem=1008M@0x80000000";
++	else if(reg == 3)
++		return "mem=2032M@0x80000000 mem=2048M@0x300000000";
++	return "";
++}
+diff --git a/board/isee/igep0050/board_configuration.h b/board/isee/igep0050/board_configuration.h
+new file mode 100644
+index 0000000..1c2286b
+--- /dev/null
++++ b/board/isee/igep0050/board_configuration.h
+@@ -0,0 +1,313 @@
++#ifndef __IGEPv5_BOARD_CONFIGURATION_H__
++#define __IGEPv5_BOARD_CONFIGURATION_H__
++
++#include <asm/emif.h>
++
++enum emif_id { EMIF0, EMIF1 };
++
++struct emif_regs* get_emif_configuration (enum emif_id t);
++struct dmm_lisa_map_regs* get_lisa_configuration (void);
++void igepv5_print_banner (void);
++const unsigned char* getBoardMacAddr (void);
++void init_igepv5_board_configuration (int set_default);
++const char* getKernelMem (void);
++
++
++
++/* DDR3 Configuration */
++
++/* Register Fields definition to DDR3 531,8 Mhz */
++/* Register sdram_config_init = sdram_config = EMIF_SDRAM_CONFIG (0x4C000008) */
++
++#define SDRAM_TYPE				3		/* SDRAM_TYPE : 3 = DDR3, 4 = LPDDR2 */
++#define IBANK_POS				0		/* IBANK_POS : */
++#define DDR_TERM				1		/* DDR_TERM: DDR3 termination resistor value
++                                            set to 0 for disable,
++                                            set to 1 for RZQ/4,
++                                            set to 2 for RZQ/2,
++                                            set to 3 for RZQ/6,
++                                            set to 4 for RZQ/12,
++                                            set to 5 for RZQ/8 */
++#define DDR2_DDQS				1       /* DDR2_DDQS: DDR2 differential DDQS enable.
++                                            NOT SUPPORTED. Set to 1 for compatibility */
++#define DYN_ODT					0       /* DYN_ODT: DDR3 Dynamic ODT. NOT SUPPORTED.
++                                            Set to 0 to turn off dynamic ODT. */
++#define DDR_DISABLE_DLL			0       /* Disable DLL select. Set to 1 to disable DLL inside SDRAM */
++#define SDRAM_DRIVE				1		/* SDRAM drive strength.For DDR3, set to 0 for RZQ/6 and
++                                            set to 1 for RZQ/7. All other values are reserved. */
++
++/* CAS WRITE Latency (Use the lowest value supported for best performance ) */
++/* DDR3 CAS Write latency. Value of 0, 1, 2, and 3 (CAS write latency of 5, 6, 7, and 8) are supported. */
++#define CWL_5					0
++#define CWL_6					1
++#define CWL_7					2
++#define CWL_8					3
++#define CWL						CWL_6
++
++/* CAS Latency (referred to as read latency (RL) in some SDRAM specs)
++The value of this field defines the CAS latency to be used when accessing connected SDRAM devices.
++Values of 3, 4, 5, 6, 7, and 8 (CAS latency of 3, 4, 5, 6, 7, and 8) are supported for LPDDR2-SDRAM.
++Values of 2, 4, 6, 8, 10, 12, and 14 (CAS latency of 5, 6, 7, 8, 9, 10, and 11) are supported for DDR3.
++All other values are reserved.
++*/
++#define CL_5					2
++#define CL_6					4
++#define CL_7					6
++#define CL_8					8
++#define CL_9					10
++#define CL_10					12
++#define CL_11					14
++#define CL						CL_7
++
++#define NORROW_MODE				0           /* SDRAM data bus width. Set to 0 for 32-bit and set to 1 for 16-bit.
++                                                All other values are reserved. In the current implementation, only 32-bit devices are supported.
++                                                Two DDR3 devices are used in parallel to make one 32-bit device */
++#define ROWSIZE					6			/* 6 = 15 row bits */
++#define IBANK					3			/* 3 = 8 banks */
++#define EBANK_CS0_ENABLE		0
++#define EBANK_CS0_CS1_ENABLE	1
++#ifdef IGEPv5_MEMORY_4G
++#define EBANK					EBANK_CS0_CS1_ENABLE	/* External chip select setup. Defines whether SDRAM accesses will use 1 or 2 chip select lines. Set to 0 to use NCS0 only. Set to 1 to use NCS[1:0] */
++#else
++#define EBANK					EBANK_CS0_ENABLE	/* External chip select setup. Defines whether SDRAM accesses will use 1 or 2 chip select lines. Set to 0 to use NCS0 only. Set to 1 to use NCS[1:0] */
++#endif
++#define PAGESIZE				2			/* 1024 word page - 10 column bits */
++
++#define SDRAM_CONFIG_1			(SDRAM_TYPE << 29) | (IBANK_POS << 27) | (DDR_TERM << 24) | \
++								(DDR2_DDQS << 23) | (DYN_ODT << 21) | (DDR_DISABLE_DLL << 20) | \
++								(SDRAM_DRIVE << 18) | (CWL << 16) | (NORROW_MODE << 14) | (CL << 10) | \
++								(ROWSIZE << 7) | (IBANK << 4) | (EBANK << 3) | (PAGESIZE)
++
++/* Register sdram_config2 = EMIF_SDRAM_CONFIG (0x4C00000C) */
++#define EBANK_POS				0
++#define SDRAM_CONFIG_2			(EBANK_POS << 27) | 0
++
++/* Register ref_ctrl = EMIF_SDRAM_REFRESH_CONTROL (0x4C000010) */
++#define INITREF_DIS 			0
++#define SRT 					0
++#define ASR 					0
++#define PASR 					0
++#define REFRESH_RATE 			4149 /* (531,8 Mhz * 7,8uS) */
++
++#define REFRESH_CONTROL			(INITREF_DIS << 31) | (SRT << 29) | (ASR << 28) | (PASR << 24) | REFRESH_RATE
++
++
++/* Register sdram_tim1 = EMIF_SDRAM_TIMMING_1 (0x4C000018) */
++
++#define T_RTW					6	/* Minimum number of DDR clock cycles between Read to Write data phases, minus one.*/
++#define T_RP					6	/* Minimum number of DDR clock cycles from Precharge to Activate or Refresh, minus one. */
++#define T_RCD					6	/* Minimum number of DDR clock cycles from Activate to Read or Write,  minus one. */
++#define T_WR					7	/* Minimum number of DDR clock cycles from last Write transfer to Precharge,  minus one. */
++#define T_RAS					19	/* Minimum number of DDR clock cycles from Activate to Precharge, minus one. T_RAS value needs to be bigger than or equal to T_RDC value */
++#define T_RC					26	/* Minimum number of DDR clock cycles from Activate to Activate,  minus one. */
++#define T_RRD					6	/* Minimum number of DDR clock cycles from Activate to Activate for a different bank, minus one. For an 8-bank, this field must be equal to ((tFAW / (4 × tCK)) - 1) */
++#define T_WTR					3	/* Minimum number of DDR clock cycles from last Write to Read, minus one. */
++#define T_SDRAM_TIM1			(T_RTW << 29) | (T_RP << 25) | (T_RCD << 21) | (T_WR << 17) | (T_RAS << 12) | (T_RC << 6) | (T_RRD << 3) | (T_WTR)
++
++/* Register sdram_tim2 = EMIF_SDRAM_TIMMING_2 (0x4C000020) */
++#define T_XP					3	/* Minimum number of DDR clock cycles from power-down exit to any command other than a read command, minus one */
++#define T_ODT					0	/* Minimum number of DDR clock cycles from ODT enable to write data driven for DDR3. Must be equal to tAOND */
++#define T_XSNR					143	/* Minimum number of DDR clock cycles from Self-Refresh exit to any command other than a Read command, minus one. For DDR3, the value of tXS must be programmed. */
++#define T_XSRD					511	/* Minimum number of DDR clock cycles from Self-Refresh exit to a Read command, minus one. For DDR3, the value of tXSDLL must be programmed. */
++#define T_RTP					3	/* Minimum number of DDR clock cycles for the last read command to a Precharge command, minus one */
++#define T_CKE					2	/* Minimum number of DDR clock cycles between CKE pin changes, minus one. */
++#define T_SDRAM_TIM2			(T_XP << 28) | (T_ODT << 25) | (T_XSNR << 16) | (T_XSRD << 6) | (T_RTP << 3) | (T_CKE)
++
++/* Register sdram_tim3 = EMIF_SDRAM_TIMMING_3 (0x4C000028) */
++#define	T_PDLL_UL				0	/* Minimum number of DDR clock cycles for PHY DLL to unlock. A value of N will be equal to N x 128 clocks */
++#define T_CSTA					2	/* Minimum number of DDR clock cycles between write-to-write or read-to-read data phases to different chip selects, minus one. */
++#define T_CKESR					3	/* Minimum number of DDR clock cycles for which SDRAM must remain in Self Refresh, minus one */
++#define T_ZQ_ZQCS				63	/* Number of DDR clock cycles for a ZQCS command, minus one. */
++#define T_TDQSCKMAX				0	/* Number of DDR clock that satisfies tDQSCKmax for LPDDR2, minus one. */
++#define T_RFC					138	/* Minimum number of DDR clock cycles from Refresh or Load Mode to Refresh or Activate, minus one.*/
++#define T_RAS_MAX				8	/* Maximum number of REFRESH_RATE intervals from Activate to Precharge command.
++										This field must be equal to ((tRASmax / tREFI)-1) rounded down to the next lower integer.
++										Value for T_RAS_MAX can be calculated as follows:
++											If tRASmax = 120 us and tREFI = 15.7 us,
++												then T_RAS_MAX = ((120/15.7)-1) = 6.64. Round down to the next lower integer.
++									Therefore, the programmed value must be 6.*/
++#define T_SDRAM_TIM3			(T_PDLL_UL << 28) | (T_CSTA << 24) | (T_CKESR << 21) | (T_ZQ_ZQCS << 15) | (T_TDQSCKMAX << 13) | (T_RFC << 4) | T_RAS_MAX
++
++/* Register zq_config = EMIF_SDRAM_OUTPUT_IMPEDANCE_CALIBRATION_CONFIG (0x4C0000C8) */
++#ifdef IGEPv5_MEMORY_4G
++#define ZQ_CS1EN				1	/* Writing a 1 enables ZQ calibration for CS1. */
++#else
++#define ZQ_CS1EN				0	/* Writing a 1 enables ZQ calibration for CS1. */
++#endif
++#define ZQ_CS0EN 				1	/* Writing a 1 enables ZQ calibration for CS0. */
++#define ZQ_DUALCALEN 			0	/* ZQ Dual Calibration enable. Allows both ranks to be ZQ calibrated simultaneously.
++									   Setting this bit requires both chip selects to have a separate calibration resistor per device. */
++#define ZQ_SFEXITEN 			1	/* Writing a 1 enables the issuing of ZQCL on Self-Refresh exit. */
++#define ZQ_PDEXITEN 			0	/* Writing a 1 enables the issuing of ZQCL on Active Power-Down, and Precharge Power-Down exit. */
++#define ZQ_ZQINIT_MULT 			1	/* Indicates the number of ZQCL durations that make up a ZQINIT duration, minus one. */
++#define ZQ_ZQCL_MULT 			3	/* Indicates the number of ZQCS intervals that make up a ZQCL duration, minus one.
++									   ZQCS interval is defined by ZQ_ZQCS inEMIF_SDRAM_TIMING_3: see T_SDRAM_TIM3[T_ZQ_ZQCS] */
++#define ZQ_REFINTERVAL 			0x190B	/* Number of refresh periods between ZQCS commands */
++
++#define ZQ_CONFIG				(ZQ_CS1EN << 31) | (ZQ_CS0EN << 30) | (ZQ_DUALCALEN << 29) | \
++								(ZQ_SFEXITEN << 28) | (ZQ_PDEXITEN << 27) | (ZQ_ZQINIT_MULT << 18) | \
++								(ZQ_ZQCL_MULT << 16) | (ZQ_REFINTERVAL)
++
++/* Register emif_ddr_phy_ctlr_1_init (init) = EMIF_DDR_PHY_CONTROL_1 (0x4C0000E4) */
++#define RDLVL_MASK_INIT 			0	/* Writing a 1 to this field will mask read data eye training during full leveling command,
++										   plus drives reg_phy_use_rd_data_eye_level control low to allow user to use programmed ratio values.
++										   Incremental training needs to be disabled using incremental training registers. */
++#define RDLVLGATE_MASK_INIT 		0	/* Writing a 1 to this field will mask dqs gate training during full leveling command,
++										   plus drives reg_phy_use_rd_dqs_level control low to allow user to use programmed ratio values.
++										   Incremental training needs to be disabled using incremental training registers. */
++#define WRLVL_MASK_INIT 			0	/* Writing a 1 to this field will mask write leveling training during full leveling command,
++										   plus drives reg_phy_use_wr_level control low to allow user to use programmed ratio values.
++										   Incremental training needs to be disabled using incremental training registers. */
++#define PHY_HALF_DELAYS_INIT 		1	/* Adjust slave delay line delays to support 2×
++										   mode 1: 2× mode (MDLL clock is half the rate of PHY) - OPP_NOM
++										   mode 0: 1× mode (MDLL clock rate is same as PHY) - OPP_BOOT */
++#define PHY_CLK_STALL_LEVEL_INIT 	1	/* Enable variable idle value for delay lines. Enable during normal operations to avoid differential aging in the delay lines. */
++#define PHY_DIS_CALIB_RST_INIT 		0	/* Disable the dll_calib (internally generated) signal from resetting the Read Capture FIFO pointers and portions of data PHYs. Debug only. */
++#define PHY_INVERT_CLKOUT_INIT		0	/* Inverts the polarity of DRAM clock. This bit must be set to 0 when in LDDDR2 mode.
++										   0: core clock is passed on to DRAM
++										   1: inverted core clock is passed on to DRAM */
++#define PHY_DLL_LOCK_DIFF_INIT		0x10	/* The maximum number of delay line taps variation while maintaining the master DLL lock.
++											   When the PHY is in locked state and the variation on the clock exceeds the variation indicated by this field,
++											   the lock signal is de-asserted and a dll_calib signal is generated.
++											   To prevent the dll_calib signal from being asserted in the middle of traffic when the clock jitter exceeds the variation,
++											   this register needs to be set to a value which will ensure that the lock will not be lost. Recommended value is 16. */
++#define PHY_FAST_DLL_LOCK_INIT 		0		/* Controls master DLL to lock fast or average logic must be part of locking process.
++											   Set to 1 before OPP transition commences, and set back to 0 after OPP transition completes.
++											   1: MDLL lock is asserted based on single sample
++											   0: MDLL lock is asserted based on average of 16 samples. */
++#define READ_LATENCY_INIT 			0x0A	/* This field defines the read latency for the read data from SDRAM in number of DDR clock cycles
++											   This field is used by the EMIF as well as the PHY. READ_LATENCY = RL + reg_phy_rdc_we_to_re -1.
++											   EMIF uses above equation to calculate reg_phy_rdc_we_to_re and forward it to the PHY.
++											   For DDR3, the true RL is used, not the decoded value. See JEDEC spec. */
++
++
++#define EMIF_DDR_PHY_CONTROL_1_INIT		(RDLVL_MASK_INIT << 27) | (RDLVLGATE_MASK_INIT << 26) | (WRLVL_MASK_INIT << 25) | \
++										(PHY_HALF_DELAYS_INIT << 21) | (PHY_CLK_STALL_LEVEL_INIT << 20) | (PHY_DIS_CALIB_RST_INIT << 19) | \
++										(PHY_INVERT_CLKOUT_INIT << 18) | (PHY_DLL_LOCK_DIFF_INIT << 10) | (PHY_FAST_DLL_LOCK_INIT << 9) | \
++										(READ_LATENCY_INIT)
++
++/* Register emif_ddr_phy_ctlr_1 (init) = EMIF_DDR_PHY_CONTROL_1 (0x4C0000E4) */
++#define RDLVL_MASK		 			0	/* Writing a 1 to this field will mask read data eye training during full leveling command,
++										   plus drives reg_phy_use_rd_data_eye_level control low to allow user to use programmed ratio values.
++										   Incremental training needs to be disabled using incremental training registers. */
++#define RDLVLGATE_MASK		 		0	/* Writing a 1 to this field will mask dqs gate training during full leveling command,
++										   plus drives reg_phy_use_rd_dqs_level control low to allow user to use programmed ratio values.
++										   Incremental training needs to be disabled using incremental training registers. */
++#define WRLVL_MASK		 			0	/* Writing a 1 to this field will mask write leveling training during full leveling command,
++										   plus drives reg_phy_use_wr_level control low to allow user to use programmed ratio values.
++										   Incremental training needs to be disabled using incremental training registers. */
++#define PHY_HALF_DELAYS		 		1	/* Adjust slave delay line delays to support 2×
++										   mode 1: 2× mode (MDLL clock is half the rate of PHY) - OPP_NOM
++										   mode 0: 1× mode (MDLL clock rate is same as PHY) - OPP_BOOT */
++#define PHY_CLK_STALL_LEVEL		 	1	/* Enable variable idle value for delay lines. Enable during normal operations to avoid differential aging in the delay lines. */
++#define PHY_DIS_CALIB_RST	 		0	/* Disable the dll_calib (internally generated) signal from resetting the Read Capture FIFO pointers and portions of data PHYs. Debug only. */
++#define PHY_INVERT_CLKOUT			1	/* Inverts the polarity of DRAM clock. This bit must be set to 0 when in LDDDR2 mode.
++										   0: core clock is passed on to DRAM
++										   1: inverted core clock is passed on to DRAM */
++#define PHY_DLL_LOCK_DIFF			0x10	/* The maximum number of delay line taps variation while maintaining the master DLL lock.
++											   When the PHY is in locked state and the variation on the clock exceeds the variation indicated by this field,
++											   the lock signal is de-asserted and a dll_calib signal is generated.
++											   To prevent the dll_calib signal from being asserted in the middle of traffic when the clock jitter exceeds the variation,
++											   this register needs to be set to a value which will ensure that the lock will not be lost. Recommended value is 16. */
++#define PHY_FAST_DLL_LOCK	 		0		/* Controls master DLL to lock fast or average logic must be part of locking process.
++											   Set to 1 before OPP transition commences, and set back to 0 after OPP transition completes.
++											   1: MDLL lock is asserted based on single sample
++											   0: MDLL lock is asserted based on average of 16 samples. */
++#define READ_LATENCY	 			0x0A	/* This field defines the read latency for the read data from SDRAM in number of DDR clock cycles
++											   This field is used by the EMIF as well as the PHY. READ_LATENCY = RL + reg_phy_rdc_we_to_re -1.
++											   EMIF uses above equation to calculate reg_phy_rdc_we_to_re and forward it to the PHY.
++											   For DDR3, the true RL is used, not the decoded value. See JEDEC spec. */
++
++
++#define EMIF_DDR_PHY_CONTROL_1	(RDLVL_MASK << 27) | (RDLVLGATE_MASK << 26) | (WRLVL_MASK << 25) | \
++								(PHY_HALF_DELAYS << 21) | (PHY_CLK_STALL_LEVEL << 20) | (PHY_DIS_CALIB_RST << 19) | \
++								(PHY_INVERT_CLKOUT << 18) | (PHY_DLL_LOCK_DIFF << 10) | (PHY_FAST_DLL_LOCK << 9) | \
++								(READ_LATENCY)
++
++
++
++
++/*  DMM memory mapping register
++    DMM_LISA_MAP_i (0x4E000040 + (0x4 * i)) where i[0..3]
++    31:24 SYS_ADDR: DMM system section address MSB for view mapping i : RESET = 0x00
++    23: RESERVED - Write 0
++    22:20 SYS_SIZE: DMM system section size for view mapping i
++        0x0: 16-MiB section <- RESET
++        0x1: 32-MiB section
++        0x2: 64-MiB section
++        0x3: 128-MiB section
++        0x4: 256-MiB section
++        0x5: 512-MiB section
++        0x6: 1-GiB section
++        0x7: 2-GiB section
++    19:18 SDRC_INTL: SDRAM controller interleaving mode
++        0x0: No interleaving  <- RESET
++        0x1: 128-byte interleaving
++        0x2: 256-byte interleaving
++        0x3: 512-byte interleaving
++        The 128-/256-/512-byte interleaving applies only to
++        nontiled regions. If accesses are made to tiled regions,
++        interleaving is forced to 1kiB. SDRC_INTL is don't care if
++        SDRC_MAP is not 0x3 (no interleaving)
++    17:16 SDRC_ADDRSPC: SDRAM controller address space for view mapping i (RESET = 0)
++    15:10 RESEVED - Write 0
++    9:8 SDRC_MAP: SDRAM controller mapping for view mapping i
++        0x0: Unmapped <- RESET
++        0x1: Mapped on EMIF1 only (not interleaved)
++        0x2: Mapped on EMIF2 only (not interleaved)
++        0x3: Mapped on EMIF1 and EMIF2 (interleaved)
++        To enable interleaving, SDRC_MAP must be 0x3 and
++        SDRC_INTL must be a nonzero value.
++    7:0 SDRC_ADDR SDRAM controller address MSB for view mapping i (RESET = 0)
++*/
++
++#define LISA_MAP_0_SYS_ADDR 		0
++#define LISA_MAP_0_SYS_SIZE			0
++#define LISA_MAP_0_SDRC_INTL		0
++#define LISA_MAP_0_SDRC_ADDRSPC		0
++#define LISA_MAP_0_SDRC_MAP 		0
++#define LISA_MAP_0_SDRC_ADDR 		0x00
++#define DMM_LISA_MAP0				(LISA_MAP_0_SYS_ADDR << 24) | (LISA_MAP_0_SYS_SIZE << 20) | (LISA_MAP_0_SDRC_INTL << 18) | \
++									(LISA_MAP_0_SDRC_ADDRSPC << 16) | (LISA_MAP_0_SDRC_MAP << 8) | LISA_MAP_0_SDRC_ADDR
++
++#define LISA_MAP_1_SYS_ADDR 		0
++#define LISA_MAP_1_SYS_SIZE			0
++#define LISA_MAP_1_SDRC_INTL		0
++#define LISA_MAP_1_SDRC_ADDRSPC		0
++#define LISA_MAP_1_SDRC_MAP 		0
++#define LISA_MAP_1_SDRC_ADDR 		0x00
++#define DMM_LISA_MAP1				(LISA_MAP_1_SYS_ADDR << 24) | (LISA_MAP_1_SYS_SIZE << 20) | (LISA_MAP_1_SDRC_INTL << 18) | \
++									(LISA_MAP_1_SDRC_ADDRSPC << 16) | (LISA_MAP_1_SDRC_MAP << 8) | LISA_MAP_1_SDRC_ADDR
++
++#define LISA_MAP_2_SYS_ADDR 		0x80    /* SYS_ADDR: 0x80000000*/
++#define LISA_MAP_2_SYS_SIZE		7       /* SYS_SIZE: 0x7: 2-GiB section */
++#define LISA_MAP_2_SDRC_INTL		3       /* SDRC_INTL: 0x1: 128-byte interleaving */
++#define LISA_MAP_2_SDRC_ADDRSPC		0       /* SDRC_ADDRSPC = 0x00000000 */
++#define LISA_MAP_2_SDRC_MAP 		3       /* SDRC_MAP: 0x3: Mapped on EMIF1 and EMIF2 (interleaved) */
++#define LISA_MAP_2_SDRC_ADDR 		0x00    /* SDRC_ADDR = 0x00000000 */
++
++#define DMM_LISA_MAP2				(LISA_MAP_2_SYS_ADDR << 24) | (LISA_MAP_2_SYS_SIZE << 20) | (LISA_MAP_2_SDRC_INTL << 18) | \
++									(LISA_MAP_2_SDRC_ADDRSPC << 16) | (LISA_MAP_2_SDRC_MAP << 8) | LISA_MAP_2_SDRC_ADDR
++
++#define LISA_MAP_2_SYS_ADDR_1G 		0x80    /* SYS_ADDR: 0x80000000*/
++#define LISA_MAP_2_SYS_SIZE_1G		6       /* SYS_SIZE: 0x6: 1-GiB section */
++#define LISA_MAP_2_SDRC_INTL_1G		0       /* SDRC_INTL: 0x1: 128-byte interleaving */
++#define LISA_MAP_2_SDRC_ADDRSPC_1G	0       /* SDRC_ADDRSPC = 0x00000000 */
++#define LISA_MAP_2_SDRC_MAP_1G 		1       /* SDRC_MAP: 0x1: Mapped on EMIF1 (no interleaved) */
++#define LISA_MAP_2_SDRC_ADDR_1G		0x00    /* SDRC_ADDR = 0x00000000 */
++
++#define DMM_LISA_MAP2_1G			(LISA_MAP_2_SYS_ADDR_1G << 24) | (LISA_MAP_2_SYS_SIZE_1G << 20) | (LISA_MAP_2_SDRC_INTL_1G << 18) | \
++									(LISA_MAP_2_SDRC_ADDRSPC_1G << 16) | (LISA_MAP_2_SDRC_MAP_1G << 8) | LISA_MAP_2_SDRC_ADDR_1G
++
++
++#define LISA_MAP_3_SYS_ADDR 		0xFF    /* SYS_ADDR: 0xFF000000*/
++#define LISA_MAP_3_SYS_SIZE		0       /* SYS_SIZE: 0x0: 16-MiB section */
++#define LISA_MAP_3_SDRC_INTL		0       /* SDRC_INTL: 0x0: No interleaving */
++#define LISA_MAP_3_SDRC_ADDRSPC		2
++#define LISA_MAP_3_SDRC_MAP 		1       /* SDRC_MAP: 0x3: Mapped on EMIF1 and EMIF2 (interleaved) */
++#define LISA_MAP_3_SDRC_ADDR 		0x00    /* SDRC_ADDR = 0x00000000 */
++
++#define DMM_LISA_MAP3				(LISA_MAP_3_SYS_ADDR << 24) | (LISA_MAP_3_SYS_SIZE << 20) | (LISA_MAP_3_SDRC_INTL << 18) | \
++									(LISA_MAP_3_SDRC_ADDRSPC << 16) | (LISA_MAP_3_SDRC_MAP << 8) | LISA_MAP_3_SDRC_ADDR
++
++#endif
+diff --git a/board/isee/igep0050/mux_data.h b/board/isee/igep0050/mux_data.h
+new file mode 100644
+index 0000000..a1a8cfa
+--- /dev/null
++++ b/board/isee/igep0050/mux_data.h
+@@ -0,0 +1,299 @@
++/*
++ * (C) Copyright 2013
++ * ISEE 2007 SL
++ *
++ *	Manel Caro <mcaro@iseebcn.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++#ifndef _IGEP0050_MUX_DATA_H
++#define _IGEP0050_MUX_DATA_H
++
++#include <asm/arch/mux_omap5.h>
++
++const struct pad_conf_entry core_padconf_array_essential[] = {
++
++	{EMMC_CLK, (PTU | IEN | M0)}, /*  EMMC_CLK   */
++	{EMMC_CMD, (PTU | IEN | M0)}, /*  EMMC_CMD   */
++	{EMMC_DATA0, (PTU | IEN | M0)}, /*  EMMC_DATA0 */
++	{EMMC_DATA1, (PTU | IEN | M0)}, /*  EMMC_DATA1 */
++	{EMMC_DATA2, (PTU | IEN | M0)}, /*  EMMC_DATA2 */
++	{EMMC_DATA3, (PTU | IEN | M0)}, /*  EMMC_DATA3 */
++	{EMMC_DATA4, (PTU | IEN | M0)}, /*  EMMC_DATA4 */
++	{EMMC_DATA5, (PTU | IEN | M0)}, /*  EMMC_DATA5 */
++	{EMMC_DATA6, (PTU | IEN | M0)}, /*  EMMC_DATA6 */
++	{EMMC_DATA7, (PTU | IEN | M0)}, /*  EMMC_DATA7 */
++	{SDCARD_CLK, (PTU | IEN | M0)}, /*  SDCARD_CLK  */
++	{SDCARD_CMD, (PTU | IEN | M0)}, /*  SDCARD_CMD  */
++	{SDCARD_DATA0, (PTU | IEN | M0)}, /*  SDCARD_DATA0*/
++	{SDCARD_DATA1, (PTU | IEN | M0)}, /*  SDCARD_DATA1*/
++	{SDCARD_DATA2, (PTU | IEN | M0)}, /*  SDCARD_DATA2*/
++	{SDCARD_DATA3, (PTU | IEN | M0)}, /*  SDCARD_DATA3*/
++	{UART3_RX_IRRX, (PTU | IEN | M0)}, /*  UART3_RX_IRRX    */
++	{UART3_TX_IRTX, (M0)},    /*  UART3_TX_IRTX    */
++	{USBB1_HSIC_STROBE, (PTU | IEN | M0)},    /*  USBB1_HSIC_STROBE */
++	{USBB1_HSIC_DATA, (PTU | IEN | M0)},    /*  USBB1_HSIC_DATA */
++	{USBB2_HSIC_STROBE, (PTU | IEN | M0)},    /*  USBB2_HSIC_STROBE */
++	{USBB2_HSIC_DATA, (PTU | IEN | M0)},    /*  USBB2_HSIC_DATA  */
++	{USBB3_HSIC_STROBE, (PTU | IEN | M0)},    /*  USBB3_HSIC_STROBE*/
++	{USBB3_HSIC_DATA, (PTU | IEN | M0)},    /*  USBB3_HSIC_DATA  */
++	{USBD0_HS_DP, (IEN | M0)},	/*  USBD0_HS_DP */
++	{USBD0_HS_DM, (IEN | M0)},	/*  USBD0_HS_DM */
++	{USBD0_SS_RX, (IEN | M0)},	/*  USBD0_SS_RX */
++	{I2C3_SCL, (IEN | M0)}, /* I2C5_SCL */
++	{I2C3_SDA, (IEN | M0)}, /* I2C5_SDA */
++	{I2C4_SCL, (IEN | M0)}, /* I2C5_SCL */
++	{I2C4_SDA, (IEN | M0)}, /* I2C5_SDA */
++	{I2C5_SCL, (IEN | M0)}, /* I2C5_SCL */
++	{I2C5_SDA, (IEN | M0)}, /* I2C5_SDA */
++	{HSI2_ACWAKE, (PTU | M6)},    /*  HSI2_ACWAKE : GPMC_25 - USBH_nReset2, gpio3 79 */
++	{HSI2_CAFLAG, (PTU | M6)},    /*  HSI2_CAFLAG : USBH_nReset - gpio3 80*/
++	{HSI2_CAWAKE,  (PTU | M6)},    /* HSI2_CAWAKE : GPMC_24 - Lan Enable - gpio 78*/
++	{C2C_DATA14, (PTU |IEN | M6)},    /*  C2C_DATA14 : GPMC 22 : GPIO4_119 msata_detect*/
++	{C2C_DATA13, (PTU |IEN | M6)},    /*  C2C_DATA14 : GPMC 21 : GPIO4_118 user button*/
++};
++
++const struct pad_conf_entry wkup_padconf_array_essential[] = {
++
++	{SR_PMIC_SCL, (PTU | IEN | M0)}, /* SR_PMIC_SCL */
++	{SR_PMIC_SDA, (PTU | IEN | M0)}, /* SR_PMIC_SDA */
++	{SYS_32K, (IEN | M0)}, /*  SYS_32K     */
++	{FREF_CLK1_OUT, (PTD | IEN | M0)},    /*  FREF_CLK1_OUT  */
++	{LLIB_WAKEREQIN, (PTU | M6)},    /*  GPIO1_15 - Lan Reset */
++};
++
++const struct pad_conf_entry core_padconf_array_non_essential[] = {
++
++	{C2C_DATAIN0, (IEN | M0)},    /*  C2C_DATAIN0   */
++	{C2C_DATAIN1, (IEN | M0)},    /*  C2C_DATAIN1   */
++	{C2C_DATAIN2, (IEN | M0)},    /*  C2C_DATAIN2   */
++	{C2C_DATAIN3, (IEN | M0)},    /*  C2C_DATAIN3   */
++	{C2C_DATAIN4, (IEN | M0)},    /*  C2C_DATAIN4   */
++	{C2C_DATAIN5, (IEN | M0)},    /*  C2C_DATAIN5   */
++	{C2C_DATAIN6, (IEN | M0)},    /*  C2C_DATAIN6   */
++	{C2C_DATAIN7, (IEN | M0)},    /*  C2C_DATAIN7   */
++	{C2C_CLKIN1,  (IEN | M0)},    /*  C2C_CLKIN1    */
++	{C2C_CLKIN0,  (IEN | M0)},    /*  C2C_CLKIN0    */
++	{C2C_CLKOUT0, (M0)},    /*  C2C_CLKOUT0   */
++	{C2C_CLKOUT1, (M0)},    /*  C2C_CLKOUT1   */
++	{C2C_DATAOUT0, (M0)},    /*  C2C_DATAOUT0  */
++	{C2C_DATAOUT1, (M0)},    /*  C2C_DATAOUT1  */
++	{C2C_DATAOUT2, (M0)},    /*  C2C_DATAOUT2  */
++	{C2C_DATAOUT3, (M0)},    /*  C2C_DATAOUT3  */
++	{C2C_DATAOUT4, (M0)},    /*  C2C_DATAOUT4  */
++	{C2C_DATAOUT5, (M0)},    /*  C2C_DATAOUT5  */
++	{C2C_DATAOUT6, (M0)},    /*  C2C_DATAOUT6  */
++	{C2C_DATAOUT7, (M0)},    /*  C2C_DATAOUT7  */
++	{C2C_DATA8, (IEN | M0)},    /*  C2C_DATA8     */
++	{C2C_DATA9, (IEN | M0)},    /*  C2C_DATA9     */
++	{C2C_DATA10, (IEN | M0)},    /*  C2C_DATA10    */
++	{C2C_DATA11, (IEN | M0)},    /*  C2C_DATA11    */
++	{C2C_DATA12, (IEN | M0)},    /*  C2C_DATA12    */
++	{C2C_DATA13, (IEN | M0)},    /*  C2C_DATA13    */
++	{C2C_DATA14, (IEN | M0)},    /*  C2C_DATA14    */
++	{C2C_DATA15, (IEN | M0)},    /*  C2C_DATA15    */
++	{LLIB_WAKEREQOUT, (PTU | IEN | M6)},    /*  GPIO2_32      */
++	{LLIA_WAKEREQOUT, (M1)},    /*  C2C_WAKEREQOUT */
++	{HSI1_ACREADY, (PTD | M6)},    /*  GPIO3_64  */
++	{HSI1_CAREADY, (PTD | M6)},    /*  GPIO3_65  */
++	{HSI1_ACWAKE,  (PTD | IEN | M6)},    /*  GPIO3_66  */
++	{HSI1_CAWAKE,  (PTU | IEN | M6)},    /*  GPIO3_67  */
++	{HSI1_ACFLAG,  (PTD | IEN | M6)},    /*  GPIO3_68  */
++	{HSI1_ACDATA,  (PTD | M6)},    /*  GPIO3_69  */
++	{HSI1_CAFLAG,  (M6)},    /*  GPIO3_70  */
++	{HSI1_CADATA,  (M6)},    /*  GPIO3_71  */
++	{UART1_TX, (M0)},    /*  UART1_TX  */
++	{UART1_CTS, (PTU | IEN | M0)},    /*  UART1_CTS */
++	{UART1_RX, (PTU | IEN | M0)},    /*  UART1_RX  */
++	{UART1_RTS, (M0)},    /*  UART1_RTS */
++	{HSI2_CAREADY, (IEN | M0)},    /*  HSI2_CAREADY */
++	{HSI2_ACREADY, (OFF_EN | M0)},    /*  HSI2_ACREADY */
++	{HSI2_CAWAKE, (IEN | PTD | M0)},    /*  HSI2_CAWAKE  */
++	{HSI2_ACWAKE, (M0)},    /*  HSI2_ACWAKE  */
++	{HSI2_CAFLAG, (IEN | PTD | M0)},    /*  HSI2_CAFLAG  */
++	{HSI2_CADATA, (IEN | PTD | M0)},    /*  HSI2_CADATA  */
++	{HSI2_ACFLAG, (M0)},    /*  HSI2_ACFLAG  */
++	{HSI2_ACDATA, (M0)},    /*  HSI2_ACDATA  */
++	{UART2_RTS, (IEN | M1)},    /*  MCSPI3_SOMI  */
++	{UART2_CTS, (IEN | M1)},    /*  MCSPI3_CS0   */
++	{UART2_RX, (IEN | M1)},    /*  MCSPI3_SIMO  */
++	{UART2_TX, (IEN | M1)},    /*  MCSPI3_CLK   */
++	{TIMER10_PWM_EVT, (IEN | M0)},    /*  TIMER10_PWM_EVT  */
++	{DSIPORTA_TE0, (IEN | M0)},    /*  DSIPORTA_TE0     */
++	{DSIPORTA_LANE0X, (IEN | M0)},    /*  DSIPORTA_LANE0X  */
++	{DSIPORTA_LANE0Y, (IEN | M0)},    /*  DSIPORTA_LANE0Y  */
++	{DSIPORTA_LANE1X, (IEN | M0)},    /*  DSIPORTA_LANE1X  */
++	{DSIPORTA_LANE1Y, (IEN | M0)},    /*  DSIPORTA_LANE1Y  */
++	{DSIPORTA_LANE2X, (IEN | M0)},    /*  DSIPORTA_LANE2X  */
++	{DSIPORTA_LANE2Y, (IEN | M0)},    /*  DSIPORTA_LANE2Y  */
++	{DSIPORTA_LANE3X, (IEN | M0)},    /*  DSIPORTA_LANE3X  */
++	{DSIPORTA_LANE3Y, (IEN | M0)},    /*  DSIPORTA_LANE3Y  */
++	{DSIPORTA_LANE4X, (IEN | M0)},    /*  DSIPORTA_LANE4X  */
++	{DSIPORTA_LANE4Y, (IEN | M0)},    /*  DSIPORTA_LANE4Y  */
++	{TIMER9_PWM_EVT, (IEN | M0)},    /*  TIMER9_PWM_EVT   */
++	{DSIPORTC_TE0, (IEN | M0)},    /*  DSIPORTC_TE0     */
++	{DSIPORTC_LANE0X, (IEN | M0)},    /*  DSIPORTC_LANE0X  */
++	{DSIPORTC_LANE0Y, (IEN | M0)},    /*  DSIPORTC_LANE0Y  */
++	{DSIPORTC_LANE1X, (IEN | M0)},    /*  DSIPORTC_LANE1X  */
++	{DSIPORTC_LANE1Y, (IEN | M0)},    /*  DSIPORTC_LANE1Y  */
++	{DSIPORTC_LANE2X, (IEN | M0)},    /*  DSIPORTC_LANE2X  */
++	{DSIPORTC_LANE2Y, (IEN | M0)},    /*  DSIPORTC_LANE2Y  */
++	{DSIPORTC_LANE3X, (IEN | M0)},    /*  DSIPORTC_LANE3X  */
++	{DSIPORTC_LANE3Y, (IEN | M0)},    /*  DSIPORTC_LANE3Y  */
++	{DSIPORTC_LANE4X, (IEN | M0)},    /*  DSIPORTC_LANE4X  */
++	{DSIPORTC_LANE4Y, (IEN | M0)},    /*  DSIPORTC_LANE4Y  */
++	{RFBI_HSYNC0, (M4)},    /*  KBD_COL5   */
++	{RFBI_TE_VSYNC0, (PTD | M6)},    /*  GPIO6_161  */
++	{RFBI_RE, (M4)},    /*  KBD_COL4   */
++	{RFBI_A0, (PTD | IEN | M6)},    /*  GPIO6_165  */
++	{RFBI_DATA8, (M4)},    /*  KBD_COL3   */
++	{RFBI_DATA9, (PTD | M6)},    /*  GPIO6_175  */
++	{RFBI_DATA10, (PTD | M6)},    /*  GPIO6_176  */
++	{RFBI_DATA11, (PTD | M6)},    /*  GPIO6_177  */
++	{RFBI_DATA12, (PTD | M6)},    /*  GPIO6_178  */
++	{RFBI_DATA13, (PTU | IEN | M6)},    /*  GPIO6_179  */
++	{RFBI_DATA14, (M4)},    /*  KBD_COL7   */
++	{RFBI_DATA15, (M4)},    /*  KBD_COL6   */
++	{GPIO6_182, (M6)},    /*  GPIO6_182  */
++	{GPIO6_183, (PTD | M6)},    /*  GPIO6_183  */
++	{GPIO6_184, (M4)},    /*  KBD_COL2   */
++	{GPIO6_185, (PTD | IEN | M6)},    /*  GPIO6_185  */
++	{GPIO6_186, (PTD | M6)},    /*  GPIO6_186  */
++	{GPIO6_187, (PTU | IEN | M4)},    /*  KBD_ROW2   */
++	{RFBI_DATA0, (PTD | M6)},    /*  GPIO6_166  */
++	{RFBI_DATA1, (PTD | M6)},    /*  GPIO6_167  */
++	{RFBI_DATA2, (PTD | M6)},    /*  GPIO6_168  */
++	{RFBI_DATA3, (PTD | IEN | M6)},    /*  GPIO6_169  */
++	{RFBI_DATA4, (IEN | M6)},    /*  GPIO6_170  */
++	{RFBI_DATA5, (IEN | M6)},    /*  GPIO6_171  */
++	{RFBI_DATA6, (PTD | M6)},    /*  GPIO6_172  */
++	{RFBI_DATA7, (PTD | M6)},    /*  GPIO6_173  */
++	{RFBI_CS0, (PTD | IEN | M6)},    /*  GPIO6_163  */
++	{RFBI_WE, (PTD | M6)},    /*  GPIO6_162  */
++	{MCSPI2_CS0, (M0)},    /*  MCSPI2_CS0 */
++	{MCSPI2_CLK, (IEN | M0)},    /*  MCSPI2_CLK */
++	{MCSPI2_SIMO, (IEN | M0)},    /*  MCSPI2_SIMO*/
++	{MCSPI2_SOMI, (PTU | IEN | M0)},    /*  MCSPI2_SOMI*/
++	{I2C4_SCL, (IEN | M0)},    /*  I2C4_SCL   */
++	{I2C4_SDA, (IEN | M0)},    /*  I2C4_SDA   */
++	{HDMI_CEC, (IEN | M0)},    /*  HDMI_CEC   */
++	{HDMI_HPD, (PTD | IEN | M0)},    /*  HDMI_HPD   */
++	{HDMI_DDC_SCL, (IEN | M0)},    /*  HDMI_DDC_SCL */
++	{HDMI_DDC_SDA, (IEN | M0)},    /*  HDMI_DDC_SDA */
++	{CSIPORTA_LANE0X, (IEN | M0)},    /*  CSIPORTA_LANE0X  */
++	{CSIPORTA_LANE0Y, (IEN | M0)},    /*  CSIPORTA_LANE0Y  */
++	{CSIPORTA_LANE1Y, (IEN | M0)},    /*  CSIPORTA_LANE1Y  */
++	{CSIPORTA_LANE1X, (IEN | M0)},    /*  CSIPORTA_LANE1X  */
++	{CSIPORTA_LANE2Y, (IEN | M0)},    /*  CSIPORTA_LANE2Y  */
++	{CSIPORTA_LANE2X, (IEN | M0)},    /*  CSIPORTA_LANE2X  */
++	{CSIPORTA_LANE3X, (IEN | M0)},    /*  CSIPORTA_LANE3X  */
++	{CSIPORTA_LANE3Y, (IEN | M0)},    /*  CSIPORTA_LANE3Y  */
++	{CSIPORTA_LANE4X, (IEN | M0)},    /*  CSIPORTA_LANE4X  */
++	{CSIPORTA_LANE4Y, (IEN | M0)},    /*  CSIPORTA_LANE4Y  */
++	{CSIPORTB_LANE0X, (IEN | M0)},    /*  CSIPORTB_LANE0X  */
++	{CSIPORTB_LANE0Y, (IEN | M0)},    /*  CSIPORTB_LANE0Y  */
++	{CSIPORTB_LANE1Y, (IEN | M0)},    /*  CSIPORTB_LANE1Y  */
++	{CSIPORTB_LANE1X, (IEN | M0)},    /*  CSIPORTB_LANE1X  */
++	{CSIPORTB_LANE2Y, (IEN | M0)},    /*  CSIPORTB_LANE2Y  */
++	{CSIPORTB_LANE2X, (IEN | M0)},    /*  CSIPORTB_LANE2X  */
++	{CSIPORTC_LANE0Y, (IEN | M0)},    /*  CSIPORTC_LANE0Y  */
++	{CSIPORTC_LANE0X, (IEN | M0)},    /*  CSIPORTC_LANE0X  */
++	{CSIPORTC_LANE1Y, (IEN | M0)},    /*  CSIPORTC_LANE1Y  */
++	{CSIPORTC_LANE1X, (IEN | M0)},    /*  CSIPORTC_LANE1X  */
++	{CAM_SHUTTER, (M0)},    /*  CAM_SHUTTER      */
++	{CAM_STROBE, (M0)},    /*  CAM_STROBE       */
++	{CAM_GLOBALRESET, (IEN | M0)},    /*  CAM_GLOBALRESET  */
++	{TIMER11_PWM_EVT, (PTD | M6)},    /*  GPIO8_227  */
++	{TIMER5_PWM_EVT, (PTD | M6)},    /*  GPIO8_228  */
++	{TIMER6_PWM_EVT, (PTD | M6)},    /*  GPIO8_229  */
++	{TIMER8_PWM_EVT,      (PTU | M6)},    /*  GPIO8_230  */
++	{I2C3_SCL, (IEN | M0)},    /*  I2C3_SCL   */
++	{I2C3_SDA, (IEN | M0)},    /*  I2C3_SDA   */
++	{GPIO8_233, (IEN | M2)},    /*  TIMER8_PWM_EVT   */
++	{ABE_CLKS, (IEN | M0)},    /*  ABE_CLKS  */
++	{ABEDMIC_DIN1, (IEN | M0)},    /*  ABEDMIC_DIN1 */
++	{ABEDMIC_DIN2, (IEN | M0)},    /*  ABEDMIC_DIN2 */
++	{ABEDMIC_DIN3, (IEN | M0)},    /*  ABEDMIC_DIN3 */
++	{ABEDMIC_CLK1, (M0)},    /*  ABEDMIC_CLK1 */
++	{ABEDMIC_CLK2, (IEN | M1)},    /*  ABEMCBSP1_FSX */
++	{ABEDMIC_CLK3, (M1)},    /*  ABEMCBSP1_DX  */
++	{ABESLIMBUS1_CLOCK, (IEN | M1)},    /*  ABEMCBSP1_CLKX   */
++	{ABESLIMBUS1_DATA, (IEN | M1)},    /*  ABEMCBSP1_DR */
++	{ABEMCBSP2_DR, (IEN | M0)},    /*  ABEMCBSP2_DR */
++	{ABEMCBSP2_DX, (M0)},    /*  ABEMCBSP2_DX */
++	{ABEMCBSP2_FSX, (IEN | M0)},    /*  ABEMCBSP2_FSX  */
++	{ABEMCBSP2_CLKX, (IEN | M0)},    /*  ABEMCBSP2_CLKX */
++	{ABEMCPDM_UL_DATA, (PTD | IEN | OFF_EN | OFF_PD | OFF_IN | M0)},    /*  ABEMCPDM_UL_DATA */
++	{ABEMCPDM_DL_DATA, (PTD | IEN | OFF_EN | OFF_PD | OFF_IN | M0)},    /*  ABEMCPDM_DL_DATA */
++	{ABEMCPDM_FRAME, (PTU | IEN | OFF_EN | OFF_PD | OFF_IN | M0)},    /*  ABEMCPDM_FRAME   */
++	{ABEMCPDM_LB_CLK, (PTD | IEN | OFF_EN | OFF_PD | OFF_IN | M0)},    /*  ABEMCPDM_LB_CLK  */
++	{WLSDIO_CLK, (PTU | IEN | M0)},    /*  WLSDIO_CLK  */
++	{WLSDIO_CMD, (PTU | IEN | M0)},    /*  WLSDIO_CMD  */
++	{WLSDIO_DATA0, (PTU | IEN | M0)},    /*  WLSDIO_DATA0*/
++	{WLSDIO_DATA1, (PTU | IEN | M0)},    /*  WLSDIO_DATA1*/
++	{WLSDIO_DATA2, (PTU | IEN | M0)},    /*  WLSDIO_DATA2*/
++	{WLSDIO_DATA3, (PTU | IEN | M0)},    /*  WLSDIO_DATA3*/
++	{UART5_RX, (PTU | IEN | M0)},    /*  UART5_RX    */
++	{UART5_TX, (M0)},    /*  UART5_TX    */
++	{UART5_CTS, (PTU | IEN | M0)},    /*  UART5_CTS   */
++	{UART5_RTS, (M0)},    /*  UART5_RTS   */
++	{I2C2_SCL, (IEN | M0)},    /*  I2C2_SCL    */
++	{I2C2_SDA, (IEN | M0)},    /*  I2C2_SDA    */
++	{MCSPI1_CLK, (M6)},    /*  GPIO5_140   */
++	{MCSPI1_SOMI, (IEN | M6)},    /*  GPIO5_141   */
++	{MCSPI1_SIMO, (PTD | M6)},    /*  GPIO5_142   */
++	{MCSPI1_CS0, (PTD | M6)},    /*  GPIO5_143   */
++	{MCSPI1_CS1, (PTD | IEN | M6)},    /*  GPIO5_144   */
++	{I2C5_SCL, (IEN | M0)},    /*  I2C5_SCL    */
++	{I2C5_SDA, (IEN | M0)},    /*  I2C5_SDA    */
++	{PERSLIMBUS2_CLOCK, (PTD | M6)},    /*  GPIO5_145   */
++	{PERSLIMBUS2_DATA, (PTD | IEN | M6)},    /*  GPIO5_146   */
++	{UART6_TX, (PTU | IEN | M6)},    /*  GPIO5_149   */
++	{UART6_RX, (PTU | IEN | M6)},    /*  GPIO5_150   */
++	{UART6_CTS, (PTU | IEN | M6)},    /*  GPIO5_151   */
++	{UART6_RTS, (PTU | M0)},    /* UART6_RTS   */
++	{UART3_CTS_RCTX, (PTU | IEN | M6)},    /*  GPIO5_153   */
++	{UART3_RTS_IRSD, (PTU | IEN | M1)},    /*  HDQ_SIO     */
++	{I2C1_PMIC_SCL, (PTU | IEN | M0)},    /*  I2C1_PMIC_SCL  */
++	{I2C1_PMIC_SDA, (PTU | IEN | M0)},    /*  I2C1_PMIC_SDA  */
++
++};
++
++const struct pad_conf_entry wkup_padconf_array_non_essential[] = {
++
++/*
++ * This pad keeps C2C Module always enabled.
++ * Putting this in safe mode do not cause the issue.
++ * C2C driver could enable this mux setting if needed.
++ */
++	{LLIA_WAKEREQIN, (M7)},    /*  SAFE MODE  */
++	/* {LLIB_WAKEREQIN, (M7)}, */    /*  SAFE MODE  */
++	{DRM_EMU0, (PTU | IEN | M0)},    /*  DRM_EMU0    */
++	{DRM_EMU1, (PTU | IEN | M0)},    /*  DRM_EMU1    */
++	{JTAG_NTRST, (IEN | M0)},    /*  JTAG_NTRST  */
++	{JTAG_TCK, (IEN | M0)},    /*  JTAG_TCK    */
++	{JTAG_RTCK, (M0)},    /*  JTAG_RTCK   */
++	{JTAG_TMSC, (IEN | M0)},    /*  JTAG_TMSC   */
++	{JTAG_TDI, (IEN | M0)},    /*  JTAG_TDI    */
++	{JTAG_TDO, (M0)},    /*  JTAG_TDO    */
++	{FREF_CLK_IOREQ, (IEN | M0)},    /*  FREF_CLK_IOREQ */
++	{FREF_CLK0_OUT, (M0)},    /*  FREF_CLK0_OUT  */
++	{FREF_CLK1_OUT, (M0)},    /*  FREF_CLK1_OUT  */
++	{FREF_CLK2_OUT, (M0)},    /*  FREF_CLK2_OUT  */
++	{FREF_CLK2_REQ, (PTU | IEN | M6)},    /*  GPIO1_WK9      */
++	{FREF_CLK1_REQ, (PTD | IEN | M6)},    /*  GPIO1_WK8      */
++	{SYS_NRESPWRON, (IEN | M0)},    /*  SYS_NRESPWRON  */
++	{SYS_NRESWARM, (PTU | IEN | M0)},    /*  SYS_NRESWARM   */
++	{SYS_PWR_REQ, (M0)},    /*  SYS_PWR_REQ    */
++	{SYS_NIRQ1, (PTU | IEN | M0)},    /*  SYS_NIRQ1      */
++	{SYS_NIRQ2, (PTU | IEN | M0)},    /*  SYS_NIRQ2      */
++	{SYS_BOOT0, (IEN | M0)},    /*  SYS_BOOT0      */
++	{SYS_BOOT1, (IEN | M0)},    /*  SYS_BOOT1      */
++	{SYS_BOOT2, (IEN | M0)},    /*  SYS_BOOT2      */
++	{SYS_BOOT3, (IEN | M0)},    /*  SYS_BOOT3      */
++	{SYS_BOOT4, (IEN | M0)},    /*  SYS_BOOT4      */
++	{SYS_BOOT5, (IEN | M0)},    /*  SYS_BOOT5      */
++
++};
++
++#endif /* _IGEP0050_MUX_DATA_H */
+diff --git a/configs/omap5_igep0050_defconfig b/configs/omap5_igep0050_defconfig
+new file mode 100644
+index 0000000..8eb49bf
+--- /dev/null
++++ b/configs/omap5_igep0050_defconfig
+@@ -0,0 +1,7 @@
++CONFIG_ARM=y
++CONFIG_OMAP54XX=y
++CONFIG_TARGET_OMAP5_IGEP0050=y
++CONFIG_SPL=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++# CONFIG_CMD_SETEXPR is not set
+diff --git a/drivers/gpio/tca642x.c b/drivers/gpio/tca642x.c
+index 6386835..de378d7 100644
+--- a/drivers/gpio/tca642x.c
++++ b/drivers/gpio/tca642x.c
+@@ -24,6 +24,8 @@
+ #include <i2c.h>
+ #include <tca642x.h>
+ 
++#ifndef CONFIG_TCA641X
++#define MAX_TCA64x_REG	3
+ /* tca642x register address definitions */
+ struct tca642x_bank_info tca642x_regs[] = {
+ 	{ .input_reg = 0x00,
+@@ -39,6 +41,19 @@ struct tca642x_bank_info tca642x_regs[] = {
+ 	  .polarity_reg = 0x0a,
+ 	  .configuration_reg = 0x0e },
+ };
++#else
++#define MAX_TCA64x_REG	2
++struct tca642x_bank_info tca642x_regs[] = {
++	{ .input_reg = 0x00,
++	  .output_reg = 0x02,
++          .polarity_reg = 0x04,
++          .configuration_reg = 0x06 },
++        { .input_reg = 0x01,
++          .output_reg = 0x03,
++          .polarity_reg = 0x05,
++          .configuration_reg = 0x07 },
++};
++#endif
+ 
+ /*
+  * Modify masked bits in register
+@@ -148,7 +163,7 @@ int tca642x_set_inital_state(uchar chip, struct tca642x_bank_info init_data[])
+ 	uint8_t polarity_reg;
+ 	uint8_t output_reg;
+ 
+-	for (i = 0; i < 3; i++) {
++	for (i = 0; i < MAX_TCA64x_REG; i++) {
+ 		config_reg = tca642x_regs[i].configuration_reg;
+ 		ret = tca642x_reg_write(chip, config_reg, 0xff,
+ 				init_data[i].configuration_reg);
+@@ -159,7 +174,6 @@ int tca642x_set_inital_state(uchar chip, struct tca642x_bank_info init_data[])
+ 		ret = tca642x_reg_write(chip, output_reg, 0xff,
+ 				init_data[i].output_reg);
+ 	}
+-
+ 	return ret;
+ }
+ 
+@@ -173,7 +187,7 @@ static int tca642x_info(uchar chip)
+ 	uint8_t data;
+ 
+ 	printf("tca642x@ 0x%x (%d pins):\n", chip, 24);
+-	for (i = 0; i < 3; i++) {
++	for (i = 0; i < MAX_TCA64x_REG ; i++) {
+ 		printf("Bank %i\n", i);
+ 		if (tca642x_reg_read(chip,
+ 				     tca642x_regs[i].configuration_reg,
+diff --git a/include/configs/omap5_igep0050.h b/include/configs/omap5_igep0050.h
+new file mode 100644
+index 0000000..01041ed
+--- /dev/null
++++ b/include/configs/omap5_igep0050.h
+@@ -0,0 +1,100 @@
++/*
++ * (C) Copyright 2014
++ * ISEE 2007 SL
++ * Manel Caro	  <mcaro@iseebcn.com>
++ *
++ * Configuration settings for the IGEPv5 board.
++ * See omap5_common.h for omap5 common settings.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#ifndef __CONFIG_IGEP0050_H
++#define __CONFIG_IGEP0050_H
++
++#ifndef CONFIG_SPL_BUILD
++/* Define the default GPT table for eMMC */
++#define PARTS_DEFAULT \
++	"uuid_disk=${uuid_gpt_disk};" \
++	"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}"
++#endif
++
++#include <configs/ti_omap5_common.h>
++
++#define CONFIG_OMAP5_IGEPv5
++
++/* IGEPv5 Memory Configuration */
++#undef IGEPv5_MEMORY_4G
++
++#define CONFIG_CONS_INDEX		3
++#define CONFIG_SYS_NS16550_COM3		UART3_BASE
++#define CONFIG_BAUDRATE			115200
++
++#define CONFIG_MISC_INIT_R
++/* MMC ENV related defines */
++#define CONFIG_ENV_IS_IN_MMC
++#define CONFIG_SYS_MMC_ENV_DEV		1	/* SLOT2: eMMC(1) */
++#define CONFIG_ENV_SIZE			(128 << 10)
++#define CONFIG_ENV_OFFSET		0xE0000
++#define CONFIG_ENV_OFFSET_REDUND	(CONFIG_ENV_OFFSET + CONFIG_ENV_SIZE)
++#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
++
++/* Enhance our eMMC support / experience. */
++#define CONFIG_CMD_GPT
++#define CONFIG_EFI_PARTITION
++#define CONFIG_HSMMC2_8BIT
++#define CONFIG_SUPPORT_EMMC_BOOT
++
++/* Required support for the TCA642X GPIO we have on the uEVM */
++#define CONFIG_TCA642X
++#define CONFIG_TCA641X			/* Modify TCA642X driver to be used with TCA641x */
++#define CONFIG_CMD_TCA642X
++#define CONFIG_SYS_I2C_TCA642X_BUS_NUM 3
++#define CONFIG_SYS_I2C_TCA642X_ADDR 0x21
++
++/* eeprom board configuration */
++#define CONFIG_IGEPV5_CFG_EEPROM
++#define CONFIG_SYS_I2C_IGEPV5_CFG_BUS_NUM   0
++#define CONFIG_SYS_I2C_IGEPV5_CFG_BUS_ADDR  0x50
++
++/* USB UHH support options */
++#define CONFIG_CMD_USB
++#define CONFIG_USB_HOST
++#define CONFIG_USB_EHCI
++#define CONFIG_USB_EHCI_OMAP
++#define CONFIG_USB_STORAGE
++#define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS 3
++#define CONFIG_EHCI_HCD_INIT_AFTER_RESET
++
++#define CONFIG_OMAP_EHCI_PHY2_RESET_GPIO 80
++#define CONFIG_OMAP_EHCI_PHY3_RESET_GPIO 79
++
++#define CONFIG_OMAP_USBLAN_ENABLE_GPIO	 78
++#define CONFIG_OMAP_USBLAN_RESET_GPIO	 15
++
++#define CONFIG_SYS_I2C_USB0_3503_BUS_NUM 	4
++#define CONFIG_SYS_I2C_USB0_3503_ADDR 		0x08
++#define CONFIG_SYS_I2C_USB1_3503_BUS_NUM 	2
++#define CONFIG_SYS_I2C_USB1_3503_ADDR 		0x08
++
++/* Enabled commands */
++#define CONFIG_CMD_DHCP		/* DHCP Support			*/
++
++/* USB Networking options */
++#define CONFIG_USB_HOST_ETHER
++
++#define CONSOLEDEV		"ttyO2"
++
++/* Max time to hold reset on this board, see doc/README.omap-reset-time */
++#define CONFIG_OMAP_PLATFORM_RESET_TIME_MAX_USEC	16296
++
++#define CONFIG_CMD_SCSI
++#define CONFIG_LIBATA
++#define CONFIG_SCSI_AHCI
++#define CONFIG_SCSI_AHCI_PLAT
++#define CONFIG_SYS_SCSI_MAX_SCSI_ID	1
++#define CONFIG_SYS_SCSI_MAX_LUN		1
++#define CONFIG_SYS_SCSI_MAX_DEVICE	(CONFIG_SYS_SCSI_MAX_SCSI_ID * \
++						CONFIG_SYS_SCSI_MAX_LUN)
++
++#endif /* __CONFIG_IGEP0050_H */
+diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
+index d4b1d83..2546665 100644
+--- a/include/configs/ti_armv7_common.h
++++ b/include/configs/ti_armv7_common.h
+@@ -61,20 +61,54 @@
+ #define DEFAULT_MMC_TI_ARGS \
+ 	"mmcdev=0\0" \
+ 	"mmcrootfstype=ext4 rootwait\0" \
+-	"finduuid=part uuid mmc 0:2 uuid\0" \
++	"memory=mem=2032M@0x80000000 mem=2048M@0x300000000 smsc75xx.mac=0x2,0xa1,0x5,0xa4,0xf,0x40\0" \
++	"finduuid=part uuid ${interface} ${bootpart} uuid\0" \
+ 	"args_mmc=run finduuid;setenv bootargs console=${console} " \
+ 		"${optargs} " \
+-		"root=PARTUUID=${uuid} rw " \
+-		"rootfstype=${mmcrootfstype}\0" \
+-	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
++		"${memory} " \
++		"root=PARTUUID=${uuid} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0" \
++	"args_mmc=run finduuid;setenv bootargs console=${console} " \
++		"${optargs} " \
++		"${memory} " \
++		"root=PARTUUID=${uuid} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0" \
++	"args_mmc_old=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"${memory} " \
++		"root=${oldroot} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0" \
++	"args_mmc_uuid=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"${memory} " \
++		"root=UUID=${uuid} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${cmdline}\0" \
++	"args_uenv_root=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"${memory} " \
++		"root=${uenv_root} ro " \
++		"rootfstype=${mmcrootfstype} " \
++		"${musb} ${cmdline}\0" \
++	"args_netinstall=setenv bootargs ${netinstall_bootargs} " \
++		"${optargs} " \
++		"${memory} " \
++		"${cape_disable} " \
++		"${cape_enable} " \
++		"root=/dev/ram rw " \
++		"${cmdline}\0" \
++	"loadbootscript=load ${interface} ${mmcdev} ${loadaddr} boot.scr\0" \
+ 	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
+ 		"source ${loadaddr}\0" \
+ 	"bootenvfile=uEnv.txt\0" \
+ 	"importbootenv=echo Importing environment from mmc${mmcdev} ...; " \
+ 		"env import -t ${loadaddr} ${filesize}\0" \
+-	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
+-	"envboot=mmc dev ${mmcdev}; " \
+-		"if mmc rescan; then " \
++	"loadbootenv=load ${interface} ${bootpart} ${loadaddr} ${bootenv}\0" \
++	"envboot=${interface} dev ${mmcdev}; " \
++		"if ${interface} rescan; then " \
+ 			"echo SD/MMC found on device ${mmcdev};" \
+ 			"if run loadbootscript; then " \
+ 				"run bootscript;" \
+@@ -90,6 +124,132 @@
+ 			"fi;" \
+ 		"fi;\0" \
+ 
++#define EEWIKI_BOOT \
++	"boot=${interface} dev ${mmcdev}; " \
++		"if ${interface} rescan; then " \
++			"echo SD/MMC found on device ${mmcdev};" \
++			"setenv bootpart ${mmcdev}:1; " \
++			"echo Checking for: /uEnv.txt ...;" \
++			"if test -e ${interface} ${bootpart} /uEnv.txt; then " \
++				"load ${interface} ${bootpart} ${loadaddr} /uEnv.txt;" \
++				"env import -t ${loadaddr} ${filesize};" \
++				"echo Loaded environment from /uEnv.txt;" \
++				"echo Checking if uenvcmd is set ...;" \
++				"if test -n ${uenvcmd}; then " \
++					"echo Running uenvcmd ...;" \
++					"run uenvcmd;" \
++				"fi;" \
++			"fi; " \
++			"echo Checking for: /boot/uEnv.txt ...;" \
++			"for i in 1 2 3 4 5 6 7 ; do " \
++				"setenv mmcpart ${i};" \
++				"setenv bootpart ${mmcdev}:${mmcpart};" \
++				"if test -e ${interface} ${bootpart} /boot/uEnv.txt; then " \
++					"load ${interface} ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
++					"env import -t ${loadaddr} ${filesize};" \
++					"echo Loaded environment from /boot/uEnv.txt;" \
++					"if test -n ${dtb}; then " \
++						"setenv fdtfile ${dtb};" \
++						"echo Using: dtb=${fdtfile} ...;" \
++					"fi;" \
++					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
++					"if test -n ${uname_r}; then " \
++						"setenv oldroot /dev/mmcblk${mmcblk}p${mmcpart};" \
++						"echo Running uname_boot ...;" \
++						"run uname_boot;" \
++					"fi;" \
++				"fi;" \
++			"done;" \
++		"fi;\0" \
++
++#define EEWIKI_UNAME_BOOT \
++	"uname_boot="\
++		"setenv bootdir /boot; " \
++		"setenv bootfile vmlinuz-${uname_r}; " \
++		"if test -e ${interface} ${bootpart} ${bootdir}/${bootfile}; then " \
++			"echo loading ${bootdir}/${bootfile} ...; "\
++			"run loadimage;" \
++			"setenv fdtdir /boot/dtbs/${uname_r}; " \
++			"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++				"run loadfdt;" \
++			"else " \
++				"setenv fdtdir /usr/lib/linux-image-${uname_r}; " \
++				"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++					"run loadfdt;" \
++				"else " \
++					"setenv fdtdir /lib/firmware/${uname_r}/device-tree; " \
++					"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++						"run loadfdt;" \
++					"else " \
++						"setenv fdtdir /boot/dtb-${uname_r}; " \
++						"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++							"run loadfdt;" \
++						"else " \
++							"setenv fdtdir /boot/dtbs; " \
++							"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++								"run loadfdt;" \
++							"else " \
++								"setenv fdtdir /boot/dtb; " \
++								"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++									"run loadfdt;" \
++								"else " \
++									"setenv fdtdir /boot; " \
++									"if test -e ${interface} ${bootpart} ${fdtdir}/${fdtfile}; then " \
++										"run loadfdt;" \
++									"else " \
++										"echo; echo unable to find ${fdtfile} ...; echo booting legacy ...;"\
++										"run args_mmc;" \
++										"echo debug: [${bootargs}] ... ;" \
++										"echo debug: [bootz ${loadaddr}] ... ;" \
++										"bootz ${loadaddr}; " \
++									"fi;" \
++								"fi;" \
++							"fi;" \
++						"fi;" \
++					"fi;" \
++				"fi;" \
++			"fi; " \
++			"setenv rdfile initrd.img-${uname_r}; " \
++			"if test -e ${interface} ${bootpart} ${bootdir}/${rdfile}; then " \
++				"echo loading ${bootdir}/${rdfile} ...; "\
++				"run loadrd;" \
++				"if test -n ${netinstall_enable}; then " \
++					"run args_netinstall; run message;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++				"fi;" \
++				"if test -n ${uenv_root}; then " \
++					"run args_uenv_root;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++				"fi;" \
++				"if test -n ${uuid}; then " \
++					"run args_mmc_uuid;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++				"else " \
++					"run args_mmc_old;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdtaddr}; " \
++				"fi;" \
++			"else " \
++				"if test -n ${uenv_root}; then " \
++					"run args_uenv_root;" \
++					"echo debug: [${bootargs}] ... ;" \
++					"echo debug: [bootz ${loadaddr} - ${fdtaddr}] ... ;" \
++					"bootz ${loadaddr} - ${fdtaddr}; " \
++				"fi;" \
++				"run args_mmc_old;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} - ${fdtaddr}] ... ;" \
++				"bootz ${loadaddr} - ${fdtaddr}; " \
++			"fi;" \
++		"fi;\0" \
++
+ /*
+  * Default to a quick boot delay.
+  */
+diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
+index b7f368e..e9b3edb 100644
+--- a/include/configs/ti_omap5_common.h
++++ b/include/configs/ti_omap5_common.h
+@@ -148,7 +148,7 @@
+ 	DEFAULT_LINUX_BOOT_ENV \
+ 	DEFAULT_MMC_TI_ARGS \
+ 	"console=" CONSOLEDEV ",115200n8\0" \
+-	"fdtfile=undefined\0" \
++	"fdtfile=omap5-igep0050.dtb\0" \
+ 	"bootpart=0:2\0" \
+ 	"bootdir=/boot\0" \
+ 	"bootfile=zImage\0" \
+@@ -157,12 +157,12 @@
+ 	"partitions=" PARTS_DEFAULT "\0" \
+ 	"optargs=\0" \
+ 	"dofastboot=0\0" \
+-	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
++	"loadbootscript=load ${bootdev} ${mmcdev} ${loadaddr} boot.scr\0" \
+ 	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
+ 		"source ${loadaddr}\0" \
+-	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
+-	"mmcboot=mmc dev ${mmcdev}; " \
+-		"if mmc rescan; then " \
++	"loadimage=load ${interface} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
++	"mmcboot=${interface} dev ${mmcdev}; " \
++		"if ${interface} rescan; then " \
+ 			"echo SD/MMC found on device ${mmcdev};" \
+ 			"if run loadimage; then " \
+ 				"run loadfdt; " \
+@@ -171,49 +171,19 @@
+ 				"bootz ${loadaddr} - ${fdtaddr}; " \
+ 			"fi;" \
+ 		"fi;\0" \
+-	"findfdt="\
+-		"if test $board_name = omap5_uevm; then " \
+-			"setenv fdtfile omap5-uevm.dtb; fi; " \
+-		"if test $board_name = dra7xx; then " \
+-			"setenv fdtfile dra7-evm.dtb; fi;" \
+-		"if test $board_name = dra72x; then " \
+-			"setenv fdtfile dra72-evm.dtb; fi;" \
+-		"if test $board_name = beagle_x15; then " \
+-			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
+-		"if test $board_name = beagle_x15_es2plus; then " \
+-			"setenv fdtfile am57xx-beagle-x15-es2plus.dtb; fi;" \
+-		"if test $board_name = am57xx_evm; then " \
+-			"setenv fdtfile am57xx-evm.dtb; fi;" \
+-		"if test $board_name = am57xx_evm_es2plus; then " \
+-			"setenv fdtfile am57xx-evm-es2plus.dtb; fi;" \
+-		"if test $board_name = am572x_idk; then " \
+-			"setenv fdtfile am572x-idk.dtb; fi;" \
+-		"if test $board_name = am571x_idk; then " \
+-			"setenv fdtfile am571x-idk.dtb; fi;" \
+-		"if test $board_name = am572x_idk_osd; then " \
+-			"setenv fdtfile am572x-idk-lcd-osd.dtb; fi;" \
+-		"if test $board_name = am571x_idk_osd; then " \
+-			"setenv fdtfile am571x-idk-lcd-osd.dtb; fi;" \
+-		"if test $fdtfile = undefined; then " \
+-			"echo WARNING: Could not determine device tree to use; fi; \0" \
+-	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile};\0" \
++	"loadrd=load ${interface} ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
++	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...;  load ${interface} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
++	EEWIKI_BOOT \
++	EEWIKI_UNAME_BOOT \
+ 	DFUARGS \
+ 	NETARGS \
+ 
+ 
+ #define CONFIG_BOOTCOMMAND \
+-	"if test ${dofastboot} -eq 1; then " \
+-		"echo Boot fastboot requested, resetting dofastboot ...;" \
+-		"setenv dofastboot 0; saveenv;" \
+-		"echo Booting into fastboot ...; fastboot;" \
+-	"fi;" \
+-	"run findfdt; " \
+-	"run envboot; " \
+-	"run mmcboot;" \
+-	"setenv mmcdev 1; " \
+-	"setenv bootpart 1:2; " \
+-	"setenv mmcroot /dev/mmcblk0p2 rw; " \
+-	"run mmcboot;" \
++	"setenv interface mmc; " \
++	"setenv mmcblk 0; " \
++	"setenv mmcdev 0; " \
++	"run boot;" \
+ 	""
+ #endif
+ 
+-- 
+2.7.0
+
