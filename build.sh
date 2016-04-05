@@ -443,6 +443,9 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		socfpga_de0_nano_soc)
+			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
+			;;
 		udoo)
 			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
@@ -535,6 +538,9 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		socfpga_de0_nano_soc)
+			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
+			;;
 		udoo)
 			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
@@ -626,6 +632,9 @@ build_u_boot () {
 		sama5d4_xplained_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		socfpga_de0_nano_soc)
+			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
 		udoo)
 			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
@@ -1156,7 +1165,9 @@ sama5d4_xplained () {
 }
 
 socfpga_de0_nano_soc () {
-	board="socfpga_de0_nano_soc" ; always_mainline
+	cleanup
+	#transitioned_to_testing="true"
+	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
 }
 
 Sinovoip_BPI_M2 () {
@@ -1171,7 +1182,6 @@ udoo () {
 	cleanup
 	#transitioned_to_testing="true"
 	board="udoo" ; build_uboot_gnueabihf
-	cleanup
 }
 
 vf610twr () {
@@ -1207,6 +1217,7 @@ sama5d3xek
 sama5d3_xplained
 sama5d4ek
 sama5d4_xplained
+socfpga_de0_nano_soc
 udoo
 vf610twr
 wandboard
@@ -1223,6 +1234,5 @@ orangepi_pc
 rpi_2
 Sinovoip_BPI_M2
 Sinovoip_BPI_M3
-socfpga_de0_nano_soc
 
 #
