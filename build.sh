@@ -1205,7 +1205,7 @@ beagle_x15_ti
 firefly_rk3288
 ls1021atwr
 mx23_olinuxino
-mx51evk
+#mx51evk
 mx53loco
 mx6qsabresd
 omap3_beagle
