@@ -1,16 +1,17 @@
-From f97cabd0b4cf7f8816af555a61be5d842c65fe8c Mon Sep 17 00:00:00 2001
+From 45ebe3f216ee5ff55636d348d4618deac47898d9 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 4 Feb 2016 21:32:15 -0600
+Date: Tue, 12 Apr 2016 15:20:01 -0500
 Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  configs/wandboard_defconfig |   4 ++
+ drivers/video/ipu_common.c  |   2 +-
  include/configs/wandboard.h | 123 +++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 126 insertions(+), 1 deletion(-)
+ 3 files changed, 127 insertions(+), 2 deletions(-)
 
 diff --git a/configs/wandboard_defconfig b/configs/wandboard_defconfig
-index f2c9cd2..26175cb 100644
+index f6bd308..2d20aa3 100644
 --- a/configs/wandboard_defconfig
 +++ b/configs/wandboard_defconfig
 @@ -3,6 +3,10 @@ CONFIG_ARCH_MX6=y
@@ -24,6 +25,19 @@ index f2c9cd2..26175cb 100644
  # CONFIG_CMD_IMLS is not set
  # CONFIG_CMD_FLASH is not set
  CONFIG_CMD_GPIO=y
+diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
+index 36d4b23..db50484 100644
+--- a/drivers/video/ipu_common.c
++++ b/drivers/video/ipu_common.c
+@@ -352,7 +352,7 @@ static int ipu_pixel_clk_set_rate(struct clk *clk, unsigned long rate)
+ 	 */
+ 	__raw_writel((div / 16) << 16, DI_BS_CLKGEN1(clk->id));
+ 
+-	clk->rate = (u64)(clk->parent->rate * 16) / div;
++	clk->rate = lldiv((u64)(clk->parent->rate * 16), div);
+ 
+ 	return 0;
+ }
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
 index 8fb0abc..809e582 100644
 --- a/include/configs/wandboard.h
@@ -183,5 +197,5 @@ index 8fb0abc..809e582 100644
  
  #include <config_distro_bootcmd.h>
 -- 
-2.7.0
+2.8.0.rc3
 

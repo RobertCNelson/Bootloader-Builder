@@ -1,13 +1,27 @@
-From ea3bb1c044c832284e13d4e2cee1aded4db4dabd Mon Sep 17 00:00:00 2001
+From 79f2b6f8b6ce8f305dd1813feef1df5c6b26c3bc Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 17 Mar 2016 10:19:15 -0500
+Date: Tue, 12 Apr 2016 15:09:36 -0500
 Subject: [PATCH] vf610twr: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
+ drivers/video/ipu_common.c |  2 +-
  include/configs/vf610twr.h | 85 ++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 67 insertions(+), 18 deletions(-)
+ 2 files changed, 68 insertions(+), 19 deletions(-)
 
+diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
+index 36d4b23..db50484 100644
+--- a/drivers/video/ipu_common.c
++++ b/drivers/video/ipu_common.c
+@@ -352,7 +352,7 @@ static int ipu_pixel_clk_set_rate(struct clk *clk, unsigned long rate)
+ 	 */
+ 	__raw_writel((div / 16) << 16, DI_BS_CLKGEN1(clk->id));
+ 
+-	clk->rate = (u64)(clk->parent->rate * 16) / div;
++	clk->rate = lldiv((u64)(clk->parent->rate * 16), div);
+ 
+ 	return 0;
+ }
 diff --git a/include/configs/vf610twr.h b/include/configs/vf610twr.h
 index 0809fbb..d7e7229 100644
 --- a/include/configs/vf610twr.h
@@ -151,5 +165,5 @@ index 0809fbb..d7e7229 100644
  
  #endif
 -- 
-2.7.0
+2.8.0.rc3
 

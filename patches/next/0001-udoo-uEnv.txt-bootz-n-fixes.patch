@@ -1,13 +1,27 @@
-From 62233fea179b447617c6ab7a352cff1702e156b0 Mon Sep 17 00:00:00 2001
+From a253b64f69b3a91f394fe0ee6d1a8f36ad1515d8 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 20 Jan 2016 18:54:20 -0600
+Date: Tue, 12 Apr 2016 15:05:37 -0500
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/udoo.h | 133 ++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 116 insertions(+), 17 deletions(-)
+ drivers/video/ipu_common.c |   2 +-
+ include/configs/udoo.h     | 133 +++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 117 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
+index 36d4b23..db50484 100644
+--- a/drivers/video/ipu_common.c
++++ b/drivers/video/ipu_common.c
+@@ -352,7 +352,7 @@ static int ipu_pixel_clk_set_rate(struct clk *clk, unsigned long rate)
+ 	 */
+ 	__raw_writel((div / 16) << 16, DI_BS_CLKGEN1(clk->id));
+ 
+-	clk->rate = (u64)(clk->parent->rate * 16) / div;
++	clk->rate = lldiv((u64)(clk->parent->rate * 16), div);
+ 
+ 	return 0;
+ }
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
 index 3d0cafa..48a2796 100644
 --- a/include/configs/udoo.h
@@ -187,5 +201,5 @@ index 3d0cafa..48a2796 100644
  /* Print Buffer Size */
  #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
 -- 
-2.7.0.rc3
+2.8.0.rc3
 
