@@ -1231,7 +1231,7 @@ A20_OLinuXino_Lime2
 A20_OLinuXino_MICRO
 Bananapi
 Bananapro
-cm_fx6
+#cm_fx6
 orangepi_pc
 rpi_2
 Sinovoip_BPI_M2
