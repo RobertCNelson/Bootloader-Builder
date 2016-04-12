@@ -1,31 +1,40 @@
-From 6e99b35660cbce95a7ba52977b73fe72b5e1f64c Mon Sep 17 00:00:00 2001
+From 57796dae590ce4e34da379081a3947e5921753d6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 3 Aug 2015 12:04:15 -0500
+Date: Tue, 12 Apr 2016 12:32:25 -0500
 Subject: [PATCH] mx53loco: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx53loco.h | 144 +++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 127 insertions(+), 17 deletions(-)
+ drivers/video/ipu_common.c |   2 +-
+ include/configs/mx53loco.h | 139 +++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 123 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
+index 36d4b23..db50484 100644
+--- a/drivers/video/ipu_common.c
++++ b/drivers/video/ipu_common.c
+@@ -352,7 +352,7 @@ static int ipu_pixel_clk_set_rate(struct clk *clk, unsigned long rate)
+ 	 */
+ 	__raw_writel((div / 16) << 16, DI_BS_CLKGEN1(clk->id));
+ 
+-	clk->rate = (u64)(clk->parent->rate * 16) / div;
++	clk->rate = lldiv((u64)(clk->parent->rate * 16), div);
+ 
+ 	return 0;
+ }
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index ad2629d..26e0438 100644
+index cfb3ae3..9a9fefe 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
-@@ -46,6 +46,12 @@
+@@ -46,6 +46,7 @@
  #define CONFIG_CMD_FS_GENERIC
  #define CONFIG_CMD_FAT
  #define CONFIG_CMD_EXT2
 +#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
-+
-+/* bootz: zImage/initrd.img support */
-+#define CONFIG_CMD_BOOTZ
-+#define CONFIG_SUPPORT_RAW_INITRD
  #define CONFIG_DOS_PARTITION
  
  /* Eth Configs */
-@@ -100,26 +106,75 @@
+@@ -102,26 +103,75 @@
  
  #define CONFIG_ETHPRIME		"FEC0"
  
@@ -108,7 +117,7 @@ index ad2629d..26e0438 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -158,19 +213,74 @@
+@@ -160,19 +210,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -194,5 +203,5 @@ index ad2629d..26e0438 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-2.4.6
+2.8.0.rc3
 

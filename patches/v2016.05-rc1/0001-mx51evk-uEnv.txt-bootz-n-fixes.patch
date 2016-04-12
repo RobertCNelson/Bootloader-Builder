@@ -1,19 +1,20 @@
-From d78b7f00bca3b2423e26af3c7d5366240a4b2743 Mon Sep 17 00:00:00 2001
+From 2b3bf8209de945dc04d9fe147d01625a453e3ed4 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 15 Mar 2016 09:05:15 -0500
+Date: Tue, 12 Apr 2016 12:29:31 -0500
 Subject: [PATCH] mx51evk: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- drivers/mmc/fsl_esdhc.c   |   9 +--
- include/configs/mx51evk.h | 150 ++++++++++++++++++++++++++++++++++++++++------
- 2 files changed, 133 insertions(+), 26 deletions(-)
+ drivers/mmc/fsl_esdhc.c    |   9 +--
+ drivers/video/ipu_common.c |   2 +-
+ include/configs/mx51evk.h  | 150 +++++++++++++++++++++++++++++++++++++++------
+ 3 files changed, 134 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/mmc/fsl_esdhc.c b/drivers/mmc/fsl_esdhc.c
-index ea5f4bf..f16e06d 100644
+index 3acf9e8..9e24728 100644
 --- a/drivers/mmc/fsl_esdhc.c
 +++ b/drivers/mmc/fsl_esdhc.c
-@@ -249,15 +249,8 @@ static int esdhc_setup_data(struct mmc *mmc, struct mmc_data *data)
+@@ -275,15 +275,8 @@ static int esdhc_setup_data(struct mmc *mmc, struct mmc_data *data)
  	 * Rounding up to next power of 2
  	 * => timeout + 13 = log2(mmc->clock/4) + 1
  	 * => timeout + 13 = fls(mmc->clock/4)
@@ -30,11 +31,24 @@ index ea5f4bf..f16e06d 100644
  	timeout -= 13;
  
  	if (timeout > 14)
+diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
+index 36d4b23..db50484 100644
+--- a/drivers/video/ipu_common.c
++++ b/drivers/video/ipu_common.c
+@@ -352,7 +352,7 @@ static int ipu_pixel_clk_set_rate(struct clk *clk, unsigned long rate)
+ 	 */
+ 	__raw_writel((div / 16) << 16, DI_BS_CLKGEN1(clk->id));
+ 
+-	clk->rate = (u64)(clk->parent->rate * 16) / div;
++	clk->rate = lldiv((u64)(clk->parent->rate * 16), div);
+ 
+ 	return 0;
+ }
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index 32cd58e..1e792b7 100644
+index 31cd5bb..b8b0c88 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
-@@ -80,6 +80,14 @@
+@@ -78,6 +78,14 @@
  #define CONFIG_CMD_FAT
  #define CONFIG_DOS_PARTITION
  
@@ -49,7 +63,7 @@ index 32cd58e..1e792b7 100644
  /*
   * Eth Configs
   */
-@@ -139,24 +147,75 @@
+@@ -137,24 +145,75 @@
  #define CONFIG_LOADADDR		0x92000000	/* loadaddr env var */
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -133,7 +147,7 @@ index 32cd58e..1e792b7 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -195,19 +254,74 @@
+@@ -193,19 +252,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -219,5 +233,5 @@ index 32cd58e..1e792b7 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-2.7.0
+2.8.0.rc3
 
