@@ -1,0 +1,11 @@
+dist: trusty
+language: c
+compiler: gcc
+cache: ccache
+addons:
+  apt:
+    packages:
+    - gcc-arm-linux-gnueabihf
+    - debootstrap
+script:
+  - bash -ex build.sh
