@@ -5,6 +5,7 @@ cache: ccache
 addons:
   apt:
     packages:
+    - bc
     - ccache
 script:
   - git config --global user.email "rcnee@example.com"
