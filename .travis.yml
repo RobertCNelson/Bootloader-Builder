@@ -5,7 +5,8 @@ cache: ccache
 addons:
   apt:
     packages:
-    - gcc-arm-linux-gnueabihf
-    - debootstrap
+    - ccache
 script:
-  - bash -ex build.sh
+  - git config --global user.email "rcnee@example.com"
+  - git config --global user.name "rcnee"
+  - bash -e build.sh
