@@ -1,14 +1,28 @@
-From 79f2b6f8b6ce8f305dd1813feef1df5c6b26c3bc Mon Sep 17 00:00:00 2001
+From 1ce08192c4d304e003c7ae159f33865b55c6d50d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 12 Apr 2016 15:09:36 -0500
+Date: Thu, 28 Apr 2016 16:51:27 -0500
 Subject: [PATCH] vf610twr: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
+ configs/vf610twr_defconfig |  2 ++
  drivers/video/ipu_common.c |  2 +-
- include/configs/vf610twr.h | 85 ++++++++++++++++++++++++++++++++++++----------
- 2 files changed, 68 insertions(+), 19 deletions(-)
+ include/configs/vf610twr.h | 82 ++++++++++++++++++++++++++++++++++++----------
+ 3 files changed, 67 insertions(+), 19 deletions(-)
 
+diff --git a/configs/vf610twr_defconfig b/configs/vf610twr_defconfig
+index c014294..38310d6 100644
+--- a/configs/vf610twr_defconfig
++++ b/configs/vf610twr_defconfig
+@@ -16,6 +16,8 @@ CONFIG_CMD_DHCP=y
+ CONFIG_CMD_MII=y
+ CONFIG_CMD_PING=y
+ CONFIG_CMD_FAT=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_FS_GENERIC=y
+ CONFIG_OF_CONTROL=y
+ CONFIG_DM=y
+ CONFIG_VYBRID_GPIO=y
 diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
 index 36d4b23..db50484 100644
 --- a/drivers/video/ipu_common.c
@@ -23,20 +37,18 @@ index 36d4b23..db50484 100644
  	return 0;
  }
 diff --git a/include/configs/vf610twr.h b/include/configs/vf610twr.h
-index 0809fbb..d7e7229 100644
+index b240613..8b804ec 100644
 --- a/include/configs/vf610twr.h
 +++ b/include/configs/vf610twr.h
-@@ -80,6 +80,9 @@
- #define CONFIG_CMD_MMC
- #define CONFIG_GENERIC_MMC
- #define CONFIG_CMD_FAT
-+#define CONFIG_CMD_EXT2
-+#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
- #define CONFIG_DOS_PARTITION
+@@ -79,6 +79,7 @@
  
- #define CONFIG_CMD_PING
-@@ -110,7 +113,7 @@
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_DOS_PARTITION
++#define CONFIG_SUPPORT_RAW_INITRD
+ 
+ #define CONFIG_FEC_MXC
+ #define CONFIG_MII
+@@ -103,7 +104,7 @@
  #define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
  #define CONFIG_SYS_SPD_BUS_NUM		0
  
@@ -45,7 +57,7 @@ index 0809fbb..d7e7229 100644
  
  #define CONFIG_SYS_LOAD_ADDR		0x82000000
  
-@@ -141,13 +144,16 @@
+@@ -134,13 +135,16 @@
  	MEM_LAYOUT_ENV_SETTINGS \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
@@ -64,7 +76,7 @@ index 0809fbb..d7e7229 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -162,15 +168,41 @@
+@@ -155,15 +159,41 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -111,7 +123,7 @@ index 0809fbb..d7e7229 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -208,19 +240,35 @@
+@@ -201,19 +231,35 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -157,13 +169,6 @@ index 0809fbb..d7e7229 100644
  
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-@@ -275,5 +323,6 @@
- #endif
- 
- #define CONFIG_CMD_BOOTZ
-+#define CONFIG_SUPPORT_RAW_INITRD
- 
- #endif
 -- 
 2.8.0.rc3
 
