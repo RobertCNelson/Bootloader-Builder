@@ -1,42 +1,42 @@
-From bfb9c467c98313b04ddc69e11e27abedb6ea6617 Mon Sep 17 00:00:00 2001
+From 49374b630db36acda96a174076f4bf2eb7c6dd6e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 15 Mar 2013 10:15:16 -0500
+Date: Thu, 28 Apr 2016 12:19:02 -0500
 Subject: [PATCH] at91sam9x5ek: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/at91sam9x5ek.h |   67 ++++++++++++++++++++++++++++++++--------
- 1 file changed, 54 insertions(+), 13 deletions(-)
+ configs/at91sam9x5ek_mmc_defconfig |  3 ++
+ include/configs/at91sam9x5ek.h     | 58 ++++++++++++++++++++++++++++++--------
+ 2 files changed, 49 insertions(+), 12 deletions(-)
 
+diff --git a/configs/at91sam9x5ek_mmc_defconfig b/configs/at91sam9x5ek_mmc_defconfig
+index db501c5..898ed04 100644
+--- a/configs/at91sam9x5ek_mmc_defconfig
++++ b/configs/at91sam9x5ek_mmc_defconfig
+@@ -15,7 +15,10 @@ CONFIG_CMD_USB=y
+ # CONFIG_CMD_SETEXPR is not set
+ CONFIG_CMD_DHCP=y
+ CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
+ CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
+ CONFIG_SPI_FLASH=y
+ CONFIG_SPI_FLASH_ATMEL=y
+ CONFIG_OF_LIBFDT=y
 diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
-index 5dd2295..7f8980c 100644
+index 251094e..b9cb2f9 100644
 --- a/include/configs/at91sam9x5ek.h
 +++ b/include/configs/at91sam9x5ek.h
-@@ -74,7 +74,7 @@
- #define CONFIG_ATMEL_LCD_RGB565
- #define CONFIG_SYS_CONSOLE_IS_IN_ENV
- 
--#define CONFIG_BOOTDELAY	3
-+#define CONFIG_BOOTDELAY	1
- 
- /*
-  * BOOTP options
-@@ -160,6 +160,14 @@
+@@ -119,6 +119,7 @@
  #define CONFIG_MMC
  #define CONFIG_GENERIC_MMC
  #define CONFIG_GENERIC_ATMEL_MCI
-+#define CONFIG_CMD_FAT
-+#define CONFIG_CMD_EXT2
-+#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
-+
-+/* bootz: zImage/initrd.img support */
-+#define CONFIG_CMD_BOOTZ
 +#define CONFIG_SUPPORT_RAW_INITRD
  #endif
  
  /* FAT */
-@@ -233,18 +241,51 @@
+@@ -194,18 +195,51 @@
  #endif
  
  #ifdef CONFIG_SYS_USE_MMC
@@ -101,5 +101,5 @@ index 5dd2295..7f8980c 100644
  
  #define CONFIG_BAUDRATE		115200
 -- 
-1.7.10.4
+2.8.0.rc3
 

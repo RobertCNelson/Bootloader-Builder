@@ -1,42 +1,48 @@
-From a4a4cfc588c889873e5a31e097287abc7255e53f Mon Sep 17 00:00:00 2001
+From 3a9b70b8d4c4083fd3fcb112ef641a9cb500541c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 3 Jun 2015 14:48:45 -0500
+Date: Thu, 28 Apr 2016 12:21:52 -0500
 Subject: [PATCH] mx23_olinuxino: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx23_olinuxino.h | 120 +++++++++++++++++++++++++++++++++------
- 1 file changed, 104 insertions(+), 16 deletions(-)
+ configs/mx23_olinuxino_defconfig |   3 ++
+ include/configs/mx23_olinuxino.h | 112 +++++++++++++++++++++++++++++++++------
+ 2 files changed, 100 insertions(+), 15 deletions(-)
 
+diff --git a/configs/mx23_olinuxino_defconfig b/configs/mx23_olinuxino_defconfig
+index e201abb..1fe0672 100644
+--- a/configs/mx23_olinuxino_defconfig
++++ b/configs/mx23_olinuxino_defconfig
+@@ -2,6 +2,7 @@ CONFIG_ARM=y
+ CONFIG_TARGET_MX23_OLINUXINO=y
+ CONFIG_SPL=y
+ CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
+ # CONFIG_CMD_IMLS is not set
+ # CONFIG_CMD_FLASH is not set
+ CONFIG_CMD_MMC=y
+@@ -11,5 +12,7 @@ CONFIG_CMD_GPIO=y
+ CONFIG_CMD_DHCP=y
+ CONFIG_CMD_CACHE=y
+ CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
+ CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
+ CONFIG_OF_LIBFDT=y
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index 65203a0..1827e2b 100644
+index 1bdbe4b..3573bc2 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
-@@ -25,6 +25,14 @@
- #define CONFIG_CMD_MMC
- #define CONFIG_CMD_USB
+@@ -17,6 +17,8 @@
  
-+#define CONFIG_CMD_FAT
-+#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
-+
-+/* bootz: zImage/initrd.img support */
-+#define CONFIG_CMD_BOOTZ
+ #define CONFIG_CMD_LED
+ 
 +#define CONFIG_SUPPORT_RAW_INITRD
 +
  /* Memory configuration */
  #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
  #define PHYS_SDRAM_1			0x40000000	/* Base address */
-@@ -65,7 +73,7 @@
- #endif
- 
- /* Booting Linux */
--#define CONFIG_BOOTDELAY	3
-+#define CONFIG_BOOTDELAY	1
- #define CONFIG_BOOTFILE		"uImage"
- #define CONFIG_LOADADDR		0x42000000
- #define CONFIG_SYS_LOAD_ADDR	CONFIG_LOADADDR
-@@ -86,20 +94,58 @@
+@@ -78,20 +80,58 @@
  	"console=ttyAMA0\0" \
  	"fdt_file=imx23-olinuxino.dtb\0" \
  	"fdt_addr=0x41000000\0" \
@@ -100,7 +106,7 @@ index 65203a0..1827e2b 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -138,19 +184,61 @@
+@@ -130,19 +170,61 @@
  			"fi; " \
  		"else " \
  			"bootm; " \
@@ -173,5 +179,5 @@ index 65203a0..1827e2b 100644
  /* The rest of the configuration is shared */
  #include <configs/mxs.h>
 -- 
-2.1.4
+2.8.0.rc3
 
