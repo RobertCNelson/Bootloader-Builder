@@ -1,14 +1,27 @@
-From 57796dae590ce4e34da379081a3947e5921753d6 Mon Sep 17 00:00:00 2001
+From dee467cd97c036aaddc6667ee75a7390e48ad275 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 12 Apr 2016 12:32:25 -0500
+Date: Thu, 28 Apr 2016 12:40:14 -0500
 Subject: [PATCH] mx53loco: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
+ configs/m53evk_defconfig   |   1 +
  drivers/video/ipu_common.c |   2 +-
- include/configs/mx53loco.h | 139 +++++++++++++++++++++++++++++++++++++++------
- 2 files changed, 123 insertions(+), 18 deletions(-)
+ include/configs/mx53loco.h | 138 +++++++++++++++++++++++++++++++++++++++------
+ 3 files changed, 123 insertions(+), 18 deletions(-)
 
+diff --git a/configs/m53evk_defconfig b/configs/m53evk_defconfig
+index 62496c3..9c0d7bc 100644
+--- a/configs/m53evk_defconfig
++++ b/configs/m53evk_defconfig
+@@ -14,6 +14,7 @@ CONFIG_CMD_USB=y
+ CONFIG_CMD_DHCP=y
+ CONFIG_CMD_MII=y
+ CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
+ CONFIG_CMD_EXT4=y
+ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_FAT=y
 diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
 index 36d4b23..db50484 100644
 --- a/drivers/video/ipu_common.c
@@ -23,18 +36,10 @@ index 36d4b23..db50484 100644
  	return 0;
  }
 diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index cfb3ae3..9a9fefe 100644
+index 8743ddc..bd64fef 100644
 --- a/include/configs/mx53loco.h
 +++ b/include/configs/mx53loco.h
-@@ -46,6 +46,7 @@
- #define CONFIG_CMD_FS_GENERIC
- #define CONFIG_CMD_FAT
- #define CONFIG_CMD_EXT2
-+#define CONFIG_CMD_EXT4
- #define CONFIG_DOS_PARTITION
- 
- /* Eth Configs */
-@@ -102,26 +103,75 @@
+@@ -91,26 +91,75 @@
  
  #define CONFIG_ETHPRIME		"FEC0"
  
@@ -117,7 +122,7 @@ index cfb3ae3..9a9fefe 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -160,19 +210,74 @@
+@@ -149,19 +198,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \

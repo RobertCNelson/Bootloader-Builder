@@ -1,15 +1,29 @@
-From 2b3bf8209de945dc04d9fe147d01625a453e3ed4 Mon Sep 17 00:00:00 2001
+From f24b68728eadf99db6b82ddc98079c499ed75f18 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 12 Apr 2016 12:29:31 -0500
+Date: Thu, 28 Apr 2016 12:36:51 -0500
 Subject: [PATCH] mx51evk: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
+ configs/mx51evk_defconfig  |   3 +
  drivers/mmc/fsl_esdhc.c    |   9 +--
  drivers/video/ipu_common.c |   2 +-
- include/configs/mx51evk.h  | 150 +++++++++++++++++++++++++++++++++++++++------
- 3 files changed, 134 insertions(+), 27 deletions(-)
+ include/configs/mx51evk.h  | 143 +++++++++++++++++++++++++++++++++++++++------
+ 4 files changed, 130 insertions(+), 27 deletions(-)
 
+diff --git a/configs/mx51evk_defconfig b/configs/mx51evk_defconfig
+index 0b3b232..b611059 100644
+--- a/configs/mx51evk_defconfig
++++ b/configs/mx51evk_defconfig
+@@ -11,5 +11,8 @@ CONFIG_CMD_USB=y
+ CONFIG_CMD_DHCP=y
+ CONFIG_CMD_MII=y
+ CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
+ CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
+ CONFIG_OF_LIBFDT=y
 diff --git a/drivers/mmc/fsl_esdhc.c b/drivers/mmc/fsl_esdhc.c
 index 3acf9e8..9e24728 100644
 --- a/drivers/mmc/fsl_esdhc.c
@@ -45,25 +59,18 @@ index 36d4b23..db50484 100644
  	return 0;
  }
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index 31cd5bb..b8b0c88 100644
+index 23b8b46..40cba3d 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
-@@ -78,6 +78,14 @@
- #define CONFIG_CMD_FAT
+@@ -75,6 +75,7 @@
+ #define CONFIG_GENERIC_MMC
  #define CONFIG_DOS_PARTITION
  
-+#define CONFIG_CMD_EXT2
-+#define CONFIG_CMD_EXT4
-+#define CONFIG_CMD_FS_GENERIC
-+
-+/* bootz: zImage/initrd.img support */
-+#define CONFIG_CMD_BOOTZ
 +#define CONFIG_SUPPORT_RAW_INITRD
-+
  /*
   * Eth Configs
   */
-@@ -137,24 +145,75 @@
+@@ -127,24 +128,75 @@
  #define CONFIG_LOADADDR		0x92000000	/* loadaddr env var */
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -147,7 +154,7 @@ index 31cd5bb..b8b0c88 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -193,19 +252,74 @@
+@@ -183,19 +235,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
