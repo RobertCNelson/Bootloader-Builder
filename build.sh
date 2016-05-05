@@ -706,7 +706,18 @@ build_u_boot () {
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 		#halt_patching_uboot
 		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+	fi
 
+	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
+		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2016.05
+		#r1: initial build
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
+
+#		p_dir="${DIR}/patches/v2016.05"
+#		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+#		#halt_patching_uboot
+#		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	if [ "x${board}" = "xomap5_igep0050" ] ; then
@@ -1040,6 +1051,22 @@ am57xx_evm () {
 	board="am57xx_evm" ; always_mainline
 }
 
+am57xx_evm_ti () {
+	cleanup
+
+	board="beagle_x15_ti"
+	uboot_config="am57xx_evm_config"
+	gcc_linaro_gnueabihf_4_9
+	GIT_SHA="v2015.07"
+	build_u_boot
+
+	board="am57xx_evm_ti"
+	uboot_config="am57xx_evm_config"
+	gcc_linaro_gnueabihf_5
+	GIT_SHA="v2016.05-rc3"
+	build_u_boot
+}
+
 at91sam9x5ek () {
 	cleanup
 	#transitioned_to_testing="true"
@@ -1052,22 +1079,6 @@ Bananapi () {
 
 Bananapro () {
 	board="Bananapro" ; always_mainline
-}
-
-beagle_x15 () {
-	cleanup
-	#transitioned_to_testing="true"
-	board="beagle_x15" ; build_uboot_gnueabihf
-}
-
-beagle_x15_ti () {
-	cleanup
-
-	board="beagle_x15_ti"
-	uboot_config="am57xx_evm_config"
-	gcc_linaro_gnueabihf_4_9
-	GIT_SHA="v2015.07"
-	build_u_boot
 }
 
 cm_fx6 () {
@@ -1212,14 +1223,15 @@ wandboard () {
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
+am57xx_evm_ti
 #exit
 
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
 am57xx_evm
+am57xx_evm_ti
 at91sam9x5ek
-beagle_x15_ti
 firefly_rk3288
 ls1021atwr
 mx23_olinuxino
