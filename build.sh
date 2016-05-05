@@ -1223,7 +1223,6 @@ wandboard () {
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
-am57xx_evm_ti
 #exit
 
 am335x_evm
