@@ -714,10 +714,10 @@ build_u_boot () {
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
 
-#		p_dir="${DIR}/patches/v2016.05"
-#		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
-#		#halt_patching_uboot
-#		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+		p_dir="${DIR}/patches/ti-2016.05"
+		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+		#halt_patching_uboot
+		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 	fi
 
 	if [ "x${board}" = "xomap5_igep0050" ] ; then
@@ -1061,9 +1061,9 @@ am57xx_evm_ti () {
 	build_u_boot
 
 	board="am57xx_evm_ti"
-	uboot_config="am57xx_evm_config"
+	uboot_config="am57xx_evm_nodt_defconfig"
 	gcc_linaro_gnueabihf_5
-	GIT_SHA="v2016.05-rc3"
+	GIT_SHA="v2016.05"
 	build_u_boot
 }
 
