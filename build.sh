@@ -1054,11 +1054,11 @@ am57xx_evm () {
 am57xx_evm_ti () {
 	cleanup
 
-	board="beagle_x15_ti"
-	uboot_config="am57xx_evm_config"
-	gcc_linaro_gnueabihf_4_9
-	GIT_SHA="v2015.07"
-	build_u_boot
+#	board="beagle_x15_ti"
+#	uboot_config="am57xx_evm_config"
+#	gcc_linaro_gnueabihf_4_9
+#	GIT_SHA="v2015.07"
+#	build_u_boot
 
 	board="am57xx_evm_ti"
 	uboot_config="am57xx_evm_nodt_defconfig"
@@ -1069,7 +1069,7 @@ am57xx_evm_ti () {
 
 at91sam9x5ek () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="at91sam9x5ek_mmc" ; build_uboot_eabi
 }
 
@@ -1163,7 +1163,7 @@ rpi_2 () {
 
 sama5d2_xplained () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
 
@@ -1193,7 +1193,7 @@ sama5d4_xplained () {
 
 socfpga_de0_nano_soc () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
 }
 
