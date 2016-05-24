@@ -1097,13 +1097,13 @@ ls1021atwr () {
 
 mx23_olinuxino () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
 
 mx51evk () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
 }
 
@@ -1213,7 +1213,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="vf610twr" ; build_uboot_gnueabihf
 }
 
