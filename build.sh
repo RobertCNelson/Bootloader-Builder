@@ -68,11 +68,13 @@ wget_dl="wget -c --directory-prefix=${gcc_dir}/"
 dl_gcc_generic () {
 	site="https://releases.linaro.org"
 	archive_site="https://releases.linaro.org/archive"
+	non_https_site="http://releases.linaro.org"
+	non_https_archive_site="http://releases.linaro.org/archive"
 	WGET="wget -c --directory-prefix=${gcc_dir}/"
 	if [ ! -f "${gcc_dir}/${directory}/${datestamp}" ] ; then
 		echo "Installing: ${toolchain_name}"
 		echo "-----------------------------"
-		${WGET} "${site}/${version}/${filename}" || ${WGET} "${archive_site}/${version}/${filename}"
+		${WGET} "${site}/${version}/${filename}" || ${WGET} "${archive_site}/${version}/${filename}" || ${WGET} "${non_https_site}/${version}/${filename}" || ${WGET} "${non_https_archive_site}/${version}/${filename}"
 		if [ -d "${gcc_dir}/${directory}" ] ; then
 			rm -rf "${gcc_dir}/${directory}" || true
 		fi
@@ -972,8 +974,7 @@ build_uboot_latest () {
 
 build_uboot_eabi () {
 	uboot_config="${board}_defconfig"
-#this fails in travis...
-#	gcc_arm_embedded_5
+	gcc_arm_embedded_5
 	gcc_linaro_gnueabihf_5
 	build_uboot_stable
 	build_uboot_testing
