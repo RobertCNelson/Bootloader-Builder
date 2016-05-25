@@ -972,7 +972,9 @@ build_uboot_latest () {
 
 build_uboot_eabi () {
 	uboot_config="${board}_defconfig"
-	gcc_arm_embedded_5
+#this fails in travis...
+#	gcc_arm_embedded_5
+	gcc_linaro_gnueabihf_5
 	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
