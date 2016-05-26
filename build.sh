@@ -867,8 +867,8 @@ build_u_boot () {
 		fi
 
 		#SPL: RockChip rk3288
-		#./tools/mkimage -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
-		#sudo dd if=u-boot-spl.rk3288 of=/dev/sdc
+		#./tools/mkimage -n rk3288 -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
+		#sudo dd if=u-boot-spl.rk3288 of=/dev/sdc seek=64
 		#sudo dd if=u-boot-dtb.img of=/dev/sdc seek=256
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-spl.rk3288 ] ; then
 			filename_search="u-boot-spl.rk3288"
