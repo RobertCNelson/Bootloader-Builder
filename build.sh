@@ -466,8 +466,9 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: firefly-4gb
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -488,6 +489,10 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		firefly-rk3288-4gb)
+			echo "patch -p1 < \"${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
@@ -785,7 +790,7 @@ build_u_boot () {
 		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
 		echo "Building ${project}: ${uboot_filename}:"
 		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET} > /dev/null
-		if [ "x${board}" = "xfirefly-rk3288" ] ; then
+		if [ "x${board}" = "xfirefly-rk3288-4gb" ] ; then
 			./tools/mkimage -n rk3288 -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
 		fi
 
@@ -1088,8 +1093,13 @@ cm_fx6 () {
 	board="cm_fx6" ; always_mainline
 }
 
-firefly_rk3288 () {
-	board="firefly-rk3288" ; always_mainline
+firefly_rk3288_4gb () {
+	board="firefly-rk3288-4gb"
+	uboot_config="firefly-rk3288_defconfig"
+	#gcc_linaro_gnueabihf_5
+	#build_uboot_stable
+	gcc_linaro_gnueabihf_5
+	build_uboot_testing
 }
 
 ls1021atwr () {
