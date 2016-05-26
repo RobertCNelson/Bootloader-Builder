@@ -1244,7 +1244,7 @@ am43xx_evm
 am57xx_evm
 am57xx_evm_ti
 at91sam9x5ek
-firefly_rk3288
+firefly_rk3288_4gb
 ls1021atwr
 mx23_olinuxino
 mx51evk
