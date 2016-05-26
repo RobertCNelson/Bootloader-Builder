@@ -595,6 +595,10 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
+		firefly-rk3288-4gb)
+			echo "patch -p1 < \"${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch"
+			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
@@ -718,8 +722,9 @@ build_u_boot () {
 	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
 		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2016.05
 		#r1: initial build
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fafec3f9de634ab3215811059f02cd15878b8d1
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 
 		p_dir="${DIR}/patches/ti-2016.05"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -1100,6 +1105,7 @@ firefly_rk3288_4gb () {
 	#build_uboot_stable
 	gcc_linaro_gnueabihf_5
 	build_uboot_testing
+	build_uboot_latest
 }
 
 ls1021atwr () {
