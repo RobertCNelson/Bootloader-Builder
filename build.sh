@@ -371,8 +371,9 @@ build_u_boot () {
 		#r4: fix: mx51evk
 		#r5: fix: panda
 		#r6: am335x_evm: enable CONFIG_PHY_ATHEROS/CONFIG_PHY_VITESSE
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x_evm: add m10a varient
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -467,8 +468,9 @@ build_u_boot () {
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: firefly-4gb
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: add m10a varient
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
