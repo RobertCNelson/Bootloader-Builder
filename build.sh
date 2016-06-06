@@ -372,8 +372,9 @@ build_u_boot () {
 		#r5: fix: panda
 		#r6: am335x_evm: enable CONFIG_PHY_ATHEROS/CONFIG_PHY_VITESSE
 		#r7: am335x_evm: add m10a varient
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: am335x_evm: flasher rewrite...
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
