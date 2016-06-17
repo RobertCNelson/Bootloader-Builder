@@ -1,14 +1,13 @@
-From 1ce08192c4d304e003c7ae159f33865b55c6d50d Mon Sep 17 00:00:00 2001
+From b04d9a4e5676639fed2a33ac493b6aa95f8ad4ef Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 28 Apr 2016 16:51:27 -0500
+Date: Fri, 17 Jun 2016 13:50:44 -0500
 Subject: [PATCH] vf610twr: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  configs/vf610twr_defconfig |  2 ++
- drivers/video/ipu_common.c |  2 +-
  include/configs/vf610twr.h | 82 ++++++++++++++++++++++++++++++++++++----------
- 3 files changed, 67 insertions(+), 19 deletions(-)
+ 2 files changed, 66 insertions(+), 18 deletions(-)
 
 diff --git a/configs/vf610twr_defconfig b/configs/vf610twr_defconfig
 index c014294..38310d6 100644
@@ -23,19 +22,6 @@ index c014294..38310d6 100644
  CONFIG_OF_CONTROL=y
  CONFIG_DM=y
  CONFIG_VYBRID_GPIO=y
-diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
-index 36d4b23..db50484 100644
---- a/drivers/video/ipu_common.c
-+++ b/drivers/video/ipu_common.c
-@@ -352,7 +352,7 @@ static int ipu_pixel_clk_set_rate(struct clk *clk, unsigned long rate)
- 	 */
- 	__raw_writel((div / 16) << 16, DI_BS_CLKGEN1(clk->id));
- 
--	clk->rate = (u64)(clk->parent->rate * 16) / div;
-+	clk->rate = lldiv((u64)(clk->parent->rate * 16), div);
- 
- 	return 0;
- }
 diff --git a/include/configs/vf610twr.h b/include/configs/vf610twr.h
 index b240613..8b804ec 100644
 --- a/include/configs/vf610twr.h
@@ -170,5 +156,5 @@ index b240613..8b804ec 100644
  /* Miscellaneous configurable options */
  #define CONFIG_SYS_LONGHELP		/* undef to save memory */
 -- 
-2.8.0.rc3
+2.8.1
 
