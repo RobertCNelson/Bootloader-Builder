@@ -1,23 +1,49 @@
-From 3838bc7f77dd894fa2bfd65ec3f35c6b635f6c15 Mon Sep 17 00:00:00 2001
+From 471c6f0b36291f5014f4347b935883ccf8a8ad75 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 28 Apr 2016 11:35:37 -0500
+Date: Fri, 17 Jun 2016 16:44:55 -0500
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/ti_armv7_common.h | 158 ++++++++++++++++++++++++++++++++++++--
- include/configs/ti_omap4_common.h |  17 ++--
- 2 files changed, 164 insertions(+), 11 deletions(-)
+ configs/omap4_panda_defconfig     |   6 +-
+ include/configs/ti_armv7_common.h | 154 +++++++++++++++++++++++++++++++++++++-
+ include/configs/ti_omap4_common.h |  17 +++--
+ 3 files changed, 167 insertions(+), 10 deletions(-)
 
+diff --git a/configs/omap4_panda_defconfig b/configs/omap4_panda_defconfig
+index 406f0ac..95465e4 100644
+--- a/configs/omap4_panda_defconfig
++++ b/configs/omap4_panda_defconfig
+@@ -3,6 +3,10 @@ CONFIG_OMAP44XX=y
+ CONFIG_TARGET_OMAP4_PANDA=y
+ CONFIG_SPL=y
+ CONFIG_HUSH_PARSER=y
++CONFIG_AUTOBOOT_KEYED=y
++CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
++CONFIG_AUTOBOOT_DELAY_STR="d"
++CONFIG_AUTOBOOT_STOP_STR=" "
+ CONFIG_CMD_BOOTZ=y
+ # CONFIG_CMD_IMLS is not set
+ CONFIG_CMD_ASKENV=y
+@@ -19,8 +23,8 @@ CONFIG_CMD_MII=y
+ CONFIG_CMD_PING=y
+ CONFIG_CMD_EXT2=y
+ CONFIG_CMD_EXT4=y
+-CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_FAT=y
+ CONFIG_CMD_FS_GENERIC=y
+ CONFIG_SYS_NS16550=y
++CONFIG_USE_TINY_PRINTF=y
+ CONFIG_OF_LIBFDT=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 2c7d542..1ad8fa8 100644
+index ba7cf15..1ad8fa8 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,11 +59,33 @@
  #define DEFAULT_MMC_TI_ARGS \
  	"mmcdev=0\0" \
  	"mmcrootfstype=ext4 rootwait\0" \
--	"finduuid=part uuid mmc 0:2 uuid\0" \
+-	"finduuid=part uuid mmc ${bootpart} uuid\0" \
 +	"finduuid=part uuid ${interface} ${bootpart} uuid\0" \
  	"args_mmc=run finduuid;setenv bootargs console=${console} " \
  		"${optargs} " \
@@ -183,19 +209,8 @@ index 2c7d542..1ad8fa8 100644
  /*
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
-@@ -219,8 +367,8 @@
- #endif
- 
- /* RAW SD card / eMMC locations. */
--#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x200	/* address 0x40000 */
--#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x300	/* 384 KB */
-+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
-+#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
- 
- /* FAT sd card locations. */
- #define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 586d848..0a3edf3 100644
+index 5fad3c1..e189151 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -45,7 +45,8 @@
@@ -231,8 +246,8 @@ index 586d848..0a3edf3 100644
 +	"loaduimage=load ${interface} ${mmcdev} ${loadaddr} uImage\0" \
  	"mmcboot=echo Booting from mmc${mmcdev} ...; " \
  		"run args_mmc; " \
- 		"bootz ${loadaddr} - ${fdtaddr}\0" \
-@@ -139,7 +141,10 @@
+ 		"if run loadimage; then " \
+@@ -142,7 +144,10 @@
  			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -245,5 +260,5 @@ index 586d848..0a3edf3 100644
  
  /*
 -- 
-2.8.0.rc3
+2.8.1
 

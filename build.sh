@@ -217,8 +217,9 @@ git_cleanup () {
 halt_patching_uboot () {
 	pwd
 	echo "-----------------------------"
-	echo "make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config}"
-	echo "make ARCH=arm CROSS_COMPILE="${CC}" ${BUILDTARGET}"
+	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" distclean"
+	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${uboot_config}"
+	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${BUILDTARGET}"
 	echo "-----------------------------"
 	exit
 }
@@ -1173,7 +1174,7 @@ omap4_panda () {
 	cleanup
 	use_old="true"
 	#transitioned_to_testing="true"
-	board="omap4_panda" ; build_uboot_gnueabihf_only_stable
+	board="omap4_panda" ; build_uboot_gnueabihf
 }
 
 omap5_igep0050 () {
