@@ -1,6 +1,6 @@
-From 8bed9c2cc4aac886b1bceb89e93f84861082bf62 Mon Sep 17 00:00:00 2001
+From eb864928993360d69a5f4797b891f02e630b825e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 28 Apr 2016 13:01:37 -0500
+Date: Fri, 17 Jun 2016 15:49:26 -0500
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -281,14 +281,14 @@ index 4dbe2b6..b9b09cd 100644
  /*
   * OMAP3 has 12 GP timers, they can be driven by the system clock
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 2c7d542..7cb72db 100644
+index ba7cf15..b50dbf0 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,11 +59,33 @@
  #define DEFAULT_MMC_TI_ARGS \
  	"mmcdev=0\0" \
  	"mmcrootfstype=ext4 rootwait\0" \
--	"finduuid=part uuid mmc 0:2 uuid\0" \
+-	"finduuid=part uuid mmc ${bootpart} uuid\0" \
 +	"finduuid=part uuid ${interface} ${bootpart} uuid\0" \
  	"args_mmc=run finduuid;setenv bootargs console=${console} " \
  		"${optargs} " \
@@ -474,5 +474,5 @@ index 2c7d542..7cb72db 100644
 -
  #endif	/* __CONFIG_TI_ARMV7_COMMON_H__ */
 -- 
-2.8.0.rc3
+2.8.1
 
