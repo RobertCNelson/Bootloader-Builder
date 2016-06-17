@@ -1,32 +1,18 @@
-From d5e42edfbcd587b77c36caff7f721a5a02215e3a Mon Sep 17 00:00:00 2001
+From 0060428827247431a22c0584feb2ab4e61acaa8d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 12 Apr 2016 13:35:50 -0500
+Date: Fri, 17 Jun 2016 15:23:55 -0500
 Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- drivers/video/ipu_common.c        |   2 +-
  include/configs/mx6sabre_common.h | 139 +++++++++++++++++++++++++++++++++-----
- 2 files changed, 122 insertions(+), 19 deletions(-)
+ 1 file changed, 121 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/video/ipu_common.c b/drivers/video/ipu_common.c
-index 36d4b23..db50484 100644
---- a/drivers/video/ipu_common.c
-+++ b/drivers/video/ipu_common.c
-@@ -352,7 +352,7 @@ static int ipu_pixel_clk_set_rate(struct clk *clk, unsigned long rate)
- 	 */
- 	__raw_writel((div / 16) << 16, DI_BS_CLKGEN1(clk->id));
- 
--	clk->rate = (u64)(clk->parent->rate * 16) / div;
-+	clk->rate = lldiv((u64)(clk->parent->rate * 16), div);
- 
- 	return 0;
- }
 diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index ceea74e..63f5709 100644
+index 1ee880d..c77b1c9 100644
 --- a/include/configs/mx6sabre_common.h
 +++ b/include/configs/mx6sabre_common.h
-@@ -76,9 +76,12 @@
+@@ -72,9 +72,12 @@
  	"image=zImage\0" \
  	"fdt_file=undefined\0" \
  	"fdt_addr=0x18000000\0" \
@@ -40,7 +26,7 @@ index ceea74e..63f5709 100644
  	"dfuspi=dfu 0 sf 0:0:10000000:0\0" \
  	"dfu_alt_info_spl=spl raw 0x400\0" \
  	"dfu_alt_info_img=u-boot raw 0x10000\0" \
-@@ -87,7 +90,8 @@
+@@ -83,7 +86,8 @@
  	"initrd_high=0xffffffff\0" \
  	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
  	"mmcpart=1\0" \
@@ -50,7 +36,7 @@ index ceea74e..63f5709 100644
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
  			"setenv get_cmd dhcp; " \
-@@ -102,15 +106,55 @@
+@@ -98,15 +102,55 @@
  			"fi; "	\
  		"fi\0" \
  	EMMC_ENV	  \
@@ -111,7 +97,7 @@ index ceea74e..63f5709 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -149,6 +193,70 @@
+@@ -145,6 +189,70 @@
  		"else " \
  			"bootz; " \
  		"fi;\0" \
@@ -182,7 +168,7 @@ index ceea74e..63f5709 100644
  		"findfdt="\
  			"if test $fdt_file = undefined; then " \
  				"if test $board_name = SABREAUTO && test $board_rev = MX6QP; then " \
-@@ -170,17 +278,12 @@
+@@ -165,17 +273,12 @@
  
  #define CONFIG_BOOTCOMMAND \
  	"run findfdt;" \
@@ -207,5 +193,5 @@ index ceea74e..63f5709 100644
  #define CONFIG_ARP_TIMEOUT     200UL
  
 -- 
-2.8.0.rc3
+2.8.1
 
