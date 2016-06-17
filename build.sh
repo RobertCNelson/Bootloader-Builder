@@ -1128,13 +1128,13 @@ firefly_rk3288_4gb () {
 
 ls1021atwr () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="ls1021atwr_sdcard_qspi" ; build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
 
@@ -1158,7 +1158,7 @@ mx6ul_14x14_evk () {
 
 mx6qsabresd () {
 	cleanup
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
 
