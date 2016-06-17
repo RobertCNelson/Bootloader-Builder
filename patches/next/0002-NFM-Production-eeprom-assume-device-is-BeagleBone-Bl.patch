@@ -1,33 +1,22 @@
-From 1ca94b2f8bbcae3ca60c4ddc84bb499679ec27bd Mon Sep 17 00:00:00 2001
+From 6e615ca15a833537f24cd64a5029d3cfd4342d92 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 17 Mar 2016 14:27:03 -0500
+Date: Fri, 17 Jun 2016 15:08:39 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c      | 17 +++++++++++------
+ board/ti/am335x/board.h      |  5 +++++
  board/ti/am335x/mux.c        |  8 ++++++--
  include/configs/am335x_evm.h |  2 ++
- 3 files changed, 19 insertions(+), 8 deletions(-)
+ 4 files changed, 24 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 0a8979e..242f6b1 100644
+index cbbce12..4523ae5 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -44,6 +44,11 @@ DECLARE_GLOBAL_DATA_PTR;
- static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
- #endif
- 
-+static inline int board_is_blank_bone_lt(void)
-+{
-+	return 1;
-+}
-+
- /*
-  * Read header information from EEPROM into global structure.
-  */
-@@ -198,7 +203,7 @@ void am33xx_spl_board_init(void)
+@@ -245,7 +245,7 @@ void am33xx_spl_board_init(void)
  	/* Get the frequency */
  	dpll_mpu_opp100.m = am335x_get_efuse_mpu_max_freq(cdev);
  
@@ -36,7 +25,7 @@ index 0a8979e..242f6b1 100644
  		/* BeagleBone PMIC Code */
  		int usb_cur_lim;
  
-@@ -231,7 +236,7 @@ void am33xx_spl_board_init(void)
+@@ -278,7 +278,7 @@ void am33xx_spl_board_init(void)
  		 * Override what we have detected since we know if we have
  		 * a Beaglebone Black it supports 1GHz.
  		 */
@@ -45,21 +34,16 @@ index 0a8979e..242f6b1 100644
  			dpll_mpu_opp100.m = MPUPLL_M_1000;
  
  		/*
-@@ -335,11 +340,11 @@ const struct dpll_params *get_dpll_ddr_params(void)
- 	enable_i2c0_pin_mux();
- 	i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED, CONFIG_SYS_OMAP24_I2C_SLAVE);
- 	if (read_eeprom() < 0)
--		puts("Could not get board ID.\n");
-+		puts("Could not get board ID: Assuming blank BBB.\n");
+@@ -386,7 +386,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr_evm_sk;
--	else if (board_is_bone_lt())
-+	else if (board_is_bone_lt() || board_is_blank_bone_lt())
+-	else if (board_is_bone_lt() || board_is_icev2())
++	else if (board_is_bone_lt() || board_is_icev2() || board_is_blank_bone_lt())
  		return &dpll_ddr_bone_black;
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr_evm_sk;
-@@ -421,7 +426,7 @@ void sdram_init(void)
+@@ -473,7 +473,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -68,7 +52,20 @@ index 0a8979e..242f6b1 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -595,7 +600,7 @@ int board_eth_init(bd_t *bis)
+@@ -593,8 +593,11 @@ int board_late_init(void)
+ 	char *name = NULL;
+ 
+ 	rc = read_eeprom();
+-	if (rc)
++	if (rc) {
+ 		puts("Could not get board ID.\n");
++		setenv("board_name", "A335BNLT");
++		setenv("board_rev", "EMMC");
++	}
+ 
+ 	if (board_is_bbg1())
+ 		name = "BBG1";
+@@ -712,7 +715,7 @@ int board_eth_init(bd_t *bis)
  		puts("Could not get board ID.\n");
  
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced()) ||
@@ -77,13 +74,38 @@ index 0a8979e..242f6b1 100644
  		writel(MII_MODE_ENABLE, &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_MII;
+@@ -791,6 +794,8 @@ int board_fit_config_name_match(const char *name)
+ 		return 0;
+ 	else if (board_is_icev2() && !strcmp(name, "am335x-icev2"))
+ 		return 0;
++	else if (board_is_blank_bone_lt() && !strcmp(name, "am335x-boneblack-emmc-overlay"))
++		return 0;
+ 	else
+ 		return -1;
+ }
+diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
+index cded779..d07b372 100644
+--- a/board/ti/am335x/board.h
++++ b/board/ti/am335x/board.h
+@@ -21,6 +21,11 @@ static inline int board_is_bone_lt(void)
+ 	return board_ti_is("A335BNLT");
+ }
+ 
++static inline int board_is_blank_bone_lt(void)
++{
++	return !board_ti_is("A335BNLT");
++}
++
+ static inline int board_is_bbg1(void)
+ {
+ 	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "BBG1", 4);
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 44b78b0..2c9ab82 100644
+index afca0ec..6375269 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -381,7 +381,11 @@ void enable_board_pin_mux(void)
- 		configure_module_pin_mux(bbb_p9_15_pin_mux);
- #endif
+@@ -412,7 +412,11 @@ void enable_board_pin_mux(void)
+ 		configure_module_pin_mux(rmii1_pin_mux);
+ 		configure_module_pin_mux(spi0_pin_mux);
  	} else {
 -		puts("Unknown board, cannot configure pinmux.");
 -		hang();
@@ -96,18 +118,18 @@ index 44b78b0..2c9ab82 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index b73c143..6b89005 100644
+index 4cc2df3..d0a10b0 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -97,6 +97,8 @@
- 
- #define CONFIG_BOOTCOMMAND \
- 	"run findfdt; " \
-+	"setenv fdtfile am335x-boneblack.dtb; "\
-+	"setenv fdtbase am335x-boneblack; "\
- 	"run envboot; " \
- 	"run distro_bootcmd"
- 
+@@ -190,6 +190,8 @@
+ 				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
+ 			"elif test $board_rev = GH01; then " \
+ 				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
++			"elif test $board_rev = EMMC; then " \
++				"setenv fdtfile am335x-boneblack-emmc-overlay.dtb; setenv fdtbase am335x-boneblack-emmc-overlay; " \
+ 			"else " \
+ 				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
+ 			"fi; " \
 -- 
-2.7.0
+2.8.1
 
