@@ -1,11 +1,11 @@
-From a4c61f264f5d56e0df62d93a33540ee2ad4951be Mon Sep 17 00:00:00 2001
+From 47e8e8a2b961a0897745604144aaa0ee5c8c7e76 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 25 May 2016 15:12:53 -0500
+Date: Mon, 20 Jun 2016 14:26:00 -0500
 Subject: [PATCH] sama5d3xek: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/at91-sama5_common.h             |  9 +--
+ include/configs/at91-sama5_common.h | 9 +++++----
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/include/configs/at91-sama5_common.h b/include/configs/at91-sama5_common.h
