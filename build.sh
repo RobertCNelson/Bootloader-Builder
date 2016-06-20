@@ -1190,7 +1190,7 @@ omap5_igep0050 () {
 omap5_uevm () {
 	cleanup
 	use_old="true"
-	#transitioned_to_testing="true"
+	transitioned_to_testing="true"
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
