@@ -942,6 +942,9 @@ build_u_boot () {
 cleanup () {
 	unset GIT_SHA
 	unset transitioned_to_testing
+	build_old="false"
+	build_stable="false"
+	build_testing="false"
 }
 
 build_at91bootstrap_all () {
@@ -955,34 +958,40 @@ build_at91bootstrap_all () {
 }
 
 build_uboot_old () {
-	if [ "x${use_old}" = "xtrue" ] ; then
+	if [ "x${build_old}" = "xtrue" ] ; then
 		old=1
 		if [ "${uboot_old}" ] ; then
 			GIT_SHA=${uboot_old}
 			build_u_boot
 		fi
 		unset old
+		build_old="false"
 	fi
 }
 
 build_uboot_stable () {
-	if [ "x${transitioned_to_testing}" = "x" ] ; then
+	if [ "x${build_stable}" = "xtrue" ] ; then
 		stable=1
 		if [ "${uboot_stable}" ] ; then
 			GIT_SHA=${uboot_stable}
 			build_u_boot
 		fi
 		unset stable
+		build_stable="false"
 	fi
 }
 
 build_uboot_testing () {
-	testing=1
-	if [ "${uboot_testing}" ] ; then
-		GIT_SHA=${uboot_testing}
-		build_u_boot
+	if [ "x${build_testing}" = "xtrue" ] ; then
+		testing=1
+		if [ "${uboot_testing}" ] ; then
+			GIT_SHA=${uboot_testing}
+			build_u_boot
+		fi
+		unset testing
+		build_testing="false"
 	fi
-	unset testing
+
 }
 
 build_uboot_latest () {
@@ -1028,7 +1037,7 @@ build_uboot_gnueabihf_only_stable () {
 always_mainline () {
 	cleanup
 	if [ ! "x${uboot_testing}" = "x" ] ; then
-		transitioned_to_testing="true"
+		build_testing="true"
 	fi
 	build_uboot_gnueabihf
 }
@@ -1058,15 +1067,16 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-	use_old="true"
-	#transitioned_to_testing="true"
+	build_old="true"
+	build_stable="true"
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
 
 am335x_boneblack_flasher () {
 	cleanup
-	use_old="true"
-	#transitioned_to_testing="true"
+	build_old="true"
+	build_stable="true"
+	build_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
@@ -1102,7 +1112,9 @@ am57xx_evm_ti () {
 
 at91sam9x5ek () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="at91sam9x5ek_mmc" ; build_uboot_eabi
 }
 
@@ -1129,51 +1141,65 @@ firefly_rk3288_4gb () {
 
 ls1021atwr () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="ls1021atwr_sdcard_qspi" ; build_uboot_gnueabihf
 }
 
 mx23_olinuxino () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
 
 mx51evk () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
 }
 
 mx53loco () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="mx53loco" ; build_uboot_gnueabihf
 }
 
 mx6ul_14x14_evk () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="mx6ul_14x14_evk" ; build_uboot_gnueabihf
 }
 
 mx6qsabresd () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
 
 omap3_beagle () {
 	cleanup
-	use_old="true"
-	#transitioned_to_testing="true"
+	build_old="true"
+	build_stable="true"
+	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
 
 omap4_panda () {
 	cleanup
-	use_old="true"
-	#transitioned_to_testing="true"
+#	build_old="true"
+	build_stable="true"
+	build_testing="true"
 	board="omap4_panda" ; build_uboot_gnueabihf
 }
 
@@ -1189,8 +1215,9 @@ omap5_igep0050 () {
 
 omap5_uevm () {
 	cleanup
-	use_old="true"
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
@@ -1204,37 +1231,49 @@ rpi_2 () {
 
 sama5d2_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3xek () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4ek () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="sama5d4ek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4_xplained () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 socfpga_de0_nano_soc () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+	build_stable="true"
+	build_testing="true"
 	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
 }
 
@@ -1248,19 +1287,25 @@ Sinovoip_BPI_M3 () {
 
 udoo () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="udoo" ; build_uboot_gnueabihf
 }
 
 vf610twr () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="vf610twr" ; build_uboot_gnueabihf
 }
 
 wandboard () {
 	cleanup
-	transitioned_to_testing="true"
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
 
