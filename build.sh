@@ -267,6 +267,7 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE="${CC}" distclean
 	UGIT_VERSION=$(git describe)
 
+	#v2016.03
 	p_dir="${DIR}/patches/${uboot_old}"
 	if [ "${old}" ] ; then
 		#r1: initial release
@@ -369,13 +370,15 @@ build_u_boot () {
 		esac
 	fi
 
+	#v2016.05
 	p_dir="${DIR}/patches/${uboot_stable}"
 	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: firefly-4gb
 		#r3: am335x_evm: add m10a varient
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: omap3/omap4: fix...
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -476,6 +479,7 @@ build_u_boot () {
 		esac
 	fi
 
+	#v2016.07
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
@@ -942,6 +946,7 @@ build_u_boot () {
 cleanup () {
 	unset GIT_SHA
 	unset transitioned_to_testing
+	unset uboot_config
 	build_old="false"
 	build_stable="false"
 	build_testing="false"
@@ -1004,7 +1009,9 @@ build_uboot_latest () {
 }
 
 build_uboot_eabi () {
-	uboot_config="${board}_defconfig"
+	if [ "x${uboot_config}" = "x" ] ; then
+		uboot_config="${board}_defconfig"
+	fi
 	gcc_arm_embedded_5
 	gcc_linaro_gnueabihf_5
 	build_uboot_old
@@ -1014,7 +1021,9 @@ build_uboot_eabi () {
 }
 
 build_uboot_gnueabihf () {
-	uboot_config="${board}_defconfig"
+	if [ "x${uboot_config}" = "x" ] ; then
+		uboot_config="${board}_defconfig"
+	fi
 	gcc_linaro_gnueabihf_5
 	build_uboot_old
 	build_uboot_stable
@@ -1023,13 +1032,17 @@ build_uboot_gnueabihf () {
 }
 
 build_uboot_gnueabihf_only_old () {
-	uboot_config="${board}_defconfig"
+	if [ "x${uboot_config}" = "x" ] ; then
+		uboot_config="${board}_defconfig"
+	fi
 	gcc_linaro_gnueabihf_5
 	build_uboot_old
 }
 
 build_uboot_gnueabihf_only_stable () {
-	uboot_config="${board}_defconfig"
+	if [ "x${uboot_config}" = "x" ] ; then
+		uboot_config="${board}_defconfig"
+	fi
 	gcc_linaro_gnueabihf_5
 	build_uboot_stable
 }
@@ -1044,7 +1057,9 @@ always_mainline () {
 
 always_rc () {
 	cleanup
-	uboot_config="${board}_defconfig"
+	if [ "x${uboot_config}" = "x" ] ; then
+		uboot_config="${board}_defconfig"
+	fi
 	gcc_linaro_gnueabihf_5
 	build_uboot_latest
 }
@@ -1080,9 +1095,7 @@ am335x_boneblack_flasher () {
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
-	gcc_linaro_gnueabihf_5
-	build_uboot_old
-	build_uboot_stable
+	build_uboot_gnueabihf
 }
 
 am43xx_evm () {
@@ -1131,12 +1144,12 @@ cm_fx6 () {
 }
 
 firefly_rk3288_4gb () {
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
 	board="firefly-rk3288-4gb"
 	uboot_config="firefly-rk3288_defconfig"
-	gcc_linaro_gnueabihf_5
-	build_uboot_stable
-	build_uboot_testing
-	build_uboot_latest
+	build_uboot_gnueabihf
 }
 
 ls1021atwr () {
@@ -1189,7 +1202,7 @@ mx6qsabresd () {
 
 omap3_beagle () {
 	cleanup
-	build_old="true"
+#	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
