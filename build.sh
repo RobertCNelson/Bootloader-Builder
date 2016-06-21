@@ -757,6 +757,19 @@ build_u_boot () {
 		${git} "${p_dir}/0001-IGEPv5-Added-IGEPv5-board-support.patch"
 	fi
 
+	if [ "x${board}" = "xartik5" ] || [ "x${board}" = "xartik10" ] ; then
+		git pull ${git_opts} https://github.com/SamsungARTIK/u-boot-artik artik-exynos/v2012.07
+		#r1: first pass
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
+
+		p_dir="${DIR}/patches/artik-2012.07"
+
+		if [ "x${board}" = "xartik5" ] ; then
+			${git} "${p_dir}/0001-artik5-fixes.patch"
+		fi
+	fi
+
 	unset BUILDTARGET
 	if [ "x${board}" = "xmx23_olinuxino" ] ; then
 		BUILDTARGET="u-boot.sb"
@@ -1064,6 +1077,22 @@ always_rc () {
 	build_uboot_latest
 }
 
+artik5 () {
+	board="artik5"
+	uboot_config="artik5_config"
+	gcc_linaro_gnueabihf_4_9
+	GIT_SHA="v2012.07"
+	build_u_boot
+}
+
+artik10 () {
+	board="artik10"
+	uboot_config="artik10_config"
+	gcc_linaro_gnueabihf_4_9
+	GIT_SHA="v2012.07"
+	build_u_boot
+}
+
 A10_OLinuXino_Lime () {
 	board="A10-OLinuXino-Lime" ; always_mainline
 }
@@ -1323,6 +1352,9 @@ wandboard () {
 }
 
 #exit
+
+artik5
+artik10
 
 am335x_evm
 am335x_boneblack_flasher
