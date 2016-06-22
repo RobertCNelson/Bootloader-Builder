@@ -737,8 +737,9 @@ build_u_boot () {
 		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2016.05
 		#r1: initial build
 		#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fafec3f9de634ab3215811059f02cd15878b8d1
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f78d9ed60efd32e589ba43d32b26baab25241686
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 
 		p_dir="${DIR}/patches/ti-2016.05"
 		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
