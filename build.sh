@@ -728,7 +728,7 @@ build_u_boot () {
 		RELEASE_VER="-r28" #bump on every change...
 
 		p_dir="${DIR}/patches/v2015.07"
-		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+		echo "$patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 		#halt_patching_uboot
 		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 	fi
@@ -742,7 +742,7 @@ build_u_boot () {
 		RELEASE_VER="-r3" #bump on every change...
 
 		p_dir="${DIR}/patches/ti-2016.05"
-		echo "${git} \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+		echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 		#halt_patching_uboot
 		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 	fi
