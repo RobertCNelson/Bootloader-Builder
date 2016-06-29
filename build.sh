@@ -739,8 +739,9 @@ build_u_boot () {
 		#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fafec3f9de634ab3215811059f02cd15878b8d1
 		#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f78d9ed60efd32e589ba43d32b26baab25241686
 		#r4: fix boot: revert http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9aa01b346b76c6f0715ae67cd9790156ca2e00d3
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=fc109e36469a3cf8eca245cd1cece517dde11e8f
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 
 		p_dir="${DIR}/patches/ti-2016.05"
 		echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -770,6 +771,7 @@ build_u_boot () {
 
 		if [ "x${board}" = "xartik5" ] ; then
 			echo "patch -p1 < \"${p_dir}/0001-artik5-fixes.patch\""
+			#halt_patching_uboot
 			${git} "${p_dir}/0001-artik5-fixes.patch"
 		fi
 	fi
