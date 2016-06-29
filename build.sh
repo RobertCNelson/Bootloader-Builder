@@ -762,12 +762,14 @@ build_u_boot () {
 	if [ "x${board}" = "xartik5" ] || [ "x${board}" = "xartik10" ] ; then
 		git pull ${git_opts} https://github.com/SamsungARTIK/u-boot-artik artik-exynos/v2012.07
 		#r1: first pass
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: artik5: disable log level
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 
 		p_dir="${DIR}/patches/artik-2012.07"
 
 		if [ "x${board}" = "xartik5" ] ; then
+			echo "patch -p1 < \"${p_dir}/0001-artik5-fixes.patch\""
 			${git} "${p_dir}/0001-artik5-fixes.patch"
 		fi
 	fi
