@@ -764,8 +764,9 @@ build_u_boot () {
 		git pull ${git_opts} https://github.com/SamsungARTIK/u-boot-artik artik-exynos/v2012.07
 		#r1: first pass
 		#r2: artik5: disable log level
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: artik5: mmc1
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 
 		p_dir="${DIR}/patches/artik-2012.07"
 
