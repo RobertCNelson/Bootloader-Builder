@@ -1120,6 +1120,8 @@ am335x_evm () {
 	cleanup
 	build_old="true"
 	build_stable="true"
+	build_testing="true"
+
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
 
@@ -1135,7 +1137,6 @@ am335x_boneblack_flasher () {
 }
 
 am43xx_evm () {
-	cleanup
 	board="am43xx_evm" ; always_mainline
 }
 
