@@ -740,8 +740,9 @@ build_u_boot () {
 		#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f78d9ed60efd32e589ba43d32b26baab25241686
 		#r4: fix boot: revert http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9aa01b346b76c6f0715ae67cd9790156ca2e00d3
 		#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=fc109e36469a3cf8eca245cd1cece517dde11e8f
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b43cf45fec75961d196da4563bd32c0215d2fd58
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 
 		p_dir="${DIR}/patches/ti-2016.05"
 		echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -1154,7 +1155,7 @@ am57xx_evm_ti () {
 #	build_u_boot
 
 	board="am57xx_evm_ti"
-	uboot_config="am57xx_evm_nodt_defconfig"
+	uboot_config="am57xx_evm_defconfig"
 	gcc_linaro_gnueabihf_5
 	GIT_SHA="v2016.05"
 	build_u_boot
