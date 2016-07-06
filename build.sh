@@ -777,6 +777,12 @@ build_u_boot () {
 			#halt_patching_uboot
 			${git} "${p_dir}/0001-artik5-fixes.patch"
 		fi
+
+		if [ "x${board}" = "xartik10" ] ; then
+			echo "patch -p1 < \"${p_dir}/0001-artik10-fixes.patch\""
+			#halt_patching_uboot
+			${git} "${p_dir}/0001-artik10-fixes.patch"
+		fi
 	fi
 
 	unset BUILDTARGET
