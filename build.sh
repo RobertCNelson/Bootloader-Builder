@@ -293,6 +293,12 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
+		am335x_blank_bbbw)
+			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			echo "patch -p1 < \"${p_dir}/0002-blank-bbbw.patch\""
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-blank-bbbw.patch"
+			;;
 		at91sam9x5ek_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -1145,6 +1151,17 @@ am335x_boneblack_flasher () {
 	build_uboot_gnueabihf
 }
 
+am335x_blank_bbbw () {
+	cleanup
+	build_old="true"
+#	build_stable="true"
+#	build_testing="true"
+
+	board="am335x_blank_bbbw"
+	uboot_config="am335x_evm_defconfig"
+	build_uboot_gnueabihf
+}
+
 am43xx_evm () {
 	board="am43xx_evm" ; always_mainline
 }
@@ -1375,6 +1392,7 @@ artik10
 
 am335x_evm
 am335x_boneblack_flasher
+am335x_blank_bbbw
 am43xx_evm
 am57xx_evm
 am57xx_evm_ti
