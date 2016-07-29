@@ -119,16 +119,16 @@ gcc_arm_embedded_4_9 () {
 
 gcc_arm_embedded_5 () {
 		#
-		#https://releases.linaro.org/components/toolchain/binaries/5.3-2016.02/arm-eabi/gcc-linaro-5.3-2016.02-x86_64_arm-eabi.tar.xz
+		#https://releases.linaro.org/components/toolchain/binaries/5.3-2016.05/arm-eabi/gcc-linaro-5.3.1-2016.05-rc2-i686_arm-eabi.tar.xz
 		#
 
 		gcc_version="5.3"
-		release="16.02"
+		release="16.05"
 		target="arm-eabi"
 
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
-		filename="gcc-linaro-${gcc_version}-20${release}-x86_64_arm-eabi.tar.xz"
-		directory="gcc-linaro-${gcc_version}-20${release}-x86_64_arm-eabi"
+		filename="gcc-linaro-${gcc_version}.1-20${release}-x86_64_arm-eabi.tar.xz"
+		directory="gcc-linaro-${gcc_version}.1-20${release}-x86_64_arm-eabi"
 
 		datestamp="${gcc_version}-20${release}-${target}"
 
@@ -163,12 +163,12 @@ gcc_linaro_gnueabihf_5 () {
 		#
 
 		gcc_version="5.3"
-		release="16.02"
+		release="16.05"
 		target="arm-linux-gnueabihf"
 
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
-		filename="gcc-linaro-${gcc_version}-20${release}-x86_64_${target}.tar.xz"
-		directory="gcc-linaro-${gcc_version}-20${release}-x86_64_${target}"
+		filename="gcc-linaro-${gcc_version}.1-20${release}-x86_64_${target}.tar.xz"
+		directory="gcc-linaro-${gcc_version}.1-20${release}-x86_64_${target}"
 
 		datestamp="${gcc_version}-20${release}-${target}"
 
