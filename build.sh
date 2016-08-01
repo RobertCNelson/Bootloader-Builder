@@ -278,8 +278,9 @@ build_u_boot () {
 		#r6: am335x_evm: enable CONFIG_PHY_ATHEROS/CONFIG_PHY_VITESSE
 		#r7: am335x_evm: add m10a varient
 		#r8: am335x_evm: flasher rewrite...
-		#r9: (pending)
-		RELEASE_VER="-r8" #bump on every change...
+		#r9: am335x_evm: fix bbbw...
+		#r10: (pending)
+		RELEASE_VER="-r9" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -389,8 +390,9 @@ build_u_boot () {
 		#r2: firefly-4gb
 		#r3: am335x_evm: add m10a varient
 		#r4: omap3/omap4: fix...
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: am335x_evm: fix bbbw...
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -495,8 +497,9 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x_evm: fix bbbw...
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1409,8 +1412,8 @@ artik10
 
 am335x_evm
 am335x_boneblack_flasher
-am335x_blank_bbbw
-am335x_blank_osd335x
+#am335x_blank_bbbw
+#am335x_blank_osd335x
 am43xx_evm
 am57xx_evm
 am57xx_evm_ti
