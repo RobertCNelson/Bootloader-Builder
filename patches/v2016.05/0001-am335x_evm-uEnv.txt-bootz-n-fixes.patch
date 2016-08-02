@@ -1,6 +1,6 @@
-From 989e0ac75e456ac701736b6ee641c93a4c14966b Mon Sep 17 00:00:00 2001
+From 884602de247611f4c7d9eb0a05c96dcff52202d7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 1 Aug 2016 16:56:57 -0500
+Date: Mon, 1 Aug 2016 21:52:02 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,9 +10,9 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/mux.c             |   9 +-
  common/spl/spl.c                  |   8 ++
  configs/am335x_evm_defconfig      |   1 -
- include/configs/am335x_evm.h      |  55 ++++++--
+ include/configs/am335x_evm.h      |  57 ++++++--
  include/configs/ti_armv7_common.h | 265 +++++++++++++++++++++++++++++++++++++-
- 7 files changed, 344 insertions(+), 21 deletions(-)
+ 7 files changed, 346 insertions(+), 21 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index 4330be6..0a8979e 100644
@@ -129,7 +129,7 @@ index 62f26b5..55ff115 100644
  CONFIG_AUTOBOOT_KEYED=y
  CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 16935a1..96edf3a 100644
+index 16935a1..0a2877c 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -184,7 +184,7 @@ index 16935a1..96edf3a 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"run envboot; " \
  			"if run loadimage; then " \
-@@ -160,17 +169,41 @@
+@@ -160,17 +169,43 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -210,6 +210,8 @@ index 16935a1..96edf3a 100644
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
 +			"elif test $board_rev = GH01; then " \
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
++			"elif test $board_rev = BWA0; then " \
++				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
 +			"else " \
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
 +			"fi; " \
@@ -229,7 +231,7 @@ index 16935a1..96edf3a 100644
  	NANDARGS \
  	NETARGS \
  	DFUARGS \
-@@ -432,6 +465,8 @@
+@@ -432,6 +467,8 @@
  #define CONFIG_PHY_GIGE
  #define CONFIG_PHYLIB
  #define CONFIG_PHY_SMSC

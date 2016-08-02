@@ -1,15 +1,15 @@
-From 1ca94b2f8bbcae3ca60c4ddc84bb499679ec27bd Mon Sep 17 00:00:00 2001
+From fbc5780bd7477f14060614cee0d16c1464873a60 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 17 Mar 2016 14:27:03 -0500
+Date: Mon, 1 Aug 2016 22:00:29 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c      | 17 +++++++++++------
- board/ti/am335x/mux.c        |  8 ++++++--
+ board/ti/am335x/mux.c        |  7 +++++--
  include/configs/am335x_evm.h |  2 ++
- 3 files changed, 19 insertions(+), 8 deletions(-)
+ 3 files changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index 0a8979e..242f6b1 100644
@@ -78,11 +78,11 @@ index 0a8979e..242f6b1 100644
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_MII;
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 44b78b0..2c9ab82 100644
+index 9a26095..9a1995a 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -381,7 +381,11 @@ void enable_board_pin_mux(void)
- 		configure_module_pin_mux(bbb_p9_15_pin_mux);
+@@ -373,7 +373,10 @@ void enable_board_pin_mux(void)
+ 		configure_module_pin_mux(mmc1_pin_mux);
  #endif
  	} else {
 -		puts("Unknown board, cannot configure pinmux.");
@@ -92,11 +92,10 @@ index 44b78b0..2c9ab82 100644
 +		configure_module_pin_mux(mii1_pin_mux);
 +		configure_module_pin_mux(mmc0_pin_mux);
 +		configure_module_pin_mux(mmc1_pin_mux);
-+		configure_module_pin_mux(bbb_p9_15_pin_mux);
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index b73c143..6b89005 100644
+index 0a2877c..f4c6555 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -97,6 +97,8 @@
@@ -109,5 +108,5 @@ index b73c143..6b89005 100644
  	"run distro_bootcmd"
  
 -- 
-2.7.0
+2.8.1
 
