@@ -1,6 +1,6 @@
-From d706b83d6a40ca3b5f7a7f1b5fbed52d32db0a8b Mon Sep 17 00:00:00 2001
+From 8991e3ff363adb90c1292af3f665fb24f22b02a7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 1 Aug 2016 21:55:05 -0500
+Date: Fri, 5 Aug 2016 16:25:22 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -12,9 +12,9 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/mux.c                          |   9 +-
  common/spl/spl.c                               |   8 +
  configs/am335x_evm_defconfig                   |   7 +-
- include/configs/am335x_evm.h                   |  63 +++++-
+ include/configs/am335x_evm.h                   |  65 +++++-
  include/configs/ti_armv7_common.h              | 265 ++++++++++++++++++++++++-
- 9 files changed, 401 insertions(+), 23 deletions(-)
+ 9 files changed, 403 insertions(+), 23 deletions(-)
  create mode 100644 arch/arm/dts/am335x-boneblack-emmc-overlay.dts
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
@@ -212,7 +212,7 @@ index 696024c..840e7db 100644
 -CONFIG_OF_LIST="am335x-evm am335x-bone am335x-boneblack am335x-evmsk am335x-bonegreen am335x-icev2"
 +CONFIG_OF_LIST="am335x-evm am335x-bone am335x-boneblack am335x-evmsk am335x-bonegreen am335x-boneblack-emmc-overlay am335x-icev2"
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index ba4c215..a223405 100644
+index ba4c215..67f15ec 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -267,7 +267,7 @@ index ba4c215..a223405 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"run envboot; " \
  			"if run loadimage; then " \
-@@ -161,11 +170,34 @@
+@@ -161,11 +170,36 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -295,6 +295,8 @@ index ba4c215..a223405 100644
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
 +			"elif test $board_rev = BWA0; then " \
 +				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
++			"elif test $board_rev = BWA3; then " \
++				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
 +			"else " \
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
 +			"fi; " \
@@ -305,7 +307,7 @@ index ba4c215..a223405 100644
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -173,13 +205,20 @@
+@@ -173,13 +207,20 @@
  		"if test $board_name = A335_ICE; then " \
  			"setenv fdtfile am335x-icev2.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
@@ -327,7 +329,7 @@ index ba4c215..a223405 100644
  	NANDARGS \
  	NETARGS \
  	DFUARGS \
-@@ -456,6 +495,8 @@
+@@ -456,6 +497,8 @@
  #define CONFIG_PHY_GIGE
  #define CONFIG_PHYLIB
  #define CONFIG_PHY_SMSC

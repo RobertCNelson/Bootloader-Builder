@@ -1,6 +1,6 @@
-From 3ee34e48af14671af819c28f1f7ce36bcd8034a6 Mon Sep 17 00:00:00 2001
+From 8991e3ff363adb90c1292af3f665fb24f22b02a7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 20 Jun 2016 16:58:23 -0500
+Date: Fri, 5 Aug 2016 16:25:22 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,19 +9,19 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  arch/arm/dts/am335x-boneblack-emmc-overlay.dts |  42 ++++
  board/ti/am335x/board.c                        |  24 ++-
  board/ti/am335x/board.h                        |   5 +
- board/ti/am335x/mux.c                          |  17 +-
+ board/ti/am335x/mux.c                          |   9 +-
  common/spl/spl.c                               |   8 +
  configs/am335x_evm_defconfig                   |   7 +-
- include/configs/am335x_evm.h                   |  61 +++++-
+ include/configs/am335x_evm.h                   |  65 +++++-
  include/configs/ti_armv7_common.h              | 265 ++++++++++++++++++++++++-
- 9 files changed, 407 insertions(+), 23 deletions(-)
+ 9 files changed, 403 insertions(+), 23 deletions(-)
  create mode 100644 arch/arm/dts/am335x-boneblack-emmc-overlay.dts
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 0a41eb2..53a7a45 100644
+index ef573ec..9686f48 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -96,6 +96,7 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
+@@ -100,6 +100,7 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
  	zynqmp-zc1751-xm018-dc4.dtb		\
  	zynqmp-zc1751-xm019-dc5.dtb
  dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb am335x-bone.dtb \
@@ -150,24 +150,10 @@ index 9776df7..cded779 100644
  {
  	return board_ti_is("A335X_SK");
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 8afa5f9..afca0ec 100644
+index 8afa5f9..466ee08 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -262,6 +262,13 @@ static struct module_pin_mux uart3_icev2_pin_mux[] = {
- 	{-1},
- };
- 
-+static struct module_pin_mux bbb_p9_15_pin_mux[] = {
-+	/* P9.15 shared pin */
-+	{OFFSET(gpmc_a0), MODE(0) | PULLUDDIS},
-+	{OFFSET(gpmc_csn3), (MODE(3) | RXACTIVE | PULLUP_EN)},
-+	{-1},
-+};
-+
- #if defined(CONFIG_NOR_BOOT)
- void enable_norboot_pin_mux(void)
- {
-@@ -381,7 +388,14 @@ void enable_board_pin_mux(void)
+@@ -381,7 +381,14 @@ void enable_board_pin_mux(void)
  		configure_module_pin_mux(mmc0_pin_mux_sk_evm);
  	} else if (board_is_bone_lt()) {
  		/* Beaglebone LT pinmux */
@@ -183,14 +169,6 @@ index 8afa5f9..afca0ec 100644
  		configure_module_pin_mux(mmc0_pin_mux);
  #if defined(CONFIG_NAND) && defined(CONFIG_EMMC_BOOT)
  		configure_module_pin_mux(nand_pin_mux);
-@@ -389,6 +403,7 @@ void enable_board_pin_mux(void)
- 		configure_module_pin_mux(bone_norcape_pin_mux);
- #else
- 		configure_module_pin_mux(mmc1_pin_mux);
-+		configure_module_pin_mux(bbb_p9_15_pin_mux);
- #endif
- 	} else if (board_is_icev2()) {
- 		configure_module_pin_mux(mmc0_pin_mux);
 diff --git a/common/spl/spl.c b/common/spl/spl.c
 index 840910a..a35daf9 100644
 --- a/common/spl/spl.c
@@ -234,7 +212,7 @@ index 696024c..840e7db 100644
 -CONFIG_OF_LIST="am335x-evm am335x-bone am335x-boneblack am335x-evmsk am335x-bonegreen am335x-icev2"
 +CONFIG_OF_LIST="am335x-evm am335x-bone am335x-boneblack am335x-evmsk am335x-bonegreen am335x-boneblack-emmc-overlay am335x-icev2"
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index ba4c215..066c848 100644
+index ba4c215..67f15ec 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -289,7 +267,7 @@ index ba4c215..066c848 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"run envboot; " \
  			"if run loadimage; then " \
-@@ -161,11 +170,32 @@
+@@ -161,11 +170,36 @@
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
  		"if test $board_name = A335BONE; then " \
@@ -315,6 +293,10 @@ index ba4c215..066c848 100644
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
 +			"elif test $board_rev = GH01; then " \
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
++			"elif test $board_rev = BWA0; then " \
++				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
++			"elif test $board_rev = BWA3; then " \
++				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
 +			"else " \
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
 +			"fi; " \
@@ -325,7 +307,7 @@ index ba4c215..066c848 100644
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -173,13 +203,20 @@
+@@ -173,13 +207,20 @@
  		"if test $board_name = A335_ICE; then " \
  			"setenv fdtfile am335x-icev2.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
@@ -347,7 +329,7 @@ index ba4c215..066c848 100644
  	NANDARGS \
  	NETARGS \
  	DFUARGS \
-@@ -456,6 +493,8 @@
+@@ -456,6 +497,8 @@
  #define CONFIG_PHY_GIGE
  #define CONFIG_PHYLIB
  #define CONFIG_PHY_SMSC

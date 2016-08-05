@@ -1,6 +1,6 @@
-From bb1ee1f544415cdb413b044673cf49f599b04ab4 Mon Sep 17 00:00:00 2001
+From 0d2cba9c2e53a9d2c1d02ef14d90e786be138cd0 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 17 Jun 2016 15:46:44 -0500
+Date: Fri, 5 Aug 2016 16:31:19 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -8,9 +8,9 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c      | 17 +++++++++++------
  board/ti/am335x/board.h      |  5 +++++
- board/ti/am335x/mux.c        |  8 ++++++--
+ board/ti/am335x/mux.c        |  7 +++++--
  include/configs/am335x_evm.h |  2 ++
- 4 files changed, 24 insertions(+), 8 deletions(-)
+ 4 files changed, 23 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index cbbce12..4523ae5 100644
@@ -100,10 +100,10 @@ index cded779..d07b372 100644
  {
  	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "BBG1", 4);
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index afca0ec..6375269 100644
+index 466ee08..29b6588 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -412,7 +412,11 @@ void enable_board_pin_mux(void)
+@@ -404,7 +404,10 @@ void enable_board_pin_mux(void)
  		configure_module_pin_mux(rmii1_pin_mux);
  		configure_module_pin_mux(spi0_pin_mux);
  	} else {
@@ -114,17 +114,16 @@ index afca0ec..6375269 100644
 +		configure_module_pin_mux(mii1_pin_mux);
 +		configure_module_pin_mux(mmc0_pin_mux);
 +		configure_module_pin_mux(mmc1_pin_mux);
-+		configure_module_pin_mux(bbb_p9_15_pin_mux);
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 066c848..529fc8d 100644
+index 67f15ec..ffa5a79 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -190,6 +190,8 @@
- 				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
- 			"elif test $board_rev = GH01; then " \
- 				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
+@@ -194,6 +194,8 @@
+ 				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
+ 			"elif test $board_rev = BWA3; then " \
+ 				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
 +			"elif test $board_rev = EMMC; then " \
 +				"setenv fdtfile am335x-boneblack-emmc-overlay.dtb; setenv fdtbase am335x-boneblack-emmc-overlay; " \
  			"else " \

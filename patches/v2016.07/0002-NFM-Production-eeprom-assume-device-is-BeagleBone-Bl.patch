@@ -1,6 +1,6 @@
-From 05c3f9362d4e2b75f70e23eff4385e2f40dd4487 Mon Sep 17 00:00:00 2001
+From 0d2cba9c2e53a9d2c1d02ef14d90e786be138cd0 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 1 Aug 2016 22:02:53 -0500
+Date: Fri, 5 Aug 2016 16:31:19 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -117,12 +117,12 @@ index 466ee08..29b6588 100644
  	}
  }
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index a223405..b8a9d4f 100644
+index 67f15ec..ffa5a79 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -192,6 +192,8 @@
- 				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
- 			"elif test $board_rev = BWA0; then " \
+@@ -194,6 +194,8 @@
+ 				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
+ 			"elif test $board_rev = BWA3; then " \
  				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
 +			"elif test $board_rev = EMMC; then " \
 +				"setenv fdtfile am335x-boneblack-emmc-overlay.dtb; setenv fdtbase am335x-boneblack-emmc-overlay; " \

@@ -279,8 +279,9 @@ build_u_boot () {
 		#r7: am335x_evm: add m10a varient
 		#r8: am335x_evm: flasher rewrite...
 		#r9: am335x_evm: fix bbbw...
-		#r10: (pending)
-		RELEASE_VER="-r9" #bump on every change...
+		#r10: am335x_evm: bbbw a3
+		#r11: (pending)
+		RELEASE_VER="-r10" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -293,18 +294,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
-			;;
-		am335x_blank_bbbw)
-			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-blank-bbbw.patch\""
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0002-blank-bbbw.patch"
-			;;
-		am335x_blank_osd335x)
-			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-blank-osd335x.patch\""
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0002-blank-osd335x.patch"
 			;;
 		at91sam9x5ek_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
@@ -391,8 +380,9 @@ build_u_boot () {
 		#r3: am335x_evm: add m10a varient
 		#r4: omap3/omap4: fix...
 		#r5: am335x_evm: fix bbbw...
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: bbbw a3
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -498,8 +488,9 @@ build_u_boot () {
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: fix bbbw...
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: bbbw a3
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1161,28 +1152,6 @@ am335x_boneblack_flasher () {
 	build_uboot_gnueabihf
 }
 
-am335x_blank_bbbw () {
-	cleanup
-	build_old="true"
-#	build_stable="true"
-#	build_testing="true"
-
-	board="am335x_blank_bbbw"
-	uboot_config="am335x_evm_defconfig"
-	build_uboot_gnueabihf
-}
-
-am335x_blank_osd335x () {
-	cleanup
-	build_old="true"
-#	build_stable="true"
-#	build_testing="true"
-
-	board="am335x_blank_osd335x"
-	uboot_config="am335x_evm_defconfig"
-	build_uboot_gnueabihf
-}
-
 am43xx_evm () {
 	board="am43xx_evm" ; always_mainline
 }
@@ -1413,8 +1382,6 @@ artik10
 
 am335x_evm
 am335x_boneblack_flasher
-#am335x_blank_bbbw
-#am335x_blank_osd335x
 am43xx_evm
 am57xx_evm
 am57xx_evm_ti
