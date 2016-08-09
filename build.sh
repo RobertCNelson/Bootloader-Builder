@@ -372,17 +372,14 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2016.05
+	#v2016.07
 	p_dir="${DIR}/patches/${uboot_stable}"
 	if [ "${stable}" ] ; then
 		#r1: initial release
-		#r2: firefly-4gb
-		#r3: am335x_evm: add m10a varient
-		#r4: omap3/omap4: fix...
-		#r5: am335x_evm: fix bbbw...
-		#r6: am335x_evm: bbbw a3
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r2: am335x_evm: fix bbbw...
+		#r3: am335x_evm: bbbw a3
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -464,9 +461,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-sama5d4_xplained-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		socfpga_de0_nano_soc)
-			pfile="0001-de0_nano-fixes.patch"
-			echo "patch -p1 < \"${p_dir}/${pfile}\""
-			${git} "${p_dir}/${pfile}"
+			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
 		udoo)
 			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
@@ -483,14 +478,12 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2016.07
+	#v2016.09
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: am335x_evm: fix bbbw...
-		#r3: am335x_evm: bbbw a3
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1179,7 +1172,7 @@ am57xx_evm_ti () {
 at91sam9x5ek () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="at91sam9x5ek_mmc" ; build_uboot_eabi
 }
@@ -1198,7 +1191,7 @@ cm_fx6 () {
 
 firefly_rk3288_4gb () {
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="firefly-rk3288-4gb"
 	uboot_config="firefly-rk3288_defconfig"
@@ -1208,7 +1201,7 @@ firefly_rk3288_4gb () {
 ls1021atwr () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="ls1021atwr_sdcard_qspi" ; build_uboot_gnueabihf
 }
@@ -1216,7 +1209,7 @@ ls1021atwr () {
 mx23_olinuxino () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
@@ -1224,7 +1217,7 @@ mx23_olinuxino () {
 mx51evk () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
 }
@@ -1232,7 +1225,7 @@ mx51evk () {
 mx53loco () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="mx53loco" ; build_uboot_gnueabihf
 }
@@ -1240,7 +1233,7 @@ mx53loco () {
 mx6ul_14x14_evk () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="mx6ul_14x14_evk" ; build_uboot_gnueabihf
 }
@@ -1248,7 +1241,7 @@ mx6ul_14x14_evk () {
 mx6qsabresd () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
@@ -1282,7 +1275,7 @@ omap5_igep0050 () {
 omap5_uevm () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
@@ -1298,7 +1291,7 @@ rpi_2 () {
 sama5d2_xplained () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
@@ -1306,7 +1299,7 @@ sama5d2_xplained () {
 sama5d3xek () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
 }
@@ -1314,7 +1307,7 @@ sama5d3xek () {
 sama5d3_xplained () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
@@ -1322,7 +1315,7 @@ sama5d3_xplained () {
 sama5d4ek () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="sama5d4ek_mmc" ; build_uboot_gnueabihf
 }
@@ -1330,7 +1323,7 @@ sama5d4ek () {
 sama5d4_xplained () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
@@ -1354,7 +1347,7 @@ Sinovoip_BPI_M3 () {
 udoo () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="udoo" ; build_uboot_gnueabihf
 }
@@ -1362,7 +1355,7 @@ udoo () {
 vf610twr () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="vf610twr" ; build_uboot_gnueabihf
 }
@@ -1370,7 +1363,7 @@ vf610twr () {
 wandboard () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
