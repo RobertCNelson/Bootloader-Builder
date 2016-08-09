@@ -1,6 +1,6 @@
-From b26e5cf2d5064959aa8613e2c11a18e9bbcd9ef6 Mon Sep 17 00:00:00 2001
+From 0e25530400ec644a4726c2a21d60c60195fc4fe7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 25 May 2016 20:36:03 -0500
+Date: Tue, 9 Aug 2016 13:06:54 -0500
 Subject: [PATCH] firefly-rk3288-4gb uEnv.txt bootz n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -12,22 +12,22 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  4 files changed, 3 insertions(+), 13 deletions(-)
 
 diff --git a/arch/arm/dts/rk3288-firefly.dts b/arch/arm/dts/rk3288-firefly.dts
-index aed8d3a..7572e79 100644
+index 3176d50..90a3e1a 100644
 --- a/arch/arm/dts/rk3288-firefly.dts
 +++ b/arch/arm/dts/rk3288-firefly.dts
-@@ -30,8 +30,8 @@
- 		0x5 0x0>;
+@@ -31,8 +31,8 @@
  	rockchip,phy-timing = <0x48f9aab4 0xea0910 0x1002c200
  		0xa60 0x40 0x10 0x0>;
--	rockchip,sdram-channel = /bits/ 8 <0x1 0xa 0x3 0x2 0x1 0x0 0xf 0xf>;
+ 	/* Add a dummy value to cause of-platdata think this is bytes */
+-	rockchip,sdram-channel = /bits/ 8 <0x1 0xa 0x3 0x2 0x1 0x0 0xf 0xf 0xff>;
 -	rockchip,sdram-params = <0x30B25564 0x627 3 666000000 3 9 1>;
-+	rockchip,sdram-channel = /bits/ 8 <0x2 0xa 0x3 0x2 0x1 0x0 0xf 0xf>;
++	rockchip,sdram-channel = /bits/ 8 <0x2 0xa 0x3 0x2 0x1 0x0 0xf 0xf 0xff>;
 +	rockchip,sdram-params = <0x30B25564 0x627 3 666000000 3 13 1>;
  };
  
  &ir {
 diff --git a/configs/firefly-rk3288_defconfig b/configs/firefly-rk3288_defconfig
-index 0995f9b..52281a8 100644
+index bdafc71..1f3a222 100644
 --- a/configs/firefly-rk3288_defconfig
 +++ b/configs/firefly-rk3288_defconfig
 @@ -62,9 +62,6 @@ CONFIG_DEBUG_UART_BASE=0xff690000
@@ -65,10 +65,10 @@ index a29f557..8ac6521 100644
 -
  #endif
 diff --git a/include/configs/rk3288_common.h b/include/configs/rk3288_common.h
-index 8a81397..811f898 100644
+index 8adc26f..5814fc1 100644
 --- a/include/configs/rk3288_common.h
 +++ b/include/configs/rk3288_common.h
-@@ -93,7 +93,6 @@
+@@ -91,7 +91,6 @@
  
  /* First try to boot from SD (index 0), then eMMC (index 1 */
  #define BOOT_TARGET_DEVICES(func) \
