@@ -1192,7 +1192,7 @@ cm_fx6 () {
 firefly_rk3288_4gb () {
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true" #broke due to sd card mkimage script changes...
 	board="firefly-rk3288-4gb"
 	uboot_config="firefly-rk3288_defconfig"
 	build_uboot_gnueabihf
