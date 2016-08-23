@@ -1,6 +1,6 @@
-From dfe8b532556c790e0482b8119eb0ebb7514e144d Mon Sep 17 00:00:00 2001
+From 80549e3b37432990bf6d2694ac96dd5101952e3c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 1 Aug 2016 22:16:25 -0500
+Date: Tue, 23 Aug 2016 11:52:22 -0500
 Subject: [PATCH] beagle_x15: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -360,7 +360,7 @@ index 83bd661..36ccdbb 100644
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index d6ad6a5..43b24c2 100644
+index 90bb5b4..66c2e10 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
 @@ -83,9 +83,9 @@
@@ -376,8 +376,8 @@ index d6ad6a5..43b24c2 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"if run loadimage; then " \
  				"run loadfdt; " \
-@@ -119,23 +119,26 @@
- 			"setenv fdtfile am571x-idk-lcd-osd.dtb; fi;" \
+@@ -125,23 +125,26 @@
+ 			"setenv fdtfile am571x-idk-lcd-osd101t2587.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
 -	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile};\0" \
@@ -415,5 +415,5 @@ index d6ad6a5..43b24c2 100644
  
  /*
 -- 
-2.8.1
+2.9.3
 
