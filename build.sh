@@ -486,7 +486,7 @@ build_u_boot () {
 		#r3: am335x_evm: fix m10a
 		#r4: am335x_evm: rewrite blank eeprom
 		#r5: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
