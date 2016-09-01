@@ -1,19 +1,20 @@
-From 93d63735544e24e9edcf869365f8f76f0f645fc4 Mon Sep 17 00:00:00 2001
+From 0e9dfe60ae76bf1bb34ebc35b822af3e537e1b2a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 29 Aug 2016 21:20:00 -0500
+Date: Thu, 1 Sep 2016 13:49:33 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c      | 17 +++++++++++------
- board/ti/am335x/board.h      |  5 +++++
- board/ti/am335x/mux.c        |  7 +++++--
- include/configs/am335x_evm.h |  2 ++
- 4 files changed, 23 insertions(+), 8 deletions(-)
+ board/ti/am335x/board.c        | 12 +++++++-----
+ board/ti/am335x/board.h        |  5 +++++
+ board/ti/am335x/mux.c          |  7 +++++--
+ board/ti/common/board_detect.c | 11 +++++++++++
+ include/configs/am335x_evm.h   |  3 +++
+ 5 files changed, 31 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 7d9f519..62acbfc 100644
+index 7d9f519..be2cbd2 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -245,7 +245,7 @@ void am33xx_spl_board_init(void)
@@ -52,20 +53,7 @@ index 7d9f519..62acbfc 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -593,8 +593,11 @@ int board_late_init(void)
- 	char *name = NULL;
- 
- 	rc = read_eeprom();
--	if (rc)
-+	if (rc) {
- 		puts("Could not get board ID.\n");
-+		setenv("board_name", "A335BNLT");
-+		setenv("board_rev", "EMMC");
-+	}
- 
- 	if (board_is_bbg1())
- 		name = "BBG1";
-@@ -712,7 +715,7 @@ int board_eth_init(bd_t *bis)
+@@ -712,7 +712,7 @@ int board_eth_init(bd_t *bis)
  		puts("Could not get board ID.\n");
  
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
@@ -74,31 +62,31 @@ index 7d9f519..62acbfc 100644
  		writel(MII_MODE_ENABLE, &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_MII;
-@@ -793,6 +796,8 @@ int board_fit_config_name_match(const char *name)
+@@ -783,6 +783,8 @@ int board_fit_config_name_match(const char *name)
  		return 0;
- 	else if (board_is_icev2() && !strcmp(name, "am335x-icev2"))
+ 	else if (board_is_bone_lt() && !strcmp(name, "am335x-boneblack"))
  		return 0;
-+	else if (board_is_blank_bone_lt() && !strcmp(name, "am335x-boneblack-emmc-overlay"))
++	else if (board_is_blank_bone_lt() && !strcmp(name, "am335x-boneblack"))
 +		return 0;
- 	else
- 		return -1;
- }
+ 	else if (board_is_m10a() && !strcmp(name, "am335x-boneblack"))
+ 		return 0;
+ 	else if (board_is_bone_lt_enhanced() && !strcmp(name, "am335x-boneblack"))
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 17d00c3..fae185d 100644
+index 17d00c3..998dccc 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -21,6 +21,11 @@ static inline int board_is_bone_lt(void)
- 	return board_ti_is("A335BNLT");
+@@ -36,6 +36,11 @@ static inline int board_is_m10a(void)
+ 	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "M10A", 4);
  }
  
 +static inline int board_is_blank_bone_lt(void)
 +{
-+	return !board_ti_is("A335BNLT");
++	return board_ti_is("A335BLNK");
 +}
 +
- static inline int board_is_bbg1(void)
+ static inline int board_is_evm_sk(void)
  {
- 	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "BBG1", 4);
+ 	return board_ti_is("A335X_SK");
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
 index aef5806..794536a 100644
 --- a/board/ti/am335x/mux.c
@@ -116,19 +104,42 @@ index aef5806..794536a 100644
 +		configure_module_pin_mux(mmc1_pin_mux);
  	}
  }
+diff --git a/board/ti/common/board_detect.c b/board/ti/common/board_detect.c
+index e0ae1a5..1dc66c9 100644
+--- a/board/ti/common/board_detect.c
++++ b/board/ti/common/board_detect.c
+@@ -134,6 +134,17 @@ int __maybe_unused ti_i2c_eeprom_am_get(int bus_addr, int dev_addr)
+ 
+ 	rc = ti_i2c_eeprom_get(bus_addr, dev_addr, TI_EEPROM_HEADER_MAGIC,
+ 			       sizeof(am_ep), (uint8_t *)&am_ep);
++	if (rc < 0) {
++		ep->header = TI_EEPROM_HEADER_MAGIC;
++
++		strlcpy(ep->name, "A335BLNK", TI_EEPROM_HDR_NAME_LEN + 1);
++		ti_eeprom_string_cleanup(ep->name);
++
++		strlcpy(ep->version, "EMMC", TI_EEPROM_HDR_REV_LEN + 1);
++		ti_eeprom_string_cleanup(ep->version);
++
++		goto already_read;
++	}
+ 	if (rc)
+ 		return rc;
+ 
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 6a4351a..752b673 100644
+index 6a4351a..70e8856 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -194,6 +194,8 @@
- 				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
- 			"elif test $board_rev = BWA3; then " \
- 				"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; " \
-+			"elif test $board_rev = EMMC; then " \
-+				"setenv fdtfile am335x-boneblack-emmc-overlay.dtb; setenv fdtbase am335x-boneblack-emmc-overlay; " \
- 			"else " \
+@@ -198,6 +198,9 @@
  				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
  			"fi; " \
+ 		"fi; " \
++		"if test $board_name = A335BLNK; then " \
++			"setenv fdtfile am335x-boneblack-emmc-overlay.dtb; setenv fdtbase am335x-boneblack-emmc-overlay; " \
++		"fi; " \
+ 		"if test $board_name = BBG1; then " \
+ 			"setenv fdtfile am335x-bonegreen.dtb; setenv fdtbase am335x-bonegreen; fi; " \
+ 		"if test $board_name = A33515BB; then " \
 -- 
 2.9.3
 

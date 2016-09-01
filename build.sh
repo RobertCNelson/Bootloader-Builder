@@ -484,7 +484,8 @@ build_u_boot () {
 		#r1: initial release
 		#r2: am335x_evm: enable CONFIG_OF_LIBFDT_OVERLAY
 		#r3: am335x_evm: fix m10a
-		#r4: (pending)
+		#r4: am335x_evm: rewrite blank eeprom
+		#r5: (pending)
 		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
