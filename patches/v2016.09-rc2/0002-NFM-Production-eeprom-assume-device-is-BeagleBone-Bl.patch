@@ -1,6 +1,6 @@
-From 0e9dfe60ae76bf1bb34ebc35b822af3e537e1b2a Mon Sep 17 00:00:00 2001
+From 0675bdbd37561fc613d7c4b6a70cda3f953cd6d1 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 1 Sep 2016 13:49:33 -0500
+Date: Fri, 9 Sep 2016 13:58:49 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -14,7 +14,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  5 files changed, 31 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 7d9f519..be2cbd2 100644
+index 8573bd7..8d6107f 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -245,7 +245,7 @@ void am33xx_spl_board_init(void)
@@ -53,29 +53,29 @@ index 7d9f519..be2cbd2 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -712,7 +712,7 @@ int board_eth_init(bd_t *bis)
+@@ -722,7 +722,7 @@ int board_eth_init(bd_t *bis)
  		puts("Could not get board ID.\n");
  
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
 -	    board_is_idk()) {
 +	    board_is_idk() || board_is_blank_bone_lt()) {
+ 		puts("eth0: MII MODE\n");
  		writel(MII_MODE_ENABLE, &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
- 				PHY_INTERFACE_MODE_MII;
-@@ -783,6 +783,8 @@ int board_fit_config_name_match(const char *name)
+@@ -794,6 +794,8 @@ int board_fit_config_name_match(const char *name)
  		return 0;
  	else if (board_is_bone_lt() && !strcmp(name, "am335x-boneblack"))
  		return 0;
 +	else if (board_is_blank_bone_lt() && !strcmp(name, "am335x-boneblack"))
 +		return 0;
- 	else if (board_is_m10a() && !strcmp(name, "am335x-boneblack"))
+ 	else if (board_is_bbbw() && !strcmp(name, "am335x-boneblack"))
  		return 0;
- 	else if (board_is_bone_lt_enhanced() && !strcmp(name, "am335x-boneblack"))
+ 	else if (board_is_m10a() && !strcmp(name, "am335x-vsc8531bbb"))
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 17d00c3..998dccc 100644
+index edbd392..29612eb 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -36,6 +36,11 @@ static inline int board_is_m10a(void)
+@@ -41,6 +41,11 @@ static inline int board_is_m10a(void)
  	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "M10A", 4);
  }
  
@@ -127,10 +127,10 @@ index e0ae1a5..1dc66c9 100644
  		return rc;
  
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 6a4351a..70e8856 100644
+index 9c933c7..72ae523 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -198,6 +198,9 @@
+@@ -195,6 +195,9 @@
  				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
  			"fi; " \
  		"fi; " \
@@ -139,7 +139,7 @@ index 6a4351a..70e8856 100644
 +		"fi; " \
  		"if test $board_name = BBG1; then " \
  			"setenv fdtfile am335x-bonegreen.dtb; setenv fdtbase am335x-bonegreen; fi; " \
- 		"if test $board_name = A33515BB; then " \
+ 		"if test $board_name = BBBW; then " \
 -- 
 2.9.3
 
