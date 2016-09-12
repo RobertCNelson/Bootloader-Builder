@@ -1,6 +1,6 @@
-From 49d14f803d4738f9f707359a89086281cf7dc2ae Mon Sep 17 00:00:00 2001
+From c886a2c68d249552367b39e61a25d6dfeb6048f7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 21 Jun 2016 09:34:31 -0500
+Date: Mon, 12 Sep 2016 12:58:28 -0500
 Subject: [PATCH] mx23_olinuxino: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,27 +10,29 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  2 files changed, 100 insertions(+), 15 deletions(-)
 
 diff --git a/configs/mx23_olinuxino_defconfig b/configs/mx23_olinuxino_defconfig
-index a028482..69dc3c0 100644
+index 322d941..5b1d778 100644
 --- a/configs/mx23_olinuxino_defconfig
 +++ b/configs/mx23_olinuxino_defconfig
-@@ -3,6 +3,7 @@ CONFIG_TARGET_MX23_OLINUXINO=y
- CONFIG_SPL=y
+@@ -4,6 +4,7 @@ CONFIG_SPL=y
  CONFIG_BOOTDELAY=3
+ CONFIG_VERSION_VARIABLE=y
  CONFIG_HUSH_PARSER=y
 +CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
  # CONFIG_CMD_FLASH is not set
  CONFIG_CMD_MMC=y
-@@ -12,5 +13,7 @@ CONFIG_CMD_GPIO=y
+@@ -13,7 +14,9 @@ CONFIG_CMD_GPIO=y
  CONFIG_CMD_DHCP=y
  CONFIG_CMD_CACHE=y
  CONFIG_CMD_EXT2=y
 +CONFIG_CMD_EXT4=y
  CONFIG_CMD_FAT=y
 +CONFIG_CMD_FS_GENERIC=y
+ CONFIG_USB=y
+ CONFIG_USB_STORAGE=y
  CONFIG_OF_LIBFDT=y
 diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index 7747258..ca81fae 100644
+index 9971c81..d30a7f7 100644
 --- a/include/configs/mx23_olinuxino.h
 +++ b/include/configs/mx23_olinuxino.h
 @@ -17,6 +17,8 @@
@@ -42,7 +44,7 @@ index 7747258..ca81fae 100644
  /* Memory configuration */
  #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
  #define PHYS_SDRAM_1			0x40000000	/* Base address */
-@@ -77,20 +79,58 @@
+@@ -76,20 +78,58 @@
  	"console=ttyAMA0\0" \
  	"fdt_file=imx23-olinuxino.dtb\0" \
  	"fdt_addr=0x41000000\0" \
@@ -106,7 +108,7 @@ index 7747258..ca81fae 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -129,19 +169,61 @@
+@@ -128,19 +168,61 @@
  			"fi; " \
  		"else " \
  			"bootm; " \
@@ -179,5 +181,5 @@ index 7747258..ca81fae 100644
  /* The rest of the configuration is shared */
  #include <configs/mxs.h>
 -- 
-2.8.1
+2.9.3
 
