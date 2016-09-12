@@ -1,6 +1,6 @@
-From 17f4667428ba8c1a6feb8c85bc1dac7ea634b620 Mon Sep 17 00:00:00 2001
+From e169c085489cb1950b511b0c5036d7fe49d6e1a8 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 9 Sep 2016 16:24:33 -0500
+Date: Mon, 12 Sep 2016 12:06:03 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -30,10 +30,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 arch/arm/dts/am335x-vsc8531bbb.dts
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 223124e..0015c26 100644
+index a4ab069..b3711f9 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -106,13 +106,10 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
+@@ -107,13 +107,10 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
  	zynqmp-zc1751-xm018-dc4.dtb		\
  	zynqmp-zc1751-xm019-dc5.dtb
  dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb am335x-bone.dtb \
@@ -775,7 +775,7 @@ index 8afa5f9..aef5806 100644
  #if defined(CONFIG_NAND) && defined(CONFIG_EMMC_BOOT)
  		configure_module_pin_mux(nand_pin_mux);
 diff --git a/configs/am335x_boneblack_defconfig b/configs/am335x_boneblack_defconfig
-index d310e0b..be5080f 100644
+index b4e2a1c..822cc6a 100644
 --- a/configs/am335x_boneblack_defconfig
 +++ b/configs/am335x_boneblack_defconfig
 @@ -4,7 +4,6 @@ CONFIG_SPL_STACK_R_ADDR=0x82000000
@@ -783,14 +783,14 @@ index d310e0b..be5080f 100644
  CONFIG_SPL_STACK_R=y
  CONFIG_FIT=y
 -CONFIG_SYS_EXTRA_OPTIONS="EMMC_BOOT"
+ CONFIG_VERSION_VARIABLE=y
  CONFIG_HUSH_PARSER=y
  CONFIG_AUTOBOOT_KEYED=y
- CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
-index 6885230..9073cf2 100644
+index 65a9002..8e44f2e 100644
 --- a/configs/am335x_evm_defconfig
 +++ b/configs/am335x_evm_defconfig
-@@ -1,11 +1,14 @@
+@@ -1,14 +1,17 @@
  CONFIG_ARM=y
  CONFIG_TARGET_AM335X_EVM=y
  CONFIG_SPL_STACK_R_ADDR=0x82000000
@@ -798,7 +798,10 @@ index 6885230..9073cf2 100644
 +CONFIG_DEFAULT_DEVICE_TREE="am335x-boneblack"
  CONFIG_SPL=y
  CONFIG_SPL_STACK_R=y
+ CONFIG_FIT=y
 -CONFIG_SYS_EXTRA_OPTIONS="NAND"
+ CONFIG_SPL_LOAD_FIT=y
+ CONFIG_VERSION_VARIABLE=y
  CONFIG_HUSH_PARSER=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
@@ -807,7 +810,7 @@ index 6885230..9073cf2 100644
  CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
  CONFIG_CMD_ASKENV=y
-@@ -15,6 +18,7 @@ CONFIG_CMD_SF=y
+@@ -18,6 +21,7 @@ CONFIG_CMD_SF=y
  CONFIG_CMD_SPI=y
  CONFIG_CMD_I2C=y
  CONFIG_CMD_USB=y
@@ -815,21 +818,19 @@ index 6885230..9073cf2 100644
  CONFIG_CMD_DFU=y
  CONFIG_CMD_GPIO=y
  # CONFIG_CMD_SETEXPR is not set
-@@ -43,10 +47,11 @@ CONFIG_G_DNL_MANUFACTURER="Texas Instruments"
- CONFIG_G_DNL_VENDOR_NUM=0x0451
- CONFIG_G_DNL_PRODUCT_NUM=0xd022
- CONFIG_OF_LIBFDT=y
+@@ -29,8 +33,9 @@ CONFIG_CMD_EXT4=y
+ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_FAT=y
+ CONFIG_CMD_FS_GENERIC=y
 +CONFIG_OF_LIBFDT_OVERLAY=y
- CONFIG_SPL_NET_VCI_STRING="AM335x U-Boot SPL"
- CONFIG_RSA=y
- CONFIG_FIT=y
- CONFIG_SPL_OF_LIBFDT=y
- CONFIG_SPL_LOAD_FIT=y
+ CONFIG_OF_CONTROL=y
 -CONFIG_OF_LIST="am335x-evm am335x-bone am335x-boneblack am335x-evmsk am335x-bonegreen am335x-icev2"
 +CONFIG_OF_LIST="am335x-bone am335x-boneblack am335x-bonegreen am335x-boneblack-emmc-overlay am335x-sancloud-bbe am335x-vsc8531bbb"
  CONFIG_DM_I2C=y
+ CONFIG_DM_MMC=y
+ CONFIG_SPI_FLASH=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index ba4c215..7764273 100644
+index f12ee04..528cff2 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -955,7 +956,7 @@ index ba4c215..7764273 100644
  	NANDARGS \
  	NETARGS \
  	DFUARGS \
-@@ -311,12 +351,7 @@
+@@ -307,12 +347,7 @@
  #endif
  
  #ifdef CONFIG_USB_MUSB_GADGET
@@ -969,7 +970,7 @@ index ba4c215..7764273 100644
  #endif /* CONFIG_USB_MUSB_GADGET */
  
  /*
-@@ -456,6 +491,8 @@
+@@ -452,6 +487,8 @@
  #define CONFIG_PHY_GIGE
  #define CONFIG_PHYLIB
  #define CONFIG_PHY_SMSC
@@ -979,7 +980,7 @@ index ba4c215..7764273 100644
  /*
   * NOR Size = 16 MiB
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 9f947ee..5700140 100644
+index 32cb202..620acbd 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,18 +59,50 @@
