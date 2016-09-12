@@ -1,6 +1,6 @@
-From 520e2862bc0892769a7a75852a6c29768caad1c9 Mon Sep 17 00:00:00 2001
+From eff24594992e2262db6b0476ce0d36ede8e24725 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 23 Aug 2016 13:25:46 -0500
+Date: Mon, 12 Sep 2016 14:43:03 -0500
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -11,12 +11,12 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 165 insertions(+), 9 deletions(-)
 
 diff --git a/configs/omap4_panda_defconfig b/configs/omap4_panda_defconfig
-index 406f0ac..8f62717 100644
+index b69124e..a803236 100644
 --- a/configs/omap4_panda_defconfig
 +++ b/configs/omap4_panda_defconfig
-@@ -3,6 +3,10 @@ CONFIG_OMAP44XX=y
- CONFIG_TARGET_OMAP4_PANDA=y
+@@ -4,6 +4,10 @@ CONFIG_TARGET_OMAP4_PANDA=y
  CONFIG_SPL=y
+ CONFIG_VERSION_VARIABLE=y
  CONFIG_HUSH_PARSER=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
@@ -25,7 +25,7 @@ index 406f0ac..8f62717 100644
  CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
  CONFIG_CMD_ASKENV=y
-@@ -19,7 +23,6 @@ CONFIG_CMD_MII=y
+@@ -20,7 +24,6 @@ CONFIG_CMD_MII=y
  CONFIG_CMD_PING=y
  CONFIG_CMD_EXT2=y
  CONFIG_CMD_EXT4=y
@@ -34,7 +34,7 @@ index 406f0ac..8f62717 100644
  CONFIG_CMD_FS_GENERIC=y
  CONFIG_SYS_NS16550=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 9f947ee..733e46a 100644
+index 32cb202..a57081d 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,11 +59,33 @@
@@ -208,10 +208,10 @@ index 9f947ee..733e46a 100644
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 5fad3c1..368e1f9 100644
+index 8c88ebf..9de08a0 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
-@@ -45,6 +45,7 @@
+@@ -44,6 +44,7 @@
   * the timings to use or use pre-determined timings (based on using the
   * dynamic method.  Default to the static timing infomation.
   */
@@ -219,7 +219,7 @@ index 5fad3c1..368e1f9 100644
  #define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
  #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
  #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
-@@ -83,9 +84,10 @@
+@@ -82,9 +83,10 @@
   */
  #define BOOTENV_DEV_LEGACY_MMC(devtypeu, devtypel, instance) \
  	"bootcmd_" #devtypel #instance "=" \
@@ -232,7 +232,7 @@ index 5fad3c1..368e1f9 100644
  
  #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
  	#devtypel #instance " "
-@@ -118,8 +120,8 @@
+@@ -117,8 +119,8 @@
  	"bootfile=zImage\0" \
  	"usbtty=cdc_acm\0" \
  	"vram=16M\0" \
@@ -243,7 +243,7 @@ index 5fad3c1..368e1f9 100644
  	"mmcboot=echo Booting from mmc${mmcdev} ...; " \
  		"run args_mmc; " \
  		"if run loadimage; then " \
-@@ -142,7 +144,10 @@
+@@ -141,7 +143,10 @@
  			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
