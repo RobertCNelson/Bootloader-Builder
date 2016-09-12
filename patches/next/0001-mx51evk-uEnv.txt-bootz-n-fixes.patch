@@ -1,6 +1,6 @@
-From 83c8b33719a7f20735e582997daab13031988165 Mon Sep 17 00:00:00 2001
+From a18a171e851c845288142817f0520ca147f34c8e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 17 Jun 2016 10:04:38 -0500
+Date: Mon, 12 Sep 2016 14:29:32 -0500
 Subject: [PATCH] mx51evk: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -11,10 +11,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 129 insertions(+), 26 deletions(-)
 
 diff --git a/configs/mx51evk_defconfig b/configs/mx51evk_defconfig
-index 0b3b232..b611059 100644
+index c903b41..4ba9811 100644
 --- a/configs/mx51evk_defconfig
 +++ b/configs/mx51evk_defconfig
-@@ -11,5 +11,8 @@ CONFIG_CMD_USB=y
+@@ -12,7 +12,10 @@ CONFIG_CMD_USB=y
  CONFIG_CMD_DHCP=y
  CONFIG_CMD_MII=y
  CONFIG_CMD_PING=y
@@ -22,12 +22,14 @@ index 0b3b232..b611059 100644
 +CONFIG_CMD_EXT4=y
  CONFIG_CMD_FAT=y
 +CONFIG_CMD_FS_GENERIC=y
+ CONFIG_USB=y
+ CONFIG_USB_STORAGE=y
  CONFIG_OF_LIBFDT=y
 diff --git a/drivers/mmc/fsl_esdhc.c b/drivers/mmc/fsl_esdhc.c
-index 57ad975..46a9a36 100644
+index 103b32e..fa8a327 100644
 --- a/drivers/mmc/fsl_esdhc.c
 +++ b/drivers/mmc/fsl_esdhc.c
-@@ -275,15 +275,8 @@ static int esdhc_setup_data(struct mmc *mmc, struct mmc_data *data)
+@@ -288,15 +288,8 @@ static int esdhc_setup_data(struct mmc *mmc, struct mmc_data *data)
  	 * Rounding up to next power of 2
  	 * => timeout + 13 = log2(mmc->clock/4) + 1
  	 * => timeout + 13 = fls(mmc->clock/4)
@@ -45,7 +47,7 @@ index 57ad975..46a9a36 100644
  
  	if (timeout > 14)
 diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index 23b8b46..40cba3d 100644
+index 072aafd..eeeda63 100644
 --- a/include/configs/mx51evk.h
 +++ b/include/configs/mx51evk.h
 @@ -75,6 +75,7 @@
@@ -56,7 +58,7 @@ index 23b8b46..40cba3d 100644
  /*
   * Eth Configs
   */
-@@ -127,24 +128,75 @@
+@@ -125,24 +126,75 @@
  #define CONFIG_LOADADDR		0x92000000	/* loadaddr env var */
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -140,7 +142,7 @@ index 23b8b46..40cba3d 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -183,19 +235,74 @@
+@@ -181,19 +233,74 @@
  			"fi; " \
  		"else " \
  			"bootz; " \
@@ -226,5 +228,5 @@ index 23b8b46..40cba3d 100644
  #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-2.8.1
+2.9.3
 
