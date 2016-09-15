@@ -1371,8 +1371,8 @@ wandboard () {
 	build_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
-firefly_rk3288_4gb
-exit
+
+#exit
 
 artik5
 artik10
