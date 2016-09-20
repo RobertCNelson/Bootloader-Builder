@@ -381,8 +381,9 @@ build_u_boot () {
 		#r3: am335x_evm: fix m10a
 		#r4: am335x_evm: rewrite blank eeprom
 		#r5: am335x_evm: lots of dts fixes, fits in 1MB hole..
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: eMMC on A5A/A6 is BROKEN with spl-dtb...
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
