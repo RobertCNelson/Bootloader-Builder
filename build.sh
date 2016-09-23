@@ -383,18 +383,23 @@ build_u_boot () {
 		#r5: am335x_evm: lots of dts fixes, fits in 1MB hole..
 		#r6: am335x_evm: eMMC on A5A/A6 is BROKEN with spl-dtb...
 		#r7: am335x_evm: fix eMMC, thanks Dr.-Ing. Krzysztof Piotrowski!
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: am335x_evm: bring back 1GB memory fix.. (might be my board..)
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
 		am335x_evm)
+			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
+			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -596,12 +601,16 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
+			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
+			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
