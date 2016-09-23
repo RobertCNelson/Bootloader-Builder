@@ -7,4 +7,4 @@ uboot_stable="v2016.09"
 #uboot_testing="v2016.09"
 
 uboot_prev="bbdae1651e96a4fca82b16765e641649170656e5"
-uboot_latest="bbdae1651e96a4fca82b16765e641649170656e5"
+uboot_latest="df9e4cdabbb9ea2a1a1686d58bc389cb028a41f0"
