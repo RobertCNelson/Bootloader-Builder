@@ -1,6 +1,6 @@
-From ce3be71f1fd3a7291d120ca3e59e6a91170046c3 Mon Sep 17 00:00:00 2001
+From 234ae867e697d6f2f3d6eacbeddbb6b2354c2802 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 23 Sep 2016 14:43:18 -0500
+Date: Fri, 23 Sep 2016 15:00:22 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -22,7 +22,8 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  configs/am335x_evm_defconfig                   |  21 +-
  include/configs/am335x_evm.h                   |  71 +++++--
  include/configs/ti_armv7_common.h              | 266 ++++++++++++++++++++++++-
- 17 files changed, 791 insertions(+), 133 deletions(-)
+ scripts/config_whitelist.txt                   |   1 +
+ 18 files changed, 792 insertions(+), 133 deletions(-)
  create mode 100644 arch/arm/dts/am335x-bone-common_mii.dtsi
  create mode 100644 arch/arm/dts/am335x-bone-common_rgmii.dtsi
  create mode 100644 arch/arm/dts/am335x-boneblack-emmc-overlay.dts
@@ -1275,6 +1276,18 @@ index d8a8c4a..9dfd230 100644
  /*
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
+diff --git a/scripts/config_whitelist.txt b/scripts/config_whitelist.txt
+index cb4516f..d49235b 100644
+--- a/scripts/config_whitelist.txt
++++ b/scripts/config_whitelist.txt
+@@ -3573,6 +3573,7 @@ CONFIG_PHY_LXT
+ CONFIG_PHY_M88E1111
+ CONFIG_PHY_MARVELL
+ CONFIG_PHY_MAX_ADDR
++CONFIG_PHY_MSCC
+ CONFIG_PHY_MICREL
+ CONFIG_PHY_MICREL_KSZ9021
+ CONFIG_PHY_MICREL_KSZ9031
 -- 
 2.9.3
 
