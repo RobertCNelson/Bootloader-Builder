@@ -1133,7 +1133,7 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-	build_old="true"
+#	build_old="true"
 	build_stable="true"
 	build_testing="true"
 
@@ -1142,7 +1142,7 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
-	build_old="true"
+#	build_old="true"
 	build_stable="true"
 	build_testing="true"
 
