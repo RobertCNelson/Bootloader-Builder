@@ -1,6 +1,6 @@
-From eff24594992e2262db6b0476ce0d36ede8e24725 Mon Sep 17 00:00:00 2001
+From c81ffe459680d869109655af9ab4f80c0f8af057 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 12 Sep 2016 14:43:03 -0500
+Date: Thu, 22 Sep 2016 15:43:25 -0500
 Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -11,12 +11,12 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 165 insertions(+), 9 deletions(-)
 
 diff --git a/configs/omap4_panda_defconfig b/configs/omap4_panda_defconfig
-index b69124e..a803236 100644
+index e496afe..e1be5b6 100644
 --- a/configs/omap4_panda_defconfig
 +++ b/configs/omap4_panda_defconfig
-@@ -4,6 +4,10 @@ CONFIG_TARGET_OMAP4_PANDA=y
- CONFIG_SPL=y
+@@ -7,6 +7,10 @@ CONFIG_TARGET_OMAP4_PANDA=y
  CONFIG_VERSION_VARIABLE=y
+ CONFIG_SPL=y
  CONFIG_HUSH_PARSER=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
@@ -25,7 +25,7 @@ index b69124e..a803236 100644
  CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
  CONFIG_CMD_ASKENV=y
-@@ -20,7 +24,6 @@ CONFIG_CMD_MII=y
+@@ -23,7 +27,6 @@ CONFIG_CMD_MII=y
  CONFIG_CMD_PING=y
  CONFIG_CMD_EXT2=y
  CONFIG_CMD_EXT4=y
@@ -34,7 +34,7 @@ index b69124e..a803236 100644
  CONFIG_CMD_FS_GENERIC=y
  CONFIG_SYS_NS16550=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 32cb202..a57081d 100644
+index d8a8c4a..d4e501b 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,11 +59,33 @@
@@ -208,7 +208,7 @@ index 32cb202..a57081d 100644
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
 diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 8c88ebf..9de08a0 100644
+index 4115c78..c0bcf44 100644
 --- a/include/configs/ti_omap4_common.h
 +++ b/include/configs/ti_omap4_common.h
 @@ -44,6 +44,7 @@

@@ -1,6 +1,6 @@
-From c886a2c68d249552367b39e61a25d6dfeb6048f7 Mon Sep 17 00:00:00 2001
+From 0528e8597db71a0f84ec7669f6e7b41f0fb703d8 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 12 Sep 2016 12:58:28 -0500
+Date: Thu, 22 Sep 2016 11:54:18 -0500
 Subject: [PATCH] mx23_olinuxino: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,18 +10,18 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  2 files changed, 100 insertions(+), 15 deletions(-)
 
 diff --git a/configs/mx23_olinuxino_defconfig b/configs/mx23_olinuxino_defconfig
-index 322d941..5b1d778 100644
+index 4c1a505..7af15d5 100644
 --- a/configs/mx23_olinuxino_defconfig
 +++ b/configs/mx23_olinuxino_defconfig
-@@ -4,6 +4,7 @@ CONFIG_SPL=y
- CONFIG_BOOTDELAY=3
+@@ -8,6 +8,7 @@ CONFIG_BOOTDELAY=3
  CONFIG_VERSION_VARIABLE=y
+ CONFIG_SPL=y
  CONFIG_HUSH_PARSER=y
 +CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
  # CONFIG_CMD_FLASH is not set
  CONFIG_CMD_MMC=y
-@@ -13,7 +14,9 @@ CONFIG_CMD_GPIO=y
+@@ -17,7 +18,9 @@ CONFIG_CMD_GPIO=y
  CONFIG_CMD_DHCP=y
  CONFIG_CMD_CACHE=y
  CONFIG_CMD_EXT2=y

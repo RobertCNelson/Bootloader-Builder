@@ -1,6 +1,6 @@
-From 624d09905f642b72cc57212172b816c2517d8445 Mon Sep 17 00:00:00 2001
+From 5709742fd83eff92915df2b827915dceed4477bc Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 12 Sep 2016 15:07:59 -0500
+Date: Thu, 22 Sep 2016 16:55:39 -0500
 Subject: [PATCH] ti_omap5_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -11,21 +11,21 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 166 insertions(+), 16 deletions(-)
 
 diff --git a/configs/omap5_uevm_defconfig b/configs/omap5_uevm_defconfig
-index ec75672..c48ad8a 100644
+index ed0917b..c52a50b 100644
 --- a/configs/omap5_uevm_defconfig
 +++ b/configs/omap5_uevm_defconfig
-@@ -2,6 +2,10 @@ CONFIG_ARM=y
- CONFIG_OMAP54XX=y
- CONFIG_TARGET_OMAP5_UEVM=y
+@@ -5,6 +5,10 @@ CONFIG_TARGET_OMAP5_UEVM=y
+ CONFIG_VERSION_VARIABLE=y
  CONFIG_SPL=y
+ CONFIG_HUSH_PARSER=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
 +CONFIG_AUTOBOOT_DELAY_STR="d"
 +CONFIG_AUTOBOOT_STOP_STR=" "
- CONFIG_VERSION_VARIABLE=y
- CONFIG_HUSH_PARSER=y
  CONFIG_CMD_BOOTZ=y
-@@ -20,7 +24,6 @@ CONFIG_CMD_MII=y
+ # CONFIG_CMD_IMLS is not set
+ CONFIG_CMD_ASKENV=y
+@@ -21,7 +25,6 @@ CONFIG_CMD_MII=y
  CONFIG_CMD_PING=y
  CONFIG_CMD_EXT2=y
  CONFIG_CMD_EXT4=y
@@ -34,7 +34,7 @@ index ec75672..c48ad8a 100644
  CONFIG_CMD_FS_GENERIC=y
  CONFIG_SYS_NS16550=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 32cb202..17b61c6 100644
+index d8a8c4a..0ddd6f5 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,11 +59,33 @@
