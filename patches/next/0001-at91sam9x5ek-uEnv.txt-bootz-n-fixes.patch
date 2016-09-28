@@ -1,6 +1,6 @@
-From b73bab0cd669cf7cbb5432091203f603a713c18a Mon Sep 17 00:00:00 2001
+From 109d44956988f3121d264e451f677df8647411a5 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 12 Sep 2016 12:15:32 -0500
+Date: Wed, 28 Sep 2016 09:58:30 -0500
 Subject: [PATCH] at91sam9x5ek: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,7 +10,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  2 files changed, 49 insertions(+), 12 deletions(-)
 
 diff --git a/configs/at91sam9x5ek_mmc_defconfig b/configs/at91sam9x5ek_mmc_defconfig
-index 7995c23..ca673a0 100644
+index eb88bbb..ad9e442 100644
 --- a/configs/at91sam9x5ek_mmc_defconfig
 +++ b/configs/at91sam9x5ek_mmc_defconfig
 @@ -16,7 +16,10 @@ CONFIG_CMD_USB=y
@@ -21,14 +21,14 @@ index 7995c23..ca673a0 100644
 +CONFIG_CMD_EXT4=y
  CONFIG_CMD_FAT=y
 +CONFIG_CMD_FS_GENERIC=y
+ CONFIG_CMD_UBI=y
  CONFIG_SPI_FLASH=y
  CONFIG_SPI_FLASH_ATMEL=y
- CONFIG_USB=y
 diff --git a/include/configs/at91sam9x5ek.h b/include/configs/at91sam9x5ek.h
-index 637c403..bc1fb3f 100644
+index edad1dd..3c6aab2 100644
 --- a/include/configs/at91sam9x5ek.h
 +++ b/include/configs/at91sam9x5ek.h
-@@ -118,6 +118,7 @@
+@@ -117,6 +117,7 @@
  #define CONFIG_MMC
  #define CONFIG_GENERIC_MMC
  #define CONFIG_GENERIC_ATMEL_MCI
@@ -36,7 +36,7 @@ index 637c403..bc1fb3f 100644
  #endif
  
  /* FAT */
-@@ -192,18 +193,51 @@
+@@ -191,18 +192,51 @@
  #endif
  
  #ifdef CONFIG_SYS_USE_MMC
