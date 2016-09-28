@@ -137,6 +137,27 @@ gcc_arm_embedded_5 () {
 	dl_gcc_generic
 }
 
+gcc_arm_embedded_6 () {
+		#
+		#https://releases.linaro.org/components/toolchain/binaries/6.1-2016.08/arm-eabi/gcc-linaro-6.1.1-2016.08-x86_64_arm-eabi.tar.xz
+		#
+		#site="https://snapshots.linaro.org"
+
+		gcc_version="6.1"
+		release="16.08"
+		target="arm-eabi"
+
+		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
+		filename="gcc-linaro-${gcc_version}.1-20${release}-x86_64_arm-eabi.tar.xz"
+		directory="gcc-linaro-${gcc_version}.1-20${release}-x86_64_arm-eabi"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/arm-eabi-"
+
+	dl_gcc_generic
+}
+
 gcc_linaro_gnueabihf_4_9 () {
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/4.9-2016.02/arm-linux-gnueabihf/gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabihf.tar.xz
@@ -164,6 +185,27 @@ gcc_linaro_gnueabihf_5 () {
 
 		gcc_version="5.3"
 		release="16.05"
+		target="arm-linux-gnueabihf"
+
+		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
+		filename="gcc-linaro-${gcc_version}.1-20${release}-x86_64_${target}.tar.xz"
+		directory="gcc-linaro-${gcc_version}.1-20${release}-x86_64_${target}"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/${target}-"
+
+	dl_gcc_generic
+}
+
+gcc_linaro_gnueabihf_6 () {
+		#
+		#https://releases.linaro.org/components/toolchain/binaries/6.1-2016.08/arm-linux-gnueabihf/gcc-linaro-6.1.1-2016.08-x86_64_arm-linux-gnueabihf.tar.xz
+		#
+		#site="https://snapshots.linaro.org"
+
+		gcc_version="6.1"
+		release="16.08"
 		target="arm-linux-gnueabihf"
 
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
@@ -1058,9 +1100,9 @@ build_uboot_eabi () {
 		uboot_config="${board}_defconfig"
 	fi
 	gcc_arm_embedded_5
-	gcc_linaro_gnueabihf_5
 	build_uboot_old
 	build_uboot_stable
+	gcc_arm_embedded_6
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -1072,6 +1114,7 @@ build_uboot_gnueabihf () {
 	gcc_linaro_gnueabihf_5
 	build_uboot_old
 	build_uboot_stable
+	gcc_linaro_gnueabihf_6
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -1105,7 +1148,7 @@ always_rc () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
 	fi
-	gcc_linaro_gnueabihf_5
+	gcc_linaro_gnueabihf_6
 	build_uboot_latest
 }
 

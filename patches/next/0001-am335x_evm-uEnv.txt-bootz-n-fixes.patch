@@ -1,6 +1,6 @@
-From 234ae867e697d6f2f3d6eacbeddbb6b2354c2802 Mon Sep 17 00:00:00 2001
+From 206c088ab0cf6af08ff11f4ad65313c8a8c5f366 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 23 Sep 2016 15:00:22 -0500
+Date: Tue, 27 Sep 2016 21:32:33 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -15,15 +15,15 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  arch/arm/dts/am335x-bonegreen.dts              |   1 +
  arch/arm/dts/am335x-sancloud-bbe.dts           | 100 ++++++++++
  arch/arm/dts/am335x-vsc8531bbb.dts             |  91 +++++++++
- board/ti/am335x/board.c                        |  47 ++++-
+ board/ti/am335x/board.c                        |  51 ++++-
  board/ti/am335x/board.h                        |  15 ++
  board/ti/am335x/mux.c                          |   9 +-
  configs/am335x_boneblack_defconfig             |   1 -
  configs/am335x_evm_defconfig                   |  21 +-
- include/configs/am335x_evm.h                   |  71 +++++--
+ include/configs/am335x_evm.h                   |  73 +++++--
  include/configs/ti_armv7_common.h              | 266 ++++++++++++++++++++++++-
  scripts/config_whitelist.txt                   |   1 +
- 18 files changed, 792 insertions(+), 133 deletions(-)
+ 18 files changed, 797 insertions(+), 134 deletions(-)
  create mode 100644 arch/arm/dts/am335x-bone-common_mii.dtsi
  create mode 100644 arch/arm/dts/am335x-bone-common_rgmii.dtsi
  create mode 100644 arch/arm/dts/am335x-boneblack-emmc-overlay.dts
@@ -31,10 +31,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 arch/arm/dts/am335x-vsc8531bbb.dts
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 1d41d48..4d22d75 100644
+index 032c5ae..7531922 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -107,13 +107,10 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
+@@ -110,13 +110,10 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
  	zynqmp-zc1751-xm018-dc4.dtb		\
  	zynqmp-zc1751-xm019-dc5.dtb
  dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb am335x-bone.dtb \
@@ -621,7 +621,7 @@ index 0000000..d2df1aa
 +	system-power-controller;
 +};
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 56f4984..8573bd7 100644
+index 56f4984..abc0ea4 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -539,6 +539,24 @@ static struct clk_synth cdce913_data = {
@@ -649,7 +649,7 @@ index 56f4984..8573bd7 100644
  #if defined(CONFIG_HW_WATCHDOG)
  	hw_watchdog_init();
  #endif
-@@ -578,8 +596,18 @@ int board_late_init(void)
+@@ -578,8 +596,22 @@ int board_late_init(void)
  	if (rc)
  		puts("Could not get board ID.\n");
  
@@ -660,6 +660,10 @@ index 56f4984..8573bd7 100644
 +			puts("Model: BeagleBone Black Wireless\n");
 +			name = "BBBW";
 +		}
++		if (!strncmp(board_ti_get_rev(), "SE", 2)) {
++			puts("Model: SanCloud BeagleBone Enhanced\n");
++			name = "SBBE";
++		}
 +	}
 +
  	if (board_is_bbg1())
@@ -668,7 +672,7 @@ index 56f4984..8573bd7 100644
  	set_board_info_env(name);
  #endif
  
-@@ -693,18 +721,21 @@ int board_eth_init(bd_t *bis)
+@@ -693,18 +725,21 @@ int board_eth_init(bd_t *bis)
  	if (read_eeprom() < 0)
  		puts("Could not get board ID.\n");
  
@@ -691,7 +695,7 @@ index 56f4984..8573bd7 100644
  		writel((RGMII_MODE_ENABLE | RGMII_INT_DELAY), &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_RGMII;
-@@ -729,7 +760,7 @@ int board_eth_init(bd_t *bis)
+@@ -729,7 +764,7 @@ int board_eth_init(bd_t *bis)
  #define AR8051_DEBUG_RGMII_CLK_DLY_REG	0x5
  #define AR8051_RGMII_TX_CLK_DLY		0x100
  
@@ -700,7 +704,7 @@ index 56f4984..8573bd7 100644
  		const char *devname;
  		devname = miiphy_get_current_dev();
  
-@@ -759,17 +790,17 @@ int board_eth_init(bd_t *bis)
+@@ -759,17 +794,17 @@ int board_eth_init(bd_t *bis)
  #ifdef CONFIG_SPL_LOAD_FIT
  int board_fit_config_name_match(const char *name)
  {
@@ -725,7 +729,7 @@ index 56f4984..8573bd7 100644
  	else
  		return -1;
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 9776df7..edbd392 100644
+index 9776df7..c5ab8c1 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
 @@ -21,11 +21,26 @@ static inline int board_is_bone_lt(void)
@@ -744,7 +748,7 @@ index 9776df7..edbd392 100644
  
 +static inline int board_is_bone_lt_enhanced(void)
 +{
-+	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "SE0A", 4);
++	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "SE", 2);
 +}
 +
 +static inline int board_is_m10a(void)
@@ -776,7 +780,7 @@ index 8afa5f9..aef5806 100644
  #if defined(CONFIG_NAND) && defined(CONFIG_EMMC_BOOT)
  		configure_module_pin_mux(nand_pin_mux);
 diff --git a/configs/am335x_boneblack_defconfig b/configs/am335x_boneblack_defconfig
-index a3994f7..c1fef6a 100644
+index 2ef1aff..c957795 100644
 --- a/configs/am335x_boneblack_defconfig
 +++ b/configs/am335x_boneblack_defconfig
 @@ -3,7 +3,6 @@ CONFIG_TARGET_AM335X_EVM=y
@@ -788,7 +792,7 @@ index a3994f7..c1fef6a 100644
  CONFIG_SPL=y
  CONFIG_SPL_STACK_R=y
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
-index 86ebf0f..b844202 100644
+index 67c458f..b57f5e8 100644
 --- a/configs/am335x_evm_defconfig
 +++ b/configs/am335x_evm_defconfig
 @@ -1,16 +1,17 @@
@@ -821,15 +825,17 @@ index 86ebf0f..b844202 100644
  CONFIG_CMD_DFU=y
  CONFIG_CMD_GPIO=y
  # CONFIG_CMD_SETEXPR is not set
-@@ -31,16 +33,10 @@ CONFIG_CMD_EXT4=y
+@@ -31,19 +33,11 @@ CONFIG_CMD_EXT4=y
  CONFIG_CMD_EXT4_WRITE=y
  CONFIG_CMD_FAT=y
  CONFIG_CMD_FS_GENERIC=y
 -CONFIG_OF_CONTROL=y
 -CONFIG_OF_LIST="am335x-evm am335x-bone am335x-boneblack am335x-evmsk am335x-bonegreen am335x-icev2"
+ CONFIG_DFU_MMC=y
+-CONFIG_DFU_NAND=y
+ CONFIG_DFU_RAM=y
 -CONFIG_DM_I2C=y
 -CONFIG_DM_MMC=y
-+CONFIG_OF_LIBFDT_OVERLAY=y
  CONFIG_SPI_FLASH=y
  CONFIG_SPI_FLASH_WINBOND=y
 -CONFIG_DM_ETH=y
@@ -839,7 +845,7 @@ index 86ebf0f..b844202 100644
  CONFIG_USB=y
  CONFIG_USB_MUSB_HOST=y
  CONFIG_USB_MUSB_GADGET=y
-@@ -50,5 +46,4 @@ CONFIG_USB_GADGET_DOWNLOAD=y
+@@ -53,5 +47,4 @@ CONFIG_USB_GADGET_DOWNLOAD=y
  CONFIG_G_DNL_MANUFACTURER="Texas Instruments"
  CONFIG_G_DNL_VENDOR_NUM=0x0451
  CONFIG_G_DNL_PRODUCT_NUM=0xd022
@@ -847,7 +853,7 @@ index 86ebf0f..b844202 100644
 -CONFIG_SPL_OF_LIBFDT=y
 +CONFIG_OF_LIBFDT=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 911f2cb..d1482a6 100644
+index 34b4dd0..44e3988 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -910,7 +916,7 @@ index 911f2cb..d1482a6 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"run envboot; " \
  			"if run loadimage; then " \
-@@ -160,12 +168,37 @@
+@@ -160,12 +168,39 @@
  		"run ramargs; " \
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
  	"findfdt="\
@@ -948,10 +954,12 @@ index 911f2cb..d1482a6 100644
 +			"setenv fdtfile am335x-bonegreen.dtb; setenv fdtbase am335x-bonegreen; fi; " \
 +		"if test $board_name = BBBW; then " \
 +			"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; fi; " \
++		"if test $board_name = SBBE; then " \
++			"setenv fdtfile am335x-sancloud-bbe.dtb; setenv fdtbase am335x-sancloud-bbe; fi; " \
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -173,13 +206,20 @@
+@@ -173,13 +208,20 @@
  		"if test $board_name = A335_ICE; then " \
  			"setenv fdtfile am335x-icev2.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
@@ -973,7 +981,7 @@ index 911f2cb..d1482a6 100644
  	NANDARGS \
  	NETARGS \
  	DFUARGS \
-@@ -303,12 +343,7 @@
+@@ -303,12 +345,7 @@
  #endif
  
  #ifdef CONFIG_USB_MUSB_GADGET
@@ -988,7 +996,7 @@ index 911f2cb..d1482a6 100644
  
  /*
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index d8a8c4a..9dfd230 100644
+index f039df5..a549fce 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,18 +59,51 @@
@@ -1277,10 +1285,10 @@ index d8a8c4a..9dfd230 100644
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
 diff --git a/scripts/config_whitelist.txt b/scripts/config_whitelist.txt
-index cb4516f..d49235b 100644
+index efa95f0..83115e9 100644
 --- a/scripts/config_whitelist.txt
 +++ b/scripts/config_whitelist.txt
-@@ -3573,6 +3573,7 @@ CONFIG_PHY_LXT
+@@ -3567,6 +3567,7 @@ CONFIG_PHY_LXT
  CONFIG_PHY_M88E1111
  CONFIG_PHY_MARVELL
  CONFIG_PHY_MAX_ADDR
