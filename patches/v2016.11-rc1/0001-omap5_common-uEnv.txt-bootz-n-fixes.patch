@@ -1,6 +1,6 @@
-From 03450ddf6d76ae121968aa3aeead467b614e0c4f Mon Sep 17 00:00:00 2001
+From acaae3ac1bc9e74aed6a0f832fc1f0c2a4e15f2e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 28 Sep 2016 10:09:27 -0500
+Date: Mon, 3 Oct 2016 10:02:51 -0500
 Subject: [PATCH] ti_omap5_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -34,7 +34,7 @@ index 63ff1bc..44d21f6 100644
  CONFIG_CMD_FS_GENERIC=y
  CONFIG_DFU_MMC=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index f039df5..e39aec9 100644
+index f5602b8..a33da38 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,11 +59,33 @@
@@ -208,10 +208,10 @@ index f039df5..e39aec9 100644
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index cbdf0bc..3d0b4a3 100644
+index a483850..b894606 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
-@@ -82,7 +82,7 @@
+@@ -81,7 +81,7 @@
  	"loadbootscript=fatload mmc ${mmcdev} ${loadaddr} boot.scr\0" \
  	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
  		"source ${loadaddr}\0" \
@@ -220,7 +220,7 @@ index cbdf0bc..3d0b4a3 100644
  	"mmcboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
  			"echo SD/MMC found on device ${mmcdev};" \
-@@ -110,23 +110,22 @@
+@@ -109,23 +109,22 @@
  			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -252,8 +252,8 @@ index cbdf0bc..3d0b4a3 100644
 -	"run mmcboot;" \
 +	"run boot;" \
  	""
- #endif
  
+ /*
 -- 
 2.9.3
 
