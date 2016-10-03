@@ -1141,6 +1141,9 @@ build_uboot_gnueabihf_only_stable () {
 
 always_mainline () {
 	cleanup
+	if [ ! "x${build_stable}" = "x" ] ; then
+		build_stable="true"
+	fi
 	if [ ! "x${uboot_testing}" = "x" ] ; then
 		build_testing="true"
 	fi
