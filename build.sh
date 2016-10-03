@@ -531,7 +531,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2016-next
+	#v2016.11
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
@@ -541,12 +541,16 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
+			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
+			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
