@@ -1259,6 +1259,10 @@ cm_fx6 () {
 	board="cm_fx6" ; always_mainline
 }
 
+Cubietruck_plus () {
+	board="Cubietruck_plus" ; always_mainline
+}
+
 firefly_rk3288_4gb () {
 #	build_old="true"
 	build_stable="true"
@@ -1479,6 +1483,7 @@ A33_OLinuXino
 Bananapi
 Bananapro
 #cm_fx6
+Cubietruck_plus
 orangepi_pc
 rpi_2
 Sinovoip_BPI_M2
