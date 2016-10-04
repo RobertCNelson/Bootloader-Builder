@@ -1191,6 +1191,10 @@ A20_OLinuXino_MICRO () {
 	board="A20-OLinuXino_MICRO" ; always_mainline
 }
 
+A33_OLinuXino () {
+	board="A33-OLinuXino" ; always_mainline
+}
+
 am335x_evm () {
 	cleanup
 #	build_old="true"
@@ -1471,6 +1475,7 @@ A10_OLinuXino_Lime
 A20_OLinuXino_Lime
 A20_OLinuXino_Lime2
 A20_OLinuXino_MICRO
+A33_OLinuXino
 Bananapi
 Bananapro
 #cm_fx6
