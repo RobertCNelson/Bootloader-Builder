@@ -1,6 +1,6 @@
-From 49a869971cd91e9bae99ea7479852ce6c553d113 Mon Sep 17 00:00:00 2001
+From 29e24cadf3247049db44292317b437da7d9a9701 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 22 Sep 2016 17:18:00 -0500
+Date: Tue, 18 Oct 2016 15:14:29 -0500
 Subject: [PATCH] sama5d2_xplained fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,11 +10,11 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  2 files changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/configs/sama5d2_xplained_mmc_defconfig b/configs/sama5d2_xplained_mmc_defconfig
-index 8ac42a3..e42adcf 100644
+index 23ab4d6..390d4ef 100644
 --- a/configs/sama5d2_xplained_mmc_defconfig
 +++ b/configs/sama5d2_xplained_mmc_defconfig
-@@ -13,6 +13,10 @@ CONFIG_SYS_EXTRA_OPTIONS="SAMA5D2,SYS_USE_MMC"
- CONFIG_BOOTDELAY=3
+@@ -14,6 +14,10 @@ CONFIG_BOOTDELAY=3
+ # CONFIG_DISPLAY_BOARDINFO is not set
  CONFIG_SPL=y
  CONFIG_HUSH_PARSER=y
 +CONFIG_AUTOBOOT_KEYED=y
