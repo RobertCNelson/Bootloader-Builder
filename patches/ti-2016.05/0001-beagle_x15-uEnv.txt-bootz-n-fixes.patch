@@ -1,6 +1,6 @@
-From d4176e56733f6c1c6c089de0c6cd4c1db8062663 Mon Sep 17 00:00:00 2001
+From f8808f7fd91f0e8a6f43ebce58a161f6adfd9dd4 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 9 Sep 2016 14:16:51 -0500
+Date: Tue, 18 Oct 2016 14:51:16 -0500
 Subject: [PATCH] beagle_x15: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -95,7 +95,7 @@ index da6876b..5433c83 100644
  CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 4730d86..b31c11d 100644
+index 8fa6f3e..3f47c2b 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -60,22 +60,45 @@
@@ -155,9 +155,9 @@ index 4730d86..b31c11d 100644
  			"echo SD/MMC found on device ${mmcdev};" \
  			"if run loadbootscript; then " \
  				"run bootscript;" \
-@@ -127,6 +150,208 @@
- 	"loadfit=run args_fit; bootm ${loadaddr}:kernel@1 " \
- 		"${loadaddr}:ramdisk@1 ${loadaddr}:${fdtfile};\0" \
+@@ -126,6 +149,208 @@
+ 	"args_fit=setenv bootargs console=${console} \0" \
+ 	"loadfit=run args_fit; bootm ${loadaddr}#${fdtfile};\0" \
  
 +#define EEWIKI_MMC_BOOT \
 +	"mmc_boot=${interface} dev ${mmcdev}; " \
@@ -365,7 +365,7 @@ index 4730d86..b31c11d 100644
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index 0f7e053..364417f 100644
+index a566918..83e748d 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
 @@ -111,25 +111,24 @@
