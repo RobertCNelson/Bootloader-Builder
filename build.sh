@@ -1472,7 +1472,7 @@ sama5d4ek
 sama5d4_xplained
 socfpga_de0_nano_soc
 udoo
-vf610twr
+#vf610twr
 wandboard
 
 #devices with no patches...
