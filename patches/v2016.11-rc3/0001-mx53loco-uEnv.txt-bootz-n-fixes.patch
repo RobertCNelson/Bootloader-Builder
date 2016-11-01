@@ -1,58 +1,69 @@
-From feb845a61c93562ca91cbf98726e17a222d00690 Mon Sep 17 00:00:00 2001
+From 9599de76bfa41ee393c927b17e4244048c2a3082 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 1 Nov 2016 10:17:21 -0500
-Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
+Date: Fri, 17 Jun 2016 10:28:59 -0500
+Subject: [PATCH] mx53loco: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx6sabre_common.h | 139 +++++++++++++++++++++++++++++++++-----
- 1 file changed, 121 insertions(+), 18 deletions(-)
+ configs/m53evk_defconfig   |   1 +
+ include/configs/mx53loco.h | 138 +++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 122 insertions(+), 17 deletions(-)
 
-diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index e404d5b..1408e5a 100644
---- a/include/configs/mx6sabre_common.h
-+++ b/include/configs/mx6sabre_common.h
-@@ -72,9 +72,12 @@
+diff --git a/configs/m53evk_defconfig b/configs/m53evk_defconfig
+index 62496c3..9c0d7bc 100644
+--- a/configs/m53evk_defconfig
++++ b/configs/m53evk_defconfig
+@@ -14,6 +14,7 @@ CONFIG_CMD_USB=y
+ CONFIG_CMD_DHCP=y
+ CONFIG_CMD_MII=y
+ CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
+ CONFIG_CMD_EXT4=y
+ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_FAT=y
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index 8743ddc..bd64fef 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -91,26 +91,75 @@
+ 
+ #define CONFIG_ETHPRIME		"FEC0"
+ 
+-#define CONFIG_LOADADDR		0x72000000	/* loadaddr env var */
++#define CONFIG_LOADADDR		0x70010000	/* loadaddr env var */
+ #define CONFIG_SYS_TEXT_BASE    0x77800000
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
++	"initrd_high=0xffffffff\0" \
++	"fdt_high=0xffffffff\0" \
+ 	"script=boot.scr\0" \
  	"image=zImage\0" \
- 	"fdt_file=undefined\0" \
- 	"fdt_addr=0x18000000\0" \
-+	"rdaddr=0x12A00000\0" \
+-	"fdt_addr=0x71000000\0" \
++	"fdt_dir=/dtbs/\0" \
++	"fdt_addr=0x71ff0000\0" \
++	"rdaddr=0x72000000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
--	"console=" CONSOLE_DEV "\0" \
 +	"console=ttymxc0,115200\0" \
 +	"optargs=\0" \
 +	"cmdline=\0" \
- 	"dfuspi=dfu 0 sf 0:0:10000000:0\0" \
- 	"dfu_alt_info_spl=spl raw 0x400\0" \
- 	"dfu_alt_info_img=u-boot raw 0x10000\0" \
-@@ -83,7 +86,8 @@
- 	"initrd_high=0xffffffff\0" \
- 	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
+ 	"mmcdev=0\0" \
  	"mmcpart=1\0" \
--	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
+-	"mmcroot=/dev/mmcblk0p2 rw rootwait\0" \
+-	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} root=${mmcroot}\0" \
 +	"mmcroot=/dev/mmcblk0p2 ro\0" \
 +	"mmcrootfstype=ext4 rootwait fixrtc\0" \
- 	"update_sd_firmware=" \
- 		"if test ${ip_dyn} = yes; then " \
- 			"setenv get_cmd dhcp; " \
-@@ -98,15 +102,55 @@
- 			"fi; "	\
- 		"fi\0" \
- 	EMMC_ENV	  \
--	"mmcargs=setenv bootargs console=${console},${baudrate} " \
--		"root=${mmcroot}\0" \
-+	"mmcargs=setenv bootargs console=${console}" \
++	"mmcargs=setenv bootargs console=${console} " \
 +		"${optargs} " \
 +		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
  	"loadbootscript=" \
- 		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
--	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+-	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+-	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
@@ -87,7 +98,7 @@ index e404d5b..1408e5a 100644
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
 +						"echo Running uname_boot ...;" \
-+						"setenv mmcroot /dev/mmcblk${mmckernel}p${mmcpart} ro;" \
++						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
 +						"run uname_boot;" \
 +					"fi;" \
 +				"fi;" \
@@ -97,10 +108,11 @@ index e404d5b..1408e5a 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -145,6 +189,70 @@
+@@ -149,19 +198,74 @@
+ 			"fi; " \
  		"else " \
  			"bootz; " \
- 		"fi;\0" \
++		"fi;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
 +		"setenv bootfile vmlinuz-${uname_r}; " \
@@ -164,18 +176,12 @@ index e404d5b..1408e5a 100644
 +				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
-+		"fi;\0" \
- 		"findfdt="\
- 			"if test $fdt_file = undefined; then " \
- 				"if test $board_name = SABREAUTO && test $board_rev = MX6QP; then " \
-@@ -165,17 +273,12 @@
+ 		"fi;\0"
  
  #define CONFIG_BOOTCOMMAND \
- 	"run findfdt;" \
--	"mmc dev ${mmcdev};" \
--	"if mmc rescan; then " \
+-	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"if run loadbootscript; then " \
--		"run bootscript; " \
+-			"run bootscript; " \
 -		"else " \
 -			"if run loadimage; then " \
 -				"run mmcboot; " \
@@ -183,15 +189,10 @@ index e404d5b..1408e5a 100644
 -			"fi; " \
 -		"fi; " \
 -	"else run netboot; fi"
-+	"setenv mmcdev 1;" \
-+	"setenv mmckernel 0;" \
-+	"run mmcboot;" \
-+	"setenv mmcdev 0;" \
-+	"setenv mmckernel 0;" \
 +	"run mmcboot;"
  
- #define CONFIG_ARP_TIMEOUT     200UL
+ #define CONFIG_ARP_TIMEOUT	200UL
  
 -- 
-2.10.1
+2.8.1
 

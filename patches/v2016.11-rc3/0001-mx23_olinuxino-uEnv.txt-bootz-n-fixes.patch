@@ -1,79 +1,88 @@
-From feb845a61c93562ca91cbf98726e17a222d00690 Mon Sep 17 00:00:00 2001
+From 9edeb8dcba24d18ec5313d9687e2350540cf7bbb Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 1 Nov 2016 10:17:21 -0500
-Subject: [PATCH] mx6qsabre_common: uEnv.txt, bootz, n fixes
+Date: Tue, 18 Oct 2016 15:00:45 -0500
+Subject: [PATCH] mx23_olinuxino: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx6sabre_common.h | 139 +++++++++++++++++++++++++++++++++-----
- 1 file changed, 121 insertions(+), 18 deletions(-)
+ configs/mx23_olinuxino_defconfig |   3 ++
+ include/configs/mx23_olinuxino.h | 112 +++++++++++++++++++++++++++++++++------
+ 2 files changed, 100 insertions(+), 15 deletions(-)
 
-diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index e404d5b..1408e5a 100644
---- a/include/configs/mx6sabre_common.h
-+++ b/include/configs/mx6sabre_common.h
-@@ -72,9 +72,12 @@
- 	"image=zImage\0" \
- 	"fdt_file=undefined\0" \
- 	"fdt_addr=0x18000000\0" \
-+	"rdaddr=0x12A00000\0" \
+diff --git a/configs/mx23_olinuxino_defconfig b/configs/mx23_olinuxino_defconfig
+index ad27842..d9508a1 100644
+--- a/configs/mx23_olinuxino_defconfig
++++ b/configs/mx23_olinuxino_defconfig
+@@ -9,6 +9,7 @@ CONFIG_VERSION_VARIABLE=y
+ # CONFIG_DISPLAY_BOARDINFO is not set
+ CONFIG_SPL=y
+ CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
+ # CONFIG_CMD_IMLS is not set
+ # CONFIG_CMD_FLASH is not set
+ CONFIG_CMD_MMC=y
+@@ -18,7 +19,9 @@ CONFIG_CMD_GPIO=y
+ CONFIG_CMD_DHCP=y
+ CONFIG_CMD_CACHE=y
+ CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
+ CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
+ CONFIG_USB=y
+ CONFIG_USB_STORAGE=y
+ CONFIG_OF_LIBFDT=y
+diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
+index 36ff7ce..1ee598f 100644
+--- a/include/configs/mx23_olinuxino.h
++++ b/include/configs/mx23_olinuxino.h
+@@ -16,6 +16,8 @@
+ 
+ #define CONFIG_CMD_LED
+ 
++#define CONFIG_SUPPORT_RAW_INITRD
++
+ /* Memory configuration */
+ #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
+ #define PHYS_SDRAM_1			0x40000000	/* Base address */
+@@ -75,20 +77,58 @@
+ 	"console=ttyAMA0\0" \
+ 	"fdt_file=imx23-olinuxino.dtb\0" \
+ 	"fdt_addr=0x41000000\0" \
++	"fdtdir=\0" \
++	"bootfile=\0" \
++	"bootdir=\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
--	"console=" CONSOLE_DEV "\0" \
-+	"console=ttymxc0,115200\0" \
 +	"optargs=\0" \
 +	"cmdline=\0" \
- 	"dfuspi=dfu 0 sf 0:0:10000000:0\0" \
- 	"dfu_alt_info_spl=spl raw 0x400\0" \
- 	"dfu_alt_info_img=u-boot raw 0x10000\0" \
-@@ -83,7 +86,8 @@
- 	"initrd_high=0xffffffff\0" \
- 	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
- 	"mmcpart=1\0" \
--	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
+ 	"mmcdev=0\0" \
+ 	"mmcpart=2\0" \
+-	"mmcroot=/dev/mmcblk0p3 rw rootwait\0" \
 +	"mmcroot=/dev/mmcblk0p2 ro\0" \
 +	"mmcrootfstype=ext4 rootwait fixrtc\0" \
- 	"update_sd_firmware=" \
- 		"if test ${ip_dyn} = yes; then " \
- 			"setenv get_cmd dhcp; " \
-@@ -98,15 +102,55 @@
- 			"fi; "	\
- 		"fi\0" \
- 	EMMC_ENV	  \
--	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+ 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 -		"root=${mmcroot}\0" \
-+	"mmcargs=setenv bootargs console=${console}" \
 +		"${optargs} " \
 +		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
- 	"loadbootscript=" \
++	"loadbootenv=load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt\0" \
++	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
++		"env import -t ${loadaddr} ${filesize}\0" \
+ 	"loadbootscript="  \
  		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
- 	"bootscript=echo Running bootscript from mmc ...; " \
+ 	"bootscript=echo Running bootscript from mmc ...; "	\
  		"source\0" \
--	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+-	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
-+	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
 +	"loadfdt=echo loading ${fdtdir}/${fdt_file} ...;  load mmc ${bootpart} ${fdt_addr} ${fdtdir}/${fdt_file}\0" \
 +	"mmcboot=mmc dev ${mmcdev}; " \
 +		"if mmc rescan; then " \
 +			"echo SD/MMC found on device ${mmcdev};" \
-+			"setenv bootpart ${mmcdev}:1; " \
-+			"echo Checking for: /uEnv.txt ...;" \
-+			"if test -e mmc ${bootpart} /uEnv.txt; then " \
-+				"load mmc ${bootpart} ${loadaddr} /uEnv.txt;" \
-+				"env import -t ${loadaddr} ${filesize};" \
-+				"echo Loaded environment from /uEnv.txt;" \
-+				"echo Checking if uenvcmd is set ...;" \
-+				"if test -n ${uenvcmd}; then " \
-+					"echo Running uenvcmd ...;" \
-+					"run uenvcmd;" \
-+				"fi;" \
-+			"fi; " \
 +			"echo Checking for: /boot/uEnv.txt ...;" \
-+			"for i in 1 2 3 4 5 6 7 ; do " \
++			"for i in 2 3 4 5 6 7 ; do " \
 +				"setenv mmcpart ${i};" \
 +				"setenv bootpart ${mmcdev}:${mmcpart};" \
 +				"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
@@ -82,12 +91,14 @@ index e404d5b..1408e5a 100644
 +					"echo Loaded environment from /boot/uEnv.txt;" \
 +					"if test -n ${dtb}; then " \
 +						"setenv fdt_file ${dtb};" \
-+						"echo Using: dtb=${fdt_file} ...;" \
++						"echo using ${fdt_file} ...;" \
 +					"fi;" \
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
-+						"echo Running uname_boot ...;" \
-+						"setenv mmcroot /dev/mmcblk${mmckernel}p${mmcpart} ro;" \
++						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
++						"if test -n ${uuid}; then " \
++							"setenv mmcroot UUID=${uuid} ro;" \
++						"fi;" \
 +						"run uname_boot;" \
 +					"fi;" \
 +				"fi;" \
@@ -97,10 +108,11 @@ index e404d5b..1408e5a 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -145,6 +189,70 @@
+@@ -127,19 +167,61 @@
+ 			"fi; " \
  		"else " \
- 			"bootz; " \
- 		"fi;\0" \
+ 			"bootm; " \
++		"fi;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
 +		"setenv bootfile vmlinuz-${uname_r}; " \
@@ -147,51 +159,27 @@ index e404d5b..1408e5a 100644
 +					"fi;" \
 +				"fi;" \
 +			"fi; " \
-+			"setenv rdfile initrd.img-${uname_r}; " \
-+			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
-+				"echo loading ${bootdir}/${rdfile} ...; "\
-+				"run loadrd;" \
-+				"if test -n ${uuid}; then " \
-+					"setenv mmcroot UUID=${uuid} ro;" \
-+				"fi;" \
-+				"run mmcargs;" \
-+				"echo debug: [${bootargs}] ... ;" \
-+				"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}] ... ;" \
-+				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}; " \
-+			"else " \
-+				"run mmcargs;" \
-+				"echo debug: [${bootargs}] ... ;" \
-+				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
-+				"bootz ${loadaddr} - ${fdt_addr}; " \
-+			"fi;" \
-+		"fi;\0" \
- 		"findfdt="\
- 			"if test $fdt_file = undefined; then " \
- 				"if test $board_name = SABREAUTO && test $board_rev = MX6QP; then " \
-@@ -165,17 +273,12 @@
++			"run mmcargs;" \
++			"echo debug: [${bootargs}] ... ;" \
++			"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
++			"bootz ${loadaddr} - ${fdt_addr}; " \
+ 		"fi;\0"
  
  #define CONFIG_BOOTCOMMAND \
- 	"run findfdt;" \
--	"mmc dev ${mmcdev};" \
--	"if mmc rescan; then " \
+-	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"if run loadbootscript; then " \
--		"run bootscript; " \
+-			"run bootscript; " \
 -		"else " \
--			"if run loadimage; then " \
+-			"if run loaduimage; then " \
 -				"run mmcboot; " \
 -			"else run netboot; " \
 -			"fi; " \
 -		"fi; " \
 -	"else run netboot; fi"
-+	"setenv mmcdev 1;" \
-+	"setenv mmckernel 0;" \
-+	"run mmcboot;" \
-+	"setenv mmcdev 0;" \
-+	"setenv mmckernel 0;" \
 +	"run mmcboot;"
  
- #define CONFIG_ARP_TIMEOUT     200UL
- 
+ /* The rest of the configuration is shared */
+ #include <configs/mxs.h>
 -- 
-2.10.1
+2.9.3
 

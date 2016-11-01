@@ -806,8 +806,9 @@ build_u_boot () {
 		#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=052f3bfd39e212e43fd141a49331107409e4f993
 		#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e532158a39cf9ac91f1245dc5379bdc90f0f2c92
 		#r11: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=bbfdf926a1ebd5620fa8e3e60b9e747d8de12254
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=03a34ea13b9e91a89ae66fd159ff252999d0ba06
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 
 		p_dir="${DIR}/patches/ti-2016.05"
 		echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -1260,6 +1261,10 @@ cm_fx6 () {
 	board="cm_fx6" ; always_mainline
 }
 
+Cubieboard4 () {
+	board="Cubieboard4" ; always_mainline
+}
+
 Cubietruck_plus () {
 	board="Cubietruck_plus" ; always_mainline
 }
@@ -1455,7 +1460,7 @@ am57xx_evm
 am57xx_evm_ti
 at91sam9x5ek
 firefly_rk3288_4gb
-ls1021atwr
+#ls1021atwr
 mx23_olinuxino
 mx51evk
 mx53loco
@@ -1484,6 +1489,7 @@ A33_OLinuXino
 Bananapi
 Bananapro
 #cm_fx6
+Cubieboard4
 Cubietruck_plus
 orangepi_pc
 rpi_2
