@@ -1141,7 +1141,7 @@ build_uboot_gnueabihf_only_stable () {
 	build_uboot_stable
 }
 
-always_mainline () {
+always_stable_n_testing () {
 	cleanup
 	if [ ! "x${build_stable}" = "x" ] ; then
 		build_stable="true"
@@ -1152,13 +1152,12 @@ always_mainline () {
 	build_uboot_gnueabihf
 }
 
-always_rc () {
+always_testing () {
 	cleanup
-	if [ "x${uboot_config}" = "x" ] ; then
-		uboot_config="${board}_defconfig"
+	if [ ! "x${uboot_testing}" = "x" ] ; then
+		build_testing="true"
 	fi
-	gcc_linaro_gnueabihf_6
-	build_uboot_latest
+	build_uboot_gnueabihf
 }
 
 artik5 () {
@@ -1178,23 +1177,23 @@ artik10 () {
 }
 
 A10_OLinuXino_Lime () {
-	board="A10-OLinuXino-Lime" ; always_mainline
+	board="A10-OLinuXino-Lime" ; always_stable_n_testing
 }
 
 A20_OLinuXino_Lime () {
-	board="A20-OLinuXino-Lime" ; always_mainline
+	board="A20-OLinuXino-Lime" ; always_stable_n_testing
 }
 
 A20_OLinuXino_Lime2 () {
-	board="A20-OLinuXino-Lime2" ; always_mainline
+	board="A20-OLinuXino-Lime2" ; always_stable_n_testing
 }
 
 A20_OLinuXino_MICRO () {
-	board="A20-OLinuXino_MICRO" ; always_mainline
+	board="A20-OLinuXino_MICRO" ; always_stable_n_testing
 }
 
 A33_OLinuXino () {
-	board="A33-OLinuXino" ; always_mainline
+	board="A33-OLinuXino" ; always_stable_n_testing
 }
 
 am335x_evm () {
@@ -1218,11 +1217,11 @@ am335x_boneblack_flasher () {
 }
 
 am43xx_evm () {
-	board="am43xx_evm" ; always_mainline
+	board="am43xx_evm" ; always_stable_n_testing
 }
 
 am57xx_evm () {
-	board="am57xx_evm" ; always_mainline
+	board="am57xx_evm" ; always_stable_n_testing
 }
 
 am57xx_evm_ti () {
@@ -1250,23 +1249,23 @@ at91sam9x5ek () {
 }
 
 Bananapi () {
-	board="Bananapi" ; always_mainline
+	board="Bananapi" ; always_stable_n_testing
 }
 
 Bananapro () {
-	board="Bananapro" ; always_mainline
+	board="Bananapro" ; always_stable_n_testing
 }
 
 cm_fx6 () {
-	board="cm_fx6" ; always_mainline
+	board="cm_fx6" ; always_stable_n_testing
 }
 
 Cubieboard4 () {
-	board="Cubieboard4" ; always_mainline
+	board="Cubieboard4" ; always_testing
 }
 
 Cubietruck_plus () {
-	board="Cubietruck_plus" ; always_mainline
+	board="Cubietruck_plus" ; always_testing
 }
 
 firefly_rk3288_4gb () {
@@ -1361,11 +1360,11 @@ omap5_uevm () {
 }
 
 orangepi_pc () {
-	board="orangepi_pc" ; always_mainline
+	board="orangepi_pc" ; always_stable_n_testing
 }
 
 rpi_2 () {
-	board="rpi_2" ; always_mainline
+	board="rpi_2" ; always_stable_n_testing
 }
 
 sama5d2_xplained () {
@@ -1417,11 +1416,11 @@ socfpga_de0_nano_soc () {
 }
 
 Sinovoip_BPI_M2 () {
-	board="Sinovoip_BPI_M2" ; always_mainline
+	board="Sinovoip_BPI_M2" ; always_stable_n_testing
 }
 
 Sinovoip_BPI_M3 () {
-	board="Sinovoip_BPI_M3" ; always_mainline
+	board="Sinovoip_BPI_M3" ; always_stable_n_testing
 }
 
 udoo () {
