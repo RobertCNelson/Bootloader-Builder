@@ -1,6 +1,6 @@
-From dcb6efa7eaedf349f41ad437764c6fc8cbed82c0 Mon Sep 17 00:00:00 2001
+From cffd9ec226b0464b36e12f373dad2a0f43aaf8f7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 18 Oct 2016 15:11:50 -0500
+Date: Wed, 30 Nov 2016 12:50:44 -0600
 Subject: [PATCH] ti_omap5_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -11,10 +11,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 166 insertions(+), 16 deletions(-)
 
 diff --git a/configs/omap5_uevm_defconfig b/configs/omap5_uevm_defconfig
-index 50dda81..9cc0ee9 100644
+index 3005ffd..19037e3 100644
 --- a/configs/omap5_uevm_defconfig
 +++ b/configs/omap5_uevm_defconfig
-@@ -6,6 +6,10 @@ CONFIG_VERSION_VARIABLE=y
+@@ -7,6 +7,10 @@ CONFIG_VERSION_VARIABLE=y
  CONFIG_SPL=y
  CONFIG_SPL_OS_BOOT=y
  CONFIG_HUSH_PARSER=y
@@ -25,7 +25,7 @@ index 50dda81..9cc0ee9 100644
  CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
  CONFIG_CMD_ASKENV=y
-@@ -22,7 +26,6 @@ CONFIG_CMD_MII=y
+@@ -23,7 +27,6 @@ CONFIG_CMD_MII=y
  CONFIG_CMD_PING=y
  CONFIG_CMD_EXT2=y
  CONFIG_CMD_EXT4=y
@@ -34,7 +34,7 @@ index 50dda81..9cc0ee9 100644
  CONFIG_CMD_FS_GENERIC=y
  CONFIG_DFU_MMC=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index f31d5d3..eb7d36e 100644
+index 1be8137..b2c8a32 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,11 +59,33 @@
@@ -208,7 +208,7 @@ index f31d5d3..eb7d36e 100644
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index 29b7d96..d23e0f0 100644
+index 8322f64..7412e66 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
 @@ -78,7 +78,7 @@
@@ -236,7 +236,8 @@ index 29b7d96..d23e0f0 100644
 -	"if test ${dofastboot} -eq 1; then " \
 -		"echo Boot fastboot requested, resetting dofastboot ...;" \
 -		"setenv dofastboot 0; saveenv;" \
--		"echo Booting into fastboot ...; fastboot 0;" \
+-		"echo Booting into fastboot ...; " \
+-		"fastboot " __stringify(CONFIG_FASTBOOT_USB_DEV) "; " \
 -	"fi;" \
  	"run findfdt; " \
 -	"run envboot; " \
@@ -249,11 +250,10 @@ index 29b7d96..d23e0f0 100644
  	"setenv mmcdev 1; " \
 -	"setenv bootpart 1:2; " \
 -	"setenv mmcroot /dev/mmcblk0p2 rw; " \
--	"run mmcboot;" \
 +	"run boot;" \
+ 	"run mmcboot;" \
  	""
  
- /*
 -- 
-2.9.3
+2.10.2
 

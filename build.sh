@@ -1094,8 +1094,8 @@ build_uboot_eabi () {
 	fi
 	gcc_arm_embedded_5
 	build_uboot_old
-	build_uboot_stable
 	gcc_arm_embedded_6
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -1106,8 +1106,8 @@ build_uboot_gnueabihf () {
 	fi
 	gcc_linaro_gnueabihf_5
 	build_uboot_old
-	build_uboot_stable
 	gcc_linaro_gnueabihf_6
+	build_uboot_stable
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -1124,7 +1124,7 @@ build_uboot_gnueabihf_only_stable () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
 	fi
-	gcc_linaro_gnueabihf_5
+	gcc_linaro_gnueabihf_6
 	build_uboot_stable
 }
 

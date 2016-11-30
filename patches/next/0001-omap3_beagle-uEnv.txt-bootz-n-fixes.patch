@@ -1,6 +1,6 @@
-From 2f10253f0e8281f0b58d6c337aefa20c8bf4164b Mon Sep 17 00:00:00 2001
+From 2917faf3be1b81423917541979da488af5a3b889 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 1 Nov 2016 10:22:30 -0500
+Date: Wed, 30 Nov 2016 12:27:48 -0600
 Subject: [PATCH] omap3_beagle: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  configs/omap3_beagle_defconfig    |   1 +
  include/configs/omap3_beagle.h    | 148 ++++++++---------------------------
  include/configs/ti_armv7_common.h | 158 ++++++++++++++++++++++++++++++++++++--
- 4 files changed, 218 insertions(+), 127 deletions(-)
+ 4 files changed, 216 insertions(+), 129 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index cfdab3e..ebf4683 100644
@@ -124,17 +124,57 @@ index 7a1fd44..57f1912 100644
  CONFIG_SYS_EXTRA_OPTIONS="NAND"
  CONFIG_SYS_CONSOLE_INFO_QUIET=y
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
-index 8a69a5f..02c11aa 100644
+index 9850aa6..08b21ca 100644
 --- a/include/configs/omap3_beagle.h
 +++ b/include/configs/omap3_beagle.h
-@@ -105,50 +105,30 @@
- 							/* devices */
+@@ -110,86 +110,38 @@
+ #define CONFIG_BOOTCOMMAND \
+ 	"run findfdt; " \
+ 	"run distro_bootcmd; " \
+-	"mmc dev ${mmcdev}; if mmc rescan; then " \
+-		"if run userbutton; then " \
+-			"setenv bootenv uEnv.txt;" \
+-		"else " \
+-			"setenv bootenv user.txt;" \
+-		"fi;" \
+-		"echo SD/MMC found on device ${mmcdev};" \
+-		"if run loadbootenv; then " \
+-			"echo Loaded environment from ${bootenv};" \
+-			"run importbootenv;" \
+-		"fi;" \
+-		"if test -n $uenvcmd; then " \
+-			"echo Running uenvcmd ...;" \
+-			"run uenvcmd;" \
+-		"fi;" \
+-		"if run loadbootscript; then " \
+-			"run bootscript; " \
+-		"else " \
+-			"if run loadimage; then " \
+-				"run mmcboot;" \
+-			"fi;" \
+-		"fi; " \
+-	"fi;" \
+-	"run nandboot;" \
+-	"setenv bootfile zImage;" \
+-	"if run loadimage; then " \
+-		"run loadfdt;" \
+-		"run mmcbootz; " \
+-	"fi; " \
++	"setenv interface mmc; " \
++	"setenv mmcblk 0; " \
++	"setenv mmcdev 0; " \
++	"run boot;" \
+ 
+ #include <config_distro_bootcmd.h>
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
 -	"loadaddr=0x80200000\0" \
+-	"kernel_addr_r=0x80200000\0" \
 -	"rdaddr=0x81000000\0" \
+-	"initrd_addr_r=0x81000000\0" \
 -	"fdt_high=0xffffffff\0" \
 -	"fdtaddr=0x80f80000\0" \
+-	"fdt_addr_r=0x80f80000\0" \
 -	"usbtty=cdc_acm\0" \
 -	"bootfile=uImage\0" \
 -	"ramdisk=ramdisk.gz\0" \
@@ -201,7 +241,7 @@ index 8a69a5f..02c11aa 100644
  	"findfdt=" \
  		"if test $beaglerev = AxBx; then " \
  			"setenv fdtfile omap3-beagle.dtb; fi; " \
-@@ -162,80 +142,18 @@
+@@ -203,48 +155,10 @@
  			"setenv fdtfile omap3-beagle-xm.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
@@ -246,54 +286,16 @@ index 8a69a5f..02c11aa 100644
 -	"userbutton=if gpio input 173; then run userbutton_xm; " \
 -		"else run userbutton_nonxm; fi;\0" \
 -	"userbutton_xm=gpio input 4;\0" \
--	"userbutton_nonxm=gpio input 7;\0"
--/* "run userbutton" will return 1 (false) if pressed and 0 (true) if not */
+-	"userbutton_nonxm=gpio input 7;\0" \
 +	"loadrd=load ${interface} ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
 +	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load ${interface} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
 +	EEWIKI_BOOT \
 +	EEWIKI_UNAME_BOOT \
-+
- #define CONFIG_BOOTCOMMAND \
- 	"run findfdt; " \
--	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"if run userbutton; then " \
--			"setenv bootenv uEnv.txt;" \
--		"else " \
--			"setenv bootenv user.txt;" \
--		"fi;" \
--		"echo SD/MMC found on device ${mmcdev};" \
--		"if run loadbootenv; then " \
--			"echo Loaded environment from ${bootenv};" \
--			"run importbootenv;" \
--		"fi;" \
--		"if test -n $uenvcmd; then " \
--			"echo Running uenvcmd ...;" \
--			"run uenvcmd;" \
--		"fi;" \
--		"if run loadbootscript; then " \
--			"run bootscript; " \
--		"else " \
--			"if run loadimage; then " \
--				"run mmcboot;" \
--			"fi;" \
--		"fi; " \
--	"fi;" \
--	"run nandboot;" \
--	"setenv bootfile zImage;" \
--	"if run loadimage; then " \
--		"run loadfdt;" \
--		"run mmcbootz; " \
--	"fi; " \
-+	"setenv interface mmc; " \
-+	"setenv mmcblk 0; " \
-+	"setenv mmcdev 0; " \
-+	"run boot;" \
-+	""
+ 	BOOTENV
  
  /*
-  * OMAP3 has 12 GP timers, they can be driven by the system clock
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 0d74c50..7fc4409 100644
+index 1be8137..dae3054 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,11 +59,33 @@
@@ -466,7 +468,7 @@ index 0d74c50..7fc4409 100644
  /*
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
-@@ -257,8 +405,6 @@
+@@ -253,8 +401,6 @@
  #define CONFIG_CMD_SPL
  #endif
  
@@ -475,7 +477,7 @@ index 0d74c50..7fc4409 100644
  /* General parts of the framework, required. */
  #define CONFIG_SPL_BOARD_INIT
  
-@@ -296,6 +442,4 @@
+@@ -292,6 +438,4 @@
  #define NETARGS ""
  #endif
  
@@ -483,5 +485,5 @@ index 0d74c50..7fc4409 100644
 -
  #endif	/* __CONFIG_TI_ARMV7_COMMON_H__ */
 -- 
-2.10.1
+2.10.2
 
