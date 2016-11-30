@@ -348,10 +348,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		firefly-rk3288-4gb)
-			echo "patch -p1 < \"${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch"
-			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
@@ -457,10 +453,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		firefly-rk3288-4gb)
-			echo "patch -p1 < \"${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch"
-			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
@@ -565,10 +557,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		firefly-rk3288-4gb)
-			echo "patch -p1 < \"${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch"
-			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
@@ -671,10 +659,6 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		firefly-rk3288-4gb)
-			echo "patch -p1 < \"${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-firefly-rk3288-4gb-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		ls1021atwr_sdcard_qspi)
 			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
@@ -905,7 +889,7 @@ build_u_boot () {
 		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
 		echo "Building ${project}: ${uboot_filename}:"
 		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET} > /dev/null
-		if [ "x${board}" = "xfirefly-rk3288-4gb" ] ; then
+		if [ "x${board}" = "xfirefly-rk3288" ] ; then
 			./tools/mkimage -n rk3288 -T rksd -d ./spl/u-boot-spl-nodtb.bin u-boot-spl.rk3288
 		fi
 
@@ -1110,8 +1094,8 @@ build_uboot_eabi () {
 	fi
 	gcc_arm_embedded_5
 	build_uboot_old
-	gcc_arm_embedded_6
 	build_uboot_stable
+	gcc_arm_embedded_6
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -1122,8 +1106,8 @@ build_uboot_gnueabihf () {
 	fi
 	gcc_linaro_gnueabihf_5
 	build_uboot_old
-	gcc_linaro_gnueabihf_6
 	build_uboot_stable
+	gcc_linaro_gnueabihf_6
 	build_uboot_testing
 	build_uboot_latest
 }
@@ -1132,7 +1116,7 @@ build_uboot_gnueabihf_only_old () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
 	fi
-	gcc_linaro_gnueabihf_6
+	gcc_linaro_gnueabihf_5
 	build_uboot_old
 }
 
@@ -1140,7 +1124,7 @@ build_uboot_gnueabihf_only_stable () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
 	fi
-	gcc_linaro_gnueabihf_6
+	gcc_linaro_gnueabihf_5
 	build_uboot_stable
 }
 
@@ -1271,13 +1255,8 @@ Cubietruck_plus () {
 	board="Cubietruck_plus" ; always_testing
 }
 
-firefly_rk3288_4gb () {
-#	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="firefly-rk3288-4gb"
-	uboot_config="firefly-rk3288_defconfig"
-	build_uboot_gnueabihf
+firefly_rk3288 () {
+	board="firefly-rk3288" ; always_testing
 }
 
 ls1021atwr () {
@@ -1461,7 +1440,6 @@ am43xx_evm
 am57xx_evm
 am57xx_evm_ti
 at91sam9x5ek
-#firefly_rk3288_4gb
 #ls1021atwr
 mx23_olinuxino
 mx51evk
@@ -1493,6 +1471,7 @@ Bananapro
 #cm_fx6
 Cubieboard4
 Cubietruck_plus
+firefly_rk3288
 orangepi_pc
 rpi_2
 Sinovoip_BPI_M2

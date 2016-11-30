@@ -1,6 +1,6 @@
-From 1d84941db964384840523ff6fb0e4a1034d1efea Mon Sep 17 00:00:00 2001
+From c8eccb080fa40c4f3a5a949104dca4c644642883 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 4 Nov 2016 15:17:41 -0500
+Date: Wed, 30 Nov 2016 11:53:19 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -31,10 +31,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 arch/arm/dts/am335x-vsc8531bbb.dts
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 836a8c4..f5f6586 100644
+index b2306dd..6746c1b 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -110,13 +110,10 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
+@@ -114,13 +114,10 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
  	zynqmp-zc1751-xm018-dc4.dtb		\
  	zynqmp-zc1751-xm019-dc5.dtb
  dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb am335x-bone.dtb \
@@ -621,10 +621,10 @@ index 0000000..d2df1aa
 +	system-power-controller;
 +};
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index fc1353a..e9ec95e 100644
+index da9eab4..0ae9391 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -549,6 +549,24 @@ static struct clk_synth cdce913_data = {
+@@ -541,6 +541,24 @@ static struct clk_synth cdce913_data = {
   */
  int board_init(void)
  {
@@ -649,9 +649,9 @@ index fc1353a..e9ec95e 100644
  #if defined(CONFIG_HW_WATCHDOG)
  	hw_watchdog_init();
  #endif
-@@ -649,8 +667,22 @@ int board_late_init(void)
- 	if (rc)
- 		puts("Could not get board ID.\n");
+@@ -636,8 +654,22 @@ int board_late_init(void)
+ #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+ 	char *name = NULL;
  
 +	if (board_is_bone_lt()) {
 +		puts("Board: BeagleBone Black\n");
@@ -672,10 +672,10 @@ index fc1353a..e9ec95e 100644
  	set_board_info_env(name);
  #endif
  
-@@ -782,18 +814,21 @@ int board_eth_init(bd_t *bis)
- 	if (read_eeprom() < 0)
- 		puts("Could not get board ID.\n");
+@@ -766,18 +798,21 @@ int board_eth_init(bd_t *bis)
+ 	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
+ #ifdef CONFIG_DRIVER_TI_CPSW
 -	if (board_is_bone() || board_is_bone_lt() ||
 +	if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
  	    board_is_idk()) {
@@ -695,7 +695,7 @@ index fc1353a..e9ec95e 100644
  		writel((RGMII_MODE_ENABLE | RGMII_INT_DELAY), &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_RGMII;
-@@ -818,7 +853,7 @@ int board_eth_init(bd_t *bis)
+@@ -802,7 +837,7 @@ int board_eth_init(bd_t *bis)
  #define AR8051_DEBUG_RGMII_CLK_DLY_REG	0x5
  #define AR8051_RGMII_TX_CLK_DLY		0x100
  
@@ -704,7 +704,7 @@ index fc1353a..e9ec95e 100644
  		const char *devname;
  		devname = miiphy_get_current_dev();
  
-@@ -848,17 +883,17 @@ int board_eth_init(bd_t *bis)
+@@ -832,17 +867,17 @@ int board_eth_init(bd_t *bis)
  #ifdef CONFIG_SPL_LOAD_FIT
  int board_fit_config_name_match(const char *name)
  {
@@ -760,7 +760,7 @@ index 9776df7..c5ab8c1 100644
  {
  	return board_ti_is("A335X_SK");
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 8afa5f9..aef5806 100644
+index ad85b3a..6d65e99 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
 @@ -381,7 +381,14 @@ void enable_board_pin_mux(void)
@@ -864,7 +864,7 @@ index e5a1696..0f1799c 100644
 +CONFIG_OF_LIBFDT=y
 +CONFIG_OF_LIBFDT_OVERLAY=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index e18eb31..ffba348 100644
+index a2acc77..b37ba67 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -17,6 +17,7 @@
@@ -1007,7 +1007,7 @@ index e18eb31..ffba348 100644
  
  /*
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 0d74c50..b02fa41 100644
+index 1be8137..6f55971 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -59,18 +59,51 @@
@@ -1296,10 +1296,10 @@ index 0d74c50..b02fa41 100644
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
 diff --git a/scripts/config_whitelist.txt b/scripts/config_whitelist.txt
-index d476367..3dea2c0 100644
+index b3ed48b..90001c8 100644
 --- a/scripts/config_whitelist.txt
 +++ b/scripts/config_whitelist.txt
-@@ -3549,6 +3549,7 @@ CONFIG_PHY_LXT
+@@ -3495,6 +3495,7 @@ CONFIG_PHY_LXT
  CONFIG_PHY_M88E1111
  CONFIG_PHY_MARVELL
  CONFIG_PHY_MAX_ADDR
@@ -1308,5 +1308,5 @@ index d476367..3dea2c0 100644
  CONFIG_PHY_MICREL_KSZ9021
  CONFIG_PHY_MICREL_KSZ9031
 -- 
-2.10.1
+2.10.2
 

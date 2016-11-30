@@ -1,6 +1,6 @@
-From dc8f1a9b6f6dcaa1fba311a2ecebe9cf87f1da52 Mon Sep 17 00:00:00 2001
+From 72b0422867a35a584f2eb051023d31017d6fa432 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 14 Nov 2016 11:56:24 -0600
+Date: Wed, 30 Nov 2016 11:56:40 -0600
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -14,10 +14,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  5 files changed, 31 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index e9ec95e..138a93a 100644
+index 0ae9391..32ad776 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -254,7 +254,7 @@ void am33xx_spl_board_init(void)
+@@ -257,7 +257,7 @@ void am33xx_spl_board_init(void)
  	/* Get the frequency */
  	dpll_mpu_opp100.m = am335x_get_efuse_mpu_max_freq(cdev);
  
@@ -26,7 +26,7 @@ index e9ec95e..138a93a 100644
  		/* BeagleBone PMIC Code */
  		int usb_cur_lim;
  
-@@ -287,7 +287,7 @@ void am33xx_spl_board_init(void)
+@@ -290,7 +290,7 @@ void am33xx_spl_board_init(void)
  		 * Override what we have detected since we know if we have
  		 * a Beaglebone Black it supports 1GHz.
  		 */
@@ -35,8 +35,8 @@ index e9ec95e..138a93a 100644
  			dpll_mpu_opp100.m = MPUPLL_M_1000;
  
  		/*
-@@ -395,7 +395,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
- 
+@@ -393,7 +393,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+ {
  	if (board_is_evm_sk())
  		return &dpll_ddr_evm_sk;
 -	else if (board_is_bone_lt() || board_is_icev2())
@@ -44,7 +44,7 @@ index e9ec95e..138a93a 100644
  		return &dpll_ddr_bone_black;
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr_evm_sk;
-@@ -482,7 +482,7 @@ void sdram_init(void)
+@@ -474,7 +474,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -53,16 +53,16 @@ index e9ec95e..138a93a 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -815,7 +815,7 @@ int board_eth_init(bd_t *bis)
- 		puts("Could not get board ID.\n");
+@@ -799,7 +799,7 @@ int board_eth_init(bd_t *bis)
  
+ #ifdef CONFIG_DRIVER_TI_CPSW
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
 -	    board_is_idk()) {
 +	    board_is_idk() || board_is_blank_bone_lt()) {
  		puts("eth0: MII MODE\n");
  		writel(MII_MODE_ENABLE, &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
-@@ -887,6 +887,8 @@ int board_fit_config_name_match(const char *name)
+@@ -871,6 +871,8 @@ int board_fit_config_name_match(const char *name)
  		return 0;
  	else if (board_is_bone_lt() && !strcmp(name, "am335x-boneblack"))
  		return 0;
@@ -127,7 +127,7 @@ index 6e7ca91..1a0a0ac 100644
  		return rc;
  
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index ffba348..3ed6f74 100644
+index b37ba67..ae066a1 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -195,6 +195,9 @@
