@@ -426,22 +426,23 @@ build_u_boot () {
 	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: enable CONFIG_OF_LIBFDT_OVERLAY
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: arm: am33xx: Initialize EMIF REG_PR_OLD_COUNT for BBB and am335x-evm
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
 		am335x_evm)
-			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
+			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
+			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
+			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
-			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
+			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -526,26 +527,27 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2017.xx
+	#v2017.01
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x_evm: arm: am33xx: Initialize EMIF REG_PR_OLD_COUNT for BBB and am335x-evm
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
 		am335x_evm)
-			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
+			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
+			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
+			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
-			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
+			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -639,16 +641,16 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
-			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
+			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
+			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		am335x_boneblack)
-			echo "patch -p1 < \"${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch\""
+			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
-			${git} "${p_dir}/0001-Updated-to-include-uboot-support-for-MSCC-MINI-PHY-f.patch"
+			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
@@ -794,8 +796,9 @@ build_u_boot () {
 		#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e532158a39cf9ac91f1245dc5379bdc90f0f2c92
 		#r11: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=bbfdf926a1ebd5620fa8e3e60b9e747d8de12254
 		#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=03a34ea13b9e91a89ae66fd159ff252999d0ba06
-		#r13: (pending)
-		RELEASE_VER="-r12" #bump on every change...
+		#r13: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=34fda502546ed4a678b1ab223a8a2e50b3f16da3
+		#r14: (pending)
+		RELEASE_VER="-r13" #bump on every change...
 
 		p_dir="${DIR}/patches/ti-2016.05"
 		echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
