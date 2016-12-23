@@ -1,6 +1,6 @@
-From eac1cc8e2868a63d59d600f576ab8e6502a64891 Mon Sep 17 00:00:00 2001
+From a3a243b5182037da0e8ffadc26fb1dc174b0b0d7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 23 Dec 2016 12:10:30 -0600
+Date: Fri, 23 Dec 2016 15:07:21 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -8,22 +8,22 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  arch/arm/dts/Makefile                          |  11 +-
  arch/arm/dts/am335x-bone-common.dtsi           |  78 -------
  arch/arm/dts/am335x-bone-common_mii.dtsi       |  83 ++++++++
- arch/arm/dts/am335x-bone-common_rgmii.dtsi     |  81 ++++++++
+ arch/arm/dts/am335x-bone-common_rgmii.dtsi     |  81 +++++++
  arch/arm/dts/am335x-bone.dts                   |   5 +
  arch/arm/dts/am335x-boneblack-emmc-overlay.dts |  43 ++++
  arch/arm/dts/am335x-boneblack.dts              |   1 +
  arch/arm/dts/am335x-bonegreen.dts              |   1 +
  arch/arm/dts/am335x-sancloud-bbe.dts           | 100 +++++++++
- arch/arm/dts/am335x-vsc8531bbb.dts             |  91 +++++++++
+ arch/arm/dts/am335x-vsc8531bbb.dts             |  91 ++++++++
  board/ti/am335x/board.c                        |  51 ++++-
  board/ti/am335x/board.h                        |  15 ++
  board/ti/am335x/mux.c                          |   9 +-
  configs/am335x_boneblack_defconfig             |   2 +-
- configs/am335x_evm_defconfig                   |  23 +--
+ configs/am335x_evm_defconfig                   |  23 +-
  include/configs/am335x_evm.h                   |  60 ++++--
- include/configs/ti_armv7_common.h              | 270 ++++++++++++++++++++++++-
+ include/configs/ti_armv7_common.h              | 281 ++++++++++++++++++++++++-
  scripts/config_whitelist.txt                   |   1 +
- 18 files changed, 794 insertions(+), 131 deletions(-)
+ 18 files changed, 805 insertions(+), 131 deletions(-)
  create mode 100644 arch/arm/dts/am335x-bone-common_mii.dtsi
  create mode 100644 arch/arm/dts/am335x-bone-common_rgmii.dtsi
  create mode 100644 arch/arm/dts/am335x-boneblack-emmc-overlay.dts
@@ -977,7 +977,7 @@ index e0cb6dc2ec..cec33dd6dd 100644
  
  /*
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index d13fc94785..88516a5949 100644
+index d13fc94785..13a460ba95 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -60,20 +60,55 @@
@@ -1044,7 +1044,7 @@ index d13fc94785..88516a5949 100644
  	"envboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
  			"echo SD/MMC found on device ${mmcdev};" \
-@@ -127,6 +162,225 @@
+@@ -127,6 +162,236 @@
  	"loadfit=run args_fit; bootm ${loadaddr}:kernel@1 " \
  		"${loadaddr}:ramdisk@1 ${loadaddr}:${fdtfile};\0" \
  
@@ -1227,6 +1227,17 @@ index d13fc94785..88516a5949 100644
 +					"fi;" \
 +				"fi;" \
 +			"fi; " \
++			"if test -n ${dtb_overlay}; then " \
++				"echo debug: [dtb_overlay=${dtb_overlay}] ... ;" \
++				"if test -e ${devtype} ${bootpart} ${dtb_overlay}; then " \
++					"echo loading ${dtb_overlay} ...;" \
++					"load ${devtype} ${bootpart} ${rdaddr} ${dtb_overlay};" \
++					"fdt addr ${fdtaddr};" \
++					"fdt apply ${rdaddr};" \
++				"else " \
++					"echo unable to find [${devtype} ${bootpart} ${dtb_overlay}]...;" \
++				"fi; " \
++			"fi;" \
 +			"setenv rdfile initrd.img-${uname_r}; " \
 +			"if test -e ${devtype} ${bootpart} ${bootdir}/${rdfile}; then " \
 +				"echo loading ${bootdir}/${rdfile} ...; "\
