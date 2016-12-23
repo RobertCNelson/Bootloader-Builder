@@ -533,8 +533,9 @@ build_u_boot () {
 		#r1: initial release
 		#r2: am335x_evm: arm: am33xx: Initialize EMIF REG_PR_OLD_COUNT for BBB and am335x-evm
 		#r3: am335x_evm: dtb_overlay=file.dtbo
-		#r3: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: am335x_evm: dtb_overlay=file.dtbo (call fdt resize)
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

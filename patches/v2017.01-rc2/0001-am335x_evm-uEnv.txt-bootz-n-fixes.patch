@@ -1,6 +1,6 @@
-From a3a243b5182037da0e8ffadc26fb1dc174b0b0d7 Mon Sep 17 00:00:00 2001
+From db6ab7c4fc77d2c9dca7a08927835a9c528dffc9 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 23 Dec 2016 15:07:21 -0600
+Date: Fri, 23 Dec 2016 16:18:48 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -21,9 +21,9 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  configs/am335x_boneblack_defconfig             |   2 +-
  configs/am335x_evm_defconfig                   |  23 +-
  include/configs/am335x_evm.h                   |  60 ++++--
- include/configs/ti_armv7_common.h              | 281 ++++++++++++++++++++++++-
+ include/configs/ti_armv7_common.h              | 283 ++++++++++++++++++++++++-
  scripts/config_whitelist.txt                   |   1 +
- 18 files changed, 805 insertions(+), 131 deletions(-)
+ 18 files changed, 807 insertions(+), 131 deletions(-)
  create mode 100644 arch/arm/dts/am335x-bone-common_mii.dtsi
  create mode 100644 arch/arm/dts/am335x-bone-common_rgmii.dtsi
  create mode 100644 arch/arm/dts/am335x-boneblack-emmc-overlay.dts
@@ -861,7 +861,7 @@ index 08c1e79f74..2988a46eb6 100644
 +CONFIG_OF_LIBFDT=y
 +CONFIG_OF_LIBFDT_OVERLAY=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index e0cb6dc2ec..cec33dd6dd 100644
+index 49c14df8ad..8737b0ade4 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -18,6 +18,7 @@
@@ -977,7 +977,7 @@ index e0cb6dc2ec..cec33dd6dd 100644
  
  /*
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index d13fc94785..13a460ba95 100644
+index d13fc94785..a2e774779b 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -60,20 +60,55 @@
@@ -1044,7 +1044,7 @@ index d13fc94785..13a460ba95 100644
  	"envboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
  			"echo SD/MMC found on device ${mmcdev};" \
-@@ -127,6 +162,236 @@
+@@ -127,6 +162,238 @@
  	"loadfit=run args_fit; bootm ${loadaddr}:kernel@1 " \
  		"${loadaddr}:ramdisk@1 ${loadaddr}:${fdtfile};\0" \
  
@@ -1233,7 +1233,9 @@ index d13fc94785..13a460ba95 100644
 +					"echo loading ${dtb_overlay} ...;" \
 +					"load ${devtype} ${bootpart} ${rdaddr} ${dtb_overlay};" \
 +					"fdt addr ${fdtaddr};" \
++					"fdt resize;" \
 +					"fdt apply ${rdaddr};" \
++					"fdt resize;" \
 +				"else " \
 +					"echo unable to find [${devtype} ${bootpart} ${dtb_overlay}]...;" \
 +				"fi; " \
