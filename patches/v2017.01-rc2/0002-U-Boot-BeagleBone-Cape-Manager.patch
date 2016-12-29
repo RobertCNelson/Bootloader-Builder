@@ -263,7 +263,7 @@ index a2e774779b..dc64cb9af4 100644
 +			"if test -n ${uboot_overlay_addr2}; then " \
 +				"echo debug: [uboot_overlay_addr2=${uboot_overlay_addr2}] ... ;" \
 +				"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr2}; then " \
-+					"echo loading ${uboot_overlay_addr0} ...;" \
++					"echo loading ${uboot_overlay_addr2} ...;" \
 +					"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr2};" \
 +					"fdt addr ${fdtaddr};" \
 +					"fdt resize;" \
