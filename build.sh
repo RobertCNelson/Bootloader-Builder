@@ -534,23 +534,28 @@ build_u_boot () {
 		#r2: am335x_evm: arm: am33xx: Initialize EMIF REG_PR_OLD_COUNT for BBB and am335x-evm
 		#r3: am335x_evm: dtb_overlay=file.dtbo
 		#r4: am335x_evm: dtb_overlay=file.dtbo (call fdt resize)
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: am335x_evm: cape manager...
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
 		am335x_evm)
 			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			;;
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
 			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		at91sam9x5ek_mmc)
@@ -645,15 +650,19 @@ build_u_boot () {
 		am335x_evm)
 			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			;;
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
 			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		at91sam9x5ek_mmc)
