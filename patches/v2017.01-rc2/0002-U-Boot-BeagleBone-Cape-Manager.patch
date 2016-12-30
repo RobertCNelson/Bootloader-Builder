@@ -1,6 +1,6 @@
-From aadc2e90853841e306aee3362e6af97159a8b3c2 Mon Sep 17 00:00:00 2001
+From b2aacc132ac9f35ad8b5fa24ac8d564908c030bc Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 29 Dec 2016 15:17:42 -0600
+Date: Fri, 30 Dec 2016 11:24:44 -0600
 Subject: [PATCH 2/2] U-Boot: BeagleBone Cape Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,9 +9,9 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/board.c                   | 99 +++++++++++++++++++++++++++++++
  board/ti/am335x/board.h                   | 17 ++++++
  board/ti/am335x/mux.c                     | 15 +++++
- include/configs/ti_armv7_common.h         | 52 ++++++++++++++++
+ include/configs/ti_armv7_common.h         | 73 +++++++++++++++++++++++
  include/configs/ti_armv7_omap.h           |  3 +
- 6 files changed, 187 insertions(+)
+ 6 files changed, 208 insertions(+)
 
 diff --git a/arch/arm/mach-omap2/am33xx/clock_am33xx.c b/arch/arm/mach-omap2/am33xx/clock_am33xx.c
 index 7b841b2d55..119ca3d62c 100644
@@ -26,7 +26,7 @@ index 7b841b2d55..119ca3d62c 100644
  		&cmper->spi0clkctrl,
  		&cmrtc->rtcclkctrl,
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index b385de0447..64c4437091 100644
+index b385de0447..4a98510aec 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -72,9 +72,104 @@ void do_board_detect(void)
@@ -94,7 +94,7 @@ index b385de0447..64c4437091 100644
 +
 +				strncat(cape_overlay, "-", 1);
 +				strncat(cape_overlay, cape_header->version, 4);
-+				strncat(cape_overlay, ".dtbo", 14);
++				strncat(cape_overlay, ".dtbo", 5);
 +
 +				puts("BeagleBone: cape eeprom: i2c_probe: 0x");
 +				write_hex(addr);
@@ -227,68 +227,89 @@ index 6d65e99a1a..2ae077fb14 100644
  		configure_module_pin_mux(mmc0_pin_mux);
  		configure_module_pin_mux(gpio0_18_pin_mux);
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index a2e774779b..dc64cb9af4 100644
+index 4b6cbb9e89..f6c668060a 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -341,6 +341,58 @@
+@@ -347,6 +347,79 @@
  					"fi;" \
  				"fi;" \
  			"fi; " \
-+			"if test -n ${uboot_overlay_addr0}; then " \
-+				"echo debug: [uboot_overlay_addr0=${uboot_overlay_addr0}] ... ;" \
-+				"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr0}; then " \
-+					"echo loading ${uboot_overlay_addr0} ...;" \
-+					"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr0};" \
-+					"fdt addr ${fdtaddr};" \
-+					"fdt resize;" \
-+					"fdt apply ${rdaddr};" \
-+					"fdt resize;" \
-+				"else " \
-+					"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr0}]...;" \
-+				"fi; " \
++			"if test -n ${enable_uboot_overlays}; then " \
++				"if test -n ${uboot_overlay_addr0}; then " \
++					"echo debug: [uboot_overlay_addr0=${uboot_overlay_addr0}] ... ;" \
++					"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr0}; then " \
++						"echo loading ${uboot_overlay_addr0} ...;" \
++						"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr0};" \
++						"fdt addr ${fdtaddr};" \
++						"fdt resize;" \
++						"fdt apply ${rdaddr};" \
++						"fdt resize;" \
++						"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
++					"else " \
++						"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr0}]...;" \
++					"fi; " \
++				"fi;" \
++				"if test -n ${uboot_overlay_addr1}; then " \
++					"echo debug: [uboot_overlay_addr1=${uboot_overlay_addr1}] ... ;" \
++					"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr1}; then " \
++						"echo loading ${uboot_overlay_addr1} ...;" \
++						"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr1};" \
++						"fdt addr ${fdtaddr};" \
++						"fdt resize;" \
++						"fdt apply ${rdaddr};" \
++						"fdt resize;" \
++						"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
++					"else " \
++						"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr1}]...;" \
++					"fi; " \
++				"fi;" \
++				"if test -n ${uboot_overlay_addr2}; then " \
++					"echo debug: [uboot_overlay_addr2=${uboot_overlay_addr2}] ... ;" \
++					"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr2}; then " \
++						"echo loading ${uboot_overlay_addr2} ...;" \
++						"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr2};" \
++						"fdt addr ${fdtaddr};" \
++						"fdt resize;" \
++						"fdt apply ${rdaddr};" \
++						"fdt resize;" \
++						"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
++					"else " \
++						"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr2}]...;" \
++					"fi; " \
++				"fi;" \
++				"if test -n ${uboot_overlay_addr3}; then " \
++					"echo debug: [uboot_overlay_addr3=${uboot_overlay_addr3}] ... ;" \
++					"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr3}; then " \
++						"echo loading ${uboot_overlay_addr3} ...;" \
++						"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr3};" \
++						"fdt addr ${fdtaddr};" \
++						"fdt resize;" \
++						"fdt apply ${rdaddr};" \
++						"fdt resize;" \
++						"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
++					"else " \
++						"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr3}]...;" \
++					"fi; " \
++				"fi;" \
++				"if test -n ${dtb_overlay}; then " \
++					"echo debug: [dtb_overlay=${dtb_overlay}] ... ;" \
++					"if test -e ${devtype} ${bootpart} ${dtb_overlay}; then " \
++						"echo loading ${dtb_overlay} ...;" \
++						"load ${devtype} ${bootpart} ${rdaddr} ${dtb_overlay};" \
++						"fdt addr ${fdtaddr};" \
++						"fdt resize;" \
++						"fdt apply ${rdaddr};" \
++						"fdt resize;" \
++					"else " \
++						"echo unable to find [${devtype} ${bootpart} ${dtb_overlay}]...;" \
++					"fi; " \
++				"fi;" \
++			"else " \
++				"echo add [enable_uboot_overlays=1] to /boot/uEnv.txt to enable...;" \
 +			"fi;" \
-+			"if test -n ${uboot_overlay_addr1}; then " \
-+				"echo debug: [uboot_overlay_addr1=${uboot_overlay_addr1}] ... ;" \
-+				"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr1}; then " \
-+					"echo loading ${uboot_overlay_addr1} ...;" \
-+					"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr1};" \
-+					"fdt addr ${fdtaddr};" \
-+					"fdt resize;" \
-+					"fdt apply ${rdaddr};" \
-+					"fdt resize;" \
-+				"else " \
-+					"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr1}]...;" \
-+				"fi; " \
-+			"fi;" \
-+			"if test -n ${uboot_overlay_addr2}; then " \
-+				"echo debug: [uboot_overlay_addr2=${uboot_overlay_addr2}] ... ;" \
-+				"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr2}; then " \
-+					"echo loading ${uboot_overlay_addr2} ...;" \
-+					"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr2};" \
-+					"fdt addr ${fdtaddr};" \
-+					"fdt resize;" \
-+					"fdt apply ${rdaddr};" \
-+					"fdt resize;" \
-+				"else " \
-+					"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr2}]...;" \
-+				"fi; " \
-+			"fi;" \
-+			"if test -n ${uboot_overlay_addr3}; then " \
-+				"echo debug: [uboot_overlay_addr3=${uboot_overlay_addr3}] ... ;" \
-+				"if test -e ${devtype} ${bootpart} ${uboot_overlay_addr3}; then " \
-+					"echo loading ${uboot_overlay_addr3} ...;" \
-+					"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr3};" \
-+					"fdt addr ${fdtaddr};" \
-+					"fdt resize;" \
-+					"fdt apply ${rdaddr};" \
-+					"fdt resize;" \
-+				"else " \
-+					"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr3}]...;" \
-+				"fi; " \
-+			"fi;" \
- 			"if test -n ${dtb_overlay}; then " \
- 				"echo debug: [dtb_overlay=${dtb_overlay}] ... ;" \
- 				"if test -e ${devtype} ${bootpart} ${dtb_overlay}; then " \
+ 			"setenv rdfile initrd.img-${uname_r}; " \
+ 			"if test -e ${devtype} ${bootpart} ${bootdir}/${rdfile}; then " \
+ 				"echo loading ${bootdir}/${rdfile} ...; "\
 diff --git a/include/configs/ti_armv7_omap.h b/include/configs/ti_armv7_omap.h
 index 6d9d4b2d97..9c9e2266fc 100644
 --- a/include/configs/ti_armv7_omap.h

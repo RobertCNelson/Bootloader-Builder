@@ -535,8 +535,9 @@ build_u_boot () {
 		#r3: am335x_evm: dtb_overlay=file.dtbo
 		#r4: am335x_evm: dtb_overlay=file.dtbo (call fdt resize)
 		#r5: am335x_evm: cape manager...
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: enable_uboot_overlays=1 & bone_capemgr.uboot_capemgr_enabled=1
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
