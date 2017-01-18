@@ -241,9 +241,9 @@ index 4b6cbb9e89..f6c668060a 100644
 +						"echo loading ${uboot_overlay_addr0} ...;" \
 +						"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr0};" \
 +						"fdt addr ${fdtaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"fdt apply ${rdaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
 +					"else " \
 +						"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr0}]...;" \
@@ -255,9 +255,9 @@ index 4b6cbb9e89..f6c668060a 100644
 +						"echo loading ${uboot_overlay_addr1} ...;" \
 +						"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr1};" \
 +						"fdt addr ${fdtaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"fdt apply ${rdaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
 +					"else " \
 +						"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr1}]...;" \
@@ -269,9 +269,9 @@ index 4b6cbb9e89..f6c668060a 100644
 +						"echo loading ${uboot_overlay_addr2} ...;" \
 +						"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr2};" \
 +						"fdt addr ${fdtaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"fdt apply ${rdaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
 +					"else " \
 +						"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr2}]...;" \
@@ -283,9 +283,9 @@ index 4b6cbb9e89..f6c668060a 100644
 +						"echo loading ${uboot_overlay_addr3} ...;" \
 +						"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay_addr3};" \
 +						"fdt addr ${fdtaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"fdt apply ${rdaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
 +					"else " \
 +						"echo unable to find [${devtype} ${bootpart} ${uboot_overlay_addr3}]...;" \
@@ -297,9 +297,9 @@ index 4b6cbb9e89..f6c668060a 100644
 +						"echo loading ${dtb_overlay} ...;" \
 +						"load ${devtype} ${bootpart} ${rdaddr} ${dtb_overlay};" \
 +						"fdt addr ${fdtaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +						"fdt apply ${rdaddr};" \
-+						"fdt resize;" \
++						"fdt resize 0x60000;" \
 +					"else " \
 +						"echo unable to find [${devtype} ${bootpart} ${dtb_overlay}]...;" \
 +					"fi; " \
