@@ -1,0 +1,44 @@
+From 082b1414e80ffa94569613705eac319488324516 Mon Sep 17 00:00:00 2001
+From: Stefan Agner <stefan.agner@toradex.com>
+Date: Tue, 20 Dec 2016 15:58:45 +0100
+Subject: [PATCH 2/2] cmd: fdt: Print error message when fdt application fails
+
+There are lots of reason why a FDT application might fail, the
+error code might give an indication. Let the error code translate
+in a error string so users can try to understand what went wrong.
+
+Signed-off-by: Stefan Agner <stefan.agner@toradex.com>
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-by: Simon Glass <sjg@chromium.org>
+---
+ cmd/fdt.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/cmd/fdt.c b/cmd/fdt.c
+index 8bd345afa8..6883e754ed 100644
+--- a/cmd/fdt.c
++++ b/cmd/fdt.c
+@@ -642,6 +642,7 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ 	else if (strncmp(argv[1], "ap", 2) == 0) {
+ 		unsigned long addr;
+ 		struct fdt_header *blob;
++		int ret;
+ 
+ 		if (argc != 3)
+ 			return CMD_RET_USAGE;
+@@ -654,8 +655,11 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ 		if (!fdt_valid(&blob))
+ 			return CMD_RET_FAILURE;
+ 
+-		if (fdt_overlay_apply(working_fdt, blob))
++		ret = fdt_overlay_apply(working_fdt, blob);
++		if (ret) {
++			printf("fdt_overlay_apply(): %s\n", fdt_strerror(ret));
+ 			return CMD_RET_FAILURE;
++		}
+ 	}
+ #endif
+ 	/* resize the fdt */
+-- 
+2.11.0
+

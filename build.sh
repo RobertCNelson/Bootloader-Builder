@@ -424,8 +424,9 @@ build_u_boot () {
 		#r4: am335x_evm: dtb_overlay=file.dtbo (call fdt resize)
 		#r5: am335x_evm: cape manager...
 		#r6: am335x_evm: enable_uboot_overlays=1 & bone_capemgr.uboot_capemgr_enabled=1
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x_evm: fdt fixes...
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -436,6 +437,9 @@ build_u_boot () {
 			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
+			${git} "${p_dir}/0003-libfdt-Correct-fdt-handling-of-overlays-without-fixu.patch"
+			${git} "${p_dir}/0004-cmd-fdt-Print-error-message-when-fdt-application-fai.patch"
+			${git} "${p_dir}/0005-cmd-fdt-Make-fdt-get-value-endian-safe-for-single-ce.patch"
 			;;
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
@@ -446,6 +450,9 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${p_dir}/0003-libfdt-Correct-fdt-handling-of-overlays-without-fixu.patch"
+			${git} "${p_dir}/0004-cmd-fdt-Print-error-message-when-fdt-application-fai.patch"
+			${git} "${p_dir}/0005-cmd-fdt-Make-fdt-get-value-endian-safe-for-single-ce.patch"
 			;;
 		at91sam9x5ek_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""

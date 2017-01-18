@@ -1,0 +1,61 @@
+From 46743c412de57158bde73a904511519d1fdab609 Mon Sep 17 00:00:00 2001
+From: David Gibson <david@gibson.dropbear.id.au>
+Date: Tue, 20 Dec 2016 15:58:44 +0100
+Subject: [PATCH] libfdt: Correct fdt handling of overlays without fixups and
+ base trees without symbols
+
+The fdt_overlay_apply() function purports to support the edge cases where
+an overlay has no fixups to be applied, or a base tree which has no
+symbols (the latter can only work if the former is also true).  However it
+gets it wrong in a couple of small ways:
+
+  * In the no fixups case, it doesn't fail immediately, but will attempt
+    fdt_for_each_property_offset() giving -FDT_ERR_NOTFOUND as the node
+    offset, which will fail.  Instead it should succeed immediately, since
+    there's nothing to do.
+  * In the case of no symbols, it again doesn't fail immediately.  However
+    if there is an actual fixup it will fail with an unexpected error,
+    because -FDT_ERR_NOTFOUND is passed to fdt_getprop() when attempting to
+    look up the symbols.  We should instead return -FDT_ERR_NOTFOUND
+    directly.
+
+Both of these errors lead to the code returning misleading error codes in
+failing cases.
+
+[ DTC commit: 7d8ef6e1db9794f72805a0855f4f7f12fadd03d3 ]
+
+Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+Signed-off-by: Stefan Agner <stefan.agner@toradex.com>
+Acked-by: Simon Glass <sjg@chromium.org>
+---
+ lib/libfdt/fdt_overlay.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/lib/libfdt/fdt_overlay.c b/lib/libfdt/fdt_overlay.c
+index bb41404129..56cb70ed44 100644
+--- a/lib/libfdt/fdt_overlay.c
++++ b/lib/libfdt/fdt_overlay.c
+@@ -359,6 +359,9 @@ static int overlay_fixup_one_phandle(void *fdt, void *fdto,
+ 	int symbol_off, fixup_off;
+ 	int prop_len;
+ 
++	if (symbols_off < 0)
++		return symbols_off;
++
+ 	symbol_path = fdt_getprop(fdt, symbols_off, label,
+ 				  &prop_len);
+ 	if (!symbol_path)
+@@ -492,7 +495,9 @@ static int overlay_fixup_phandles(void *fdt, void *fdto)
+ 
+ 	/* We can have overlays without any fixups */
+ 	fixups_off = fdt_path_offset(fdto, "/__fixups__");
+-	if ((fixups_off < 0 && (fixups_off != -FDT_ERR_NOTFOUND)))
++	if (fixups_off == -FDT_ERR_NOTFOUND)
++		return 0; /* nothing to do */
++	if (fixups_off < 0)
+ 		return fixups_off;
+ 
+ 	/* And base DTs without symbols */
+-- 
+2.11.0
+
