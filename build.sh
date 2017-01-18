@@ -426,8 +426,9 @@ build_u_boot () {
 		#r6: am335x_evm: enable_uboot_overlays=1 & bone_capemgr.uboot_capemgr_enabled=1
 		#r7: am335x_evm: fdt fixes...
 		#r8: am335x_evm: fdt resize 0x60000
-		#r9: (pending)
-		RELEASE_VER="-r8" #bump on every change...
+		#r9: am335x_evm: allow user to adjust buffer size
+		#r10: (pending)
+		RELEASE_VER="-r9" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
