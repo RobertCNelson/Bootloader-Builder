@@ -427,8 +427,9 @@ build_u_boot () {
 		#r7: am335x_evm: fdt fixes...
 		#r8: am335x_evm: fdt resize 0x60000
 		#r9: am335x_evm: allow user to adjust buffer size
-		#r10: (pending)
-		RELEASE_VER="-r9" #bump on every change...
+		#r10: am335x_evm: emmc/video/wireless
+		#r11: (pending)
+		RELEASE_VER="-r10" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
