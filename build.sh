@@ -802,27 +802,44 @@ build_u_boot () {
 	fi
 
 	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
-		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2016.05
-		#r1: initial build
-		#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fafec3f9de634ab3215811059f02cd15878b8d1
-		#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f78d9ed60efd32e589ba43d32b26baab25241686
-		#r4: fix boot: revert http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9aa01b346b76c6f0715ae67cd9790156ca2e00d3
-		#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=fc109e36469a3cf8eca245cd1cece517dde11e8f
-		#r6: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b43cf45fec75961d196da4563bd32c0215d2fd58
-		#r7: reverse r6 config chagne
-		#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=a4560200fc597109328a6454094fa77516434880
-		#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=052f3bfd39e212e43fd141a49331107409e4f993
-		#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e532158a39cf9ac91f1245dc5379bdc90f0f2c92
-		#r11: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=bbfdf926a1ebd5620fa8e3e60b9e747d8de12254
-		#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=03a34ea13b9e91a89ae66fd159ff252999d0ba06
-		#r13: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=34fda502546ed4a678b1ab223a8a2e50b3f16da3
-		#r14: (pending)
-		RELEASE_VER="-r13" #bump on every change...
+		if [ "x${GIT_SHA}" = "xv2016.05" ] ; then
+			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2016.05
+			#r1: initial build
+			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fafec3f9de634ab3215811059f02cd15878b8d1
+			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f78d9ed60efd32e589ba43d32b26baab25241686
+			#r4: fix boot: revert http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9aa01b346b76c6f0715ae67cd9790156ca2e00d3
+			#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=fc109e36469a3cf8eca245cd1cece517dde11e8f
+			#r6: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b43cf45fec75961d196da4563bd32c0215d2fd58
+			#r7: reverse r6 config chagne
+			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=a4560200fc597109328a6454094fa77516434880
+			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=052f3bfd39e212e43fd141a49331107409e4f993
+			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e532158a39cf9ac91f1245dc5379bdc90f0f2c92
+			#r11: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=bbfdf926a1ebd5620fa8e3e60b9e747d8de12254
+			#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=03a34ea13b9e91a89ae66fd159ff252999d0ba06
+			#r13: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=34fda502546ed4a678b1ab223a8a2e50b3f16da3
+			#r14: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=593a89738a59aaf91a24f1ed174ef55b13131fa0
+			#r15: (pending)
+			RELEASE_VER="-r14" #bump on every change...
 
-		p_dir="${DIR}/patches/ti-2016.05"
-		echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
-		#halt_patching_uboot
-		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			p_dir="${DIR}/patches/ti-2016.05"
+			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+			#halt_patching_uboot
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+		fi
+	fi
+
+	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
+		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
+			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
+			#r1: initial build
+			#r2: (pending)
+			RELEASE_VER="-r1" #bump on every change...
+
+			p_dir="${DIR}/patches/ti-2017.01"
+			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+			#halt_patching_uboot
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+		fi
 	fi
 
 	if [ "x${board}" = "xomap5_igep0050" ] ; then
@@ -1244,6 +1261,12 @@ am57xx_evm_ti () {
 	uboot_config="am57xx_evm_nodt_defconfig"
 	gcc_linaro_gnueabihf_5
 	GIT_SHA="v2016.05"
+	build_u_boot
+
+	board="am57xx_evm_ti"
+	uboot_config="am57xx_evm_defconfig"
+	gcc_linaro_gnueabihf_6
+	GIT_SHA="v2017.01"
 	build_u_boot
 }
 
