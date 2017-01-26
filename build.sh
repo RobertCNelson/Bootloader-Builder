@@ -429,8 +429,9 @@ build_u_boot () {
 		#r9: am335x_evm: allow user to adjust buffer size
 		#r10: am335x_evm: emmc/video/wireless
 		#r11: am335x_evm: auto load eMMC/HDMI
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: am335x_evm: blue fixes
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
