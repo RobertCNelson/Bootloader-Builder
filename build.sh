@@ -431,8 +431,9 @@ build_u_boot () {
 		#r11: am335x_evm: auto load eMMC/HDMI
 		#r12: am335x_evm: blue fixes
 		#r13: am335x_evm: add uboot disable options
-		#r14: (pending)
-		RELEASE_VER="-r13" #bump on every change...
+		#r14: am335x_evm: hash capes for virtual detection...
+		#r15: (pending)
+		RELEASE_VER="-r14" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
