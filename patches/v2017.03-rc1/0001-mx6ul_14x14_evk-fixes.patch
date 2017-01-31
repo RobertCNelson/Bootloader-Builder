@@ -1,89 +1,35 @@
-From c65df705e1ce5c3eaef41f251df8efcefc465055 Mon Sep 17 00:00:00 2001
+From 43e5581d1339b9143f1d8ca5d4445379d64942b1 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 31 Jan 2017 10:32:24 -0600
-Subject: [PATCH] mx51evk: uEnv.txt, bootz, n fixes
+Date: Fri, 17 Jun 2016 11:54:48 -0500
+Subject: [PATCH] mx6ul_14x14_evk fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/mx51evk_defconfig |   3 +
- drivers/mmc/fsl_esdhc.c   |   9 +--
- include/configs/mx51evk.h | 143 ++++++++++++++++++++++++++++++++++++++++------
- 3 files changed, 129 insertions(+), 26 deletions(-)
+ include/configs/mx6ul_14x14_evk.h | 134 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 116 insertions(+), 18 deletions(-)
 
-diff --git a/configs/mx51evk_defconfig b/configs/mx51evk_defconfig
-index 9ac4b65f62..50c19c7a10 100644
---- a/configs/mx51evk_defconfig
-+++ b/configs/mx51evk_defconfig
-@@ -16,7 +16,10 @@ CONFIG_CMD_USB=y
- CONFIG_CMD_DHCP=y
- CONFIG_CMD_MII=y
- CONFIG_CMD_PING=y
-+CONFIG_CMD_EXT2=y
-+CONFIG_CMD_EXT4=y
- CONFIG_CMD_FAT=y
-+CONFIG_CMD_FS_GENERIC=y
- CONFIG_USB=y
- CONFIG_USB_STORAGE=y
- # CONFIG_VIDEO_SW_CURSOR is not set
-diff --git a/drivers/mmc/fsl_esdhc.c b/drivers/mmc/fsl_esdhc.c
-index 73473c53a3..018a63a458 100644
---- a/drivers/mmc/fsl_esdhc.c
-+++ b/drivers/mmc/fsl_esdhc.c
-@@ -290,15 +290,8 @@ static int esdhc_setup_data(struct mmc *mmc, struct mmc_data *data)
- 	 * Rounding up to next power of 2
- 	 * => timeout + 13 = log2(mmc->clock/4) + 1
- 	 * => timeout + 13 = fls(mmc->clock/4)
--	 *
--	 * However, the MMC spec "It is strongly recommended for hosts to
--	 * implement more than 500ms timeout value even if the card
--	 * indicates the 250ms maximum busy length."  Even the previous
--	 * value of 300ms is known to be insufficient for some cards.
--	 * So, we use
--	 * => timeout + 13 = fls(mmc->clock/2)
- 	 */
--	timeout = fls(mmc->clock/2);
-+	timeout = fls(mmc->clock/4);
- 	timeout -= 13;
- 
- 	if (timeout > 14)
-diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index db22365e9b..c3efbbf82a 100644
---- a/include/configs/mx51evk.h
-+++ b/include/configs/mx51evk.h
-@@ -67,6 +67,7 @@
- 
- #define CONFIG_GENERIC_MMC
- 
-+#define CONFIG_SUPPORT_RAW_INITRD
- /*
-  * Eth Configs
-  */
-@@ -112,24 +113,75 @@
- #define CONFIG_LOADADDR		0x92000000	/* loadaddr env var */
- 
- #define CONFIG_EXTRA_ENV_SETTINGS \
-+	"initrd_high=0xffffffff\0" \
-+	"fdt_high=0xffffffff\0" \
- 	"script=boot.scr\0" \
- 	"image=zImage\0" \
- 	"fdt_file=imx51-babbage.dtb\0" \
--	"fdt_addr=0x91000000\0" \
-+	"fdt_addr=0x91ff0000\0" \
+diff --git a/include/configs/mx6ul_14x14_evk.h b/include/configs/mx6ul_14x14_evk.h
+index b2ba773..f27d9a4 100644
+--- a/include/configs/mx6ul_14x14_evk.h
++++ b/include/configs/mx6ul_14x14_evk.h
+@@ -72,22 +72,66 @@
+ 	"initrd_high=0xffffffff\0" \
+ 	"fdt_file=undefined\0" \
+ 	"fdt_addr=0x83000000\0" \
++	"rdaddr=0x83080000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
-+	"loadaddr=0x90010000\0" \
-+	"rdaddr=0x92000000\0" \
-+	"console=ttymxc0,115200n8\0" \
 +	"optargs=\0" \
 +	"cmdline=\0" \
- 	"mmcdev=0\0" \
- 	"mmcpart=1\0" \
--	"mmcroot=/dev/mmcblk0p2 rootwait rw\0" \
--	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
--		"root=${mmcroot}\0" \
-+	"mmcroot=/dev/mmcblk0p2 ro\0" \
+ 	"videomode=video=ctfb:x:480,y:272,depth:24,pclk:108695,le:8,ri:4,up:2,lo:4,hs:41,vs:10,sync:0,vmode:0\0" \
+ 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
+ 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
+-	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
++	"mmcroot=" CONFIG_MMCROOT " rootwait ro\0" \
 +	"mmcrootfstype=ext4 rootwait\0" \
-+	"mmcargs=setenv bootargs console=${console} " \
+ 	"mmcautodetect=yes\0" \
+ 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+-		"root=${mmcroot}\0" \
 +		"${optargs} " \
 +		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype} " \
@@ -96,9 +42,6 @@ index db22365e9b..c3efbbf82a 100644
 -	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
-+	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt\0" \
-+	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
-+		"env import -t ${loadaddr} ${filesize}\0" \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
 +	"loadfdt=echo loading ${fdtdir}/${fdt_file} ...;  load mmc ${bootpart} ${fdt_addr} ${fdtdir}/${fdt_file}\0" \
@@ -142,11 +85,10 @@ index db22365e9b..c3efbbf82a 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -168,19 +220,74 @@
- 			"fi; " \
+@@ -126,6 +170,70 @@
  		"else " \
  			"bootz; " \
-+		"fi;\0" \
+ 		"fi;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
 +		"setenv bootfile vmlinuz-${uname_r}; " \
@@ -210,23 +152,31 @@ index db22365e9b..c3efbbf82a 100644
 +				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
- 		"fi;\0"
++		"fi;\0" \
+ 		"findfdt="\
+ 			"if test $fdt_file = undefined; then " \
+ 				"if test $board_name = EVK && test $board_rev = 9X9; then " \
+@@ -137,18 +245,8 @@
+ 			"fi;\0" \
  
  #define CONFIG_BOOTCOMMAND \
--	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"if run loadbootscript; then " \
--			"run bootscript; " \
--		"else " \
--			"if run loadimage; then " \
--				"run mmcboot; " \
--			"else run netboot; " \
--			"fi; " \
--		"fi; " \
--	"else run netboot; fi"
-+	"run mmcboot;"
+-	   "run findfdt;" \
+-	   "mmc dev ${mmcdev};" \
+-	   "mmc dev ${mmcdev}; if mmc rescan; then " \
+-		   "if run loadbootscript; then " \
+-			   "run bootscript; " \
+-		   "else " \
+-			   "if run loadimage; then " \
+-				   "run mmcboot; " \
+-			   "else run netboot; " \
+-			   "fi; " \
+-		   "fi; " \
+-	   "else run netboot; fi"
++	   "run findfdt; " \
++	   "run mmcboot; "
  
- #define CONFIG_ARP_TIMEOUT	200UL
- 
+ /* Miscellaneous configurable options */
+ #define CONFIG_SYS_MEMTEST_START	0x80000000
 -- 
-2.11.0
+2.8.1
 

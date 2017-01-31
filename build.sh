@@ -542,7 +542,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2017.01+
+	#v2017.03
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
@@ -1399,7 +1399,7 @@ sama5d2_xplained () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
 
@@ -1407,7 +1407,7 @@ sama5d3xek () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
 }
 
@@ -1423,7 +1423,7 @@ sama5d4ek () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 	board="sama5d4ek_mmc" ; build_uboot_gnueabihf
 }
 
@@ -1431,7 +1431,7 @@ sama5d4_xplained () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
 
