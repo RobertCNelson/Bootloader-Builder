@@ -1415,7 +1415,7 @@ sama5d3_xplained () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
 
