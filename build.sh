@@ -550,8 +550,9 @@ build_u_boot () {
 		#r3: am335x_evm: silicon patches
 		#r4: am335x_evm: disable hdmi audio
 		#r5: am335x_evm: cape universal
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: cape universal 00A0...
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
