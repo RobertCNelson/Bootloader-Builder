@@ -838,8 +838,9 @@ build_u_boot () {
 		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
 			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
 			#r1: initial build
-			#r2: (pending)
-			RELEASE_VER="-r1" #bump on every change...
+			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=acfdcab5ce406c8cfb607bd0731b7a6d41757679
+			#r3: (pending)
+			RELEASE_VER="-r2" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
