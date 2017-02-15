@@ -1,104 +1,59 @@
-From dd95bed0f0b0e8f2a38d29142fddd4bb394c90cf Mon Sep 17 00:00:00 2001
+From 657b7928d41f3dc51d1deaa410c88d600ec40fae Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 15 Feb 2017 16:29:39 -0600
-Subject: [PATCH] mx51evk: uEnv.txt, bootz, n fixes
+Date: Fri, 17 Jun 2016 10:40:43 -0500
+Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/mx51evk_defconfig |   3 +
- drivers/mmc/fsl_esdhc.c   |   9 +--
- include/configs/mx51evk.h | 143 ++++++++++++++++++++++++++++++++++++++++------
- 3 files changed, 129 insertions(+), 26 deletions(-)
+ include/configs/udoo.h | 133 ++++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 116 insertions(+), 17 deletions(-)
 
-diff --git a/configs/mx51evk_defconfig b/configs/mx51evk_defconfig
-index 9ac4b65f62..50c19c7a10 100644
---- a/configs/mx51evk_defconfig
-+++ b/configs/mx51evk_defconfig
-@@ -16,7 +16,10 @@ CONFIG_CMD_USB=y
- CONFIG_CMD_DHCP=y
- CONFIG_CMD_MII=y
- CONFIG_CMD_PING=y
-+CONFIG_CMD_EXT2=y
-+CONFIG_CMD_EXT4=y
- CONFIG_CMD_FAT=y
-+CONFIG_CMD_FS_GENERIC=y
- CONFIG_USB=y
- CONFIG_USB_STORAGE=y
- # CONFIG_VIDEO_SW_CURSOR is not set
-diff --git a/drivers/mmc/fsl_esdhc.c b/drivers/mmc/fsl_esdhc.c
-index adeb5df6da..77c9b2a04e 100644
---- a/drivers/mmc/fsl_esdhc.c
-+++ b/drivers/mmc/fsl_esdhc.c
-@@ -290,15 +290,8 @@ static int esdhc_setup_data(struct mmc *mmc, struct mmc_data *data)
- 	 * Rounding up to next power of 2
- 	 * => timeout + 13 = log2(mmc->clock/4) + 1
- 	 * => timeout + 13 = fls(mmc->clock/4)
--	 *
--	 * However, the MMC spec "It is strongly recommended for hosts to
--	 * implement more than 500ms timeout value even if the card
--	 * indicates the 250ms maximum busy length."  Even the previous
--	 * value of 300ms is known to be insufficient for some cards.
--	 * So, we use
--	 * => timeout + 13 = fls(mmc->clock/2)
- 	 */
--	timeout = fls(mmc->clock/2);
-+	timeout = fls(mmc->clock/4);
- 	timeout -= 13;
- 
- 	if (timeout > 14)
-diff --git a/include/configs/mx51evk.h b/include/configs/mx51evk.h
-index 292fa86162..51456fcfc3 100644
---- a/include/configs/mx51evk.h
-+++ b/include/configs/mx51evk.h
-@@ -65,6 +65,7 @@
- #define CONFIG_SYS_FSL_ESDHC_ADDR	MMC_SDHC1_BASE_ADDR
- #define CONFIG_SYS_FSL_ESDHC_NUM	2
- 
-+#define CONFIG_SUPPORT_RAW_INITRD
- /*
-  * Eth Configs
-  */
-@@ -110,24 +111,75 @@
- #define CONFIG_LOADADDR		0x92000000	/* loadaddr env var */
- 
+diff --git a/include/configs/udoo.h b/include/configs/udoo.h
+index fba78d0..df1c579 100644
+--- a/include/configs/udoo.h
++++ b/include/configs/udoo.h
+@@ -65,17 +65,21 @@
  #define CONFIG_EXTRA_ENV_SETTINGS \
-+	"initrd_high=0xffffffff\0" \
-+	"fdt_high=0xffffffff\0" \
  	"script=boot.scr\0" \
  	"image=zImage\0" \
- 	"fdt_file=imx51-babbage.dtb\0" \
--	"fdt_addr=0x91000000\0" \
-+	"fdt_addr=0x91ff0000\0" \
+-	"console=ttymxc1\0" \
++	"console=ttymxc1,115200\0" \
+ 	"splashpos=m,m\0" \
+ 	"fdt_high=0xffffffff\0" \
+ 	"initrd_high=0xffffffff\0" \
+ 	"fdt_file=undefined\0" \
+ 	"fdt_addr=0x18000000\0" \
++	"rdaddr=0x12A00000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
-+	"loadaddr=0x90010000\0" \
-+	"rdaddr=0x92000000\0" \
-+	"console=ttymxc0,115200n8\0" \
 +	"optargs=\0" \
 +	"cmdline=\0" \
  	"mmcdev=0\0" \
  	"mmcpart=1\0" \
 -	"mmcroot=/dev/mmcblk0p2 rootwait rw\0" \
--	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
--		"root=${mmcroot}\0" \
 +	"mmcroot=/dev/mmcblk0p2 ro\0" \
 +	"mmcrootfstype=ext4 rootwait\0" \
+ 	"update_sd_firmware_filename=u-boot.imx\0" \
+ 	"update_sd_firmware=" \
+ 		"if test ${ip_dyn} = yes; then " \
+@@ -90,15 +94,55 @@
+ 				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
+ 			"fi; "	\
+ 		"fi\0" \
+-	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+-		"root=${mmcroot}\0" \
 +	"mmcargs=setenv bootargs console=${console} " \
 +		"${optargs} " \
 +		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
  	"loadbootscript=" \
--		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
-+		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
--	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+-	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+-	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
-+	"loadbootenv=load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt\0" \
-+	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
-+		"env import -t ${loadaddr} ${filesize}\0" \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
 +	"loadfdt=echo loading ${fdtdir}/${fdt_file} ...;  load mmc ${bootpart} ${fdt_addr} ${fdtdir}/${fdt_file}\0" \
@@ -142,11 +97,10 @@ index 292fa86162..51456fcfc3 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -166,19 +218,74 @@
- 			"fi; " \
+@@ -137,6 +181,70 @@
  		"else " \
  			"bootz; " \
-+		"fi;\0" \
+ 		"fi;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
 +		"setenv bootfile vmlinuz-${uname_r}; " \
@@ -210,23 +164,28 @@ index 292fa86162..51456fcfc3 100644
 +				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
- 		"fi;\0"
++		"fi;\0" \
+ 		"findfdt=" \
+ 			"if test $board_rev = MX6Q ; then " \
+ 				"setenv fdt_file imx6q-udoo.dtb; fi; " \
+@@ -147,16 +255,7 @@
  
  #define CONFIG_BOOTCOMMAND \
--	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"if run loadbootscript; then " \
--			"run bootscript; " \
--		"else " \
--			"if run loadimage; then " \
--				"run mmcboot; " \
--			"else run netboot; " \
--			"fi; " \
--		"fi; " \
--	"else run netboot; fi"
-+	"run mmcboot;"
+ 	   "run findfdt; " \
+-	   "mmc dev ${mmcdev}; if mmc rescan; then " \
+-		   "if run loadbootscript; then " \
+-			   "run bootscript; " \
+-		   "else " \
+-			   "if run loadimage; then " \
+-				   "run mmcboot; " \
+-			   "else run netboot; " \
+-			   "fi; " \
+-		   "fi; " \
+-	   "else run netboot; fi"
++	   "run mmcboot; "
  
- #define CONFIG_ARP_TIMEOUT	200UL
- 
+ /* Print Buffer Size */
+ #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
 -- 
-2.11.0
+2.8.1
 

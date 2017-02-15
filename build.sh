@@ -562,19 +562,15 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
-			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
-			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			;;
 		am335x_boneblack)
-			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
-			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
@@ -669,7 +665,6 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
-			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
@@ -677,11 +672,9 @@ build_u_boot () {
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			;;
 		am335x_boneblack)
-			echo "patch -p1 < \"${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
-			${git} "${p_dir}/0001-Adding-MSCC-PHY-VSC8530-VSC8531-VSC8540-VSC8541.patch"
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
@@ -1487,8 +1480,8 @@ wandboard () {
 
 #exit
 
-artik5
-artik10
+###artik5
+###artik10
 
 am335x_evm
 am335x_boneblack_flasher
@@ -1496,15 +1489,15 @@ am43xx_evm
 am57xx_evm
 am57xx_evm_ti
 at91sam9x5ek
-#ls1021atwr
-#mx23_olinuxino
+###ls1021atwr
+###mx23_olinuxino
 mx51evk
 mx53loco
 mx6ul_14x14_evk
 mx6qsabresd
 omap3_beagle
 omap4_panda
-omap5_igep0050
+###omap5_igep0050
 omap5_uevm
 sama5d2_xplained
 sama5d3xek
@@ -1513,7 +1506,7 @@ sama5d4ek
 sama5d4_xplained
 socfpga_de0_nano_soc
 udoo
-#vf610twr
+###vf610twr
 wandboard
 
 #devices with no patches...
@@ -1524,12 +1517,10 @@ A20_OLinuXino_MICRO
 A33_OLinuXino
 Bananapi
 Bananapro
-#cm_fx6
 Cubieboard4
 Cubietruck_plus
 firefly_rk3288
 orangepi_pc
-rpi_2
 Sinovoip_BPI_M2
 Sinovoip_BPI_M3
 
