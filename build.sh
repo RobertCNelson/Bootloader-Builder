@@ -141,17 +141,17 @@ gcc_arm_embedded_5 () {
 
 gcc_arm_embedded_6 () {
 		#
-		#https://releases.linaro.org/components/toolchain/binaries/6.2-2016.11/arm-eabi/gcc-linaro-6.2.1-2016.11-x86_64_arm-eabi.tar.xz
+		#https://releases.linaro.org/components/toolchain/binaries/6.3-2017.02/arm-eabi/gcc-linaro-6.3.1-2017.02-x86_64_arm-eabi.tar.xz
 		#
-		#site="https://snapshots.linaro.org"
 
-		gcc_version="6.2"
-		release="16.11"
+		gcc_version="6.3"
+		gcc_minor=".1"
+		release="17.02"
 		target="arm-eabi"
 
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
-		filename="gcc-linaro-${gcc_version}.1-20${release}-x86_64_arm-eabi.tar.xz"
-		directory="gcc-linaro-${gcc_version}.1-20${release}-x86_64_arm-eabi"
+		filename="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}.tar.xz"
+		directory="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}"
 
 		datestamp="${gcc_version}-20${release}-${target}"
 
@@ -162,7 +162,7 @@ gcc_arm_embedded_6 () {
 
 gcc_linaro_gnueabihf_4_9 () {
 		#
-		#https://releases.linaro.org/components/toolchain/binaries/4.9-2016.02/arm-linux-gnueabihf/gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabihf.tar.xz
+		#https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-linux-gnueabihf/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf.tar.xz
 		#
 
 		gcc_version="4.9"
@@ -183,7 +183,7 @@ gcc_linaro_gnueabihf_4_9 () {
 
 gcc_linaro_gnueabihf_5 () {
 		#
-		#https://releases.linaro.org/components/toolchain/binaries/5.3-2016.02/arm-linux-gnueabihf/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf.tar.xz
+		#https://releases.linaro.org/components/toolchain/binaries/5.4-2017.01/arm-linux-gnueabihf/gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf.tar.xz
 		#
 
 		gcc_version="5.4"
@@ -204,13 +204,12 @@ gcc_linaro_gnueabihf_5 () {
 
 gcc_linaro_gnueabihf_6 () {
 		#
-		#https://releases.linaro.org/components/toolchain/binaries/6.2-2016.11/arm-linux-gnueabihf/gcc-linaro-6.2.1-2016.11-x86_64_arm-linux-gnueabihf.tar.xz
+		#https://releases.linaro.org/components/toolchain/binaries/6.3-2017.02/arm-linux-gnueabihf/gcc-linaro-6.3.1-2017.02-x86_64_arm-linux-gnueabihf.tar.xz
 		#
-		#site="https://snapshots.linaro.org"
 
-		gcc_version="6.2"
+		gcc_version="6.3"
 		gcc_minor=".1"
-		release="16.11"
+		release="17.02"
 		target="arm-linux-gnueabihf"
 
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
