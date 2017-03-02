@@ -555,8 +555,9 @@ build_u_boot () {
 		#r4: am335x_evm: disable hdmi audio
 		#r5: am335x_evm: cape universal
 		#r6: am335x_evm: cape universal 00A0...
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x_evm: enable for bbb
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
