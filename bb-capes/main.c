@@ -15,6 +15,11 @@ int main (void)
 	cape_overlay_hash = hash_string(cape_overlay);
 	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
 
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-CAM-VVDN-00A0.dtbo", 40 + 1);
+	strlcpy(original_hash, "0x24f51cf", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
 	strlcpy(cape_overlay, "/lib/firmware/NL-AB-BBCL-00B0.dtbo", 40 + 1);
 	strlcpy(original_hash, "0x4b0c13f", 9 + 1);
 	cape_overlay_hash = hash_string(cape_overlay);

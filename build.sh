@@ -556,8 +556,9 @@ build_u_boot () {
 		#r5: am335x_evm: cape universal
 		#r6: am335x_evm: cape universal 00A0...
 		#r7: am335x_evm: enable for bbb
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: am335x_evm: /lib/firmware/BB-BONE-CAM-VVDN-00A0.dtbo
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
