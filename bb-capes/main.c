@@ -35,6 +35,56 @@ int main (void)
 	cape_overlay_hash = hash_string(cape_overlay);
 	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
 
+	//fe131
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D5R-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe1313f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	//fe132
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D4R-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe1323f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D4N-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe1327f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D4C-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe132cf", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	//fe133
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D7N-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe1337f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D7C-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe133cf", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	//fe135
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D5N-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe1357f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D5C-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe135cf", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	//fe137
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-4D7R-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe1373f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
 	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-LCD4-01-00A1.dtbo", 40 + 1);
 	strlcpy(original_hash, "0xfe93c1f", 9 + 1);
 	cape_overlay_hash = hash_string(cape_overlay);
