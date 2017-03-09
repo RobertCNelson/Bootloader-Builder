@@ -558,8 +558,9 @@ build_u_boot () {
 		#r7: am335x_evm: enable for bbb
 		#r8: am335x_evm: /lib/firmware/BB-BONE-CAM-VVDN-00A0.dtbo
 		#r9: am335x_evm: add 4d systemd displays
-		#r10: (pending)
-		RELEASE_VER="-r9" #bump on every change...
+		#r10: am335x_evm: pocketbone
+		#r11: (pending)
+		RELEASE_VER="-r10" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -843,8 +844,9 @@ build_u_boot () {
 			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=acfdcab5ce406c8cfb607bd0731b7a6d41757679
 			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=438d0991e5a913323f6e38293a3d103d82284d9d
 			#r4: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3ca4ec25c8a6a3586601e8926bac4f5861ccaa2d
-			#r5: (pending)
-			RELEASE_VER="-r4" #bump on every change...
+			#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8369eec4f36f4eb8c30e769b3b0ad35d5148f636
+			#r6: (pending)
+			RELEASE_VER="-r5" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
