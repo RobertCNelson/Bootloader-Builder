@@ -1,43 +1,43 @@
-From f3c9966cd0cbc1f5fd955195861c86ff4b437f1d Mon Sep 17 00:00:00 2001
+From 26a4eda96fde667e5fae3303df1d6b7da16be476 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 14 Mar 2017 09:46:34 -0500
-Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
+Date: Tue, 31 Jan 2017 11:17:46 -0600
+Subject: [PATCH] ti_omap5_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/omap4_panda_defconfig     |   5 +-
+ configs/omap5_uevm_defconfig      |   5 +-
  include/configs/ti_armv7_common.h | 157 +++++++++++++++++++++++++++++++++++++-
- include/configs/ti_omap4_common.h |   8 +-
- 3 files changed, 163 insertions(+), 7 deletions(-)
+ include/configs/ti_omap5_common.h |  21 ++---
+ 3 files changed, 165 insertions(+), 18 deletions(-)
 
-diff --git a/configs/omap4_panda_defconfig b/configs/omap4_panda_defconfig
-index 91e8caf541..965560c728 100644
---- a/configs/omap4_panda_defconfig
-+++ b/configs/omap4_panda_defconfig
-@@ -10,6 +10,10 @@ CONFIG_SPL=y
- # CONFIG_SPL_EXT_SUPPORT is not set
- # CONFIG_SPL_I2C_SUPPORT is not set
+diff --git a/configs/omap5_uevm_defconfig b/configs/omap5_uevm_defconfig
+index c257fa1030..4fcd51e9b0 100644
+--- a/configs/omap5_uevm_defconfig
++++ b/configs/omap5_uevm_defconfig
+@@ -8,6 +8,10 @@ CONFIG_VERSION_VARIABLE=y
+ CONFIG_SPL=y
  CONFIG_SPL_OS_BOOT=y
+ CONFIG_HUSH_PARSER=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
 +CONFIG_AUTOBOOT_DELAY_STR="d"
 +CONFIG_AUTOBOOT_STOP_STR=" "
+ CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
  CONFIG_CMD_ASKENV=y
- # CONFIG_CMD_FLASH is not set
-@@ -20,7 +24,6 @@ CONFIG_CMD_USB=y
- CONFIG_CMD_GPIO=y
- # CONFIG_CMD_SETEXPR is not set
- # CONFIG_CMD_NFS is not set
+@@ -26,7 +30,6 @@ CONFIG_CMD_MII=y
+ CONFIG_CMD_PING=y
+ CONFIG_CMD_EXT2=y
+ CONFIG_CMD_EXT4=y
 -CONFIG_CMD_EXT4_WRITE=y
- CONFIG_MMC_OMAP_HS=y
- CONFIG_SYS_NS16550=y
- CONFIG_USB=y
+ CONFIG_CMD_FAT=y
+ CONFIG_CMD_FS_GENERIC=y
+ CONFIG_ISO_PARTITION=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index fbe8859eca..797d7674af 100644
+index c6a642fe63..9c8cb5a91b 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -54,11 +54,33 @@
+@@ -60,11 +60,33 @@
  #define DEFAULT_MMC_TI_ARGS \
  	"mmcdev=0\0" \
  	"mmcrootfstype=ext4 rootwait\0" \
@@ -74,7 +74,7 @@ index fbe8859eca..797d7674af 100644
  	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
  	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
  		"source ${loadaddr}\0" \
-@@ -67,7 +89,8 @@
+@@ -73,7 +95,8 @@
  		"env import -t ${loadaddr} ${filesize}\0" \
  	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
  	"loadimage=load ${devtype} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
@@ -84,7 +84,7 @@ index fbe8859eca..797d7674af 100644
  	"envboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
  			"echo SD/MMC found on device ${mmcdev};" \
-@@ -120,6 +143,132 @@
+@@ -126,6 +149,132 @@
  	"args_fit=setenv bootargs console=${console} \0" \
  	"loadfit=run args_fit; bootm ${loadaddr}#${fdtfile};\0" \
  
@@ -118,7 +118,7 @@ index fbe8859eca..797d7674af 100644
 +					"fi;" \
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
-+						"setenv oldroot /dev/mmcblk${mmcdev}p${mmcpart};" \
++						"setenv oldroot /dev/mmcblk${mmcblk}p${mmcpart};" \
 +						"echo Running uname_boot ...;" \
 +						"run uname_boot;" \
 +					"fi;" \
@@ -217,40 +217,44 @@ index fbe8859eca..797d7674af 100644
  /*
   * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
   * we say (for simplicity) that we have 1 bank, always, even when
-diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 8e0f9eb964..587216b92a 100644
---- a/include/configs/ti_omap4_common.h
-+++ b/include/configs/ti_omap4_common.h
-@@ -42,6 +42,7 @@
-  * the timings to use or use pre-determined timings (based on using the
-  * dynamic method.  Default to the static timing infomation.
-  */
-+/* Comment out next line for ES Rev B3 or A4 with new "M" Micron memory... */
- #define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
- #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
- #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
-@@ -79,9 +80,10 @@
-  */
- #define BOOTENV_DEV_LEGACY_MMC(devtypeu, devtypel, instance) \
- 	"bootcmd_" #devtypel #instance "=" \
-+	"setenv devtype mmc; " \
- 	"setenv mmcdev " #instance"; "\
--	"setenv bootpart " #instance":2 ; "\
--	"run mmcboot\0"
-+	"setenv bootpart " #instance":1 ; "\
-+	"run boot\0"
- 
- #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
- 	#devtypel #instance " "
-@@ -135,6 +137,8 @@
- 			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
+diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
+index 37d65653a5..f5aedfb228 100644
+--- a/include/configs/ti_omap5_common.h
++++ b/include/configs/ti_omap5_common.h
+@@ -101,25 +101,20 @@
+ 			"setenv fdtfile am571x-idk.dtb; fi;" \
  		"if test $fdtfile = undefined; then " \
  			"echo WARNING: Could not determine device tree to use; fi; \0" \
 +	EEWIKI_BOOT \
 +	EEWIKI_UNAME_BOOT \
- 	BOOTENV
+ 	DFUARGS \
+ 	NETARGS \
  
- /*
+ #define CONFIG_BOOTCOMMAND \
+-	"if test ${dofastboot} -eq 1; then " \
+-		"echo Boot fastboot requested, resetting dofastboot ...;" \
+-		"setenv dofastboot 0; saveenv;" \
+-		"echo Booting into fastboot ...; " \
+-		"fastboot " __stringify(CONFIG_FASTBOOT_USB_DEV) "; " \
+-	"fi;" \
+-	"if test ${boot_fit} -eq 1; then "	\
+-		"run update_to_fit;"	\
+-	"fi;"	\
+ 	"run findfdt; " \
+-	"run envboot; " \
+-	"run mmcboot;" \
++	"setenv devtype mmc; " \
++	"setenv mmcblk 1; " \
++	"setenv mmcdev 0; " \
++	"run boot;" \
++	"setenv mmcblk 0; " \
+ 	"setenv mmcdev 1; " \
+-	"setenv bootpart 1:2; " \
+-	"setenv mmcroot /dev/mmcblk0p2 rw; " \
++	"run boot;" \
+ 	"run mmcboot;" \
+ 	""
+ 
 -- 
 2.11.0
 
