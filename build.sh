@@ -1398,46 +1398,42 @@ orangepi_pc () {
 	board="orangepi_pc" ; always_stable_n_testing
 }
 
-rpi_2 () {
-	board="rpi_2" ; always_stable_n_testing
-}
-
 sama5d2_xplained () {
 	cleanup
-#	build_old="true"
-	build_stable="true"
+	build_old="true"
+#	build_stable="true"
 #	build_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3xek () {
 	cleanup
-#	build_old="true"
-	build_stable="true"
+	build_old="true"
+#	build_stable="true"
 #	build_testing="true"
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d3_xplained () {
 	cleanup
-#	build_old="true"
-	build_stable="true"
+	build_old="true"
+#	build_stable="true"
 #	build_testing="true"
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4ek () {
 	cleanup
-#	build_old="true"
-	build_stable="true"
+	build_old="true"
+#	build_stable="true"
 #	build_testing="true"
 	board="sama5d4ek_mmc" ; build_uboot_gnueabihf
 }
 
 sama5d4_xplained () {
 	cleanup
-#	build_old="true"
-	build_stable="true"
+	build_old="true"
+#	build_stable="true"
 #	build_testing="true"
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
