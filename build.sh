@@ -1490,7 +1490,7 @@ am57xx_evm
 am57xx_evm_ti
 at91sam9x5ek
 ###ls1021atwr
-###mx23_olinuxino
+mx23_olinuxino
 mx51evk
 mx53loco
 mx6ul_14x14_evk
