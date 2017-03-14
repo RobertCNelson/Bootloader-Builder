@@ -1322,10 +1322,11 @@ ls1021atwr () {
 
 mx23_olinuxino () {
 	cleanup
-#	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="mx23_olinuxino" ; build_uboot_eabi
+	board="mx23_olinuxino"
+	uboot_config="mx23_olinuxino_defconfig"
+	gcc_arm_embedded_4_9
+	GIT_SHA="v2017.03"
+	build_u_boot
 }
 
 mx51evk () {
