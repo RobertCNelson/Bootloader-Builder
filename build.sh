@@ -1309,7 +1309,11 @@ Cubietruck_plus () {
 }
 
 firefly_rk3288 () {
-	board="firefly-rk3288" ; always_testing
+	cleanup
+#	build_old="true"
+	build_stable="true"
+	build_testing="true"
+	board="firefly-rk3288" ; build_uboot_gnueabihf
 }
 
 ls1021atwr () {
