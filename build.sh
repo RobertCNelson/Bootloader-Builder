@@ -453,8 +453,9 @@ build_u_boot () {
 		#r8: am335x_evm: /lib/firmware/BB-BONE-CAM-VVDN-00A0.dtbo
 		#r9: am335x_evm: add 4d systemd displays
 		#r10: am335x_evm: pocketbone
-		#r11: (pending)
-		RELEASE_VER="-r10" #bump on every change...
+		#r11: am335x_evm: allow 4 more overlays to be defined
+		#r12: (pending)
+		RELEASE_VER="-r11" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
