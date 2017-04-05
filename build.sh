@@ -560,8 +560,9 @@ build_u_boot () {
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: bbg cape-universal
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: fix older bbg cape-universal
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
