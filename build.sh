@@ -454,8 +454,9 @@ build_u_boot () {
 		#r9: am335x_evm: add 4d systemd displays
 		#r10: am335x_evm: pocketbone
 		#r11: am335x_evm: allow 4 more overlays to be defined
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: am335x_evm: virtual_adc
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
