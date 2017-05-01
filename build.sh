@@ -564,8 +564,9 @@ build_u_boot () {
 		#r4: am335x_evm: bbgw cape-universal
 		#r5: am335x_evm: add BB-BONE-NH7C-01-A0.dtbo
 		#r6: am335x_evm: add am33xx pru loading option
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x_evm: dont load overlays with blue
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
