@@ -1,0 +1,84 @@
+From 5a08411cff2e76134b1541ea7c3a39684fa8bb25 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 3 May 2017 12:28:16 -0500
+Subject: [PATCH 2/2] NFM: am57xx assume blank eeprom is x15 revb1
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/am57xx/board.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/board/ti/am57xx/board.c b/board/ti/am57xx/board.c
+index af6b7f6303..06e0c761e6 100644
+--- a/board/ti/am57xx/board.c
++++ b/board/ti/am57xx/board.c
+@@ -37,6 +37,7 @@
+ #define board_is_x15()		board_ti_is("BBRDX15_")
+ #define board_is_x15_revb1()	(board_ti_is("BBRDX15_") && \
+ 				 (strncmp("B.10", board_ti_get_rev(), 3) <= 0))
++#define board_is_blank_x15_revb1()	1
+ #define board_is_am572x_evm()	board_ti_is("AM572PM_")
+ #define board_is_am572x_evm_reva3()	\
+ 				(board_ti_is("AM572PM_") && \
+@@ -399,7 +400,7 @@ void do_board_detect(void)
+ 	if (rc)
+ 		printf("ti_i2c_eeprom_init failed %d\n", rc);
+ 
+-	if (board_is_x15())
++	if (board_is_x15() || board_is_blank_x15_revb1())
+ 		bname = "BeagleBoard X15";
+ 	else if (board_is_am572x_evm())
+ 		bname = "AM572x EVM";
+@@ -423,8 +424,8 @@ static void setup_board_eeprom_env(void)
+ 	if (rc)
+ 		goto invalid_eeprom;
+ 
+-	if (board_is_x15()) {
+-		if (board_is_x15_revb1())
++	if (board_is_x15() || board_is_blank_x15_revb1()) {
++		if (board_is_x15_revb1() || board_is_blank_x15_revb1())
+ 			name = "beagle_x15_revb1";
+ 		else
+ 			name = "beagle_x15";
+@@ -443,6 +444,7 @@ static void setup_board_eeprom_env(void)
+ 	}
+ 
+ invalid_eeprom:
++	name = "beagle_x15_revb1";
+ 	set_board_info_env(name);
+ }
+ 
+@@ -493,7 +495,7 @@ void am57x_idk_lcd_detect(void)
+ 	uint8_t buf = 0;
+ 
+ 	/* Only valid for IDKs */
+-	if (board_is_x15() || board_is_am572x_evm())
++	if (board_is_x15() || board_is_am572x_evm() || board_is_blank_x15_revb1())
+ 		return;
+ 
+ 	/* Only AM571x IDK has gpio control detect.. so check that */
+@@ -629,8 +631,8 @@ void recalibrate_iodelay(void)
+ 	do_set_mux32((*ctrl)->control_padconf_core_base, pconf, pconf_sz);
+ 
+ 	/* Now do the weird minor deltas that should be safe */
+-	if (board_is_x15() || board_is_am572x_evm()) {
+-		if (board_is_x15_revb1() || board_is_am572x_evm_reva3()) {
++	if (board_is_x15() || board_is_am572x_evm() || board_is_blank_x15_revb1()) {
++		if (board_is_x15_revb1() || board_is_am572x_evm_reva3() || board_is_blank_x15_revb1()) {
+ 			pconf = core_padconf_array_delta_x15_sr2_0;
+ 			pconf_sz = ARRAY_SIZE(core_padconf_array_delta_x15_sr2_0);
+ 		} else {
+@@ -977,8 +979,8 @@ int ft_board_setup(void *blob, bd_t *bd)
+ #ifdef CONFIG_SPL_LOAD_FIT
+ int board_fit_config_name_match(const char *name)
+ {
+-	if (board_is_x15()) {
+-		if (board_is_x15_revb1()) {
++	if (board_is_x15() || board_is_blank_x15_revb1()) {
++		if (board_is_x15_revb1() || board_is_blank_x15_revb1()) {
+ 			if (!strcmp(name, "am57xx-beagle-x15-revb1"))
+ 				return 0;
+ 		} else if (!strcmp(name, "am57xx-beagle-x15")) {
+-- 
+2.11.0
+
