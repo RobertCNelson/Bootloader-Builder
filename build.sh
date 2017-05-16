@@ -852,8 +852,9 @@ build_u_boot () {
 			#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8369eec4f36f4eb8c30e769b3b0ad35d5148f636
 			#r6: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=2127a54b2aca99cc0290ff79cba0fe9e2adfd794
 			#r7: blank eeprom
-			#r8: (pending)
-			RELEASE_VER="-r7" #bump on every change...
+			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fd60700db4562ffac00317a9a44761b8c3255f1
+			#r9: (pending)
+			RELEASE_VER="-r8" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -872,14 +873,37 @@ build_u_boot () {
 			#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8369eec4f36f4eb8c30e769b3b0ad35d5148f636
 			#r6: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=2127a54b2aca99cc0290ff79cba0fe9e2adfd794
 			#r7: blank eeprom
-			#r8: (pending)
-			RELEASE_VER="-r7" #bump on every change...
+			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fd60700db4562ffac00317a9a44761b8c3255f1
+			#r9: (pending)
+			RELEASE_VER="-r8" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			#halt_patching_uboot
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0002-NFM-am57xx-assume-blank-eeprom-is-x15-revb1.patch"
+			${git} "${p_dir}/0002-NFM-board_is_x15_revb1_blank.patch"
+		fi
+	fi
+
+	if [ "x${board}" = "xam571x_sndrblock_flasher" ] ; then
+		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
+			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
+			#r1: initial build
+			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=acfdcab5ce406c8cfb607bd0731b7a6d41757679
+			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=438d0991e5a913323f6e38293a3d103d82284d9d
+			#r4: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3ca4ec25c8a6a3586601e8926bac4f5861ccaa2d
+			#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8369eec4f36f4eb8c30e769b3b0ad35d5148f636
+			#r6: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=2127a54b2aca99cc0290ff79cba0fe9e2adfd794
+			#r7: blank eeprom
+			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fd60700db4562ffac00317a9a44761b8c3255f1
+			#r9: (pending)
+			RELEASE_VER="-r8" #bump on every change...
+
+			p_dir="${DIR}/patches/ti-2017.01"
+			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+			#halt_patching_uboot
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-NFM-board_is_am571x_blank.patch"
 		fi
 	fi
 
@@ -1321,6 +1345,16 @@ am57xx_evm_ti_flasher () {
 	build_u_boot
 }
 
+am571x_sndrblock_flasher () {
+	cleanup
+
+	board="am571x_sndrblock_flasher"
+	uboot_config="am57xx_evm_defconfig"
+	gcc_linaro_gnueabihf_6
+	GIT_SHA="v2017.01"
+	build_u_boot
+}
+
 at91sam9x5ek () {
 	cleanup
 #	build_old="true"
@@ -1535,6 +1569,7 @@ am43xx_evm
 am57xx_evm
 am57xx_evm_ti
 am57xx_evm_ti_flasher
+am571x_sndrblock_flasher
 at91sam9x5ek
 ###ls1021atwr
 mx23_olinuxino

@@ -1,0 +1,29 @@
+From 45ab9587c7f73f2b3b7f8a9d431c59abf3389eab Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 16 May 2017 10:23:11 -0500
+Subject: [PATCH 2/2] NFM: board_is_am571x_blank
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/am57xx/board.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/board/ti/am57xx/board.c b/board/ti/am57xx/board.c
+index 50d05ea747..485a5ffa30 100644
+--- a/board/ti/am57xx/board.c
++++ b/board/ti/am57xx/board.c
+@@ -51,9 +51,9 @@
+ #define board_is_x15_revb1_blank()	board_ti_is("XM57BLNK")
+ 
+ //Blank Flasher
+-//#define board_is_am571x_blank()		1
++#define board_is_am571x_blank()		1
+ //Normal
+-#define board_is_am571x_blank()		board_ti_is("XM57BLNK")
++//#define board_is_am571x_blank()		board_ti_is("XM57BLNK")
+ 
+ #ifdef CONFIG_DRIVER_TI_CPSW
+ #include <cpsw.h>
+-- 
+2.11.0
+
