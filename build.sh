@@ -565,8 +565,9 @@ build_u_boot () {
 		#r5: am335x_evm: add BB-BONE-NH7C-01-A0.dtbo
 		#r6: am335x_evm: add am33xx pru loading option
 		#r7: am335x_evm: dont load overlays with blue
+		#r8: fix: mx6qsabresd_defconfig
 		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1435,7 +1436,7 @@ mx6ul_14x14_evk () {
 mx6qsabresd () {
 	cleanup
 #	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 	build_testing="true"
 	board="mx6qsabresd" ; build_uboot_gnueabihf
 }
