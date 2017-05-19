@@ -566,8 +566,9 @@ build_u_boot () {
 		#r6: am335x_evm: add am33xx pru loading option
 		#r7: am335x_evm: dont load overlays with blue
 		#r8: fix: mx6qsabresd_defconfig
-		#r8: (pending)
-		RELEASE_VER="-r8" #bump on every change...
+		#r9: fix: wandboard
+		#r10: (pending)
+		RELEASE_VER="-r9" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1554,7 +1555,7 @@ vf610twr () {
 wandboard () {
 	cleanup
 #	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 	build_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
