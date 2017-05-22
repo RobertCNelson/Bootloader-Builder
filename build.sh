@@ -567,8 +567,9 @@ build_u_boot () {
 		#r7: am335x_evm: dont load overlays with blue
 		#r8: fix: mx6qsabresd_defconfig
 		#r9: fix: wandboard
-		#r10: (pending)
-		RELEASE_VER="-r9" #bump on every change...
+		#r10: am335x_evm: fix sancloud bbe
+		#r11: (pending)
+		RELEASE_VER="-r10" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
