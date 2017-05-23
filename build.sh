@@ -1550,7 +1550,7 @@ am57xx_evm_ti
 am57xx_evm_ti_flasher
 am571x_sndrblock_flasher
 at91sam9x5ek
-###ls1021atwr
+ls1021atwr
 mx23_olinuxino
 mx51evk
 mx53loco
