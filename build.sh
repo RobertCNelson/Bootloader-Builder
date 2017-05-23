@@ -1460,7 +1460,7 @@ orangepi_pc () {
 sama5d2_xplained () {
 	cleanup
 #	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 	build_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
 }
@@ -1468,7 +1468,7 @@ sama5d2_xplained () {
 sama5d3xek () {
 	cleanup
 #	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 	build_testing="true"
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
 }
@@ -1476,7 +1476,7 @@ sama5d3xek () {
 sama5d3_xplained () {
 	cleanup
 #	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 	build_testing="true"
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
@@ -1492,7 +1492,7 @@ sama5d4ek () {
 sama5d4_xplained () {
 	cleanup
 #	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 	build_testing="true"
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
