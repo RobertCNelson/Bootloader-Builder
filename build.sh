@@ -441,8 +441,9 @@ build_u_boot () {
 		#r8: fix: mx6qsabresd_defconfig
 		#r9: fix: wandboard
 		#r10: am335x_evm: fix sancloud bbe
-		#r11: (pending)
-		RELEASE_VER="-r10" #bump on every change...
+		#r11: lots of patches rebuild...
+		#r12: (pending)
+		RELEASE_VER="-r11" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -486,6 +487,10 @@ build_u_boot () {
 		mx6ul_14x14_evk)
 			echo "patch -p1 < \"${p_dir}/0001-mx6ul_14x14_evk-fixes.patch\""
 			${git} "${p_dir}/0001-mx6ul_14x14_evk-fixes.patch"
+			;;
+		mx6ull_14x14_evk)
+			echo "patch -p1 < \"${p_dir}/0001-mx6ull_14x14_evk-fixes.patch\""
+			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
 			;;
 		mx6qsabresd)
 			echo "patch -p1 < \"${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch\""
