@@ -1,6 +1,6 @@
-From b21867846cbd15720f6ecebb991b0ebf4ad87ff2 Mon Sep 17 00:00:00 2001
+From 2463894be1587330365ef1e036b6600ae7c58ce0 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 1 Jun 2017 10:43:07 -0500
+Date: Thu, 1 Jun 2017 11:36:54 -0500
 Subject: [PATCH 2/2] U-Boot: BeagleBone Cape Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -572,7 +572,7 @@ index 6d65e99a1a..2ae077fb14 100644
  		configure_module_pin_mux(mmc0_pin_mux);
  		configure_module_pin_mux(gpio0_18_pin_mux);
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index c401ed7b99..16bd92b757 100644
+index c401ed7b99..e161a9d2b9 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -272,6 +272,19 @@
@@ -708,7 +708,7 @@ index c401ed7b99..16bd92b757 100644
 +				"fi;" \
 +				"if test -n ${overlay_i2c_script}; then " \
 +					"echo running: [${overlay_i2c_script}] ... ;" \
-+					"run ${overlay_i2c_script};" \
++					"run overlay_i2c_script;" \
 +				"fi;" \
 +				"if test -n ${uboot_try_cape_universal}; then " \
 +					"if test -n ${enable_uboot_cape_universal}; then " \
