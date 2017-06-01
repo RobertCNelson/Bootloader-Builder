@@ -486,8 +486,9 @@ build_u_boot () {
 		#r9: fix: wandboard
 		#r10: am335x_evm: fix sancloud bbe
 		#r11: lots of patches rebuild...
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: am335x_evm: add DLPDLCR2000
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
