@@ -155,7 +155,29 @@ gcc_arm_embedded_6 () {
 
 		datestamp="${gcc_version}-20${release}-${target}"
 
-		binary="bin/arm-eabi-"
+		binary="bin/${target}-"
+
+	dl_gcc_generic
+}
+
+gcc_arm_embedded_7 () {
+		#
+		#https://snapshots.linaro.org/components/toolchain/binaries/7.1-2017.05-rc1/arm-eabi/gcc-linaro-7.1.1-2017.05-rc1-x86_64_arm-eabi.tar.xz
+		#
+		site="https://snapshots.linaro.org"
+
+		gcc_version="7.1"
+		gcc_minor=".1"
+		release="17.05-rc1"
+		target="arm-eabi"
+
+		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
+		filename="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}.tar.xz"
+		directory="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/${target}-"
 
 	dl_gcc_generic
 }
@@ -210,6 +232,28 @@ gcc_linaro_gnueabihf_6 () {
 		gcc_version="6.3"
 		gcc_minor=".1"
 		release="17.05"
+		target="arm-linux-gnueabihf"
+
+		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
+		filename="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}.tar.xz"
+		directory="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/${target}-"
+
+	dl_gcc_generic
+}
+
+gcc_linaro_gnueabihf_7 () {
+		#
+		#https://snapshots.linaro.org/components/toolchain/binaries/7.1-2017.05-rc1/arm-linux-gnueabihf/gcc-linaro-7.1.1-2017.05-rc1-x86_64_arm-linux-gnueabihf.tar.xz
+		#
+		site="https://snapshots.linaro.org"
+
+		gcc_version="7.1"
+		gcc_minor=".1"
+		release="17.05-rc1"
 		target="arm-linux-gnueabihf"
 
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
