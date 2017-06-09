@@ -1626,7 +1626,7 @@ mx51evk
 mx53loco
 mx6ul_14x14_evk
 mx6ull_14x14_evk
-mx6qsabresd
+###mx6qsabresd
 omap3_beagle
 omap4_panda
 ###omap5_igep0050
