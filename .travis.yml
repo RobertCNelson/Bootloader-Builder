@@ -11,7 +11,7 @@ addons:
     - ccache
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y device-tree-compiler
+  - sudo apt-get install -y device-tree-compiler swig libpython-dev
 script:
   - git config --global user.email "rcnee@example.com"
   - git config --global user.name "rcnee"
