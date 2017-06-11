@@ -1,20 +1,20 @@
-From 84bf5f4da1f7318061ce44692ee9da4dd8b18b1a Mon Sep 17 00:00:00 2001
+From 8e05665771e6e147d345004c0dc1bcdecc006c89 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 9 Jun 2017 14:40:34 -0500
+Date: Sun, 11 Jun 2017 12:38:20 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/am335x/board.c        |  6 +++---
- board/ti/am335x/board.h        |  5 +++++
+ board/ti/am335x/board.h        |  7 ++++++-
  board/ti/am335x/mux.c          |  7 +++++--
  board/ti/common/board_detect.c | 12 ++++++++++++
  include/configs/am335x_evm.h   |  2 ++
- 5 files changed, 27 insertions(+), 5 deletions(-)
+ 5 files changed, 28 insertions(+), 6 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 97b6516945..7c75c62a5b 100644
+index 7e506b1b0d..8f33d7f520 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -626,7 +626,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
@@ -26,7 +26,7 @@ index 97b6516945..7c75c62a5b 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -901,7 +901,7 @@ void sdram_init(void)
+@@ -904,7 +904,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -35,7 +35,7 @@ index 97b6516945..7c75c62a5b 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1249,7 +1249,7 @@ int board_eth_init(bd_t *bis)
+@@ -1252,7 +1252,7 @@ int board_eth_init(bd_t *bis)
  
  #ifdef CONFIG_DRIVER_TI_CPSW
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
@@ -45,21 +45,23 @@ index 97b6516945..7c75c62a5b 100644
  		writel(MII_MODE_ENABLE, &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 4962e610f4..b6c02ad8c8 100644
+index a943f345e9..e851704b4e 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -75,6 +75,11 @@ static inline int board_is_m10a(void)
- 	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "M10A", 4);
- }
+@@ -77,7 +77,12 @@ static inline int board_is_m10a(void)
  
+ static inline int board_is_beaglebonex(void)
+ {
+-	return board_is_bone() || board_is_bone_lt() || board_is_bbg1();
++	return board_is_bone() || board_is_bone_lt() || board_is_bbg1() || board_is_blank_bone_lt();
++}
++
 +static inline int board_is_blank_bone_lt(void)
 +{
 +	return board_ti_is("A335BLNK");
-+}
-+
+ }
+ 
  static inline int board_is_evm_sk(void)
- {
- 	return board_ti_is("A335X_SK");
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
 index 2ae077fb14..240dd60398 100644
 --- a/board/ti/am335x/mux.c
