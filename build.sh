@@ -1481,7 +1481,7 @@ mx6ull_14x14_evk () {
 	board="mx6ull_14x14_evk" ; build_uboot_gnueabihf
 }
 
-mx6qsabresd () {
+mx6sabresd () {
 	cleanup
 #	build_old="true"
 #	build_stable="true"
