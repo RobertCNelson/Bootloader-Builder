@@ -646,9 +646,9 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-mx6ull_14x14_evk-fixes.patch\""
 			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
 			;;
-		mx6qsabresd)
-			echo "patch -p1 < \"${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		mx6sabresd_spl)
+			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd_spl-fixes.patch\""
+			${git} "${p_dir}/0001-mx6sabresd_spl-fixes.patch"
 			;;
 		omap3_beagle)
 			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
@@ -753,9 +753,9 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-mx6ull_14x14_evk-fixes.patch\""
 			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
 			;;
-		mx6qsabresd)
-			echo "patch -p1 < \"${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-mx6qsabre_common-uEnv.txt-bootz-n-fixes.patch"
+		mx6sabresd_spl)
+			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd_spl-fixes.patch\""
+			${git} "${p_dir}/0001-mx6sabresd_spl-fixes.patch"
 			;;
 		omap3_beagle)
 			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
@@ -1484,9 +1484,9 @@ mx6ull_14x14_evk () {
 mx6qsabresd () {
 	cleanup
 #	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 	build_testing="true"
-	board="mx6qsabresd" ; build_uboot_gnueabihf
+	board="mx6sabresd_spl" ; build_uboot_gnueabihf
 }
 
 omap3_beagle () {
@@ -1626,7 +1626,7 @@ mx51evk
 mx53loco
 mx6ul_14x14_evk
 mx6ull_14x14_evk
-###mx6qsabresd
+mx6sabresd
 omap3_beagle
 omap4_panda
 ###omap5_igep0050
