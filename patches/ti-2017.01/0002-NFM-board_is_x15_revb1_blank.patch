@@ -1,6 +1,6 @@
-From a69084be092573bd5ed5b2b221599abd1ebafecf Mon Sep 17 00:00:00 2001
+From 068104be978bf88a3f29acb154113950d760e2d5 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 16 May 2017 10:20:50 -0500
+Date: Wed, 21 Jun 2017 09:25:09 -0500
 Subject: [PATCH 2/2] NFM: board_is_x15_revb1_blank
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,10 +9,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/board/ti/am57xx/board.c b/board/ti/am57xx/board.c
-index 50d05ea747..16e83fe3de 100644
+index ab27468e5c..b92facd346 100644
 --- a/board/ti/am57xx/board.c
 +++ b/board/ti/am57xx/board.c
-@@ -46,9 +46,9 @@
+@@ -48,9 +48,9 @@
  #define board_is_am571x_sndrblock()	board_ti_is("AM571SBA")
  
  //Blank Flasher
@@ -23,7 +23,7 @@ index 50d05ea747..16e83fe3de 100644
 +//#define board_is_x15_revb1_blank()	board_ti_is("XM57BLNK")
  
  //Blank Flasher
- //#define board_is_am571x_blank()		1
+ //#define board_is_x15_revc_blank()	1
 -- 
 2.11.0
 

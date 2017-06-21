@@ -1,0 +1,29 @@
+From cd2e0c7129777a41ab5b6eb19179ea0e25779424 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 21 Jun 2017 09:23:21 -0500
+Subject: [PATCH 2/2] NFM board_is_x15_revc_blank
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ board/ti/am57xx/board.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/board/ti/am57xx/board.c b/board/ti/am57xx/board.c
+index ab27468e5c..632765588f 100644
+--- a/board/ti/am57xx/board.c
++++ b/board/ti/am57xx/board.c
+@@ -53,9 +53,9 @@
+ #define board_is_x15_revb1_blank()	board_ti_is("XM57BLNK")
+ 
+ //Blank Flasher
+-//#define board_is_x15_revc_blank()	1
++#define board_is_x15_revc_blank()	1
+ //Normal
+-#define board_is_x15_revc_blank()	board_ti_is("XM57BLNK")
++//#define board_is_x15_revc_blank()	board_ti_is("XM57BLNK")
+ 
+ //Blank Flasher
+ //#define board_is_am571x_blank()		1
+-- 
+2.11.0
+
