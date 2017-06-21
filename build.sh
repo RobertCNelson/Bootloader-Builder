@@ -894,8 +894,9 @@ build_u_boot () {
 			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fd60700db4562ffac00317a9a44761b8c3255f1
 			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=40e76546f34e77cf12454137a3f16322b9610d4c
 			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5861b3bd349184df97ea26a93fc9b06c65e0ff5e
-			#r11: (pending)
-			RELEASE_VER="-r10" #bump on every change...
+			#r11: fix new board
+			#r12: (pending)
+			RELEASE_VER="-r11" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -917,8 +918,9 @@ build_u_boot () {
 			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fd60700db4562ffac00317a9a44761b8c3255f1
 			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=40e76546f34e77cf12454137a3f16322b9610d4c
 			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5861b3bd349184df97ea26a93fc9b06c65e0ff5e
-			#r11: (pending)
-			RELEASE_VER="-r10" #bump on every change...
+			#r11: fix new board
+			#r12: (pending)
+			RELEASE_VER="-r11" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -942,8 +944,9 @@ build_u_boot () {
 			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fd60700db4562ffac00317a9a44761b8c3255f1
 			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=40e76546f34e77cf12454137a3f16322b9610d4c
 			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5861b3bd349184df97ea26a93fc9b06c65e0ff5e
-			#r11: (pending)
-			RELEASE_VER="-r10" #bump on every change...
+			#r11: fix new board
+			#r12: (pending)
+			RELEASE_VER="-r11" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
