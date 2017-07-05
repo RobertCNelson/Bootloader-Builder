@@ -646,9 +646,9 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-mx6ull_14x14_evk-fixes.patch\""
 			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
 			;;
-		mx6sabresd_spl)
-			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd_spl-fixes.patch\""
-			${git} "${p_dir}/0001-mx6sabresd_spl-fixes.patch"
+		mx6sabresd)
+			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd-fixes.patch\""
+			${git} "${p_dir}/0001-mx6sabresd-fixes.patch"
 			;;
 		omap3_beagle)
 			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
@@ -753,9 +753,9 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-mx6ull_14x14_evk-fixes.patch\""
 			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
 			;;
-		mx6sabresd_spl)
-			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd_spl-fixes.patch\""
-			${git} "${p_dir}/0001-mx6sabresd_spl-fixes.patch"
+		mx6sabresd)
+			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd-fixes.patch\""
+			${git} "${p_dir}/0001-mx6sabresd-fixes.patch"
 			;;
 		omap3_beagle)
 			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
@@ -1530,7 +1530,7 @@ mx6sabresd () {
 #	build_old="true"
 #	build_stable="true"
 	build_testing="true"
-	board="mx6sabresd_spl" ; build_uboot_gnueabihf
+	board="mx6sabresd" ; build_uboot_gnueabihf
 }
 
 omap3_beagle () {
