@@ -807,80 +807,6 @@ build_u_boot () {
 		esac
 	fi
 
-	if [ "x${board}" = "xbeagle_x15_ti" ] ; then
-		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2015.07
-		#r1: ARM: DRA7: Remove Unused pinmux definitions
-		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=024c903babcb743b5e8803160101bc3e54d2c46c
-		#r2: ARM: am43xx_evm: Enable EDMA3 support DMA on qspi
-		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8dcdcb22f9d06df1ac411b2fe70c06adcd15237b
-		#r3: load boot from usb/sata/microSD/eMMC
-		#r4: ARM: keystone2: drop unused defines from config file
-		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e22bd9012ff5785bb1a595721c39a63c2ae78896
-		#r5: ti: qspi: set flash quad bit based on quad support flag
-		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=c8123f5004f7563085eaa0f122e45d7575e66ad6
-		#r6: ARM: DRA7: emif: Fix disabling/enabling of refreshes ti-u-boot-2015.07
-		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3ec018bb44bca64873c934be87c182e5fea0290b
-		#r7: ARM: AM33xx: Push all the rtc_only related functions under LOWLEVEL_INIT macro ti
-		#r8: ARM: AM335x: Fix usb ether boot support
-		#r9: ARM: DRA74/beagle_x15: Remove pin input/output config from WAKEUP pins
-		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=d49aa5effa20d0b943c74ced84e67defce6d6d1c
-		#r10: ARM: DRA7: Fix DDR init sequence during warm reset
-		#r11: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=055751e98b7ab9147154a637489c0630af4dc825
-		#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3b05302127445f615f22696ac3d4b45a0207aa7d
-		#r13: fix beagle-x15
-		#r14: fix beagle usb/scsi boot...
-		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=75d995e87f47902b40065982ccbaae7a466d0913
-		#r15: really fix beagle usb/scsi boot...
-		#r16: netinstall fixes
-		#http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=a843d2b1a1efff638e03289e755674509ce2fa16
-		#r17: tristate lcd M0 -> M15
-		#r18: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=aada4952fe4e4e4ca726f2e319e5eb6de08ecccd
-		#r19: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f3171e0a0d41bc79f819a1b85563ef7c643bf59b
-		#r20: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8b4300ee790938671f93df484d3371e3a594d19c
-		#r21: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=90c6ccc4970d0b783e5fcc42377ff5fc2402bb57
-		#r22: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=189c59c9a2f105b62ab2e195deeef18962cc8b67
-		#r23: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=110dfa44a2ea96e353d24ef4d21fa7756dcbba41
-		#r24: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=30d3ba04dd090d5fa9c4103cf620d74c2edd47e2
-		#r25: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5922e09363b1449ba558fd1dfcd527c71119d0ee
-		#r26: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f59368c4aaf7faf3799409f90d156a4f5f68e821
-		#r27: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e2a6f4edd83e2767e15bf3b0ac00d54f237a71e1
-		#r28: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=374be76b829d6c97a4212a3b471c4a8eb9701e88
-		#r29: (pending)
-		RELEASE_VER="-r28" #bump on every change...
-
-		p_dir="${DIR}/patches/v2015.07"
-		echo "$patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
-		#halt_patching_uboot
-		${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-	fi
-
-	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
-		if [ "x${GIT_SHA}" = "xv2016.05" ] ; then
-			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2016.05
-			#r1: initial build
-			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fafec3f9de634ab3215811059f02cd15878b8d1
-			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=f78d9ed60efd32e589ba43d32b26baab25241686
-			#r4: fix boot: revert http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9aa01b346b76c6f0715ae67cd9790156ca2e00d3
-			#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=fc109e36469a3cf8eca245cd1cece517dde11e8f
-			#r6: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b43cf45fec75961d196da4563bd32c0215d2fd58
-			#r7: reverse r6 config chagne
-			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=a4560200fc597109328a6454094fa77516434880
-			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=052f3bfd39e212e43fd141a49331107409e4f993
-			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=e532158a39cf9ac91f1245dc5379bdc90f0f2c92
-			#r11: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=bbfdf926a1ebd5620fa8e3e60b9e747d8de12254
-			#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=03a34ea13b9e91a89ae66fd159ff252999d0ba06
-			#r13: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=34fda502546ed4a678b1ab223a8a2e50b3f16da3
-			#r14: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=593a89738a59aaf91a24f1ed174ef55b13131fa0
-			#r15: (pending)
-			RELEASE_VER="-r14" #bump on every change...
-
-			p_dir="${DIR}/patches/ti-2016.05"
-			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
-			#halt_patching_uboot
-			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-		fi
-	fi
-
 	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
 		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
 			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
@@ -895,8 +821,9 @@ build_u_boot () {
 			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=40e76546f34e77cf12454137a3f16322b9610d4c
 			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5861b3bd349184df97ea26a93fc9b06c65e0ff5e
 			#r11: fix new board
-			#r12: (pending)
-			RELEASE_VER="-r11" #bump on every change...
+			#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b79c87e6f7e2d24f262754845c6fc5f45b71bf15
+			#r13: (pending)
+			RELEASE_VER="-r12" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -919,8 +846,9 @@ build_u_boot () {
 			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=40e76546f34e77cf12454137a3f16322b9610d4c
 			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5861b3bd349184df97ea26a93fc9b06c65e0ff5e
 			#r11: fix new board
-			#r12: (pending)
-			RELEASE_VER="-r11" #bump on every change...
+			#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b79c87e6f7e2d24f262754845c6fc5f45b71bf15
+			#r13: (pending)
+			RELEASE_VER="-r12" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -945,8 +873,9 @@ build_u_boot () {
 			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=40e76546f34e77cf12454137a3f16322b9610d4c
 			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5861b3bd349184df97ea26a93fc9b06c65e0ff5e
 			#r11: fix new board
-			#r12: (pending)
-			RELEASE_VER="-r11" #bump on every change...
+			#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b79c87e6f7e2d24f262754845c6fc5f45b71bf15
+			#r13: (pending)
+			RELEASE_VER="-r12" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -971,8 +900,9 @@ build_u_boot () {
 			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=40e76546f34e77cf12454137a3f16322b9610d4c
 			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5861b3bd349184df97ea26a93fc9b06c65e0ff5e
 			#r11: fix new board
-			#r12: (pending)
-			RELEASE_VER="-r11" #bump on every change...
+			#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b79c87e6f7e2d24f262754845c6fc5f45b71bf15
+			#r13: (pending)
+			RELEASE_VER="-r12" #bump on every change...
 
 			p_dir="${DIR}/patches/ti-2017.01"
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -1391,18 +1321,6 @@ am57xx_evm () {
 
 am57xx_evm_ti () {
 	cleanup
-
-#	board="beagle_x15_ti"
-#	uboot_config="am57xx_evm_config"
-#	gcc_linaro_gnueabihf_4_9
-#	GIT_SHA="v2015.07"
-#	build_u_boot
-
-#	board="am57xx_evm_ti"
-#	uboot_config="am57xx_evm_nodt_defconfig"
-#	gcc_linaro_gnueabihf_5
-#	GIT_SHA="v2016.05"
-#	build_u_boot
 
 	board="am57xx_evm_ti"
 	uboot_config="am57xx_evm_defconfig"
