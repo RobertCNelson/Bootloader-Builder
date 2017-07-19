@@ -481,7 +481,8 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_stable}"
 	if [ "${stable}" ] ; then
 		#r1: initial release
-		#r2: (pending)
+		#r2: wandboard rev d
+		#r3: (pending)
 		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
