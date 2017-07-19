@@ -482,8 +482,9 @@ build_u_boot () {
 	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: wandboard rev d
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: wandboard rev d (seems like a memory problem)
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
