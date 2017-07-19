@@ -483,7 +483,7 @@ build_u_boot () {
 		#r1: initial release
 		#r2: wandboard rev d
 		#r3: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
