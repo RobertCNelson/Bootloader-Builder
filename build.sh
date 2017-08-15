@@ -1395,11 +1395,7 @@ firefly_rk3288 () {
 }
 
 ls1021atwr () {
-	cleanup
-#	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="ls1021atwr_sdcard_qspi" ; build_uboot_gnueabihf
+	board="ls1021atwr_sdcard_qspi" ; always_stable_n_testing
 }
 
 mx23_olinuxino () {
@@ -1582,7 +1578,6 @@ am57xx_evm_ti_flasher
 am57xx_beagle_revc_ti_flasher
 am571x_sndrblock_flasher
 at91sam9x5ek
-ls1021atwr
 mx23_olinuxino
 mx51evk
 mx53loco
@@ -1593,11 +1588,11 @@ omap3_beagle
 omap4_panda
 ###omap5_igep0050
 omap5_uevm
-sama5d2_xplained
-sama5d3xek
-sama5d3_xplained
-sama5d4ek
-sama5d4_xplained
+###sama5d2_xplained
+###sama5d3xek
+###sama5d3_xplained
+###sama5d4ek
+###sama5d4_xplained
 socfpga_de0_nano_soc
 udoo
 ###vf610twr
@@ -1614,6 +1609,7 @@ Bananapro
 Cubieboard4
 Cubietruck_plus
 firefly_rk3288
+ls1021atwr
 orangepi_pc
 Sinovoip_BPI_M2
 Sinovoip_BPI_M3
