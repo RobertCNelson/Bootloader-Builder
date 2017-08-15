@@ -400,9 +400,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		ls1021atwr_sdcard_qspi)
-			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
-			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
@@ -510,9 +507,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		ls1021atwr_sdcard_qspi)
-			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
-			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
@@ -618,9 +612,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		ls1021atwr_sdcard_qspi)
-			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
-			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
@@ -724,9 +715,6 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		ls1021atwr_sdcard_qspi)
-			pfile="0001-ls1021atwr-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
 		mx23_olinuxino)
 			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""

@@ -1,6 +1,6 @@
-From b40b850410a0f32021d0856af22ec86117c7d69f Mon Sep 17 00:00:00 2001
+From 36f164558e134922d4f2d7c32d12e35e62c459a6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Sun, 11 Jun 2017 16:04:08 -0500
+Date: Tue, 15 Aug 2017 16:23:00 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -10,14 +10,14 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/board.h        |  7 ++++++-
  board/ti/am335x/mux.c          |  7 +++++--
  board/ti/common/board_detect.c | 12 ++++++++++++
- include/configs/am335x_evm.h   |  2 ++
- 5 files changed, 28 insertions(+), 6 deletions(-)
+ include/configs/am335x_evm.h   |  9 +++++++++
+ 5 files changed, 35 insertions(+), 6 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 7e506b1b0d..8f33d7f520 100644
+index 08be1cc36d..57dce09cc7 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -626,7 +626,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -627,7 +627,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -26,7 +26,7 @@ index 7e506b1b0d..8f33d7f520 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -904,7 +904,7 @@ void sdram_init(void)
+@@ -905,7 +905,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -35,7 +35,7 @@ index 7e506b1b0d..8f33d7f520 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1252,7 +1252,7 @@ int board_eth_init(bd_t *bis)
+@@ -1253,7 +1253,7 @@ int board_eth_init(bd_t *bis)
  
  #ifdef CONFIG_DRIVER_TI_CPSW
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
@@ -82,10 +82,10 @@ index 2ae077fb14..240dd60398 100644
  	}
  }
 diff --git a/board/ti/common/board_detect.c b/board/ti/common/board_detect.c
-index 6fdcb6172c..5255200565 100644
+index 1da5ace923..c4afe9892b 100644
 --- a/board/ti/common/board_detect.c
 +++ b/board/ti/common/board_detect.c
-@@ -194,6 +194,17 @@ int __maybe_unused ti_i2c_eeprom_am_get(int bus_addr, int dev_addr)
+@@ -218,6 +218,17 @@ int __maybe_unused ti_i2c_eeprom_am_get(int bus_addr, int dev_addr)
  
  	rc = ti_i2c_eeprom_get(bus_addr, dev_addr, TI_EEPROM_HEADER_MAGIC,
  			       sizeof(am_ep), (uint8_t *)&am_ep);
@@ -103,7 +103,7 @@ index 6fdcb6172c..5255200565 100644
  	if (rc)
  		return rc;
  
-@@ -216,6 +227,7 @@ int __maybe_unused ti_i2c_eeprom_am_get(int bus_addr, int dev_addr)
+@@ -240,6 +251,7 @@ int __maybe_unused ti_i2c_eeprom_am_get(int bus_addr, int dev_addr)
  	memcpy(ep->mac_addr, am_ep.mac_addr,
  	       TI_EEPROM_HDR_NO_OF_MAC_ADDR * TI_EEPROM_HDR_ETH_ALEN);
  
@@ -112,18 +112,32 @@ index 6fdcb6172c..5255200565 100644
  }
  
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 05b2902450..4272846514 100644
+index 1179ddeae6..96ec0b2776 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -168,6 +168,8 @@
+@@ -90,6 +90,7 @@
+ 	"if test ${boot_fit} -eq 1; then "	\
+ 		"run update_to_fit;"	\
+ 	"fi;"	\
++	"run eeprom_program; " \
+ 	"run findfdt; " \
+ 	"run init_console; " \
+ 	"run envboot; " \
+@@ -174,6 +175,14 @@
  				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
  			"fi; " \
  		"fi; " \
 +		"if test $board_name = A335BLNK; then " \
++			"if test -e mmc 0:1 /boot/.eeprom.txt; then " \
++				"load mmc 0:1 ${loadaddr} /boot/.eeprom.txt;" \
++				"env import -t ${loadaddr} ${filesize};" \
++				"echo Loaded environment from /boot/.eeprom.txt;" \
++				"run eeprom_program; " \
++			"fi;" \
 +			"setenv fdtfile am335x-boneblack-emmc-overlay.dtb; setenv fdtbase am335x-boneblack-emmc-overlay; fi; " \
  		"if test $board_name = BBBW; then " \
  			"setenv fdtfile am335x-boneblack-wireless.dtb; setenv fdtbase am335x-boneblack-wireless; fi; " \
  		"if test $board_name = BBG1; then " \
 -- 
-2.11.0
+2.14.1
 
