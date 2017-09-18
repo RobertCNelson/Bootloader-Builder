@@ -25,14 +25,29 @@ int main (void)
 	cape_overlay_hash = hash_string(cape_overlay);
 	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
 
+	strlcpy(cape_overlay, "/lib/firmware/bb-justboom-dac-00A0.dtbo", 40 + 1);
+	strlcpy(original_hash, "0x74e7bbf", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
 	strlcpy(cape_overlay, "/lib/firmware/BB-GREEN-HDMI-00A0.dtbo", 40 + 1);
 	strlcpy(original_hash, "0x93b574f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	strlcpy(cape_overlay, "/lib/firmware/bb-justboom-amp-00A0.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xb1b7bbf", 9 + 1);
 	cape_overlay_hash = hash_string(cape_overlay);
 	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
 
 	//d15bb
 	strlcpy(cape_overlay, "/lib/firmware/DLPDLCR2000-00A0.dtbo", 40 + 1);
 	strlcpy(original_hash, "0xd15b80f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
+	strlcpy(cape_overlay, "/lib/firmware/bb-justboom-digi-00A0.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xd4c9eff", 9 + 1);
 	cape_overlay_hash = hash_string(cape_overlay);
 	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
 

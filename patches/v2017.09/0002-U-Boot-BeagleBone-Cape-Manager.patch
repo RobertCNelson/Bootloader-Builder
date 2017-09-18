@@ -1,19 +1,19 @@
-From d2a2f9a81227dbc0eb028f920d17d1a1d8a35be9 Mon Sep 17 00:00:00 2001
+From 5aade1da99995850a7bf272b4cd95006232eba89 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 12 Sep 2017 09:35:27 -0500
+Date: Mon, 18 Sep 2017 14:05:50 -0500
 Subject: [PATCH 2/2] U-Boot: BeagleBone Cape Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  arch/arm/mach-omap2/am33xx/clock_am33xx.c |   1 +
- board/ti/am335x/board.c                   | 385 ++++++++++++++++++++++++++++++
+ board/ti/am335x/board.c                   | 413 ++++++++++++++++++++++++++++++
  board/ti/am335x/board.h                   |  17 ++
  board/ti/am335x/hash-string.h             |  59 +++++
  board/ti/am335x/mux.c                     |  15 ++
- include/configs/ti_armv7_common.h         | 181 ++++++++++++++
+ include/configs/ti_armv7_common.h         | 181 +++++++++++++
  include/configs/ti_armv7_omap.h           |   3 +
  include/environment/ti/mmc.h              |  15 ++
- 8 files changed, 676 insertions(+)
+ 8 files changed, 704 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/arch/arm/mach-omap2/am33xx/clock_am33xx.c b/arch/arm/mach-omap2/am33xx/clock_am33xx.c
@@ -29,7 +29,7 @@ index 1780bbdb6f..a1ee457328 100644
  		&cmper->spi0clkctrl,
  		&cmrtc->rtcclkctrl,
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 4d6802c729..cf10d8f21c 100644
+index 4d6802c729..f7327a1ca2 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -40,7 +40,7 @@ index 4d6802c729..cf10d8f21c 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -76,9 +77,387 @@ void do_board_detect(void)
+@@ -76,9 +77,415 @@ void do_board_detect(void)
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
  		printf("ti_i2c_eeprom_init failed\n");
@@ -118,6 +118,7 @@ index 4d6802c729..cf10d8f21c 100644
 +	char base_dtb=UNK_BASE_DTB;
 +	char virtual_emmc=NOT_POP;
 +	char virtual_video=NOT_POP;
++	char virtual_audio=NOT_POP;
 +	char virtual_wireless=NOT_POP;
 +	char silicon=BBB_GENERIC_SILICON;
 +	char cape_universal=CAPE_UNIVERSAL;
@@ -130,6 +131,7 @@ index 4d6802c729..cf10d8f21c 100644
 +		base_dtb=BBB_BASE_DTB;
 +		virtual_emmc=BBB_EMMC;
 +		virtual_video=BBB_TDA998X_AUDIO;
++		virtual_audio=BBB_TDA998X_AUDIO;
 +		virtual_wireless=NOT_POP;
 +		virtual_adc=BBB_ADC;
 +		silicon=BBB_AM335X_2_SILICON;
@@ -142,6 +144,7 @@ index 4d6802c729..cf10d8f21c 100644
 +			base_dtb=BBBL_BASE_DTB;
 +			virtual_emmc=NOT_POP;
 +			virtual_video=NOT_POP;
++			virtual_audio=NOT_POP;
 +			virtual_wireless=NOT_POP;
 +			virtual_adc=NOT_POP;
 +			silicon=BBB_OSD3358_SILICON;
@@ -158,6 +161,7 @@ index 4d6802c729..cf10d8f21c 100644
 +			/* catches again in board_is_bbg1() */
 +			//puts("Model: SeeedStudio BeagleBone Green:\n");
 +			virtual_video=NOT_POP;
++			virtual_audio=NOT_POP;
 +			silicon=BBB_GENERIC_SILICON;
 +			cape_universal=CAPE_UNIVERSAL_BBG;
 +			name = "BBG1";
@@ -165,6 +169,7 @@ index 4d6802c729..cf10d8f21c 100644
 +		if (!strncmp(board_ti_get_rev(), "GW1", 3)) {
 +			puts("Model: SeeedStudio BeagleBone Green Wireless:\n");
 +			virtual_video=NOT_POP;
++			virtual_audio=NOT_POP;
 +			virtual_wireless=BBGW_WL1835;
 +			silicon=BBB_GENERIC_SILICON;
 +			cape_universal=CAPE_UNIVERSAL_BBGW;
@@ -172,6 +177,7 @@ index 4d6802c729..cf10d8f21c 100644
 +		if (!strncmp(board_ti_get_rev(), "AIA", 3)) {
 +			puts("Model: Arrow BeagleBone Black Industrial:\n");
 +			virtual_video=BBB_ADV7511_AUDIO;
++			virtual_audio=BBB_ADV7511_AUDIO;
 +			silicon=BBB_GENERIC_SILICON;
 +			cape_universal=CAPE_UNIVERSAL;
 +		}
@@ -189,6 +195,7 @@ index 4d6802c729..cf10d8f21c 100644
 +		if (!strncmp(board_ti_get_rev(), "ME0", 3)) {
 +			puts("Model: MENTOREL BeagleBone uSomIQ:\n");
 +			virtual_video=NOT_POP;
++			virtual_audio=NOT_POP;
 +			silicon=BBB_GENERIC_SILICON;
 +			cape_universal=CAPE_UNIVERSAL_BBG;
 +		}
@@ -202,6 +209,7 @@ index 4d6802c729..cf10d8f21c 100644
 +		base_dtb=BB_BASE_DTB;
 +		virtual_emmc=NOT_POP;
 +		virtual_video=NOT_POP;
++		virtual_audio=NOT_POP;
 +		virtual_wireless=NOT_POP;
 +		virtual_adc=BBB_ADC;
 +		silicon=BBB_GENERIC_SILICON;
@@ -214,6 +222,7 @@ index 4d6802c729..cf10d8f21c 100644
 +		base_dtb=BBB_BASE_DTB;
 +		virtual_emmc=BBB_EMMC;
 +		virtual_video=NOT_POP;
++		virtual_audio=NOT_POP;
 +		virtual_wireless=NOT_POP;
 +		virtual_adc=BBB_ADC;
 +		silicon=BBB_GENERIC_SILICON;
@@ -264,12 +273,21 @@ index 4d6802c729..cf10d8f21c 100644
 +					case 0x4b0c13f: /* /lib/firmware/NL-AB-BBCL-00B0.dtbo */
 +						virtual_video=PINS_TAKEN;
 +						break;
++					case 0x74e7bbf: /* /lib/firmware/bb-justboom-dac-00A0.dtbo */
++						virtual_audio=PINS_TAKEN;
++						break;
 +					case 0x93b574f: /* /lib/firmware/BB-GREEN-HDMI-00A0.dtbo */
 +						virtual_video=PINS_TAKEN;
++						break;
++					case 0xb1b7bbf: /* /lib/firmware/bb-justboom-amp-00A0.dtbo */
++						virtual_audio=PINS_TAKEN;
 +						break;
 +					//d15bb
 +					case 0xd15b80f: /* /lib/firmware/DLPDLCR2000-00A0.dtbo */
 +						virtual_video=PINS_TAKEN;
++						break;
++					case 0xd4c9eff: /* /lib/firmware/bb-justboom-digi-00A0.dtbo */
++						virtual_audio=PINS_TAKEN;
 +						break;
 +					case 0xe3f55df: /* /lib/firmware/BB-BONE-NH7C-01-A0.dtbo */
 +						virtual_video=PINS_TAKEN;
@@ -369,16 +387,26 @@ index 4d6802c729..cf10d8f21c 100644
 +
 +	switch(virtual_video) {
 +		case BBB_TDA998X_AUDIO:
-+			env_set("uboot_video", "/lib/firmware/BB-HDMI-TDA998x-00A0.dtbo");
-+			env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
++			if (virtual_audio == PINS_TAKEN) {
++				env_set("uboot_video", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
++				env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
++			} else {
++				env_set("uboot_video", "/lib/firmware/BB-HDMI-TDA998x-00A0.dtbo");
++				env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
++			}
 +			break;
 +		case BBB_TDA998X_NAUDIO:
 +			env_set("uboot_video", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
 +			env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
 +			break;
 +		case BBB_ADV7511_AUDIO:
-+			env_set("uboot_video", "/lib/firmware/BB-HDMI-ADV7511-00A0.dtbo");
-+			env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
++			if (virtual_audio == PINS_TAKEN) {
++				env_set("uboot_video", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
++				env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
++			} else {
++				env_set("uboot_video", "/lib/firmware/BB-HDMI-ADV7511-00A0.dtbo");
++				env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
++			}
 +			break;
 +		case BBB_ADV7511_NAUDIO:
 +			env_set("uboot_video", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
@@ -428,7 +456,7 @@ index 4d6802c729..cf10d8f21c 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -791,6 +1170,12 @@ int board_late_init(void)
+@@ -791,6 +1198,12 @@ int board_late_init(void)
  	}
  #endif
  
@@ -588,10 +616,10 @@ index 6d65e99a1a..2ae077fb14 100644
  		configure_module_pin_mux(mmc0_pin_mux);
  		configure_module_pin_mux(gpio0_18_pin_mux);
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index e0874a64e3..96a39cbda7 100644
+index b9ce4c94e0..d8699a211f 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -338,6 +338,19 @@
+@@ -335,6 +335,19 @@
  			"echo loading ${bootdir}/${bootfile} ...; "\
  			"run loadimage;" \
  			"setenv fdtdir /boot/dtbs/${uname_r}; " \
@@ -611,7 +639,7 @@ index e0874a64e3..96a39cbda7 100644
  			"if test -e ${devtype} ${bootpart} ${fdtdir}/${fdtfile}; then " \
  				"run loadfdt;" \
  			"else " \
-@@ -378,6 +391,174 @@
+@@ -375,6 +388,174 @@
  					"fi;" \
  				"fi;" \
  			"fi; " \

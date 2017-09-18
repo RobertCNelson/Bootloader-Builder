@@ -473,8 +473,9 @@ build_u_boot () {
 	if [ "${stable}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: fix BeagleBone Classic
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: add justboom capes
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
