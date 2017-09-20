@@ -1,6 +1,6 @@
-From 36f164558e134922d4f2d7c32d12e35e62c459a6 Mon Sep 17 00:00:00 2001
+From d482c493d9ea2e3af47bc5e68b06593aad1a4815 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 15 Aug 2017 16:23:00 -0500
+Date: Wed, 20 Sep 2017 14:06:05 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -14,41 +14,41 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  5 files changed, 35 insertions(+), 6 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 08be1cc36d..57dce09cc7 100644
+index 9a6bcadcf0..aeacc3c3d9 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -627,7 +627,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -671,7 +671,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
--	else if (board_is_bone_lt() || board_is_icev2())
-+	else if (board_is_bone_lt() || board_is_icev2() || board_is_blank_bone_lt())
+-	else if (board_is_pb() || board_is_bone_lt() || board_is_icev2())
++	else if (board_is_pb() || board_is_bone_lt() || board_is_icev2() || board_is_blank_bone_lt())
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -905,7 +905,7 @@ void sdram_init(void)
+@@ -950,7 +950,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
--	else if (board_is_bone_lt())
-+	else if (board_is_bone_lt() || board_is_blank_bone_lt())
+-	else if (board_is_pb() || board_is_bone_lt())
++	else if (board_is_pb() || board_is_bone_lt() || board_is_blank_bone_lt())
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1253,7 +1253,7 @@ int board_eth_init(bd_t *bis)
+@@ -1305,7 +1305,7 @@ int board_eth_init(bd_t *bis)
  
  #ifdef CONFIG_DRIVER_TI_CPSW
- 	if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
+ 	if ((board_is_bone() && !board_is_pb()) || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
 -	    board_is_idk()) {
 +	    board_is_idk() || board_is_blank_bone_lt()) {
  		puts("eth0: MII MODE\n");
  		writel(MII_MODE_ENABLE, &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index a943f345e9..11c1caa73d 100644
+index d4dcdf3c6a..a58087b17e 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -75,9 +75,14 @@ static inline int board_is_m10a(void)
+@@ -80,9 +80,14 @@ static inline int board_is_m10a(void)
  	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "M10A", 4);
  }
  
@@ -59,16 +59,16 @@ index a943f345e9..11c1caa73d 100644
 +
  static inline int board_is_beaglebonex(void)
  {
--	return board_is_bone() || board_is_bone_lt() || board_is_bbg1();
-+	return board_is_bone() || board_is_bone_lt() || board_is_bbg1() || board_is_blank_bone_lt();
+-	return board_is_pb() || board_is_bone() || board_is_bone_lt() || board_is_bbg1();
++	return board_is_pb() || board_is_bone() || board_is_bone_lt() || board_is_bbg1() || board_is_blank_bone_lt();
  }
  
  static inline int board_is_evm_sk(void)
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 2ae077fb14..240dd60398 100644
+index 5c69643455..916987f0a1 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -419,7 +419,10 @@ void enable_board_pin_mux(void)
+@@ -422,7 +422,10 @@ void enable_board_pin_mux(void)
  		configure_module_pin_mux(rmii1_pin_mux);
  		configure_module_pin_mux(spi0_pin_mux);
  	} else {
@@ -82,7 +82,7 @@ index 2ae077fb14..240dd60398 100644
  	}
  }
 diff --git a/board/ti/common/board_detect.c b/board/ti/common/board_detect.c
-index 1da5ace923..c4afe9892b 100644
+index 6f07ec331a..6f78497901 100644
 --- a/board/ti/common/board_detect.c
 +++ b/board/ti/common/board_detect.c
 @@ -218,6 +218,17 @@ int __maybe_unused ti_i2c_eeprom_am_get(int bus_addr, int dev_addr)
@@ -112,7 +112,7 @@ index 1da5ace923..c4afe9892b 100644
  }
  
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 1179ddeae6..96ec0b2776 100644
+index 34fc999c3a..a883994341 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -90,6 +90,7 @@
@@ -123,7 +123,7 @@ index 1179ddeae6..96ec0b2776 100644
  	"run findfdt; " \
  	"run init_console; " \
  	"run envboot; " \
-@@ -174,6 +175,14 @@
+@@ -191,6 +192,14 @@
  				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
  			"fi; " \
  		"fi; " \
