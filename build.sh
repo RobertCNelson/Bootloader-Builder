@@ -475,8 +475,9 @@ build_u_boot () {
 		#r2: am335x_evm: fix BeagleBone Classic
 		#r3: am335x_evm: add justboom capes
 		#r4: am335x_evm: PocketBeagle
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: am335x_evm: PocketBeagle public release
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
