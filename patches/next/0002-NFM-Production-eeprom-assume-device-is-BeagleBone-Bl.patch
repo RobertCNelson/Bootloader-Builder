@@ -1,20 +1,20 @@
-From 15a1ac79001d1d54fc417de2d026a780db658332 Mon Sep 17 00:00:00 2001
+From 901d767d81b7bfe59c826831b0a880d72ce61f91 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 9 Oct 2017 13:12:12 -0500
+Date: Mon, 9 Oct 2017 15:28:28 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c        |  6 +++---
+ board/ti/am335x/board.c        |  6 ++++--
  board/ti/am335x/board.h        |  7 ++++++-
  board/ti/am335x/mux.c          |  7 +++++--
  board/ti/common/board_detect.c | 12 ++++++++++++
  include/configs/am335x_evm.h   |  9 +++++++++
- 5 files changed, 35 insertions(+), 6 deletions(-)
+ 5 files changed, 36 insertions(+), 5 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index d9cbc3504b..6c9b30de72 100644
+index 2d8c3e9fe8..4bfcaf94a3 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -673,7 +673,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
@@ -35,15 +35,22 @@ index d9cbc3504b..6c9b30de72 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1315,7 +1315,7 @@ int board_eth_init(bd_t *bis)
+@@ -1314,6 +1314,7 @@ int board_eth_init(bd_t *bis)
+ 	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
- 	if ((board_is_bone() && !board_is_pb()) || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
--	    board_is_idk() || board_is_beaglelogic()) {
-+	    board_is_idk() || board_is_beaglelogic() || board_is_blank_bone_lt()) {
- 		puts("eth0: MII MODE\n");
- 		writel(MII_MODE_ENABLE, &cdev->miisel);
- 		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
++	if (!board_is_blank_bone_lt()) {
+ 	if (!board_is_pb()) {
+ 		if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
+ 		    board_is_idk() || board_is_beaglelogic()) {
+@@ -1341,6 +1342,7 @@ int board_eth_init(bd_t *bis)
+ 		else
+ 			n += rv;
+ 	}
++	}
+ #endif
+ 
+ 	/*
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
 index 19a3852870..dce7db160d 100644
 --- a/board/ti/am335x/board.h
