@@ -1,45 +1,44 @@
-From 9719532600328a2cdf4a124c0ab1e6210ec8e948 Mon Sep 17 00:00:00 2001
+From 9813e4512efd2b37cec994e2b0650dd1e5a64ceb Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 9 Oct 2017 13:24:45 -0500
-Subject: [PATCH] ti_omap5_common: uEnv.txt, bootz, n fixes
+Date: Tue, 12 Sep 2017 10:25:43 -0500
+Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/omap5_uevm_defconfig      |   5 +-
+ configs/omap4_panda_defconfig     |   5 +-
  include/configs/ti_armv7_common.h | 126 ++++++++++++++++++++++++++++++++++++++
- include/configs/ti_omap5_common.h |   2 +
- include/environment/ti/boot.h     |  16 +++--
+ include/configs/ti_omap4_common.h |   8 ++-
  include/environment/ti/mmc.h      |  31 ++++++++--
- 5 files changed, 166 insertions(+), 14 deletions(-)
+ 4 files changed, 163 insertions(+), 7 deletions(-)
 
-diff --git a/configs/omap5_uevm_defconfig b/configs/omap5_uevm_defconfig
-index 6e860ef5e3..3be1832525 100644
---- a/configs/omap5_uevm_defconfig
-+++ b/configs/omap5_uevm_defconfig
-@@ -10,6 +10,10 @@ CONFIG_VERSION_VARIABLE=y
- CONFIG_SPL=y
+diff --git a/configs/omap4_panda_defconfig b/configs/omap4_panda_defconfig
+index 5cee869d0b..31d6c80dd5 100644
+--- a/configs/omap4_panda_defconfig
++++ b/configs/omap4_panda_defconfig
+@@ -11,6 +11,10 @@ CONFIG_SPL=y
+ # CONFIG_SPL_EXT_SUPPORT is not set
+ # CONFIG_SPL_I2C_SUPPORT is not set
  CONFIG_SPL_OS_BOOT=y
- CONFIG_HUSH_PARSER=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
 +CONFIG_AUTOBOOT_DELAY_STR="d"
 +CONFIG_AUTOBOOT_STOP_STR=" "
- CONFIG_CMD_BOOTZ=y
  # CONFIG_CMD_IMLS is not set
  CONFIG_CMD_SPL=y
-@@ -29,7 +33,6 @@ CONFIG_CMD_MII=y
- CONFIG_CMD_PING=y
- CONFIG_CMD_EXT2=y
- CONFIG_CMD_EXT4=y
+ CONFIG_CMD_ASKENV=y
+@@ -22,7 +26,6 @@ CONFIG_CMD_SPI=y
+ CONFIG_CMD_USB=y
+ # CONFIG_CMD_SETEXPR is not set
+ # CONFIG_CMD_NFS is not set
 -CONFIG_CMD_EXT4_WRITE=y
- CONFIG_CMD_FAT=y
- CONFIG_CMD_FS_GENERIC=y
- CONFIG_ISO_PARTITION=y
+ CONFIG_ENV_IS_IN_FAT=y
+ CONFIG_ENV_FAT_INTERFACE="mmc"
+ CONFIG_ENV_FAT_DEVICE_AND_PART="0:1"
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 91e139853c..8e001a04dd 100644
+index ac3eb5d729..52a37c374e 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -129,6 +129,132 @@
+@@ -132,6 +132,132 @@
  /* Boot Argument Buffer Size */
  #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
  
@@ -73,7 +72,7 @@ index 91e139853c..8e001a04dd 100644
 +					"fi;" \
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
-+						"setenv oldroot /dev/mmcblk${mmcblk}p${mmcpart};" \
++						"setenv oldroot /dev/mmcblk${mmcdev}p${mmcpart};" \
 +						"echo Running uname_boot ...;" \
 +						"run uname_boot;" \
 +					"fi;" \
@@ -172,47 +171,40 @@ index 91e139853c..8e001a04dd 100644
  /*
   * When we have SPI, NOR or NAND flash we expect to be making use of
   * mtdparts, both for ease of use in U-Boot and for passing information
-diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index 73c1d8f66e..f797b9520f 100644
---- a/include/configs/ti_omap5_common.h
-+++ b/include/configs/ti_omap5_common.h
-@@ -65,6 +65,8 @@
- 	DEFAULT_FIT_TI_ARGS \
- 	DEFAULT_COMMON_BOOT_TI_ARGS \
- 	DEFAULT_FDT_TI_ARGS \
+diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
+index 018e4c2512..8fbe721ee1 100644
+--- a/include/configs/ti_omap4_common.h
++++ b/include/configs/ti_omap4_common.h
+@@ -36,6 +36,7 @@
+  * the timings to use or use pre-determined timings (based on using the
+  * dynamic method.  Default to the static timing infomation.
+  */
++/* Comment out next line for ES Rev B3 or A4 with new "M" Micron memory... */
+ #define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
+ #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
+ #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
+@@ -73,9 +74,10 @@
+  */
+ #define BOOTENV_DEV_LEGACY_MMC(devtypeu, devtypel, instance) \
+ 	"bootcmd_" #devtypel #instance "=" \
++	"setenv devtype mmc; " \
+ 	"setenv mmcdev " #instance"; "\
+-	"setenv bootpart " #instance":2 ; "\
+-	"run mmcboot\0"
++	"setenv bootpart " #instance":1 ; "\
++	"run boot\0"
+ 
+ #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
+ 	#devtypel #instance " "
+@@ -130,6 +132,8 @@
+ 			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
+ 		"if test $fdtfile = undefined; then " \
+ 			"echo WARNING: Could not determine device tree to use; fi; \0" \
 +	EEWIKI_BOOT \
 +	EEWIKI_UNAME_BOOT \
- 	DFUARGS \
- 	NETARGS \
+ 	BOOTENV
  
-diff --git a/include/environment/ti/boot.h b/include/environment/ti/boot.h
-index 799d9840aa..51bb3986f2 100644
---- a/include/environment/ti/boot.h
-+++ b/include/environment/ti/boot.h
-@@ -87,16 +87,14 @@
- 			"echo WARNING: Could not determine device tree to use; fi; \0"
- 
- #define CONFIG_BOOTCOMMAND \
--	"if test ${dofastboot} -eq 1; then " \
--		"echo Boot fastboot requested, resetting dofastboot ...;" \
--		"setenv dofastboot 0; saveenv;" \
--		"echo Booting into fastboot ...; " \
--		"fastboot " __stringify(CONFIG_FASTBOOT_USB_DEV) "; " \
--	"fi;" \
--	"if test ${boot_fit} -eq 1; then "	\
--		"run update_to_fit;"	\
--	"fi;"	\
- 	"run findfdt; " \
-+	"setenv devtype mmc; " \
-+	"setenv mmcblk 1; " \
-+	"setenv mmcdev 0; " \
-+	"run boot;" \
-+	"setenv mmcblk 0; " \
-+	"setenv mmcdev 1; " \
-+	"run boot;" \
- 	"run envboot; " \
- 	"run mmcboot;" \
- 	"run emmc_linux_boot; " \
+ /*
 diff --git a/include/environment/ti/mmc.h b/include/environment/ti/mmc.h
 index 4305ebdaaf..3cdae35d2f 100644
 --- a/include/environment/ti/mmc.h
@@ -265,5 +257,5 @@ index 4305ebdaaf..3cdae35d2f 100644
  		"if mmc rescan; then " \
  			"echo SD/MMC found on device ${mmcdev};" \
 -- 
-2.14.2
+2.14.1
 
