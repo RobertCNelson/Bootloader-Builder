@@ -477,8 +477,9 @@ build_u_boot () {
 		#r4: am335x_evm: PocketBeagle
 		#r5: am335x_evm: PocketBeagle public release
 		#r6: am335x_evm: BeagleLogic
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x_evm: fix BeagleLogic
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
