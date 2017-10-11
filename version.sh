@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 stable_at91bootstrap_sha="533f4082e35869ab61d1112f518063aa0496febb"
 
