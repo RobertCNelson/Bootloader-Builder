@@ -310,11 +310,6 @@ git_cleanup () {
 
 halt_patching_uboot () {
 	pwd
-	echo "-----------------------------"
-	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" distclean"
-	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${uboot_config}"
-	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${BUILDTARGET}"
-	echo "-----------------------------"
 	exit
 }
 
@@ -360,6 +355,21 @@ build_u_boot () {
 
 	make ARCH=arm CROSS_COMPILE="${CC}" distclean
 	UGIT_VERSION=$(git describe)
+
+	unset BUILDTARGET
+	if [ "x${board}" = "xmx23_olinuxino" ] ; then
+		BUILDTARGET="u-boot.sb"
+	fi
+
+	if [ "x${board}" = "xsocfpga_de0_nano_soc" ] ; then
+		BUILDTARGET="u-boot-with-spl.sfp"
+	fi
+
+	echo "-----------------------------"
+	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" distclean"
+	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${uboot_config}"
+	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${BUILDTARGET}"
+	echo "-----------------------------"
 
 	#v2017.07
 	p_dir="${DIR}/patches/${uboot_old}"
@@ -883,15 +893,6 @@ build_u_boot () {
 			#halt_patching_uboot
 			${git} "${p_dir}/0001-artik10-fixes.patch"
 		fi
-	fi
-
-	unset BUILDTARGET
-	if [ "x${board}" = "xmx23_olinuxino" ] ; then
-		BUILDTARGET="u-boot.sb"
-	fi
-
-	if [ "x${board}" = "xsocfpga_de0_nano_soc" ] ; then
-		BUILDTARGET="u-boot-with-spl.sfp"
 	fi
 
 	if [ -f "${DIR}/stop.after.patch" ] ; then
@@ -1512,10 +1513,10 @@ am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
 am57xx_evm
-#am57xx_evm_ti
-#am57xx_evm_ti_flasher
-#am57xx_beagle_revc_ti_flasher
-#am571x_sndrblock_flasher
+###am57xx_evm_ti
+###am57xx_evm_ti_flasher
+###am57xx_beagle_revc_ti_flasher
+###am571x_sndrblock_flasher
 at91sam9x5ek
 mx23_olinuxino
 mx51evk
@@ -1528,14 +1529,16 @@ omap4_panda
 ###omap5_igep0050
 omap5_uevm
 sama5d2_xplained
-sama5d3xek
-sama5d3_xplained
-sama5d4ek
-sama5d4_xplained
+###(these are a shared patch...)
+###sama5d3xek
+###sama5d3_xplained
+###sama5d4ek
+###sama5d4_xplained
+###(these are a shared patch...)
 socfpga_de0_nano_soc
 udoo
 ###vf610twr
-wandboard
+###wandboard
 
 #devices with no patches...
 A10_OLinuXino_Lime
