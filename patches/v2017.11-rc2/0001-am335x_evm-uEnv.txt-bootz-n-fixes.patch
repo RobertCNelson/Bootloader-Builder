@@ -1,25 +1,25 @@
-From 90ec4a7ee3cade90689c9e20eff69b445221b4ad Mon Sep 17 00:00:00 2001
+From b5652a525f8c436ca43ddab9addd121299b63bcc Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 26 Oct 2017 11:35:40 -0500
+Date: Thu, 26 Oct 2017 16:25:20 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c               |  111 +++-
- board/ti/am335x/board.h               |   32 +-
+ board/ti/am335x/board.c               |  120 +++-
+ board/ti/am335x/board.h               |   37 +-
  board/ti/am335x/mux.c                 |   18 +-
  configs/am335x_boneblack_defconfig    |    6 +-
  configs/am335x_evm_defconfig          |   33 +-
  configs/am335x_pocketbeagle_defconfig | 1055 +++++++++++++++++++++++++++++++++
- include/configs/am335x_evm.h          |  106 +++-
+ include/configs/am335x_evm.h          |  112 +++-
  include/configs/ti_am335x_common.h    |    2 +
- include/configs/ti_armv7_common.h     |  304 ++++++++++
+ include/configs/ti_armv7_common.h     |  310 ++++++++++
  include/environment/ti/mmc.h          |   62 +-
- 10 files changed, 1652 insertions(+), 77 deletions(-)
+ 10 files changed, 1678 insertions(+), 77 deletions(-)
  create mode 100644 configs/am335x_pocketbeagle_defconfig
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 1a52bffc00..2c113ed8c1 100644
+index 1a52bffc00..8a41a03e7a 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -84,6 +84,8 @@ struct serial_device *default_serial_console(void)
@@ -145,13 +145,19 @@ index 1a52bffc00..2c113ed8c1 100644
  		/* BeagleBoard.org BeagleBone Black Wireless: */
  		if (!strncmp(board_ti_get_rev(), "BWA", 3)) {
  			name = "BBBW";
-@@ -720,10 +747,23 @@ int board_late_init(void)
+@@ -720,10 +747,29 @@ int board_late_init(void)
  		if (!strncmp(board_ti_get_rev(), "BLA", 3)) {
  			name = "BBBL";
  		}
++		/* SanCloud BeagleBone Enhanced */
 +		if (!strncmp(board_ti_get_rev(), "SE", 2)) {
 +			puts("Model: SanCloud BeagleBone Enhanced\n");
 +			name = "SBBE";
++		}
++		/* Octavo Systems OSD3358-SM-RED */
++		if (!strncmp(board_ti_get_rev(), "OS00", 4)) {
++			puts("Model: Octavo Systems OSD3358-SM-RED\n");
++			name = "OS00";
 +		}
  	}
  
@@ -169,7 +175,7 @@ index 1a52bffc00..2c113ed8c1 100644
  	set_board_info_env(name);
  
  	/*
-@@ -859,28 +899,33 @@ int board_eth_init(bd_t *bis)
+@@ -859,28 +905,33 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -224,7 +230,7 @@ index 1a52bffc00..2c113ed8c1 100644
  #endif
  
  	/*
-@@ -895,7 +940,7 @@ int board_eth_init(bd_t *bis)
+@@ -895,7 +946,7 @@ int board_eth_init(bd_t *bis)
  #define AR8051_DEBUG_RGMII_CLK_DLY_REG	0x5
  #define AR8051_RGMII_TX_CLK_DLY		0x100
  
@@ -233,19 +239,24 @@ index 1a52bffc00..2c113ed8c1 100644
  		const char *devname;
  		devname = miiphy_get_current_dev();
  
-@@ -927,6 +972,10 @@ int board_fit_config_name_match(const char *name)
+@@ -925,8 +976,15 @@ int board_eth_init(bd_t *bis)
+ #ifdef CONFIG_SPL_LOAD_FIT
+ int board_fit_config_name_match(const char *name)
  {
++	//FIME: we currently dont use this, yet...
  	if (board_is_gp_evm() && !strcmp(name, "am335x-evm"))
  		return 0;
 +	else if (board_is_pb() && !strcmp(name, "am335x-pocketbeagle"))
 +		return 0;
 +	else if (board_is_beaglelogic() && !strcmp(name, "am335x-beaglelogic"))
 +		return 0;
++	else if (board_is_os00() && !strcmp(name, "am335x-boneblack"))
++		return 0;
  	else if (board_is_bone() && !strcmp(name, "am335x-bone"))
  		return 0;
  	else if (board_is_bone_lt() && !strcmp(name, "am335x-boneblack"))
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index e13fcff02a..4c92f3bffe 100644
+index e13fcff02a..2d2f5bd36f 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
 @@ -24,6 +24,16 @@
@@ -265,7 +276,7 @@ index e13fcff02a..4c92f3bffe 100644
  static inline int board_is_bone(void)
  {
  	return board_ti_is("A335BONE");
-@@ -34,14 +44,34 @@ static inline int board_is_bone_lt(void)
+@@ -34,14 +44,39 @@ static inline int board_is_bone_lt(void)
  	return board_ti_is("A335BNLT");
  }
  
@@ -294,10 +305,15 @@ index e13fcff02a..4c92f3bffe 100644
 +	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "M10A", 4);
 +}
 +
++static inline int board_is_os00(void)
++{
++	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS00", 4);
++}
++
  static inline int board_is_beaglebonex(void)
  {
 -	return board_is_bone() || board_is_bone_lt() || board_is_bbg1();
-+	return board_is_pb() || board_is_bone() || board_is_bone_lt() || board_is_bbg1() || board_is_beaglelogic();
++	return board_is_pb() || board_is_bone() || board_is_bone_lt() || board_is_bbg1() || board_is_beaglelogic() || board_is_os00();
  }
  
  static inline int board_is_evm_sk(void)
@@ -1498,7 +1514,7 @@ index 0000000000..d817fac61e
 +# CONFIG_EFI_LOADER is not set
 +# CONFIG_UNIT_TEST is not set
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 96294679bf..138b4e8f56 100644
+index 96294679bf..c6145c7580 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -59,9 +59,14 @@
@@ -1534,7 +1550,7 @@ index 96294679bf..138b4e8f56 100644
  	"fdtfile=undefined\0" \
  	"console=ttyO0,115200n8\0" \
  	"partitions=" \
-@@ -134,19 +139,72 @@
+@@ -134,19 +139,78 @@
  	"ramboot=echo Booting from ramdisk ...; " \
  		"run ramargs; " \
  		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
@@ -1560,6 +1576,8 @@ index 96294679bf..138b4e8f56 100644
 +			"run eeprom_dump; run eeprom_blank; run eeprom_bbb_header; run eeprom_bbbl_footer; run eeprom_dump; reset; fi; " \
 +		"if test $board_eeprom_header = bbbw_blank; then " \
 +			"run eeprom_dump; run eeprom_blank; run eeprom_bbb_header; run eeprom_bbbw_footer; run eeprom_dump; reset; fi; " \
++		"if test $board_eeprom_header = os00_blank; then " \
++			"run eeprom_dump; run eeprom_blank; run eeprom_bbb_header; run eeprom_os00_footer; run eeprom_dump; reset; fi; " \
 +		"if test $board_eeprom_header = beaglelogic_blank; then " \
 +			"run eeprom_dump; run eeprom_blank; run eeprom_beaglelogic; run eeprom_dump; reset; fi;  \0" \
  	"findfdt="\
@@ -1592,6 +1610,8 @@ index 96294679bf..138b4e8f56 100644
 +				"setenv fdtfile am335x-bonegreen.dtb; setenv fdtbase am335x-bonegreen; " \
 +			"elif test $board_rev = M10A; then " \
 +				"setenv fdtfile am335x-vsc8531bbb.dtb; setenv fdtbase am335x-vsc8531bbb; " \
++			"elif test $board_rev = OS00; then " \
++				"setenv fdtfile am335x-osd3358-sm-red.dtb; " \
 +			"else " \
 +				"setenv fdtfile am335x-boneblack.dtb; setenv fdtbase am335x-boneblack; " \
 +			"fi; " \
@@ -1610,10 +1630,12 @@ index 96294679bf..138b4e8f56 100644
 +			"setenv fdtfile am335x-boneblue.dtb; setenv fdtbase am335x-boneblue; fi; " \
 +		"if test $board_name = SBBE; then " \
 +			"setenv fdtfile am335x-sancloud-bbe.dtb; setenv fdtbase am335x-sancloud-bbe; fi; " \
++		"if test $board_name = OS00; then " \
++			"setenv fdtfile am335x-osd3358-sm-red.dtb; fi; " \
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -154,13 +212,23 @@
+@@ -154,13 +218,23 @@
  		"if test $board_name = A335_ICE; then " \
  			"setenv fdtfile am335x-icev2.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
@@ -1638,7 +1660,7 @@ index 96294679bf..138b4e8f56 100644
  	NANDARGS \
  	NETARGS \
  	DFUARGS \
-@@ -259,9 +327,14 @@
+@@ -259,9 +333,14 @@
  #define CONFIG_USB_MUSB_PIO_ONLY
  #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT
  #define CONFIG_AM335X_USB0
@@ -1654,7 +1676,7 @@ index 96294679bf..138b4e8f56 100644
  
  /*
   * Disable MMC DM for SPL build and can be re-enabled after adding
-@@ -319,6 +392,17 @@
+@@ -319,6 +398,17 @@
  #define CONFIG_ENV_OFFSET_REDUND	(CONFIG_ENV_OFFSET + CONFIG_ENV_SIZE)
  #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
  #define CONFIG_SYS_MMC_MAX_DEVICE	2
@@ -1687,10 +1709,10 @@ index bf44121a0f..f92bd67d0b 100644
   * RTC related defines. To use bootcount you must set bootlimit in the
   * environment to a non-zero value and enable CONFIG_BOOTCOUNT_LIMIT
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 91e139853c..ee1130f112 100644
+index 91e139853c..1de766ea47 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -129,6 +129,310 @@
+@@ -129,6 +129,316 @@
  /* Boot Argument Buffer Size */
  #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
  
@@ -1746,17 +1768,23 @@ index 91e139853c..ee1130f112 100644
 +		"i2c mw 0x50 0x0a.2 4c; " \
 +		"i2c mw 0x50 0x0b.2 54; " \
 +		"\0" \
++	"eeprom_bbbl_footer= " \
++		"i2c mw 0x50 0x0c.2 42; " \
++		"i2c mw 0x50 0x0d.2 4c; " \
++		"i2c mw 0x50 0x0e.2 41; " \
++		"i2c mw 0x50 0x0f.2 32; " \
++		"\0" \
 +	"eeprom_bbbw_footer= " \
 +		"i2c mw 0x50 0x0c.2 42; " \
 +		"i2c mw 0x50 0x0d.2 57; " \
 +		"i2c mw 0x50 0x0e.2 41; " \
 +		"i2c mw 0x50 0x0f.2 35; " \
 +		"\0" \
-+	"eeprom_bbbl_footer= " \
-+		"i2c mw 0x50 0x0c.2 42; " \
-+		"i2c mw 0x50 0x0d.2 4c; " \
-+		"i2c mw 0x50 0x0e.2 41; " \
-+		"i2c mw 0x50 0x0f.2 32; " \
++	"eeprom_os00_footer= " \
++		"i2c mw 0x50 0x0c.2 4F; " \
++		"i2c mw 0x50 0x0d.2 53; " \
++		"i2c mw 0x50 0x0e.2 30; " \
++		"i2c mw 0x50 0x0f.2 30; " \
 +		"\0" \
 +	"eeprom_beaglelogic= " \
 +		"i2c mw 0x50 0x00.2 aa; " \

@@ -1,19 +1,19 @@
-From dc42d68d6518b9d8ab05ace801abd62151c8fa76 Mon Sep 17 00:00:00 2001
+From 5161d7c314abd20c85d8c15f7df22c1004fee1c5 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 3 Oct 2017 09:43:31 -0500
+Date: Thu, 26 Oct 2017 16:26:43 -0500
 Subject: [PATCH 2/2] U-Boot: BeagleBone Cape Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  arch/arm/mach-omap2/am33xx/clock_am33xx.c |   1 +
- board/ti/am335x/board.c                   | 415 ++++++++++++++++++++++++++++++
+ board/ti/am335x/board.c                   | 427 ++++++++++++++++++++++++++++++
  board/ti/am335x/board.h                   |  17 ++
  board/ti/am335x/hash-string.h             |  59 +++++
  board/ti/am335x/mux.c                     |  15 ++
- include/configs/ti_armv7_common.h         | 181 +++++++++++++
+ include/configs/ti_armv7_common.h         | 185 +++++++++++++
  include/configs/ti_armv7_omap.h           |   3 +
  include/environment/ti/mmc.h              |  15 ++
- 8 files changed, 706 insertions(+)
+ 8 files changed, 722 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/arch/arm/mach-omap2/am33xx/clock_am33xx.c b/arch/arm/mach-omap2/am33xx/clock_am33xx.c
@@ -29,7 +29,7 @@ index 1780bbdb6f..a1ee457328 100644
  		&cmper->spi0clkctrl,
  		&cmrtc->rtcclkctrl,
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 1f4afed9d5..d9cbc3504b 100644
+index 8a41a03e7a..52ebe061a3 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -40,7 +40,7 @@ index 1f4afed9d5..d9cbc3504b 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -76,9 +77,415 @@ void do_board_detect(void)
+@@ -76,9 +77,427 @@ void do_board_detect(void)
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
  		printf("ti_i2c_eeprom_init failed\n");
@@ -203,6 +203,12 @@ index 1f4afed9d5..d9cbc3504b 100644
 +			puts("Model: Neuromeka BeagleBone Air:\n");
 +			silicon=BBB_GENERIC_SILICON;
 +			cape_universal=CAPE_UNIVERSAL;
++		}
++		if (!strncmp(board_ti_get_rev(), "EIA", 3)) {
++			puts("Model: Octavo Systems OSD3358-SM-RED:\n");
++			silicon=BBB_OSD3358_SILICON;
++			name = "SBBE";
++			cape_universal=NOT_POP;
 +		}
 +	} else {
 +		puts("Model: BeagleBone:\n");
@@ -429,6 +435,12 @@ index 1f4afed9d5..d9cbc3504b 100644
 +			break;
 +	}
 +
++//	switch(model) {
++//		case BBB_ADC:
++//			env_set("uboot_model", "/lib/firmware/BB-ADC-00A0.dtbo");
++//			break;
++//	}
++
 +	switch(cape_universal) {
 +		case CAPE_UNIVERSAL_BBB:
 +			env_set("uboot_cape_universal_bbb", "1");
@@ -456,7 +468,7 @@ index 1f4afed9d5..d9cbc3504b 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -807,6 +1214,14 @@ int board_late_init(void)
+@@ -813,6 +1232,14 @@ int board_late_init(void)
  	}
  #endif
  
@@ -472,7 +484,7 @@ index 1f4afed9d5..d9cbc3504b 100644
  }
  #endif
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 15cd0f7e2a..f4b00ad727 100644
+index 2d2f5bd36f..637c8d596f 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
 @@ -11,6 +11,22 @@
@@ -498,7 +510,7 @@ index 15cd0f7e2a..f4b00ad727 100644
  /**
   * AM335X (EMIF_4D) EMIF REG_COS_COUNT_1, REG_COS_COUNT_2, and
   * REG_PR_OLD_COUNT values to avoid LCDC DMA FIFO underflows and Frame
-@@ -113,5 +129,6 @@ void enable_uart3_pin_mux(void);
+@@ -118,5 +134,6 @@ void enable_uart3_pin_mux(void);
  void enable_uart4_pin_mux(void);
  void enable_uart5_pin_mux(void);
  void enable_i2c0_pin_mux(void);
@@ -618,10 +630,10 @@ index 2b10b64d3a..3733246852 100644
  		configure_module_pin_mux(mmc0_pin_mux);
  		configure_module_pin_mux(gpio0_18_pin_mux);
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index ee1130f112..3f30e33b9f 100644
+index 1de766ea47..57a2a0de50 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -353,6 +353,19 @@
+@@ -359,6 +359,19 @@
  			"echo loading ${bootdir}/${bootfile} ...; "\
  			"run loadimage;" \
  			"setenv fdtdir /boot/dtbs/${uname_r}; " \
@@ -641,7 +653,7 @@ index ee1130f112..3f30e33b9f 100644
  			"if test -e ${devtype} ${bootpart} ${fdtdir}/${fdtfile}; then " \
  				"run loadfdt;" \
  			"else " \
-@@ -393,6 +406,174 @@
+@@ -399,6 +412,178 @@
  					"fi;" \
  				"fi;" \
  			"fi; " \
@@ -655,6 +667,10 @@ index ee1130f112..3f30e33b9f 100644
 +				"echo uboot_overlays: [fdt_buffer=${fdt_buffer}] ... ;" \
 +				"if test -n ${uboot_silicon}; then " \
 +					"setenv uboot_overlay ${uboot_silicon}; " \
++					"run virtualloadoverlay;" \
++				"fi;" \
++				"if test -n ${uboot_model}; then " \
++					"setenv uboot_overlay ${uboot_model}; " \
 +					"run virtualloadoverlay;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr0}; then " \

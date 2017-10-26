@@ -578,8 +578,9 @@ build_u_boot () {
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: am335x_evm: fix efi regression...
-		#r2: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x_evm: add initial Octavo Systems OSD3358-SM-RED:
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1538,7 +1539,7 @@ sama5d2_xplained
 socfpga_de0_nano_soc
 udoo
 ###vf610twr
-###wandboard
+wandboard
 
 #devices with no patches...
 A10_OLinuXino_Lime
