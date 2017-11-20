@@ -580,8 +580,9 @@ build_u_boot () {
 		#r2: am335x_evm: fix efi regression...
 		#r3: am335x_evm: add initial Octavo Systems OSD3358-SM-RED:
 		#r4: am335x_evm: Green and DLP fixes
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: wandboard: fix memory issues
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
