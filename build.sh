@@ -527,8 +527,9 @@ build_u_boot () {
 		#r1: initial release
 		#r2: am335x_evm: fix BLANK...
 		#r3: am335x_evm: enable btrfs by default
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: am335x_evm: enable btrfs_cmds by default
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
