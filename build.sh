@@ -528,8 +528,9 @@ build_u_boot () {
 		#r2: am335x_evm: fix BLANK...
 		#r3: am335x_evm: enable btrfs by default
 		#r4: am335x_evm: enable btrfs_cmds by default
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: wandboard: enable btrfs by default
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1488,7 +1489,7 @@ sama5d2_xplained
 socfpga_de0_nano_soc
 #udoo
 ###vf610twr
-#wandboard
+wandboard
 
 #devices with no patches...
 A10_OLinuXino_Lime
