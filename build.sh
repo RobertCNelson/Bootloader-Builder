@@ -530,8 +530,9 @@ build_u_boot () {
 		#r4: am335x_evm: enable btrfs_cmds by default
 		#r5: wandboard: enable btrfs by default
 		#r6: wandboard: fix build...
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: omap3_beagle: fix old Cx booting..
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
