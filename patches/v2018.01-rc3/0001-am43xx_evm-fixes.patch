@@ -1,15 +1,15 @@
-From d0a622d4913ceefa07a61e7978448b6818c940bd Mon Sep 17 00:00:00 2001
+From 8089dac75177447f251fe4050cb81cdee33d392f Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Jan 2018 16:02:25 -0600
+Date: Mon, 8 Jan 2018 16:08:45 -0600
 Subject: [PATCH] am43xx_evm fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/am43xx_evm_defconfig      |   7 ++
+ configs/am43xx_evm_defconfig      |   7 +++
  include/configs/am43xx_evm.h      |   6 ++
- include/configs/ti_armv7_common.h | 130 +++++++++++++++++++++++++++++++++++++-
+ include/configs/ti_armv7_common.h | 128 +++++++++++++++++++++++++++++++++++++-
  include/environment/ti/mmc.h      |  43 ++++++++++---
- 4 files changed, 173 insertions(+), 13 deletions(-)
+ 4 files changed, 172 insertions(+), 12 deletions(-)
 
 diff --git a/configs/am43xx_evm_defconfig b/configs/am43xx_evm_defconfig
 index c1802140dc..afddebff06 100644
@@ -51,18 +51,9 @@ index 302181bd2d..dc5fc94f42 100644
  	"run mmcboot;" \
  	"run usbboot;" \
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 91e139853c..2af84a478f 100644
+index 91e139853c..6d770ec1aa 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -48,7 +48,7 @@
- 	"ramdisk_addr_r=0x88080000\0" \
- 	"scriptaddr=0x80000000\0" \
- 	"pxefile_addr_r=0x80100000\0" \
--	"bootm_size=0x10000000\0" \
-+	"bootm_size=0x0a000000\0" \
- 	"boot_fdt=try\0"
- 
- #define DEFAULT_FIT_TI_ARGS \
 @@ -129,6 +129,132 @@
  /* Boot Argument Buffer Size */
  #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
