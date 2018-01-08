@@ -531,8 +531,9 @@ build_u_boot () {
 		#r5: wandboard: enable btrfs by default
 		#r6: wandboard: fix build...
 		#r7: omap3_beagle: fix old Cx booting..
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: am43xx_evm: uname-r support
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -549,6 +550,10 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			;;
+		am43xx_evm)
+			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
+			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"
 			;;
 		at91sam9x5ek_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
@@ -637,6 +642,10 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			;;
+		am43xx_evm)
+			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
+			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"
 			;;
 		at91sam9x5ek_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
@@ -1204,7 +1213,12 @@ am335x_boneblack_flasher () {
 }
 
 am43xx_evm () {
-	board="am43xx_evm" ; always_stable_n_testing
+	cleanup
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
+
+	board="am43xx_evm" ; build_uboot_gnueabihf
 }
 
 am57xx_evm () {
