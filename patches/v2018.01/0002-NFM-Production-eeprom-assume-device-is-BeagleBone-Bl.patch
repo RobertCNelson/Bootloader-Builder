@@ -1,6 +1,6 @@
-From 003e53e216ca5027e1d47a3f4172c92647976fc8 Mon Sep 17 00:00:00 2001
+From 5bb671ab322547957914e7ef6fb4b7e47fcb8900 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 9 Jan 2018 14:35:48 -0600
+Date: Thu, 18 Jan 2018 14:53:08 -0600
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -16,10 +16,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  7 files changed, 37 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index ef22233161..e53eefa816 100644
+index 4942003439..258a31eb62 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -678,7 +678,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -709,7 +709,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -28,7 +28,7 @@ index ef22233161..e53eefa816 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -961,7 +961,7 @@ void sdram_init(void)
+@@ -992,7 +992,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -37,7 +37,7 @@ index ef22233161..e53eefa816 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1325,6 +1325,7 @@ int board_eth_init(bd_t *bis)
+@@ -1356,6 +1356,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -45,7 +45,7 @@ index ef22233161..e53eefa816 100644
  	if (!board_is_pb()) {
  		if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
  		    board_is_idk() || board_is_beaglelogic()) {
-@@ -1352,6 +1353,7 @@ int board_eth_init(bd_t *bis)
+@@ -1383,6 +1384,7 @@ int board_eth_init(bd_t *bis)
  		else
  			n += rv;
  	}
@@ -54,10 +54,10 @@ index ef22233161..e53eefa816 100644
  
  	/*
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index acba162ad9..17696bc28c 100644
+index e4d5daf269..75293d3151 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -96,9 +96,14 @@ static inline int board_is_os00(void)
+@@ -101,9 +101,14 @@ static inline int board_is_os00(void)
  	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS00", 4);
  }
  
@@ -68,8 +68,8 @@ index acba162ad9..17696bc28c 100644
 +
  static inline int board_is_beaglebonex(void)
  {
--	return board_is_pb() || board_is_bone() || board_is_bone_lt() || board_is_e14bbbi() || board_is_bbg1() || board_is_beaglelogic() || board_is_os00();
-+	return board_is_pb() || board_is_bone() || board_is_bone_lt() || board_is_e14bbbi() || board_is_bbg1() || board_is_beaglelogic() || board_is_os00() || board_is_blank_bone_lt();
+-	return board_is_pb() || board_is_bone() || (board_is_bone_lt() && !board_is_marsboard()) || board_is_e14bbbi() || board_is_bbg1() || board_is_beaglelogic() || board_is_os00();
++	return board_is_pb() || board_is_bone() || (board_is_bone_lt() && !board_is_marsboard()) || board_is_e14bbbi() || board_is_bbg1() || board_is_beaglelogic() || board_is_os00() || board_is_blank_bone_lt();
  }
  
  static inline int board_is_evm_sk(void)

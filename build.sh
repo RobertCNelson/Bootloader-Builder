@@ -439,8 +439,9 @@ build_u_boot () {
 		#r8: am43xx_evm: uname-r support
 		#r9: (busted)
 		#r10: am335x_evm: work with overlays with . in them...
-		#r11: (pending)
-		RELEASE_VER="-r10" #bump on every change...
+		#r11: am335x_evm: overlay fixups, add MarsBoard AM335X
+		#r12: (pending)
+		RELEASE_VER="-r11" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
