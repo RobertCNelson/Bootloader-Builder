@@ -440,8 +440,9 @@ build_u_boot () {
 		#r9: (busted)
 		#r10: am335x_evm: work with overlays with . in them...
 		#r11: am335x_evm: overlay fixups, add MarsBoard AM335X
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: btrfs lzo fixes
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
