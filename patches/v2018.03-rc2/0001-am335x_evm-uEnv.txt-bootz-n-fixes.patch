@@ -1,6 +1,6 @@
-From 82fc5e3e573491e286045a527c995bb92c0a4962 Mon Sep 17 00:00:00 2001
+From 92de277e00edf970050667fc9c925f72cd9f8c59 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 30 Jan 2018 10:21:48 -0600
+Date: Thu, 15 Feb 2018 15:02:49 -0600
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -11,12 +11,13 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  configs/am335x_boneblack_defconfig    |    7 +-
  configs/am335x_evm_defconfig          |   36 +-
  configs/am335x_pocketbeagle_defconfig | 1055 +++++++++++++++++++++++++++++++++
+ drivers/mmc/omap_hsmmc.c              |    2 +-
  fs/ext4/ext4_common.c                 |    2 +-
  include/configs/am335x_evm.h          |  101 +++-
  include/configs/ti_am335x_common.h    |    2 +
  include/configs/ti_armv7_common.h     |  299 ++++++++++
  include/environment/ti/mmc.h          |   67 ++-
- 11 files changed, 1680 insertions(+), 75 deletions(-)
+ 12 files changed, 1681 insertions(+), 76 deletions(-)
  create mode 100644 configs/am335x_pocketbeagle_defconfig
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
@@ -1535,6 +1536,19 @@ index 0000000000..d817fac61e
 +CONFIG_SMBIOS_MANUFACTURER="ti"
 +# CONFIG_EFI_LOADER is not set
 +# CONFIG_UNIT_TEST is not set
+diff --git a/drivers/mmc/omap_hsmmc.c b/drivers/mmc/omap_hsmmc.c
+index b12d6d9102..c6b3f25d05 100644
+--- a/drivers/mmc/omap_hsmmc.c
++++ b/drivers/mmc/omap_hsmmc.c
+@@ -918,7 +918,7 @@ int omap_mmc_init(int dev_index, uint host_caps_mask, uint f_max, int cd_gpio,
+ 	struct mmc_config *cfg;
+ 	uint host_caps_val;
+ 
+-	priv = malloc(sizeof(*priv));
++	priv = calloc(1, sizeof(*priv));
+ 	if (priv == NULL)
+ 		return -1;
+ 
 diff --git a/fs/ext4/ext4_common.c b/fs/ext4/ext4_common.c
 index dac9545365..a8e6fdef51 100644
 --- a/fs/ext4/ext4_common.c
@@ -1549,7 +1563,7 @@ index dac9545365..a8e6fdef51 100644
  	ext4fs_root = NULL;
  
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 31ab503dca..1579594856 100644
+index 7295b73c61..caa211cb6c 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -59,9 +59,14 @@
@@ -1688,7 +1702,7 @@ index 31ab503dca..1579594856 100644
  	NANDARGS \
  	NETARGS \
  	DFUARGS \
-@@ -230,9 +303,14 @@
+@@ -227,9 +300,14 @@
   */
  #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT
  #define CONFIG_AM335X_USB0
@@ -1704,7 +1718,7 @@ index 31ab503dca..1579594856 100644
  
  /*
   * Disable MMC DM for SPL build and can be re-enabled after adding
-@@ -285,6 +363,17 @@
+@@ -282,6 +360,17 @@
  #define CONFIG_ENV_OFFSET_REDUND	(CONFIG_ENV_OFFSET + CONFIG_ENV_SIZE)
  #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
  #define CONFIG_SYS_MMC_MAX_DEVICE	2
@@ -1737,7 +1751,7 @@ index 66cacdf347..1f4da159d9 100644
   * RTC related defines. To use bootcount you must set bootlimit in the
   * environment to a non-zero value and enable CONFIG_BOOTCOUNT_LIMIT
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 91e139853c..b5d2f8b1df 100644
+index d1776c9549..f817cf959a 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -129,6 +129,305 @@
