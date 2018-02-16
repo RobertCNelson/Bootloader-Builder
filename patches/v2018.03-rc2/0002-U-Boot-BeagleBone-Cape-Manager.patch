@@ -1,6 +1,6 @@
-From 211cffca3bfbf6f5c52744d89a8a8d6be8246d29 Mon Sep 17 00:00:00 2001
+From 8be0869d742308ad0ef7febc691baa4581c24b62 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 15 Feb 2018 14:47:34 -0600
+Date: Fri, 16 Feb 2018 14:59:28 -0600
 Subject: [PATCH 2/2] U-Boot: BeagleBone Cape Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,10 +10,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/board.h                   |  17 ++
  board/ti/am335x/hash-string.h             |  59 ++++
  board/ti/am335x/mux.c                     |  15 +
- include/configs/ti_armv7_common.h         | 198 +++++++++++++
+ include/configs/ti_armv7_common.h         | 199 +++++++++++++
  include/configs/ti_armv7_omap.h           |   3 +
  include/environment/ti/mmc.h              |  15 +
- 8 files changed, 762 insertions(+)
+ 8 files changed, 763 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/arch/arm/mach-omap2/am33xx/clock_am33xx.c b/arch/arm/mach-omap2/am33xx/clock_am33xx.c
@@ -657,10 +657,10 @@ index 2b10b64d3a..3733246852 100644
  		configure_module_pin_mux(mmc0_pin_mux);
  		configure_module_pin_mux(gpio0_18_pin_mux);
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index f817cf959a..7689334a36 100644
+index f817cf959a..6d14d86228 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -348,6 +348,30 @@
+@@ -348,6 +348,31 @@
  			"echo loading ${bootdir}/${bootfile} ...; "\
  			"run loadimage;" \
  			"setenv fdtdir /boot/dtbs/${uname_r}; " \
@@ -676,6 +676,7 @@ index f817cf959a..7689334a36 100644
 +							"if test -n ${uboot_try_cape_universal}; then " \
 +								"env delete -f uboot_try_cape_universal; " \
 +							"fi;" \
++							"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
 +						"else " \
 +							"if test -n ${uboot_base_dtb}; then " \
 +								"echo uboot_overlays: [uboot_base_dtb=${uboot_base_dtb}] ... ;" \
@@ -691,7 +692,7 @@ index f817cf959a..7689334a36 100644
  			"if test -e ${devtype} ${bootpart} ${fdtdir}/${fdtfile}; then " \
  				"run loadfdt;" \
  			"else " \
-@@ -388,6 +412,180 @@
+@@ -388,6 +413,180 @@
  					"fi;" \
  				"fi;" \
  			"fi; " \
@@ -913,5 +914,5 @@ index 0364f62c3d..d48d6c2d91 100644
  		"ums 0 ${devtype} 1;\0" \
  	"envboot=mmc dev ${mmcdev}; " \
 -- 
-2.15.1
+2.16.1
 
