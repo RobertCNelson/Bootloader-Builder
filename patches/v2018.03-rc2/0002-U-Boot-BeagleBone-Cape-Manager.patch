@@ -143,7 +143,7 @@ index 8a41a03e7a..784e53f34c 100644
 +			virtual_video=NOT_POP;
 +			virtual_audio=NOT_POP;
 +			virtual_wireless=NOT_POP;
-+			virtual_adc=NOT_POP;
++			virtual_adc=BBB_ADC;
 +			cape_universal=CAPE_UNIVERSAL;
 +			name = "BBBL";
 +		}

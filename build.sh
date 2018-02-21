@@ -38,13 +38,6 @@ CORES=$(getconf _NPROCESSORS_ONLN)
 
 git="git am"
 
-#Debian 7 (Wheezy): git version 1.7.10.4 and later needs "--no-edit"
-unset git_opts
-git_no_edit=$(LC_ALL=C git help pull | grep -m 1 -e "--no-edit" || true)
-if [ ! "x${git_no_edit}" = "x" ] ; then
-	git_opts="--no-edit"
-fi
-
 mkdir -p ${DIR}/git/
 mkdir -p ${DIR}/dl/
 mkdir -p ${DIR}/deploy/
@@ -242,7 +235,7 @@ git_generic () {
 	fi
 
 	cd ${DIR}/git/${project}/
-	git pull ${git_opts} || true
+	git pull --no-edit || true
 	git fetch --tags || true
 	cd -
 
@@ -442,8 +435,9 @@ build_u_boot () {
 		#r11: am335x_evm: overlay fixups, add MarsBoard AM335X
 		#r12: btrfs lzo fixes
 		#r13: am335x_evm: blue fixes
-		#r14: (pending)
-		RELEASE_VER="-r13" #bump on every change...
+		#r14: am335x_evm: blue: adc cape
+		#r15: (pending)
+		RELEASE_VER="-r14" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -721,7 +715,7 @@ build_u_boot () {
 
 	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
 		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
-			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
+			git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
 			#r1: initial build
 			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=acfdcab5ce406c8cfb607bd0731b7a6d41757679
 			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=438d0991e5a913323f6e38293a3d103d82284d9d
@@ -747,7 +741,7 @@ build_u_boot () {
 
 	if [ "x${board}" = "xam57xx_evm_ti_flasher" ] ; then
 		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
-			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
+			git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
 			#r1: initial build
 			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=acfdcab5ce406c8cfb607bd0731b7a6d41757679
 			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=438d0991e5a913323f6e38293a3d103d82284d9d
@@ -775,7 +769,7 @@ build_u_boot () {
 
 	if [ "x${board}" = "xam57xx_beagle_revc_ti_flasher" ] ; then
 		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
-			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
+			git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
 			#r1: initial build
 			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=acfdcab5ce406c8cfb607bd0731b7a6d41757679
 			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=438d0991e5a913323f6e38293a3d103d82284d9d
@@ -803,7 +797,7 @@ build_u_boot () {
 
 	if [ "x${board}" = "xam571x_sndrblock_flasher" ] ; then
 		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
-			git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
+			git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
 			#r1: initial build
 			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=acfdcab5ce406c8cfb607bd0731b7a6d41757679
 			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=438d0991e5a913323f6e38293a3d103d82284d9d
@@ -830,7 +824,7 @@ build_u_boot () {
 	fi
 
 	if [ "x${board}" = "xomap5_igep0050" ] ; then
-		git pull ${git_opts} https://github.com/rcn-ee/ti-uboot ti-u-boot-2015.07
+		git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2015.07
 		#r1: first pass
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
@@ -841,7 +835,7 @@ build_u_boot () {
 	fi
 
 	if [ "x${board}" = "xartik5" ] || [ "x${board}" = "xartik10" ] ; then
-		git pull ${git_opts} https://github.com/SamsungARTIK/u-boot-artik artik-exynos/v2012.07
+		git pull --no-edit https://github.com/SamsungARTIK/u-boot-artik artik-exynos/v2012.07
 		#r1: first pass
 		#r2: artik5: disable log level
 		#r3: artik5: mmc1
