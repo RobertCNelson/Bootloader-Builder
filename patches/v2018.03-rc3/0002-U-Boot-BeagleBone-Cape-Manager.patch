@@ -1,19 +1,19 @@
-From 8be0869d742308ad0ef7febc691baa4581c24b62 Mon Sep 17 00:00:00 2001
+From 284226a546a5758cb47a88da19cc839d382ebd9a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 16 Feb 2018 14:59:28 -0600
+Date: Wed, 21 Feb 2018 19:08:30 -0600
 Subject: [PATCH 2/2] U-Boot: BeagleBone Cape Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  arch/arm/mach-omap2/am33xx/clock_am33xx.c |   1 +
- board/ti/am335x/board.c                   | 454 ++++++++++++++++++++++++++++++
+ board/ti/am335x/board.c                   | 462 ++++++++++++++++++++++++++++++
  board/ti/am335x/board.h                   |  17 ++
  board/ti/am335x/hash-string.h             |  59 ++++
  board/ti/am335x/mux.c                     |  15 +
  include/configs/ti_armv7_common.h         | 199 +++++++++++++
  include/configs/ti_armv7_omap.h           |   3 +
  include/environment/ti/mmc.h              |  15 +
- 8 files changed, 763 insertions(+)
+ 8 files changed, 771 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/arch/arm/mach-omap2/am33xx/clock_am33xx.c b/arch/arm/mach-omap2/am33xx/clock_am33xx.c
@@ -29,7 +29,7 @@ index dc61131c1e..e16f70d4da 100644
  		&cmper->spi0clkctrl,
  		&cmrtc->rtcclkctrl,
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 8a41a03e7a..784e53f34c 100644
+index 8a41a03e7a..495179278f 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -40,7 +40,7 @@ index 8a41a03e7a..784e53f34c 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -76,9 +77,454 @@ void do_board_detect(void)
+@@ -76,9 +77,462 @@ void do_board_detect(void)
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
  		printf("ti_i2c_eeprom_init failed\n");
@@ -79,8 +79,9 @@ index 8a41a03e7a..784e53f34c 100644
 +#define UNK_BASE_DTB	0x0
 +#define BB_BASE_DTB	0x1
 +#define BBB_BASE_DTB	0x2
-+#define BBBL_BASE_DTB	0x3
-+#define BBE_BASE_DTB	0x4
++#define BBGW_BASE_DTB	0x3
++#define BBBL_BASE_DTB	0x4
++#define BBE_BASE_DTB	0x5
 +
 +#define BBB_EMMC	0x1
 +
@@ -163,6 +164,7 @@ index 8a41a03e7a..784e53f34c 100644
 +		}
 +		if (!strncmp(board_ti_get_rev(), "GW1", 3)) {
 +			puts("Model: SeeedStudio BeagleBone Green Wireless:\n");
++			base_dtb=BBGW_BASE_DTB;
 +			virtual_video=NOT_POP;
 +			virtual_audio=NOT_POP;
 +			virtual_wireless=BBGW_WL1835;
@@ -401,6 +403,12 @@ index 8a41a03e7a..784e53f34c 100644
 +			env_set("uboot_base_dtb", "am335x-boneblack-uboot.dtb");
 +			env_set("uboot_try_cape_universal", "1");
 +			break;
++		case BBGW_BASE_DTB:
++			//gpio-hogs and cape-universal dont mesh very well on bootup...
++			env_set("uboot_base_dtb_univ", "am335x-bonegreen-wireless-uboot-univ.dtb");
++			env_set("uboot_base_dtb", "am335x-boneblack-uboot.dtb");
++			env_set("uboot_try_cape_universal", "1");
++			break;
 +		case BBE_BASE_DTB:
 +			env_set("uboot_base_dtb_univ", "am335x-sancloud-bbe-uboot-univ.dtb");
 +			env_set("uboot_base_dtb", "am335x-sancloud-bbe-uboot.dtb");
@@ -495,7 +503,7 @@ index 8a41a03e7a..784e53f34c 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -813,6 +1259,14 @@ int board_late_init(void)
+@@ -813,6 +1267,14 @@ int board_late_init(void)
  	}
  #endif
  
@@ -657,7 +665,7 @@ index 2b10b64d3a..3733246852 100644
  		configure_module_pin_mux(mmc0_pin_mux);
  		configure_module_pin_mux(gpio0_18_pin_mux);
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index f817cf959a..6d14d86228 100644
+index 617b1ab4c6..50fd603961 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -348,6 +348,31 @@
