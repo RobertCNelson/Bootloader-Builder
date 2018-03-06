@@ -532,8 +532,9 @@ build_u_boot () {
 		#r2: am335x_evm: cape universal first
 		#r3: am335x_evm: pass bone_capemgr.uboot_capemgr_enabled=1
 		#r4: am335x_evm: bbgw hogs, split out...
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: am335x_evm: ext4 saveenv
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
