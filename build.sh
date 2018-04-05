@@ -441,8 +441,9 @@ build_u_boot () {
 		#r4: am335x_evm: bbgw hogs, split out...
 		#r5: am335x_evm: ext4 saveenv
 		#r6: am335x_evm: am335x: poweroff rtc internal...
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x_evm: am335x: blue schematic has 32khz external osc.. (something else breaks shutdown)
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1513,8 +1514,8 @@ wandboard
 #devices with no patches...
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
-A20_OLinuXino_Lime2
-A20_OLinuXino_MICRO
+#A20_OLinuXino_Lime2
+#A20_OLinuXino_MICRO
 #A33_OLinuXino
 #Bananapi
 #Bananapro
