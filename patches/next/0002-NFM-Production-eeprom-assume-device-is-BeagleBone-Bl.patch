@@ -1,6 +1,6 @@
-From 7dd96beded81ce781887053723334eab7380c2fc Mon Sep 17 00:00:00 2001
+From 7c5c4575c3185588ccaec6eef1868d9eceb76169 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 6 Mar 2018 10:42:40 -0600
+Date: Thu, 5 Apr 2018 11:04:44 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -16,10 +16,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  7 files changed, 37 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 6fa86b6ff3..843fd68926 100644
+index b39656a372..2b4b26d5d8 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -720,7 +720,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -721,7 +721,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -28,7 +28,7 @@ index 6fa86b6ff3..843fd68926 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -1003,7 +1003,7 @@ void sdram_init(void)
+@@ -1004,7 +1004,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -37,7 +37,7 @@ index 6fa86b6ff3..843fd68926 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1367,6 +1367,7 @@ int board_eth_init(bd_t *bis)
+@@ -1399,6 +1399,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -45,7 +45,7 @@ index 6fa86b6ff3..843fd68926 100644
  	if (!board_is_pb()) {
  		if (board_is_bone() || (board_is_bone_lt() && !board_is_bone_lt_enhanced() && !board_is_m10a()) ||
  		    board_is_idk() || board_is_beaglelogic()) {
-@@ -1394,6 +1395,7 @@ int board_eth_init(bd_t *bis)
+@@ -1426,6 +1427,7 @@ int board_eth_init(bd_t *bis)
  		else
  			n += rv;
  	}
@@ -134,7 +134,7 @@ index fca193e9b2..706e519134 100644
  CONFIG_ENV_IS_NOWHERE=y
  CONFIG_SYS_CONSOLE_INFO_QUIET=y
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
-index 30aa39b1eb..17134e2c4f 100644
+index e6007520a8..439782ef0f 100644
 --- a/configs/am335x_evm_defconfig
 +++ b/configs/am335x_evm_defconfig
 @@ -4,7 +4,7 @@ CONFIG_TI_COMMON_CMD_OPTIONS=y
@@ -166,5 +166,5 @@ index 5582a66fa7..fbfd51c764 100644
  			"setenv fdtfile am335x-boneblack-wireless.dtb; fi; " \
  		"if test $board_name = BBG1; then " \
 -- 
-2.16.1
+2.16.3
 

@@ -1,6 +1,6 @@
-From 8fbe19b426c4845fc01caf82b33743f5d4554b2f Mon Sep 17 00:00:00 2001
+From e0bd735cd5ea9228035b01fc0e5fec175ba2c89b Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 6 Mar 2018 10:39:35 -0600
+Date: Thu, 5 Apr 2018 11:04:01 -0500
 Subject: [PATCH 2/2] U-Boot: BeagleBone Cape Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -29,10 +29,10 @@ index dc61131c1e..e16f70d4da 100644
  		&cmper->spi0clkctrl,
  		&cmrtc->rtcclkctrl,
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 32d5752881..6fa86b6ff3 100644
+index 80a954523f..b39656a372 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -39,6 +39,7 @@
+@@ -40,6 +40,7 @@
  #include <environment.h>
  #include "../common/board_detect.h"
  #include "board.h"
@@ -40,7 +40,7 @@ index 32d5752881..6fa86b6ff3 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -76,9 +77,462 @@ void do_board_detect(void)
+@@ -77,9 +78,462 @@ void do_board_detect(void)
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
  		printf("ti_i2c_eeprom_init failed\n");
@@ -503,7 +503,7 @@ index 32d5752881..6fa86b6ff3 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -813,6 +1267,14 @@ int board_late_init(void)
+@@ -845,6 +1299,14 @@ int board_late_init(void)
  	}
  #endif
  
@@ -922,5 +922,5 @@ index 0364f62c3d..d48d6c2d91 100644
  		"ums 0 ${devtype} 1;\0" \
  	"envboot=mmc dev ${mmcdev}; " \
 -- 
-2.16.1
+2.16.3
 

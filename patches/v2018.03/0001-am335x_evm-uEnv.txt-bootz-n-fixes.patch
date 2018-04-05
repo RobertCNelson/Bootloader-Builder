@@ -1,28 +1,128 @@
-From a8f2c75ad7f37519c1d883df63446e38b09597bd Mon Sep 17 00:00:00 2001
+From 691a35d598032c7ebb63a58474b370109c95c8b9 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 16 Mar 2018 12:25:12 -0500
+Date: Thu, 5 Apr 2018 11:02:49 -0500
 Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c            | 120 +++++++++++----
- board/ti/am335x/board.h            |  48 +++++-
- board/ti/am335x/mux.c              |  18 ++-
- configs/am335x_boneblack_defconfig |   7 +-
- configs/am335x_evm_defconfig       |  44 +++---
- env/Kconfig                        |   1 +
- env/common.c                       |   2 +
- include/configs/am335x_evm.h       | 101 ++++++++++++-
- include/configs/ti_am335x_common.h |   2 +
- include/configs/ti_armv7_common.h  | 299 +++++++++++++++++++++++++++++++++++++
- include/environment/ti/mmc.h       |  67 +++++++--
- 11 files changed, 631 insertions(+), 78 deletions(-)
+ arch/arm/include/asm/arch-am33xx/hardware_am33xx.h |   1 +
+ arch/arm/include/asm/arch-am33xx/sys_proto.h       |   1 +
+ arch/arm/mach-omap2/am33xx/board.c                 |  34 +--
+ arch/arm/mach-omap2/hwinit-common.c                |  10 +
+ board/ti/am335x/board.c                            | 152 ++++++++---
+ board/ti/am335x/board.h                            |  48 +++-
+ board/ti/am335x/mux.c                              |  18 +-
+ configs/am335x_boneblack_defconfig                 |   7 +-
+ configs/am335x_evm_defconfig                       |  44 ++-
+ env/Kconfig                                        |   1 +
+ env/common.c                                       |   2 +
+ include/configs/am335x_evm.h                       | 101 ++++++-
+ include/configs/ti_am335x_common.h                 |   2 +
+ include/configs/ti_armv7_common.h                  | 299 +++++++++++++++++++++
+ include/environment/ti/mmc.h                       |  67 ++++-
+ 15 files changed, 692 insertions(+), 95 deletions(-)
 
+diff --git a/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h b/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h
+index 3e46283455..f1dee7a62c 100644
+--- a/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h
++++ b/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h
+@@ -61,6 +61,7 @@
+ 
+ /* RTC base address */
+ #define RTC_BASE			0x44E3E000
++#define RTC_OSC				(RTC_BASE + 0x0054)
+ 
+ /* OTG */
+ #define USB0_OTG_BASE			0x47401000
+diff --git a/arch/arm/include/asm/arch-am33xx/sys_proto.h b/arch/arm/include/asm/arch-am33xx/sys_proto.h
+index 57fbfa4625..e8499e1573 100644
+--- a/arch/arm/include/asm/arch-am33xx/sys_proto.h
++++ b/arch/arm/include/asm/arch-am33xx/sys_proto.h
+@@ -47,4 +47,5 @@ int am335x_get_tps65910_mpu_vdd(int sil_rev, int frequency);
+ void enable_usb_clocks(int index);
+ void disable_usb_clocks(int index);
+ void do_board_detect(void);
++void rtc32k_enable(void);
+ u32 get_sys_clk_index(void);
+diff --git a/arch/arm/mach-omap2/am33xx/board.c b/arch/arm/mach-omap2/am33xx/board.c
+index ea0cabad97..408237113b 100644
+--- a/arch/arm/mach-omap2/am33xx/board.c
++++ b/arch/arm/mach-omap2/am33xx/board.c
+@@ -273,23 +273,23 @@ __weak void am33xx_spl_board_init(void)
+ {
+ }
+ 
+-#if defined(CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC)
+-static void rtc32k_enable(void)
+-{
+-	struct davinci_rtc *rtc = (struct davinci_rtc *)RTC_BASE;
+-
+-	/*
+-	 * Unlock the RTC's registers.  For more details please see the
+-	 * RTC_SS section of the TRM.  In order to unlock we need to
+-	 * write these specific values (keys) in this order.
+-	 */
+-	writel(RTC_KICK0R_WE, &rtc->kick0r);
+-	writel(RTC_KICK1R_WE, &rtc->kick1r);
+-
+-	/* Enable the RTC 32K OSC by setting bits 3 and 6. */
+-	writel((1 << 3) | (1 << 6), &rtc->osc);
+-}
+-#endif
++//#if defined(CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC)
++//static void rtc32k_enable(void)
++//{
++//	struct davinci_rtc *rtc = (struct davinci_rtc *)RTC_BASE;
++//
++//	/*
++//	 * Unlock the RTC's registers.  For more details please see the
++//	 * RTC_SS section of the TRM.  In order to unlock we need to
++//	 * write these specific values (keys) in this order.
++//	 */
++//	writel(RTC_KICK0R_WE, &rtc->kick0r);
++//	writel(RTC_KICK1R_WE, &rtc->kick1r);
++//
++//	/* Enable the RTC 32K OSC by setting bits 3 and 6. */
++//	writel((1 << 3) | (1 << 6), &rtc->osc);
++//}
++//#endif
+ 
+ static void uart_soft_reset(void)
+ {
+diff --git a/arch/arm/mach-omap2/hwinit-common.c b/arch/arm/mach-omap2/hwinit-common.c
+index 4f491e60f2..db2f2ad030 100644
+--- a/arch/arm/mach-omap2/hwinit-common.c
++++ b/arch/arm/mach-omap2/hwinit-common.c
+@@ -131,6 +131,16 @@ void __weak do_board_detect(void)
+ {
+ }
+ 
++/**
++ * rtc32k_enable() - Detect board description
++ *
++ * Function to detect board description. This is expected to be
++ * overridden in the SoC family board file where desired.
++ */
++void __weak rtc32k_enable(void)
++{
++}
++
+ /**
+  * vcores_init() - Assign omap_vcores based on board
+  *
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index b144fd1821..32d5752881 100644
+index b144fd1821..80a954523f 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -84,6 +84,8 @@ struct serial_device *default_serial_console(void)
+@@ -29,6 +29,7 @@
+ #include <asm/omap_common.h>
+ #include <asm/omap_sec_common.h>
+ #include <asm/omap_mmc.h>
++#include <asm/davinci_rtc.h>
+ #include <i2c.h>
+ #include <miiphy.h>
+ #include <cpsw.h>
+@@ -84,6 +85,8 @@ struct serial_device *default_serial_console(void)
  {
  	if (board_is_icev2())
  		return &eserial4_device;
@@ -31,7 +131,7 @@ index b144fd1821..32d5752881 100644
  	else
  		return &eserial1_device;
  }
-@@ -264,7 +266,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -264,7 +267,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -40,7 +140,7 @@ index b144fd1821..32d5752881 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -274,7 +276,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -274,7 +277,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  static u8 bone_not_connected_to_ac_power(void)
  {
@@ -49,7 +149,7 @@ index b144fd1821..32d5752881 100644
  		uchar pmic_status_reg;
  		if (tps65217_reg_read(TPS65217_STATUS,
  				      &pmic_status_reg))
-@@ -295,7 +297,7 @@ const struct dpll_params *get_dpll_mpu_params(void)
+@@ -295,7 +298,7 @@ const struct dpll_params *get_dpll_mpu_params(void)
  	if (bone_not_connected_to_ac_power())
  		freq = MPUPLL_M_600;
  
@@ -58,7 +158,7 @@ index b144fd1821..32d5752881 100644
  		freq = MPUPLL_M_1000;
  
  	switch (freq) {
-@@ -324,7 +326,7 @@ static void scale_vcores_bone(int freq)
+@@ -324,7 +327,7 @@ static void scale_vcores_bone(int freq)
  	 * Only perform PMIC configurations if board rev > A1
  	 * on Beaglebone White
  	 */
@@ -67,7 +167,7 @@ index b144fd1821..32d5752881 100644
  		return;
  
  	if (i2c_probe(TPS65217_CHIP_PM))
-@@ -341,7 +343,7 @@ static void scale_vcores_bone(int freq)
+@@ -341,7 +344,7 @@ static void scale_vcores_bone(int freq)
  	 * Override what we have detected since we know if we have
  	 * a Beaglebone Black it supports 1GHz.
  	 */
@@ -76,7 +176,7 @@ index b144fd1821..32d5752881 100644
  		freq = MPUPLL_M_1000;
  
  	switch (freq) {
-@@ -387,9 +389,10 @@ static void scale_vcores_bone(int freq)
+@@ -387,9 +390,10 @@ static void scale_vcores_bone(int freq)
  
  	/*
  	 * Set LDO3, LDO4 output voltage to 3.3V for Beaglebone.
@@ -89,7 +189,7 @@ index b144fd1821..32d5752881 100644
  		if (tps65217_reg_write(TPS65217_PROT_LEVEL_2,
  				       TPS65217_DEFLS1,
  				       TPS65217_LDO_VOLTAGE_OUT_3_3,
-@@ -472,7 +475,11 @@ void scale_vcores(void)
+@@ -472,7 +476,11 @@ void scale_vcores(void)
  void set_uart_mux_conf(void)
  {
  #if CONFIG_CONS_INDEX == 1
@@ -102,7 +202,7 @@ index b144fd1821..32d5752881 100644
  #elif CONFIG_CONS_INDEX == 2
  	enable_uart1_pin_mux();
  #elif CONFIG_CONS_INDEX == 3
-@@ -542,7 +549,7 @@ void sdram_init(void)
+@@ -542,7 +550,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -111,11 +211,40 @@ index b144fd1821..32d5752881 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -612,6 +619,24 @@ static struct clk_synth cdce913_data = {
+@@ -607,11 +615,60 @@ static struct clk_synth cdce913_data = {
+ };
+ #endif
+ 
++#if defined(CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC)
++void rtc32k_enable(void)
++{
++	struct davinci_rtc *rtc = (struct davinci_rtc *)RTC_BASE;
++
++	/*
++	 * Unlock the RTC's registers.  For more details please see the
++	 * RTC_SS section of the TRM.  In order to unlock we need to
++	 * write these specific values (keys) in this order.
++	 */
++	writel(RTC_KICK0R_WE, &rtc->kick0r);
++	writel(RTC_KICK1R_WE, &rtc->kick1r);
++
++	if (board_is_pb() || board_is_blue()) {
++		/* 6: EN_32KCLK */
++		/* 3: SEL_32KCLK_SRC 0: internal, 1: external */
++		writel((0 << 3) | (1 << 6), &rtc->osc);
++	} else {
++		/* Enable the RTC 32K OSC by setting bits 3 and 6. */
++		writel((1 << 3) | (1 << 6), &rtc->osc);
++	}
++}
++#endif
++
+ /*
+  * Basic board specific setup.  Pinmux has been handled already.
   */
  int board_init(void)
  {
-+	u32 sys_reboot;
++	u32 sys_reboot, sys_rtc_osc;
 +
 +	sys_reboot = readl(PRM_RSTST);
 +	if (sys_reboot & (1 << 9))
@@ -133,10 +262,17 @@ index b144fd1821..32d5752881 100644
 +	if (sys_reboot & (1 << 0))
 +		puts("Reset Source: Power-on reset has occurred.\n");
 +
++	sys_rtc_osc = readl(RTC_OSC);
++	if (sys_rtc_osc & (1 << 3)) {
++		puts("RTC 32KCLK Source: External.\n");
++	} else {
++		puts("RTC 32KCLK Source: Internal.\n");
++	}
++
  #if defined(CONFIG_HW_WATCHDOG)
  	hw_watchdog_init();
  #endif
-@@ -708,6 +733,8 @@ int board_late_init(void)
+@@ -708,6 +765,8 @@ int board_late_init(void)
  	char *name = NULL;
  
  	if (board_is_bone_lt()) {
@@ -145,7 +281,7 @@ index b144fd1821..32d5752881 100644
  		/* BeagleBoard.org BeagleBone Black Wireless: */
  		if (!strncmp(board_ti_get_rev(), "BWA", 3)) {
  			name = "BBBW";
-@@ -720,10 +747,29 @@ int board_late_init(void)
+@@ -720,10 +779,29 @@ int board_late_init(void)
  		if (!strncmp(board_ti_get_rev(), "BLA", 3)) {
  			name = "BBBL";
  		}
@@ -175,7 +311,7 @@ index b144fd1821..32d5752881 100644
  	set_board_info_env(name);
  
  	/*
-@@ -859,28 +905,33 @@ int board_eth_init(bd_t *bis)
+@@ -859,28 +937,33 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -230,7 +366,7 @@ index b144fd1821..32d5752881 100644
  #endif
  
  	/*
-@@ -895,7 +946,7 @@ int board_eth_init(bd_t *bis)
+@@ -895,7 +978,7 @@ int board_eth_init(bd_t *bis)
  #define AR8051_DEBUG_RGMII_CLK_DLY_REG	0x5
  #define AR8051_RGMII_TX_CLK_DLY		0x100
  
@@ -239,7 +375,7 @@ index b144fd1821..32d5752881 100644
  		const char *devname;
  		devname = miiphy_get_current_dev();
  
-@@ -925,8 +976,15 @@ int board_eth_init(bd_t *bis)
+@@ -925,8 +1008,15 @@ int board_eth_init(bd_t *bis)
  #ifdef CONFIG_SPL_LOAD_FIT
  int board_fit_config_name_match(const char *name)
  {
@@ -1103,5 +1239,5 @@ index 4305ebdaaf..0364f62c3d 100644
  				"if test ${boot_fdt} = try; then " \
  					"bootz; " \
 -- 
-2.16.2
+2.16.3
 
