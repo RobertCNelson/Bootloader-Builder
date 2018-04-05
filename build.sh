@@ -442,8 +442,9 @@ build_u_boot () {
 		#r5: am335x_evm: ext4 saveenv
 		#r6: am335x_evm: am335x: poweroff rtc internal...
 		#r7: am335x_evm: am335x: blue schematic has 32khz external osc.. (something else breaks shutdown)
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: am335x_evm: am335x: blue however it seems broken, revert to internal...
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -535,8 +536,9 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x_evm: am335x: pocket/blue, internal 32KHz osc..
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
