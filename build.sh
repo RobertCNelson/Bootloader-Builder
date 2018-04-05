@@ -1515,15 +1515,15 @@ A10_OLinuXino_Lime
 A20_OLinuXino_Lime
 A20_OLinuXino_Lime2
 A20_OLinuXino_MICRO
-A33_OLinuXino
-Bananapi
-Bananapro
-Cubieboard4
-Cubietruck_plus
-firefly_rk3288
+#A33_OLinuXino
+#Bananapi
+#Bananapro
+#Cubieboard4
+#Cubietruck_plus
+#firefly_rk3288
 ls1021atwr
-orangepi_pc
-Sinovoip_BPI_M2
-Sinovoip_BPI_M3
+#orangepi_pc
+#Sinovoip_BPI_M2
+#Sinovoip_BPI_M3
 
 #
