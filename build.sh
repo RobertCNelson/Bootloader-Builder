@@ -443,16 +443,19 @@ build_u_boot () {
 		#r6: am335x_evm: am335x: poweroff rtc internal...
 		#r7: am335x_evm: am335x: blue schematic has 32khz external osc.. (something else breaks shutdown)
 		#r8: am335x_evm: am335x: blue however it seems broken, revert to internal...
-		#r9: (pending)
-		RELEASE_VER="-r8" #bump on every change...
+		#r9: am335x_evm: bbb/bbg, power-on reset the board if lan8710 don't work
+		#r10: (pending)
+		RELEASE_VER="-r9" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
 		am335x_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
+			echo "patch -p1 < \"${p_dir}/0003-Fix-Power-on-reset-the-board-if-phy-don-t-work.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
+			${git} "${p_dir}/0003-Fix-Power-on-reset-the-board-if-phy-don-t-work.patch"
 			;;
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
