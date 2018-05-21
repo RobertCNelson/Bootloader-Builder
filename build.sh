@@ -723,6 +723,20 @@ build_u_boot () {
 	fi
 
 	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
+		if [ "x${GIT_SHA}" = "xv2018.01" ] ; then
+			git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2018.01
+			#r1: initial build
+			#r2: (pending)
+			RELEASE_VER="-r1" #bump on every change...
+
+			p_dir="${DIR}/patches/ti-2018.01"
+			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-fixes.patch\""
+			#halt_patching_uboot
+			${git} "${p_dir}/0001-beagle_x15-fixes.patch"
+		fi
+	fi
+
+	if [ "x${board}" = "xam57xx_evm_ti" ] ; then
 		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
 			git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
 			#r1: initial build
@@ -947,15 +961,22 @@ build_u_boot () {
 		fi
 
 		#SPL based targets, need MLO and u-boot.img from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
+		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] ; then
 			filename_search="MLO"
 			filename_id="deploy/${board}/MLO-${uboot_filename}"
 			file_save
 
-			filename_search="u-boot.img"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-			file_save
-			UBOOT_DONE=1
+			if [ -f ${DIR}/scratch/${project}/u-boot-dtb.img ] ; then
+				filename_search="u-boot-dtb.img"
+				filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+				file_save
+				UBOOT_DONE=1
+			elif [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
+				filename_search="u-boot.img"
+				filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+				file_save
+				UBOOT_DONE=1
+			fi
 		fi
 
 		#SPL (i.mx6) targets, need SPL and u-boot.img from u-boot
@@ -1239,8 +1260,8 @@ am57xx_evm_ti () {
 
 	board="am57xx_evm_ti"
 	uboot_config="am57xx_evm_defconfig"
-	gcc_linaro_gnueabihf_6
-	GIT_SHA="v2017.01"
+	build_uboot_gnueabihf
+	GIT_SHA="v2018.01"
 	build_u_boot
 }
 
@@ -1479,7 +1500,6 @@ wandboard () {
 	build_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
-
 #exit
 
 ###artik5
@@ -1489,7 +1509,7 @@ am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
 am57xx_evm
-###am57xx_evm_ti
+am57xx_evm_ti
 ###am57xx_evm_ti_flasher
 ###am57xx_beagle_revc_ti_flasher
 ###am571x_sndrblock_flasher
