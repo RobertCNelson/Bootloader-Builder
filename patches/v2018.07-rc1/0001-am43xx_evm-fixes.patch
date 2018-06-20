@@ -1,44 +1,60 @@
-From cc1a150ad32954085a9259cc0251adb717958461 Mon Sep 17 00:00:00 2001
+From fd75494564dc83b883805781f4b5c56e2d7d9067 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 20 Jun 2018 15:17:08 -0500
-Subject: [PATCH] ti_omap4_common: uEnv.txt, bootz, n fixes
+Date: Tue, 6 Mar 2018 10:45:57 -0600
+Subject: [PATCH] am43xx_evm fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/omap4_panda_defconfig     |   5 +-
- include/configs/ti_armv7_common.h | 126 ++++++++++++++++++++++++++++++
- include/configs/ti_omap4_common.h |   8 +-
- include/environment/ti/mmc.h      |  31 +++++++-
- 4 files changed, 163 insertions(+), 7 deletions(-)
+ configs/am43xx_evm_defconfig      |   7 +++
+ include/configs/am43xx_evm.h      |   6 ++
+ include/configs/ti_armv7_common.h | 126 ++++++++++++++++++++++++++++++++++++++
+ include/environment/ti/mmc.h      |  43 ++++++++++---
+ 4 files changed, 172 insertions(+), 10 deletions(-)
 
-diff --git a/configs/omap4_panda_defconfig b/configs/omap4_panda_defconfig
-index 41df480be3..6561e05ccd 100644
---- a/configs/omap4_panda_defconfig
-+++ b/configs/omap4_panda_defconfig
-@@ -12,6 +12,10 @@ CONFIG_VERSION_VARIABLE=y
- # CONFIG_SPL_I2C_SUPPORT is not set
- # CONFIG_SPL_NAND_SUPPORT is not set
- CONFIG_SPL_OS_BOOT=y
+diff --git a/configs/am43xx_evm_defconfig b/configs/am43xx_evm_defconfig
+index 172b292c3f..b2792396dc 100644
+--- a/configs/am43xx_evm_defconfig
++++ b/configs/am43xx_evm_defconfig
+@@ -56,3 +56,10 @@ CONFIG_USB_GADGET_MANUFACTURER="Texas Instruments"
+ CONFIG_USB_GADGET_VENDOR_NUM=0x0403
+ CONFIG_USB_GADGET_PRODUCT_NUM=0xbd00
+ CONFIG_USB_GADGET_DOWNLOAD=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
 +CONFIG_AUTOBOOT_DELAY_STR="d"
 +CONFIG_AUTOBOOT_STOP_STR=" "
- CONFIG_CMD_SPL=y
- CONFIG_CMD_ASKENV=y
- # CONFIG_CMD_FLASH is not set
-@@ -22,7 +26,6 @@ CONFIG_CMD_SPI=y
- CONFIG_CMD_USB=y
- # CONFIG_CMD_SETEXPR is not set
- # CONFIG_CMD_NFS is not set
--CONFIG_CMD_EXT4_WRITE=y
- CONFIG_ENV_IS_IN_FAT=y
- CONFIG_ENV_FAT_INTERFACE="mmc"
- CONFIG_ENV_FAT_DEVICE_AND_PART="0:1"
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_FS_BTRFS=y
++CONFIG_CMD_BTRFS=y
+diff --git a/include/configs/am43xx_evm.h b/include/configs/am43xx_evm.h
+index 663f861706..957093b42b 100644
+--- a/include/configs/am43xx_evm.h
++++ b/include/configs/am43xx_evm.h
+@@ -196,6 +196,8 @@
+ 			"setenv fdtfile am437x-idk-evm.dtb; fi; " \
+ 		"if test $fdtfile = undefined; then " \
+ 			"echo WARNING: Could not determine device tree; fi; \0" \
++	EEWIKI_BOOT \
++	EEWIKI_UNAME_BOOT \
+ 	NANDARGS \
+ 	NETARGS \
+ 	DFUARGS \
+@@ -205,6 +207,10 @@
+ 		"run update_to_fit;"	\
+ 	"fi;"	\
+ 	"run findfdt; " \
++	"setenv devtype mmc; " \
++	"setenv mmcblk 0; " \
++	"setenv mmcdev 0; " \
++	"run boot;" \
+ 	"run envboot;" \
+ 	"run mmcboot;" \
+ 	"run usbboot;" \
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 9257e2b0a4..745889a86b 100644
+index 4771e74940..e5893ec926 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -119,6 +119,132 @@
+@@ -125,6 +125,132 @@
  /* Boot Argument Buffer Size */
  #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
  
@@ -72,7 +88,7 @@ index 9257e2b0a4..745889a86b 100644
 +					"fi;" \
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
-+						"setenv oldroot /dev/mmcblk${mmcdev}p${mmcpart};" \
++						"setenv oldroot /dev/mmcblk${mmcblk}p${mmcpart};" \
 +						"echo Running uname_boot ...;" \
 +						"run uname_boot;" \
 +					"fi;" \
@@ -171,45 +187,11 @@ index 9257e2b0a4..745889a86b 100644
  /*
   * When we have SPI, NOR or NAND flash we expect to be making use of
   * mtdparts, both for ease of use in U-Boot and for passing information
-diff --git a/include/configs/ti_omap4_common.h b/include/configs/ti_omap4_common.h
-index 33761c65e9..7dfc14a424 100644
---- a/include/configs/ti_omap4_common.h
-+++ b/include/configs/ti_omap4_common.h
-@@ -35,6 +35,7 @@
-  * the timings to use or use pre-determined timings (based on using the
-  * dynamic method.  Default to the static timing infomation.
-  */
-+/* Comment out next line for ES Rev B3 or A4 with new "M" Micron memory... */
- #define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
- #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
- #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
-@@ -69,9 +70,10 @@
-  */
- #define BOOTENV_DEV_LEGACY_MMC(devtypeu, devtypel, instance) \
- 	"bootcmd_" #devtypel #instance "=" \
-+	"setenv devtype mmc; " \
- 	"setenv mmcdev " #instance"; "\
--	"setenv bootpart " #instance":2 ; "\
--	"run mmcboot\0"
-+	"setenv bootpart " #instance":1 ; "\
-+	"run boot\0"
- 
- #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
- 	#devtypel #instance " "
-@@ -118,6 +120,8 @@
- 			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
- 		"if test $fdtfile = undefined; then " \
- 			"echo WARNING: Could not determine device tree to use; fi; \0" \
-+	EEWIKI_BOOT \
-+	EEWIKI_UNAME_BOOT \
- 	BOOTENV
- 
- /*
 diff --git a/include/environment/ti/mmc.h b/include/environment/ti/mmc.h
-index 785fc15345..9fdc703da0 100644
+index 4305ebdaaf..4c7a323180 100644
 --- a/include/environment/ti/mmc.h
 +++ b/include/environment/ti/mmc.h
-@@ -11,11 +11,33 @@
+@@ -12,22 +12,45 @@
  #define DEFAULT_MMC_TI_ARGS \
  	"mmcdev=0\0" \
  	"mmcrootfstype=ext4 rootwait\0" \
@@ -219,6 +201,8 @@ index 785fc15345..9fdc703da0 100644
  		"${optargs} " \
 -		"root=PARTUUID=${uuid} rw " \
 -		"rootfstype=${mmcrootfstype}\0" \
+-	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
+-	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
 +		"root=PARTUUID=${uuid} ro " \
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
@@ -243,19 +227,26 @@ index 785fc15345..9fdc703da0 100644
 +		"${cape_enable} " \
 +		"root=/dev/ram rw " \
 +		"${cmdline}\0" \
- 	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
- 	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
++	"loadbootscript=load ${devtype} ${mmcdev} ${loadaddr} boot.scr\0" \
++	"bootscript=echo Running bootscript from ${devtype}${mmcdev} ...; " \
  		"source ${loadaddr}\0" \
-@@ -24,7 +46,8 @@
+ 	"bootenvfile=uEnv.txt\0" \
+-	"importbootenv=echo Importing environment from mmc${mmcdev} ...; " \
++	"importbootenv=echo Importing environment from ${devtype}${mmcdev} ...; " \
  		"env import -t ${loadaddr} ${filesize}\0" \
- 	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
+-	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
++	"loadbootenv=fatload ${devtype} ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
  	"loadimage=load ${devtype} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 -	"loadfdt=load ${devtype} ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
+-	"envboot=mmc dev ${mmcdev}; " \
+-		"if mmc rescan; then " \
 +	"loadrd=load ${devtype} ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
-+	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load ${devtype} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
- 	"envboot=mmc dev ${mmcdev}; " \
- 		"if mmc rescan; then " \
++	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...;  load ${devtype} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
++	"envboot=${devtype} dev ${mmcdev}; " \
++		"if ${devtype} rescan; then " \
  			"echo SD/MMC found on device ${mmcdev};" \
+ 			"if run loadbootscript; then " \
+ 				"run bootscript;" \
 -- 
-2.17.1
+2.16.1
 
