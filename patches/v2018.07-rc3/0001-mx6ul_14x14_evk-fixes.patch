@@ -1,55 +1,46 @@
-From 03f808850886a9492a85050476c17e8b14d85cbb Mon Sep 17 00:00:00 2001
+From 43e5581d1339b9143f1d8ca5d4445379d64942b1 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 3 Jul 2018 09:19:17 -0500
-Subject: [PATCH] mx53loco: uEnv.txt, bootz, n fixes
+Date: Fri, 17 Jun 2016 11:54:48 -0500
+Subject: [PATCH] mx6ul_14x14_evk fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- include/configs/mx53loco.h | 138 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 121 insertions(+), 17 deletions(-)
+ include/configs/mx6ul_14x14_evk.h | 134 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 116 insertions(+), 18 deletions(-)
 
-diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
-index 0c74e563a0..4e8fd7c9ae 100644
---- a/include/configs/mx53loco.h
-+++ b/include/configs/mx53loco.h
-@@ -68,25 +68,74 @@
- 
- #define CONFIG_ETHPRIME		"FEC0"
- 
--#define CONFIG_LOADADDR		0x72000000	/* loadaddr env var */
-+#define CONFIG_LOADADDR		0x70010000	/* loadaddr env var */
- 
- #define CONFIG_EXTRA_ENV_SETTINGS \
-+	"initrd_high=0xffffffff\0" \
-+	"fdt_high=0xffffffff\0" \
- 	"script=boot.scr\0" \
- 	"image=zImage\0" \
--	"fdt_addr=0x71000000\0" \
-+	"fdt_dir=/dtbs/\0" \
-+	"fdt_addr=0x71ff0000\0" \
-+	"rdaddr=0x72000000\0" \
+diff --git a/include/configs/mx6ul_14x14_evk.h b/include/configs/mx6ul_14x14_evk.h
+index b2ba773..f27d9a4 100644
+--- a/include/configs/mx6ul_14x14_evk.h
++++ b/include/configs/mx6ul_14x14_evk.h
+@@ -72,22 +72,66 @@
+ 	"initrd_high=0xffffffff\0" \
+ 	"fdt_file=undefined\0" \
+ 	"fdt_addr=0x83000000\0" \
++	"rdaddr=0x83080000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
-+	"console=ttymxc0,115200\0" \
 +	"optargs=\0" \
 +	"cmdline=\0" \
- 	"mmcdev=0\0" \
- 	"mmcpart=1\0" \
--	"mmcroot=/dev/mmcblk0p2 rw rootwait\0" \
--	"mmcargs=setenv bootargs console=ttymxc0,${baudrate} root=${mmcroot}\0" \
-+	"mmcroot=/dev/mmcblk0p2 ro\0" \
-+	"mmcrootfstype=ext4 rootwait fixrtc\0" \
-+	"mmcargs=setenv bootargs console=${console} " \
+ 	"videomode=video=ctfb:x:480,y:272,depth:24,pclk:108695,le:8,ri:4,up:2,lo:4,hs:41,vs:10,sync:0,vmode:0\0" \
+ 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
+ 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
+-	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
++	"mmcroot=" CONFIG_MMCROOT " rootwait ro\0" \
++	"mmcrootfstype=ext4 rootwait\0" \
+ 	"mmcautodetect=yes\0" \
+ 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+-		"root=${mmcroot}\0" \
 +		"${optargs} " \
 +		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
  	"loadbootscript=" \
- 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
  	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loadimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
--	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 +	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
@@ -94,11 +85,10 @@ index 0c74e563a0..4e8fd7c9ae 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -125,19 +174,74 @@
- 			"fi; " \
+@@ -126,6 +170,70 @@
  		"else " \
  			"bootz; " \
-+		"fi;\0" \
+ 		"fi;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
 +		"setenv bootfile vmlinuz-${uname_r}; " \
@@ -162,23 +152,31 @@ index 0c74e563a0..4e8fd7c9ae 100644
 +				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
 +				"bootz ${loadaddr} - ${fdt_addr}; " \
 +			"fi;" \
- 		"fi;\0"
++		"fi;\0" \
+ 		"findfdt="\
+ 			"if test $fdt_file = undefined; then " \
+ 				"if test $board_name = EVK && test $board_rev = 9X9; then " \
+@@ -137,18 +245,8 @@
+ 			"fi;\0" \
  
  #define CONFIG_BOOTCOMMAND \
--	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"if run loadbootscript; then " \
--			"run bootscript; " \
--		"else " \
--			"if run loadimage; then " \
--				"run mmcboot; " \
--			"else run netboot; " \
--			"fi; " \
--		"fi; " \
--	"else run netboot; fi"
-+	"run mmcboot;"
+-	   "run findfdt;" \
+-	   "mmc dev ${mmcdev};" \
+-	   "mmc dev ${mmcdev}; if mmc rescan; then " \
+-		   "if run loadbootscript; then " \
+-			   "run bootscript; " \
+-		   "else " \
+-			   "if run loadimage; then " \
+-				   "run mmcboot; " \
+-			   "else run netboot; " \
+-			   "fi; " \
+-		   "fi; " \
+-	   "else run netboot; fi"
++	   "run findfdt; " \
++	   "run mmcboot; "
  
- #define CONFIG_ARP_TIMEOUT	200UL
- 
+ /* Miscellaneous configurable options */
+ #define CONFIG_SYS_MEMTEST_START	0x80000000
 -- 
-2.18.0
+2.8.1
 
