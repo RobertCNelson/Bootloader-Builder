@@ -433,13 +433,12 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2018.05
+	#v2018.07
 	p_dir="${DIR}/patches/${uboot_stable}"
 	if [ "${stable}" ] ; then
 		#r1: initial release
-		#r2: am335x_evm: am335x: pocket/blue, internal 32KHz osc..
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -527,7 +526,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2018.07
+	#v2018.09
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
@@ -620,7 +619,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2018.09
+	#v2018.11
 	p_dir="${DIR}/patches/next"
 	if [ "${next}" ] ; then
 		#r1: initial release
