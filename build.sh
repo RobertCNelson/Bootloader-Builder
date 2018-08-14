@@ -1377,8 +1377,8 @@ mx6sabresd () {
 omap3_beagle () {
 	cleanup
 	build_old="true"
-#	build_stable="true"
-#	build_testing="true"
+	build_stable="true"
+	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
 
