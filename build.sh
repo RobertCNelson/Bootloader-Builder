@@ -530,8 +530,9 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x_evm: fix overlays...
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1376,8 +1377,8 @@ mx6sabresd () {
 
 omap3_beagle () {
 	cleanup
-	build_old="true"
-	build_stable="true"
+#	build_old="true"
+#	build_stable="true"
 	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
