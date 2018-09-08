@@ -1505,9 +1505,9 @@ am57xx_evm_ti
 ###am57xx_evm_ti_flasher
 ###am57xx_beagle_revc_ti_flasher
 ###am571x_sndrblock_flasher
-at91sam9x5ek
-mx23_olinuxino
-mx51evk
+#at91sam9x5ek
+#mx23_olinuxino
+#mx51evk
 mx53loco
 mx6ul_14x14_evk
 mx6ull_14x14_evk
@@ -1516,17 +1516,17 @@ omap3_beagle
 omap4_panda
 ###omap5_igep0050
 omap5_uevm
-sama5d2_xplained
+#sama5d2_xplained
 ###(these are a shared patch...)
 ###sama5d3xek
 ###sama5d3_xplained
 ###sama5d4ek
 ###sama5d4_xplained
 ###(these are a shared patch...)
-socfpga_de0_nano_soc
+#socfpga_de0_nano_soc
 #udoo
 ###vf610twr
-wandboard
+#wandboard
 
 #devices with no patches...
 A10_OLinuXino_Lime
