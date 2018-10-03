@@ -359,9 +359,11 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			echo "patch -p1 < \"${p_dir}/0003-am335x_evm-use-str-to-get-to-u-boot-prompt.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${p_dir}/0003-am335x_evm-use-str-to-get-to-u-boot-prompt.patch"
 			;;
 		am43xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
@@ -452,9 +454,11 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			echo "patch -p1 < \"${p_dir}/0003-am335x_evm-use-str-to-get-to-u-boot-prompt.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${p_dir}/0003-am335x_evm-use-str-to-get-to-u-boot-prompt.patch"
 			;;
 		am43xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
@@ -546,9 +550,11 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			echo "patch -p1 < \"${p_dir}/0003-am335x_evm-use-str-to-get-to-u-boot-prompt.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${p_dir}/0003-am335x_evm-use-str-to-get-to-u-boot-prompt.patch"
 			;;
 		am43xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
@@ -639,9 +645,11 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			echo "patch -p1 < \"${p_dir}/0003-am335x_evm-use-str-to-get-to-u-boot-prompt.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${p_dir}/0003-am335x_evm-use-str-to-get-to-u-boot-prompt.patch"
 			;;
 		am43xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
