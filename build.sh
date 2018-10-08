@@ -1451,7 +1451,7 @@ mx6sabresd
 omap3_beagle
 omap4_panda
 omap5_uevm
-#sama5d2_xplained
+sama5d2_xplained
 ###(these are a shared patch...)
 ###sama5d3xek
 ###sama5d3_xplained
