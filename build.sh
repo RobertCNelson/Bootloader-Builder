@@ -1457,7 +1457,7 @@ sama5d2_xplained
 ###sama5d3_xplained
 ###sama5d4_xplained
 ###(these are a shared patch...)
-#socfpga_de0_nano_soc
+socfpga_de0_nano_soc
 #udoo
 ###vf610twr
 #wandboard
