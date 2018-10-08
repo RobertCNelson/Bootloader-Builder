@@ -1443,7 +1443,7 @@ am57xx_evm_ti
 ###am571x_sndrblock_flasher
 #at91sam9x5ek
 #mx23_olinuxino
-#mx51evk
+mx51evk
 mx53loco
 mx6ul_14x14_evk
 mx6ull_14x14_evk
