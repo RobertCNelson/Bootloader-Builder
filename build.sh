@@ -1200,10 +1200,6 @@ A20_OLinuXino_MICRO () {
 	board="A20-OLinuXino_MICRO" ; always_stable_n_testing
 }
 
-A33_OLinuXino () {
-	board="A33-OLinuXino" ; always_stable_n_testing
-}
-
 am335x_evm () {
 	cleanup
 #	build_old="true"
@@ -1285,26 +1281,6 @@ at91sam9x5ek () {
 	board="at91sam9x5ek_mmc" ; build_uboot_eabi
 }
 
-Bananapi () {
-	board="Bananapi" ; always_stable_n_testing
-}
-
-Bananapro () {
-	board="Bananapro" ; always_stable_n_testing
-}
-
-cm_fx6 () {
-	board="cm_fx6" ; always_stable_n_testing
-}
-
-Cubieboard4 () {
-	board="Cubieboard4" ; always_testing
-}
-
-Cubietruck_plus () {
-	board="Cubietruck_plus" ; always_testing
-}
-
 firefly_rk3288 () {
 	cleanup
 #	build_old="true"
@@ -1368,7 +1344,7 @@ mx6sabresd () {
 omap3_beagle () {
 	cleanup
 #	build_old="true"
-#	build_stable="true"
+	build_stable="true"
 	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
@@ -1381,26 +1357,12 @@ omap4_panda () {
 	board="omap4_panda" ; build_uboot_gnueabihf
 }
 
-omap5_igep0050 () {
-	cleanup
-
-	board="omap5_igep0050"
-	uboot_config="omap5_igep0050_config"
-	gcc_linaro_gnueabihf_4_9
-	GIT_SHA="v2015.07"
-	build_u_boot
-}
-
 omap5_uevm () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap5_uevm" ; build_uboot_gnueabihf
-}
-
-orangepi_pc () {
-	board="orangepi_pc" ; always_stable_n_testing
 }
 
 sama5d2_xplained () {
@@ -1441,14 +1403,6 @@ socfpga_de0_nano_soc () {
 	build_stable="true"
 	build_testing="true"
 	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
-}
-
-Sinovoip_BPI_M2 () {
-	board="Sinovoip_BPI_M2" ; always_stable_n_testing
-}
-
-Sinovoip_BPI_M3 () {
-	board="Sinovoip_BPI_M3" ; always_stable_n_testing
 }
 
 udoo () {
@@ -1496,7 +1450,6 @@ mx6ull_14x14_evk
 mx6sabresd
 omap3_beagle
 omap4_panda
-###omap5_igep0050
 omap5_uevm
 #sama5d2_xplained
 ###(these are a shared patch...)
@@ -1512,17 +1465,9 @@ omap5_uevm
 #devices with no patches...
 A10_OLinuXino_Lime
 A20_OLinuXino_Lime
-#A20_OLinuXino_Lime2
-#A20_OLinuXino_MICRO
-#A33_OLinuXino
-#Bananapi
-#Bananapro
-#Cubieboard4
-#Cubietruck_plus
+A20_OLinuXino_Lime2
+A20_OLinuXino_MICRO
 #firefly_rk3288
 ls1021atwr
-#orangepi_pc
-#Sinovoip_BPI_M2
-#Sinovoip_BPI_M3
 
 #
