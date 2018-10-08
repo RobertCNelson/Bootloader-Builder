@@ -1441,7 +1441,7 @@ am57xx_evm_ti
 ###am57xx_evm_ti_flasher
 ###am57xx_beagle_revc_ti_flasher
 ###am571x_sndrblock_flasher
-#at91sam9x5ek
+at91sam9x5ek
 mx23_olinuxino
 mx51evk
 mx53loco
