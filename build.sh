@@ -401,7 +401,7 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4ek_mmc|sama5d4_xplained_mmc)
+		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
 			${git} "${p_dir}/0001-sama5dX-fixes.patch"
 			;;
@@ -495,7 +495,7 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4ek_mmc|sama5d4_xplained_mmc)
+		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
 			${git} "${p_dir}/0001-sama5dX-fixes.patch"
 			;;
@@ -588,7 +588,7 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4ek_mmc|sama5d4_xplained_mmc)
+		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
 			${git} "${p_dir}/0001-sama5dX-fixes.patch"
 			;;
@@ -681,7 +681,7 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4ek_mmc|sama5d4_xplained_mmc)
+		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
 			${git} "${p_dir}/0001-sama5dX-fixes.patch"
 			;;
@@ -1427,14 +1427,6 @@ sama5d3_xplained () {
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
 }
 
-sama5d4ek () {
-	cleanup
-#	build_old="true"
-#	build_stable="true"
-#	build_testing="true"
-	board="sama5d4ek_mmc" ; build_uboot_gnueabihf
-}
-
 sama5d4_xplained () {
 	cleanup
 #	build_old="true"
@@ -1510,7 +1502,6 @@ omap5_uevm
 ###(these are a shared patch...)
 ###sama5d3xek
 ###sama5d3_xplained
-###sama5d4ek
 ###sama5d4_xplained
 ###(these are a shared patch...)
 #socfpga_de0_nano_soc
