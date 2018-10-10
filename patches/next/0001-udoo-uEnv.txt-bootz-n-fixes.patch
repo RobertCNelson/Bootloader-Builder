@@ -1,33 +1,28 @@
-From 2dfe74ec8853fa281a8db7d9f516d831ad489292 Mon Sep 17 00:00:00 2001
+From 9f2c42f8e06613b4ace8d96dd04987f7a13fbb61 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 6 Dec 2017 13:27:53 -0600
+Date: Wed, 10 Oct 2018 11:36:54 -0500
 Subject: [PATCH] udoo: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  configs/udoo_defconfig |   6 ++
- include/configs/udoo.h | 202 +++++++++++++++++++++++++++++++++----------------
- 2 files changed, 144 insertions(+), 64 deletions(-)
+ include/configs/udoo.h | 203 ++++++++++++++++++++++++++++-------------
+ 2 files changed, 145 insertions(+), 64 deletions(-)
 
 diff --git a/configs/udoo_defconfig b/configs/udoo_defconfig
-index b92b181d4f..eff9e6e65f 100644
+index 52de8ca46c..d8ba6ebd86 100644
 --- a/configs/udoo_defconfig
 +++ b/configs/udoo_defconfig
-@@ -8,16 +8,22 @@ CONFIG_SPL_MMC_SUPPORT=y
- CONFIG_SPL_SERIAL_SUPPORT=y
- CONFIG_SPL_LIBDISK_SUPPORT=y
- CONFIG_SPL_WATCHDOG_SUPPORT=y
-+CONFIG_DISTRO_DEFAULTS=y
- CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=arch/arm/mach-imx/spl_sd.cfg"
- CONFIG_BOOTDELAY=3
+@@ -16,11 +16,17 @@ CONFIG_SUPPORT_RAW_INITRD=y
  CONFIG_BOARD_EARLY_INIT_F=y
- CONFIG_SPL=y
  CONFIG_SPL_EXT_SUPPORT=y
  CONFIG_SPL_I2C_SUPPORT=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
 +CONFIG_AUTOBOOT_DELAY_STR="d"
 +CONFIG_AUTOBOOT_STOP_STR=" "
+ CONFIG_SPL_WATCHDOG_SUPPORT=y
++CONFIG_DISTRO_DEFAULTS=y
  CONFIG_HUSH_PARSER=y
  CONFIG_CMD_BOOTZ=y
  CONFIG_CMD_GPIO=y
@@ -37,19 +32,11 @@ index b92b181d4f..eff9e6e65f 100644
  CONFIG_CMD_DHCP=y
  CONFIG_CMD_MII=y
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
-index bcce41db8a..4b83aff9c7 100644
+index 985f306813..040266b88a 100644
 --- a/include/configs/udoo.h
 +++ b/include/configs/udoo.h
-@@ -9,6 +9,7 @@
- #ifndef __CONFIG_H
- #define __CONFIG_H
- 
-+#include <config_distro_defaults.h>
- #include "mx6_common.h"
- 
- #include "imx6_spl.h"
-@@ -51,19 +52,21 @@
- #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+@@ -45,19 +45,21 @@
+ #define CONFIG_SYS_FSL_ESDHC_ADDR	0
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
 -	"script=boot.scr\0" \
@@ -76,7 +63,7 @@ index bcce41db8a..4b83aff9c7 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
-@@ -78,73 +81,144 @@
+@@ -72,73 +74,146 @@
  				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
  			"fi; "	\
  		"fi\0" \
@@ -255,6 +242,8 @@ index bcce41db8a..4b83aff9c7 100644
 +#define BOOT_TARGET_DEVICES(func) \
 +	func(MMC, mmc, 0) \
 +	func(MMC, mmc, 1)
++
++#undef CONFIG_BOOTCOMMAND
  
  #define CONFIG_BOOTCOMMAND \
  	   "run findfdt; " \
@@ -278,7 +267,7 @@ index bcce41db8a..4b83aff9c7 100644
 +#include <config_distro_bootcmd.h>
  
  /* Physical Memory Map */
- #define CONFIG_NR_DRAM_BANKS		1
+ #define PHYS_SDRAM			MMDC0_ARB_BASE_ADDR
 -- 
-2.15.0
+2.19.1
 
