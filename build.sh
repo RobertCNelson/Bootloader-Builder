@@ -1460,7 +1460,7 @@ sama5d2_xplained
 socfpga_de0_nano_soc
 udoo
 ###vf610twr
-#wandboard
+wandboard
 
 #devices with no patches...
 A10_OLinuXino_Lime
