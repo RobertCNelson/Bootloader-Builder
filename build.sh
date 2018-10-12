@@ -430,8 +430,9 @@ build_u_boot () {
 		#r2: am335x_evm: fix overlays...
 		#r3: rebuild with all enabled...
 		#r4: am335x_evm bring back bug/feature..
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: add pocketbeagle eeprom...
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -523,8 +524,9 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x eeprom, dtb overlays..
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
