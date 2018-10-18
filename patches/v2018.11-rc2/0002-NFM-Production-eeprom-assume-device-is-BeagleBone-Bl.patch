@@ -1,6 +1,6 @@
-From 57c0a4f0c417486640fea96798c620255eb5a1db Mon Sep 17 00:00:00 2001
+From a637a1587d92222e14ba89485a647f99040b3aaf Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 14 Aug 2018 11:50:43 -0500
+Date: Thu, 18 Oct 2018 12:20:25 -0500
 Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
@@ -16,7 +16,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  7 files changed, 37 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 07f8c541e2..648b625882 100644
+index 085910cdaf..f4f721c0d6 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -722,7 +722,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
@@ -37,7 +37,7 @@ index 07f8c541e2..648b625882 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1409,6 +1409,7 @@ int board_eth_init(bd_t *bis)
+@@ -1487,6 +1487,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -45,7 +45,7 @@ index 07f8c541e2..648b625882 100644
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a()) || board_is_bben() ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1436,6 +1437,7 @@ if (!board_is_pb()) {
+@@ -1514,6 +1515,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }
@@ -54,10 +54,10 @@ index 07f8c541e2..648b625882 100644
  
  	/*
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index e30cd77957..6d8f51e85c 100644
+index c90034617f..78ae74359e 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -100,10 +100,15 @@ static inline int board_is_os00(void)
+@@ -95,10 +95,15 @@ static inline int board_is_os00(void)
  	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS00", 4);
  }
  
@@ -68,7 +68,7 @@ index e30cd77957..6d8f51e85c 100644
 +
  static inline int board_is_beaglebonex(void)
  {
- 	return board_is_pb() || board_is_bone() || (board_is_bone_lt() && !board_is_marsboard()) ||
+ 	return board_is_pb() || board_is_bone() || board_is_bone_lt() ||
 -	       board_is_bbg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00();
 +	       board_is_bbg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00() || board_is_blank_bone_lt();
  }
@@ -122,7 +122,7 @@ index c475f106b2..43f5d2aebe 100644
  }
  
 diff --git a/configs/am335x_boneblack_defconfig b/configs/am335x_boneblack_defconfig
-index 70e97f34d9..8161f60dfe 100644
+index d6600021b3..d2e282c2b5 100644
 --- a/configs/am335x_boneblack_defconfig
 +++ b/configs/am335x_boneblack_defconfig
 @@ -4,7 +4,7 @@ CONFIG_TI_COMMON_CMD_OPTIONS=y
@@ -135,7 +135,7 @@ index 70e97f34d9..8161f60dfe 100644
  CONFIG_VERSION_VARIABLE=y
  CONFIG_ARCH_MISC_INIT=y
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
-index 70e97f34d9..8161f60dfe 100644
+index d6600021b3..d2e282c2b5 100644
 --- a/configs/am335x_evm_defconfig
 +++ b/configs/am335x_evm_defconfig
 @@ -4,7 +4,7 @@ CONFIG_TI_COMMON_CMD_OPTIONS=y
@@ -148,7 +148,7 @@ index 70e97f34d9..8161f60dfe 100644
  CONFIG_VERSION_VARIABLE=y
  CONFIG_ARCH_MISC_INIT=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 2477c7d7ba..da6019bed3 100644
+index 7b6c036384..42ca575b17 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -199,6 +199,14 @@
@@ -167,5 +167,5 @@ index 2477c7d7ba..da6019bed3 100644
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
 -- 
-2.18.0
+2.19.1
 
