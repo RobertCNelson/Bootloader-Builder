@@ -538,7 +538,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-halt_patching_uboot
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			;;
 		am335x_boneblack)
