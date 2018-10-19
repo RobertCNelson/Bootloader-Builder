@@ -432,8 +432,9 @@ build_u_boot () {
 		#r4: am335x_evm bring back bug/feature..
 		#r5: add pocketbeagle eeprom...
 		#r6: am335x_evm: drop marsboard support...
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x_evm: fix default state of i2c2_pin_mux and mmc0_sdwp...
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -527,8 +528,9 @@ build_u_boot () {
 		#r1: initial release
 		#r2: am335x eeprom, dtb overlays..
 		#r3: am335x_evm: drop marsboard support...
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: am335x_evm: fix default state of i2c2_pin_mux and mmc0_sdwp...
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -536,6 +538,7 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+halt_patching_uboot
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 			;;
 		am335x_boneblack)
