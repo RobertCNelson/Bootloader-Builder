@@ -59,15 +59,11 @@ fi
 wget_dl="wget -c --directory-prefix=${gcc_dir}/"
 
 dl_gcc_generic () {
-	site="https://releases.linaro.org"
-	archive_site="https://releases.linaro.org/archive"
-	non_https_site="http://releases.linaro.org"
-	non_https_archive_site="http://releases.linaro.org/archive"
 	WGET="wget -c --directory-prefix=${gcc_dir}/"
 	if [ ! -f "${gcc_dir}/${directory}/${datestamp}" ] ; then
 		echo "Installing: ${toolchain_name}"
 		echo "-----------------------------"
-		${WGET} "${site}/${version}/${filename}" || ${WGET} "${archive_site}/${version}/${filename}" || ${WGET} "${non_https_site}/${version}/${filename}" || ${WGET} "${non_https_archive_site}/${version}/${filename}"
+		${WGET} "${site}/${version}/${filename}" || ${WGET} "${archive_site}/${version}/${filename}"
 		if [ -d "${gcc_dir}/${directory}" ] ; then
 			rm -rf "${gcc_dir}/${directory}" || true
 		fi
@@ -91,6 +87,9 @@ dl_gcc_generic () {
 
 #NOTE: ignore formatting, as this is just: meld build.sh ../stable-kernel/scripts/gcc.sh
 gcc_arm_embedded_4_9 () {
+		site="https://releases.linaro.org"
+		archive_site="https://releases.linaro.org/archive"
+
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/4.9-2016.02/arm-eabi/gcc-linaro-5.3-2016.02-x86_64_arm-eabi.tar.xz
 		#
@@ -112,6 +111,9 @@ gcc_arm_embedded_4_9 () {
 }
 
 gcc_arm_embedded_6 () {
+		site="https://releases.linaro.org"
+		archive_site="https://releases.linaro.org/archive"
+
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/arm-eabi/gcc-linaro-6.3.1-2017.05-x86_64_arm-eabi.tar.xz
 		#https://releases.linaro.org/components/toolchain/binaries/6.4-2017.08/arm-eabi/gcc-linaro-6.4.1-2017.08-x86_64_arm-eabi.tar.xz
@@ -136,6 +138,9 @@ gcc_arm_embedded_6 () {
 }
 
 gcc_arm_embedded_7 () {
+		site="https://releases.linaro.org"
+		archive_site="https://releases.linaro.org/archive"
+
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/7.1-2017.05/arm-eabi/gcc-linaro-7.1.1-2017.05-x86_64_arm-eabi.tar.xz
 		#https://releases.linaro.org/components/toolchain/binaries/7.1-2017.08/arm-eabi/gcc-linaro-7.1.1-2017.08-x86_64_arm-eabi.tar.xz
@@ -161,6 +166,9 @@ gcc_arm_embedded_7 () {
 }
 
 gcc_linaro_gnueabihf_4_9 () {
+		site="https://releases.linaro.org"
+		archive_site="https://releases.linaro.org/archive"
+
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-linux-gnueabihf/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf.tar.xz
 		#
@@ -182,6 +190,9 @@ gcc_linaro_gnueabihf_4_9 () {
 }
 
 gcc_linaro_gnueabihf_6 () {
+		site="https://releases.linaro.org"
+		archive_site="https://releases.linaro.org/archive"
+
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/arm-linux-gnueabihf/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf.tar.xz
 		#https://releases.linaro.org/components/toolchain/binaries/6.4-2017.08/arm-linux-gnueabihf/gcc-linaro-6.4.1-2017.08-x86_64_arm-linux-gnueabihf.tar.xz
@@ -206,6 +217,9 @@ gcc_linaro_gnueabihf_6 () {
 }
 
 gcc_linaro_gnueabihf_7 () {
+		site="https://releases.linaro.org"
+		archive_site="https://releases.linaro.org/archive"
+
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/7.1-2017.05/arm-linux-gnueabihf/gcc-linaro-7.1.1-2017.05-x86_64_arm-linux-gnueabihf.tar.xz
 		#https://releases.linaro.org/components/toolchain/binaries/7.1-2017.08/arm-linux-gnueabihf/gcc-linaro-7.1.1-2017.08-x86_64_arm-linux-gnueabihf.tar.xz
@@ -222,6 +236,54 @@ gcc_linaro_gnueabihf_7 () {
 		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
 		filename="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}.tar.xz"
 		directory="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/${target}-"
+
+	dl_gcc_generic
+}
+
+gcc_arm_arm_linux_gnueabihf_8 () {
+		#
+		#https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
+		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2018.08/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf.tar.xz
+		#
+		site="https://developer.arm.com/-/media/Files/downloads/gnu-a"
+		archive_site="https://developer.arm.com/-/media/Files/downloads/gnu-a"
+
+		gcc_version="8.2"
+		gcc_minor=""
+		release="18.08"
+		target="arm-linux-gnueabihf"
+
+		version="${gcc_version}-20${release}"
+		filename="gcc-arm-${gcc_version}${gcc_minor}-20${release}-x86_64-${target}.tar.xz"
+		directory="gcc-arm-${gcc_version}${gcc_minor}-20${release}-x86_64-${target}"
+
+		datestamp="${gcc_version}-20${release}-${target}"
+
+		binary="bin/${target}-"
+
+	dl_gcc_generic
+}
+
+gcc_arm_aarch64_linux_gnu_8 () {
+		#
+		#https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
+		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2018.08/gcc-arm-8.2-2018.08-x86_64-aarch64-linux-gnu.tar.xz
+		#
+		site="https://developer.arm.com/-/media/Files/downloads/gnu-a"
+		archive_site="https://developer.arm.com/-/media/Files/downloads/gnu-a"
+
+		gcc_version="8.2"
+		gcc_minor=""
+		release="18.08"
+		target="aarch64-linux-gnu"
+
+		version="${gcc_version}-20${release}"
+		filename="gcc-arm-${gcc_version}${gcc_minor}-20${release}-x86_64-${target}.tar.xz"
+		directory="gcc-arm-${gcc_version}${gcc_minor}-20${release}-x86_64-${target}"
 
 		datestamp="${gcc_version}-20${release}-${target}"
 
@@ -1141,6 +1203,17 @@ build_uboot_gnueabihf () {
 	build_uboot_latest
 }
 
+build_uboot_aarch64 () {
+	if [ "x${uboot_config}" = "x" ] ; then
+		uboot_config="${board}_defconfig"
+	fi
+	gcc_arm_aarch64_linux_gnu_8
+	build_uboot_old
+	build_uboot_stable
+	build_uboot_testing
+	build_uboot_latest
+}
+
 build_uboot_gnueabihf_only_old () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
@@ -1436,6 +1509,14 @@ wandboard () {
 	build_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
 }
+
+am65x_evm_a53 () {
+	cleanup
+#	build_old="true"
+#	build_stable="true"
+	build_testing="true"
+	board="am65x_evm_a53" ; build_uboot_aarch64
+}
 #exit
 
 ###artik5
@@ -1466,7 +1547,7 @@ sama5d2_xplained
 ###sama5d4_xplained
 ###(these are a shared patch...)
 socfpga_de0_nano_soc
-udoo
+#udoo
 ###vf610twr
 wandboard
 
@@ -1477,5 +1558,8 @@ A20_OLinuXino_Lime2
 A20_OLinuXino_MICRO
 #firefly_rk3288
 ls1021atwr
+
+#development...
+#am65x_evm_a53
 
 #
