@@ -1,6 +1,6 @@
-From 737ab837008cf8b1e31507c21b9a9c2d582da593 Mon Sep 17 00:00:00 2001
+From 452d62fe287f5a087adbbed51cedf7df8f6d8c8a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 5 Dec 2018 15:48:13 -0600
+Date: Thu, 20 Dec 2018 12:48:30 -0600
 Subject: [PATCH] de0_nano fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -11,10 +11,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 1f3fa1575a..906b32657a 100644
+index cb7ec58079..cbf2aed48e 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -790,11 +790,9 @@ config ARCH_SOCFPGA
+@@ -811,11 +811,9 @@ config ARCH_SOCFPGA
  	select ARM64 if TARGET_SOCFPGA_STRATIX10
  	select CPU_V7A if TARGET_SOCFPGA_GEN5 || TARGET_SOCFPGA_ARRIA10
  	select DM
@@ -24,10 +24,10 @@ index 1f3fa1575a..906b32657a 100644
  	select SPL_DM_RESET if DM_RESET
 -	select SPL_DM_SERIAL
  	select SPL_LIBCOMMON_SUPPORT
- 	select SPL_LIBDISK_SUPPORT
  	select SPL_LIBGENERIC_SUPPORT
-@@ -807,7 +805,6 @@ config ARCH_SOCFPGA
- 	select SPL_SPI_SUPPORT if DM_SPI
+ 	select SPL_NAND_SUPPORT if SPL_NAND_DENALI
+@@ -824,7 +822,6 @@ config ARCH_SOCFPGA
+ 	select SPL_SERIAL_SUPPORT
  	select SPL_WATCHDOG_SUPPORT
  	select SUPPORT_SPL
 -	select SYS_NS16550
