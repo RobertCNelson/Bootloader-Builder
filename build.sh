@@ -615,6 +615,10 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
 			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"
 			;;
+		am57xx_evm)
+			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
+			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
+			;;
 		at91sam9x5ek_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
@@ -707,6 +711,10 @@ build_u_boot () {
 		am43xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
 			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"
+			;;
+		am57xx_evm)
+			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
+			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
 			;;
 		at91sam9x5ek_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
@@ -1312,7 +1320,12 @@ am43xx_evm () {
 }
 
 am57xx_evm () {
-	board="am57xx_evm" ; always_stable_n_testing
+	cleanup
+#	build_old="true"
+	build_stable="true"
+	build_testing="true"
+
+	board="am57xx_evm" ; build_uboot_gnueabihf
 }
 
 am57xx_evm_ti () {
