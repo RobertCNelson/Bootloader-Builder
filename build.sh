@@ -403,8 +403,9 @@ build_u_boot () {
 		#r5: add pocketbeagle eeprom...
 		#r6: am335x_evm: drop marsboard support...
 		#r7: am335x_evm: fix default state of i2c2_pin_mux and mmc0_sdwp...
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: am335x_evm: revert i2c2_pin_mux state, broke capes...
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -499,8 +500,9 @@ build_u_boot () {
 		#r2: am335x eeprom, dtb overlays..
 		#r3: am335x_evm: drop marsboard support...
 		#r4: am335x_evm: fix default state of i2c2_pin_mux and mmc0_sdwp...
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: am335x_evm: revert i2c2_pin_mux state, broke capes...
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -592,8 +594,9 @@ build_u_boot () {
 	p_dir="${DIR}/patches/${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am335x_evm: revert i2c2_pin_mux state, broke capes...
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1292,7 +1295,7 @@ A20_OLinuXino_MICRO () {
 
 am335x_evm () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 
@@ -1301,7 +1304,7 @@ am335x_evm () {
 
 am335x_boneblack_flasher () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 
