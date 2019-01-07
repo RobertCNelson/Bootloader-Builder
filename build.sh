@@ -667,7 +667,9 @@ build_u_boot () {
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-ARM-at91-Convert-SPL_GENERATE_ATMEL_PMECC_HEADER-to-.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
+			${git} "${p_dir}/0001-ARM-at91-Convert-SPL_GENERATE_ATMEL_PMECC_HEADER-to-.patch"
 			${git} "${p_dir}/0001-sama5dX-fixes.patch"
 			;;
 		socfpga_de0_nano_soc)
@@ -764,7 +766,9 @@ build_u_boot () {
 			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
+			echo "patch -p1 < \"${p_dir}/0001-ARM-at91-Convert-SPL_GENERATE_ATMEL_PMECC_HEADER-to-.patch\""
 			echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
+			${git} "${p_dir}/0001-ARM-at91-Convert-SPL_GENERATE_ATMEL_PMECC_HEADER-to-.patch"
 			${git} "${p_dir}/0001-sama5dX-fixes.patch"
 			;;
 		socfpga_de0_nano_soc)
