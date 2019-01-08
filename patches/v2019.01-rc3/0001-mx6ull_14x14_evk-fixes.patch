@@ -1,88 +1,67 @@
-From 398a79461822f291a9556c44b6cc7bcaee0b5c18 Mon Sep 17 00:00:00 2001
+From 6efb4f15034d3caac600db548a9a59d13376a8e6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 8 Jan 2019 09:12:42 -0600
-Subject: [PATCH] mx23_olinuxino: uEnv.txt, bootz, n fixes
+Date: Wed, 24 May 2017 12:59:55 -0500
+Subject: [PATCH] mx6ull_14x14_evk fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/mx23_olinuxino_defconfig |   3 +
- include/configs/mx23_olinuxino.h | 112 ++++++++++++++++++++++++++-----
- 2 files changed, 100 insertions(+), 15 deletions(-)
+ include/configs/mx6ullevk.h | 132 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 115 insertions(+), 17 deletions(-)
 
-diff --git a/configs/mx23_olinuxino_defconfig b/configs/mx23_olinuxino_defconfig
-index 0e552a6ac4..ff9b5923cf 100644
---- a/configs/mx23_olinuxino_defconfig
-+++ b/configs/mx23_olinuxino_defconfig
-@@ -16,6 +16,7 @@ CONFIG_ARCH_MISC_INIT=y
- CONFIG_HUSH_PARSER=y
- # CONFIG_CMD_BOOTEFI is not set
- # CONFIG_CMD_FLASH is not set
-+CONFIG_CMD_BOOTZ=y
- CONFIG_CMD_GPIO=y
- CONFIG_CMD_MMC=y
- CONFIG_CMD_USB=y
-@@ -23,7 +24,9 @@ CONFIG_CMD_USB=y
- CONFIG_CMD_DHCP=y
- CONFIG_CMD_CACHE=y
- CONFIG_CMD_EXT2=y
-+CONFIG_CMD_EXT4=y
- CONFIG_CMD_FAT=y
-+CONFIG_CMD_FS_GENERIC=y
- CONFIG_ENV_IS_IN_MMC=y
- CONFIG_LED_STATUS=y
- CONFIG_LED_STATUS_GPIO=y
-diff --git a/include/configs/mx23_olinuxino.h b/include/configs/mx23_olinuxino.h
-index 330f020f78..76c007c20a 100644
---- a/include/configs/mx23_olinuxino.h
-+++ b/include/configs/mx23_olinuxino.h
-@@ -10,6 +10,8 @@
- 
- /* U-Boot Commands */
- 
-+#define CONFIG_SUPPORT_RAW_INITRD
-+
- /* Memory configuration */
- #define PHYS_SDRAM_1			0x40000000	/* Base address */
- #define PHYS_SDRAM_1_SIZE		0x08000000	/* Max 128 MB RAM */
-@@ -56,20 +58,58 @@
- 	"console=ttyAMA0\0" \
- 	"fdt_file=imx23-olinuxino.dtb\0" \
- 	"fdt_addr=0x41000000\0" \
-+	"fdtdir=\0" \
-+	"bootfile=\0" \
-+	"bootdir=\0" \
+diff --git a/include/configs/mx6ullevk.h b/include/configs/mx6ullevk.h
+index 19b0630d9d..eef65d5659 100644
+--- a/include/configs/mx6ullevk.h
++++ b/include/configs/mx6ullevk.h
+@@ -62,22 +62,66 @@
+ 	"initrd_high=0xffffffff\0" \
+ 	"fdt_file=imx6ull-14x14-evk.dtb\0" \
+ 	"fdt_addr=0x83000000\0" \
++	"rdaddr=0x83080000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
 +	"optargs=\0" \
 +	"cmdline=\0" \
- 	"mmcdev=0\0" \
- 	"mmcpart=2\0" \
--	"mmcroot=/dev/mmcblk0p3 rw rootwait\0" \
-+	"mmcroot=/dev/mmcblk0p2 ro\0" \
-+	"mmcrootfstype=ext4 rootwait fixrtc\0" \
+ 	"videomode=video=ctfb:x:480,y:272,depth:24,pclk:108695,le:8,ri:4,up:2,lo:4,hs:41,vs:10,sync:0,vmode:0\0" \
+ 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
+ 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
+-	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
++	"mmcroot=" CONFIG_MMCROOT " rootwait ro\0" \
++	"mmcrootfstype=ext4 rootwait\0" \
+ 	"mmcautodetect=yes\0" \
  	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 -		"root=${mmcroot}\0" \
 +		"${optargs} " \
 +		"root=${mmcroot} " \
 +		"rootfstype=${mmcrootfstype} " \
 +		"${cmdline}\0" \
-+	"loadbootenv=load mmc ${bootpart} ${loadaddr} /boot/uEnv.txt\0" \
-+	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
-+		"env import -t ${loadaddr} ${filesize}\0" \
- 	"loadbootscript="  \
- 		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
- 	"bootscript=echo Running bootscript from mmc ...; "	\
+ 	"loadbootscript=" \
+-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 	"bootscript=echo Running bootscript from mmc ...; " \
  		"source\0" \
--	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
 +	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
++	"loadrd=load mmc ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
 +	"loadfdt=echo loading ${fdtdir}/${fdt_file} ...;  load mmc ${bootpart} ${fdt_addr} ${fdtdir}/${fdt_file}\0" \
 +	"mmcboot=mmc dev ${mmcdev}; " \
 +		"if mmc rescan; then " \
 +			"echo SD/MMC found on device ${mmcdev};" \
++			"setenv bootpart ${mmcdev}:1; " \
++			"echo Checking for: /uEnv.txt ...;" \
++			"if test -e mmc ${bootpart} /uEnv.txt; then " \
++				"load mmc ${bootpart} ${loadaddr} /uEnv.txt;" \
++				"env import -t ${loadaddr} ${filesize};" \
++				"echo Loaded environment from /uEnv.txt;" \
++				"echo Checking if uenvcmd is set ...;" \
++				"if test -n ${uenvcmd}; then " \
++					"echo Running uenvcmd ...;" \
++					"run uenvcmd;" \
++				"fi;" \
++			"fi; " \
 +			"echo Checking for: /boot/uEnv.txt ...;" \
-+			"for i in 2 3 4 5 6 7 ; do " \
++			"for i in 1 2 3 4 5 6 7 ; do " \
 +				"setenv mmcpart ${i};" \
 +				"setenv bootpart ${mmcdev}:${mmcpart};" \
 +				"if test -e mmc ${bootpart} /boot/uEnv.txt; then " \
@@ -91,14 +70,12 @@ index 330f020f78..76c007c20a 100644
 +					"echo Loaded environment from /boot/uEnv.txt;" \
 +					"if test -n ${dtb}; then " \
 +						"setenv fdt_file ${dtb};" \
-+						"echo using ${fdt_file} ...;" \
++						"echo Using: dtb=${fdt_file} ...;" \
 +					"fi;" \
 +					"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
 +					"if test -n ${uname_r}; then " \
++						"echo Running uname_boot ...;" \
 +						"setenv mmcroot /dev/mmcblk${mmcdev}p${mmcpart} ro;" \
-+						"if test -n ${uuid}; then " \
-+							"setenv mmcroot UUID=${uuid} ro;" \
-+						"fi;" \
 +						"run uname_boot;" \
 +					"fi;" \
 +				"fi;" \
@@ -108,11 +85,10 @@ index 330f020f78..76c007c20a 100644
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
  			"if run loadfdt; then " \
-@@ -108,19 +148,61 @@
- 			"fi; " \
+@@ -116,19 +160,73 @@
  		"else " \
- 			"bootm; " \
-+		"fi;\0" \
+ 			"bootz; " \
+ 		"fi;\0" \
 +	"uname_boot="\
 +		"setenv bootdir /boot; " \
 +		"setenv bootfile vmlinuz-${uname_r}; " \
@@ -159,27 +135,41 @@ index 330f020f78..76c007c20a 100644
 +					"fi;" \
 +				"fi;" \
 +			"fi; " \
-+			"run mmcargs;" \
-+			"echo debug: [${bootargs}] ... ;" \
-+			"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
-+			"bootz ${loadaddr} - ${fdt_addr}; " \
- 		"fi;\0"
++			"setenv rdfile initrd.img-${uname_r}; " \
++			"if test -e mmc ${bootpart} ${bootdir}/${rdfile}; then " \
++				"echo loading ${bootdir}/${rdfile} ...; "\
++				"run loadrd;" \
++				"if test -n ${uuid}; then " \
++					"setenv mmcroot UUID=${uuid} ro;" \
++				"fi;" \
++				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}] ... ;" \
++				"bootz ${loadaddr} ${rdaddr}:${rdsize} ${fdt_addr}; " \
++			"else " \
++				"run mmcargs;" \
++				"echo debug: [${bootargs}] ... ;" \
++				"echo debug: [bootz ${loadaddr} - ${fdt_addr}] ... ;" \
++				"bootz ${loadaddr} - ${fdt_addr}; " \
++			"fi;" \
++		"fi;\0" \
  
  #define CONFIG_BOOTCOMMAND \
--	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"if run loadbootscript; then " \
--			"run bootscript; " \
--		"else " \
--			"if run loaduimage; then " \
--				"run mmcboot; " \
--			"else run netboot; " \
--			"fi; " \
--		"fi; " \
--	"else run netboot; fi"
-+	"run mmcboot;"
+-	   "mmc dev ${mmcdev};" \
+-	   "mmc dev ${mmcdev}; if mmc rescan; then " \
+-		   "if run loadbootscript; then " \
+-			   "run bootscript; " \
+-		   "else " \
+-			   "if run loadimage; then " \
+-				   "run mmcboot; " \
+-			   "else run netboot; " \
+-			   "fi; " \
+-		   "fi; " \
+-	   "else run netboot; fi"
++	   "run mmcboot; "
  
- /* The rest of the configuration is shared */
- #include <configs/mxs.h>
+ /* Miscellaneous configurable options */
+ #define CONFIG_SYS_MEMTEST_START	0x80000000
 -- 
-2.20.1
+2.11.0
 

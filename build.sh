@@ -1399,7 +1399,7 @@ mx23_olinuxino () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
 }
 
