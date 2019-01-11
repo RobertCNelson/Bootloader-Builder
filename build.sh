@@ -1397,7 +1397,7 @@ ls1021atwr () {
 
 mx23_olinuxino () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 #	build_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
@@ -1405,7 +1405,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
@@ -1413,7 +1413,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx53loco" ; build_uboot_gnueabihf
@@ -1421,7 +1421,7 @@ mx53loco () {
 
 mx6ul_14x14_evk () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx6ul_14x14_evk" ; build_uboot_gnueabihf
@@ -1429,7 +1429,7 @@ mx6ul_14x14_evk () {
 
 mx6ull_14x14_evk () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx6ull_14x14_evk" ; build_uboot_gnueabihf
@@ -1437,7 +1437,7 @@ mx6ull_14x14_evk () {
 
 mx6sabresd () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx6sabresd" ; build_uboot_gnueabihf
@@ -1445,7 +1445,7 @@ mx6sabresd () {
 
 omap3_beagle () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
@@ -1453,7 +1453,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap4_panda" ; build_uboot_gnueabihf
@@ -1461,7 +1461,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap5_uevm" ; build_uboot_gnueabihf
@@ -1469,7 +1469,7 @@ omap5_uevm () {
 
 sama5d2_xplained () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
@@ -1477,7 +1477,7 @@ sama5d2_xplained () {
 
 sama5d3xek () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
@@ -1485,7 +1485,7 @@ sama5d3xek () {
 
 sama5d3_xplained () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
@@ -1493,7 +1493,7 @@ sama5d3_xplained () {
 
 sama5d4_xplained () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
@@ -1501,7 +1501,7 @@ sama5d4_xplained () {
 
 socfpga_de0_nano_soc () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
@@ -1509,7 +1509,7 @@ socfpga_de0_nano_soc () {
 
 udoo () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="udoo" ; build_uboot_gnueabihf
@@ -1517,7 +1517,7 @@ udoo () {
 
 vf610twr () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="vf610twr" ; build_uboot_gnueabihf
@@ -1525,7 +1525,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
