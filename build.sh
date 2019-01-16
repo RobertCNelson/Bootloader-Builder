@@ -1517,8 +1517,8 @@ udoo () {
 
 vf610twr () {
 	cleanup
-	build_old="true"
-	build_stable="true"
+#	build_old="true"
+#	build_stable="true"
 	build_testing="true"
 	board="vf610twr" ; build_uboot_gnueabihf
 }
@@ -1569,7 +1569,7 @@ sama5d2_xplained
 ###(these are a shared patch...)
 socfpga_de0_nano_soc
 #udoo
-###vf610twr
+vf610twr
 wandboard
 
 #devices with no patches...
