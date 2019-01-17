@@ -478,10 +478,6 @@ build_u_boot () {
 		socfpga_de0_nano_soc)
 			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
-		udoo)
-			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-			;;
 		vf610twr)
 			echo "patch -p1 < \"${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
@@ -574,10 +570,6 @@ build_u_boot () {
 			;;
 		socfpga_de0_nano_soc)
 			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
-			;;
-		udoo)
-			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		vf610twr)
 			echo "patch -p1 < \"${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch\""
@@ -675,10 +667,6 @@ build_u_boot () {
 		socfpga_de0_nano_soc)
 			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
 			;;
-		udoo)
-			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
-			;;
 		vf610twr)
 			echo "patch -p1 < \"${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
@@ -773,10 +761,6 @@ build_u_boot () {
 			;;
 		socfpga_de0_nano_soc)
 			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
-			;;
-		udoo)
-			echo "patch -p1 < \"${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-udoo-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		vf610twr)
 			echo "patch -p1 < \"${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch\""
@@ -1297,6 +1281,14 @@ A20_OLinuXino_MICRO () {
 	board="A20-OLinuXino_MICRO" ; always_stable_n_testing
 }
 
+ls1021atwr () {
+	board="ls1021atwr_sdcard_qspi" ; always_stable_n_testing
+}
+
+udoo () {
+	board="udoo" ; always_stable_n_testing
+}
+
 am335x_evm () {
 	cleanup
 	build_old="true"
@@ -1389,10 +1381,6 @@ firefly_rk3288 () {
 	build_stable="true"
 	build_testing="true"
 	board="firefly-rk3288" ; build_uboot_gnueabihf
-}
-
-ls1021atwr () {
-	board="ls1021atwr_sdcard_qspi" ; always_stable_n_testing
 }
 
 mx23_olinuxino () {
@@ -1507,14 +1495,6 @@ socfpga_de0_nano_soc () {
 	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
 }
 
-udoo () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="udoo" ; build_uboot_gnueabihf
-}
-
 vf610twr () {
 	cleanup
 #	build_old="true"
@@ -1568,7 +1548,6 @@ sama5d2_xplained
 ###sama5d4_xplained
 ###(these are a shared patch...)
 socfpga_de0_nano_soc
-#udoo
 vf610twr
 wandboard
 
@@ -1579,6 +1558,7 @@ A20_OLinuXino_Lime2
 A20_OLinuXino_MICRO
 #firefly_rk3288
 ls1021atwr
+udoo
 
 #development...
 #am65x_evm_a53
