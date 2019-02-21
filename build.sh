@@ -410,8 +410,9 @@ build_u_boot () {
 		#r7: am335x_evm: fix default state of i2c2_pin_mux and mmc0_sdwp...
 		#r8: am335x_evm: revert i2c2_pin_mux state, broke capes...
 		#r9: am335x_evm: add BB-BONE-NH10C-01-00A0
-		#r10: (pending)
-		RELEASE_VER="-r9" #bump on every change...
+		#r10: am335x_evm: fix BBE
+		#r11: (pending)
+		RELEASE_VER="-r10" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1298,7 +1299,7 @@ am335x_evm () {
 	cleanup
 	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
@@ -1307,7 +1308,7 @@ am335x_boneblack_flasher () {
 	cleanup
 	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
