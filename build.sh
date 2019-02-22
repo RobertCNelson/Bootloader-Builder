@@ -411,8 +411,9 @@ build_u_boot () {
 		#r8: am335x_evm: revert i2c2_pin_mux state, broke capes...
 		#r9: am335x_evm: add BB-BONE-NH10C-01-00A0
 		#r10: am335x_evm: fix BBE
-		#r11: (pending)
-		RELEASE_VER="-r10" #bump on every change...
+		#r11: am335x_evm: really fix BBE
+		#r12: (pending)
+		RELEASE_VER="-r11" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

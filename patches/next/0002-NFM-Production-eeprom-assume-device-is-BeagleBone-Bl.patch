@@ -43,7 +43,7 @@ index 085910cdaf..f4f721c0d6 100644
  #ifdef CONFIG_DRIVER_TI_CPSW
 +if (!board_is_blank_bone_lt()) {
  if (!board_is_pb()) {
- 	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a()) || !board_is_bben() ||
+ 	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
 @@ -1514,6 +1515,7 @@ if (!board_is_pb()) {
  	else
