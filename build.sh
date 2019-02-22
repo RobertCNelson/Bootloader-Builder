@@ -1529,8 +1529,8 @@ am65x_evm_a53 () {
 ###artik5
 ###artik10
 
-#am335x_evm
-#am335x_boneblack_flasher
+am335x_evm
+am335x_boneblack_flasher
 am43xx_evm
 am57xx_evm
 am57xx_evm_ti
