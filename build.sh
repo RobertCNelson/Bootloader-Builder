@@ -412,8 +412,9 @@ build_u_boot () {
 		#r9: am335x_evm: add BB-BONE-NH10C-01-00A0
 		#r10: am335x_evm: fix BBE
 		#r11: am335x_evm: really fix BBE
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: am335x_evm: add BBORG_DISPLAY70-00A2.dtbo
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -503,8 +504,9 @@ build_u_boot () {
 		#r1: initial release
 		#r2: am335x_evm: revert i2c2_pin_mux state, broke capes...
 		#r3: am335x_evm: add BB-BONE-NH10C-01-00A0
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: am335x_evm: add BBORG_DISPLAY70-00A2.dtbo
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

@@ -57,6 +57,12 @@ int main (void)
 	cape_overlay_hash = hash_string(cape_overlay);
 	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
 
+	//e0
+	strlcpy(cape_overlay, "/lib/firmware/BBORG_DISPLAY70-00A2.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xe05061f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
 	//e3
 	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-NH7C-01-A0.dtbo", 40 + 1);
 	strlcpy(original_hash, "0xe3f55df", 9 + 1);
