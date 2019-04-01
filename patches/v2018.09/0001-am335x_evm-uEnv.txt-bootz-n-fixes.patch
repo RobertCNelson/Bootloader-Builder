@@ -1,7 +1,7 @@
-From 1c3ed1a12fc98c254c2775078205306356dc3f8b Mon Sep 17 00:00:00 2001
+From c55b5aaaa838e4d78d9e65545684b388987d9ee6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 21 Feb 2019 16:00:30 -0600
-Subject: [PATCH] am335x_evm: uEnv.txt, bootz, n fixes
+Date: Mon, 1 Apr 2019 15:23:53 -0500
+Subject: [PATCH 1/2] am335x_evm: uEnv.txt, bootz, n fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
@@ -97,7 +97,7 @@ index 1a24acb748..91f59855c7 100644
   * vcores_init() - Assign omap_vcores based on board
   *
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index a359d20021..7ade2bec16 100644
+index a359d20021..9eb285d6cb 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -28,6 +28,7 @@
