@@ -1,7 +1,7 @@
-From 6e96321365cf6acbe2e26fbba9bd49ab6c2e42d9 Mon Sep 17 00:00:00 2001
+From 582fa7f4c4d6c0339dec95e60fc13680c5c6edfa Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 18 Oct 2018 12:15:10 -0500
-Subject: [PATCH 2/2] NFM: Production: eeprom: assume device is BeagleBone
+Date: Tue, 2 Apr 2019 15:47:00 -0500
+Subject: [PATCH 3/3] NFM: Production: eeprom: assume device is BeagleBone
  Black
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -16,10 +16,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  7 files changed, 37 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 7d0600a98d..11a8aa9569 100644
+index 8d8b5be12b..f0a7cf6f8f 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -722,7 +722,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -728,7 +728,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -28,7 +28,7 @@ index 7d0600a98d..11a8aa9569 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -1004,7 +1004,7 @@ void sdram_init(void)
+@@ -1010,7 +1010,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -37,7 +37,7 @@ index 7d0600a98d..11a8aa9569 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1409,6 +1409,7 @@ int board_eth_init(bd_t *bis)
+@@ -1415,6 +1415,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -45,7 +45,7 @@ index 7d0600a98d..11a8aa9569 100644
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1436,6 +1437,7 @@ if (!board_is_pb()) {
+@@ -1442,6 +1443,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }
@@ -75,10 +75,10 @@ index c90034617f..78ae74359e 100644
  
  static inline int board_is_evm_sk(void)
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 879b1c4a42..5c7b5f42d3 100644
+index 64fb73ee64..91ee6f61fd 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -424,7 +424,10 @@ void enable_board_pin_mux(void)
+@@ -423,7 +423,10 @@ void enable_board_pin_mux(void)
  		configure_module_pin_mux(rmii1_pin_mux);
  		configure_module_pin_mux(spi0_pin_mux);
  	} else {
@@ -167,5 +167,5 @@ index 7b6c036384..42ca575b17 100644
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
 -- 
-2.19.1
+2.20.1
 

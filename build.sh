@@ -460,6 +460,7 @@ build_u_boot () {
 				git add --all
 				git commit -a -m 'am335x_evm: uEnv.txt, bootz, n fixes' -s
 				git format-patch -1 -o ../../patches/${uboot_old}/
+				exit 2
 			fi
 
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
@@ -493,6 +494,7 @@ build_u_boot () {
 				git add --all
 				git commit -a -m 'U-Boot: BeagleBone Cape Manager' -s
 				git format-patch -2 -o ../../patches/${uboot_old}/
+				exit 2
 			fi
 
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
@@ -500,10 +502,43 @@ build_u_boot () {
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
 			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			echo "patch -p1 < \"${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
-			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_old}/${board}/0003"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/board/ti/am335x/
+					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
+					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
+					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
+
+					mkdir -p ${base}/board/ti/common/
+					cp board/ti/common/board_detect.c ${base}/board/ti/common/
+
+					mkdir -p ${base}/configs/
+					cp configs/am335x_boneblack_defconfig ${base}/configs/
+					cp configs/am335x_evm_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/am335x_evm.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+					halt_patching_uboot
+				fi
+
+				cp -rv ${base}/* ./
+				git add --all
+				git commit -a -m 'NFM: Production: eeprom: assume device is BeagleBone Black' -s
+				git format-patch -3 -o ../../patches/${uboot_old}/
+				exit 2
+			fi
+
+			${git} "${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
 			;;
 		am43xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""

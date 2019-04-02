@@ -1,7 +1,7 @@
-From 77a6ba49648d98ed7d1dbc456cb47f81f3774c5b Mon Sep 17 00:00:00 2001
+From eba68eebc1cb04c0c489a2052c000bc23cc5c554 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Mon, 1 Apr 2019 15:33:42 -0500
-Subject: [PATCH 2/2] U-Boot: BeagleBone Cape Manager
+Subject: [PATCH 2/3] U-Boot: BeagleBone Cape Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
