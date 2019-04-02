@@ -725,7 +725,29 @@ build_u_boot () {
 			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
 			;;
 		mx6sabresd)
-			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd-fixes.patch\""
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_old}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/mx6sabresd_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx6sabre_common.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-mx6sabresd-fixes.patch\""
+					halt_patching_uboot
+				fi
+
+				cp -rv ${base}/* ./
+				git add --all
+				git commit -a -m 'mx6sabresd fixes' -s
+				git format-patch -1 -o ../../patches/${uboot_old}/
+				exit 2
+			fi
+
 			${git} "${p_dir}/0001-mx6sabresd-fixes.patch"
 			;;
 		omap3_beagle)
