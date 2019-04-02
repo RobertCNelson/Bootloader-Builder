@@ -601,7 +601,29 @@ build_u_boot () {
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
-			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_old}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/mx23_olinuxino_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
+					halt_patching_uboot
+				fi
+
+				cp -rv ${base}/* ./
+				git add --all
+				git commit -a -m 'mx23_olinuxino: uEnv.txt, bootz, n fixes' -s
+				git format-patch -1 -o ../../patches/${uboot_old}/
+				exit 2
+			fi
+
 			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx51evk)
