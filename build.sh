@@ -910,10 +910,6 @@ build_u_boot () {
 
 			${git} "${p_dir}/0001-de0_nano-fixes.patch"
 			;;
-		vf610twr)
-			echo "patch -p1 < \"${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch"
-			;;
 		wandboard)
 			echo "patch -p1 < \"${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
