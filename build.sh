@@ -911,7 +911,29 @@ build_u_boot () {
 			${git} "${p_dir}/0001-de0_nano-fixes.patch"
 			;;
 		wandboard)
-			echo "patch -p1 < \"${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch\""
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_old}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/wandboard_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/wandboard.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch\""
+					halt_patching_uboot
+				fi
+
+				cp -rv ${base}/* ./
+				git add --all
+				git commit -a -m 'wandboard: uEnv.txt, bootz, n fixes' -s
+				git format-patch -1 -o ../../patches/${uboot_old}/
+				exit 2
+			fi
+
 			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		esac
@@ -1946,7 +1968,8 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-#exit
+wandboard
+exit
 
 ###artik5
 ###artik10
