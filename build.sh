@@ -375,6 +375,30 @@ build_at91bootstrap () {
 	git_cleanup
 }
 
+cp_git_commit_patch () {
+	cp -rv ${base}/* ./
+	git add --all
+	git commit -a -m "${patch_file}" -s
+	git format-patch -1 -o ../../patches/${uboot_ref}/
+	exit 2
+}
+
+cp_git_commit_patch_two () {
+	cp -rv ${base}/* ./
+	git add --all
+	git commit -a -m "${patch_file}" -s
+	git format-patch -2 -o ../../patches/${uboot_ref}/
+	exit 2
+}
+
+cp_git_commit_patch_three () {
+	cp -rv ${base}/* ./
+	git add --all
+	git commit -a -m "$patch_file" -s
+	git format-patch -3 -o ../../patches/${uboot_ref}/
+	exit 2
+}
+
 build_u_boot () {
 	project="u-boot"
 	git_generic
@@ -420,6 +444,7 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
+			patch_file="am335x_evm-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -453,19 +478,14 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'am335x_evm: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
+			${git} "${p_dir}/0001-${patch_file}.patch"
 
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-
+			patch_file="U-Boot-BeagleBone-Cape-Manager"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0002"
@@ -487,18 +507,12 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
+					echo "patch -p1 < \"${p_dir}/0002-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'U-Boot: BeagleBone Cape Manager' -s
-				git format-patch -2 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch_two
 			fi
-
-			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
+			${git} "${p_dir}/0002-${patch_file}.patch"
 			;;
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
@@ -507,6 +521,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 
+			patch_file="NFM-Production-eeprom-assume-device-is-BeagleBone-Bl"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0003"
@@ -528,20 +543,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am335x_evm.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+					echo "patch -p1 < \"${p_dir}/0003-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'NFM: Production: eeprom: assume device is BeagleBone Black' -s
-				git format-patch -3 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch_three
 			fi
-
-			${git} "${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
+			${git} "${p_dir}/0003-${patch_file}.patch"
 			;;
 		am43xx_evm)
+			patch_file="${board}-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -558,20 +568,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'am43xx_evm fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		at91sam9x5ek_mmc)
+			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -584,24 +589,19 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'at91sam9x5ek: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
+			patch_file="mx23_olinuxino-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -614,20 +614,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'mx23_olinuxino: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx51evk)
+			patch_file="mx51evk-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -643,20 +638,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx51evk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'mx51evk: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx53loco)
+			patch_file="mx53loco-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -666,20 +656,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx53loco.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'mx53loco: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6ul_14x14_evk)
+			patch_file="${board}-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -689,20 +674,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6ul_14x14_evk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-mx6ul_14x14_evk-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'mx6ul_14x14_evk fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-mx6ul_14x14_evk-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6ull_14x14_evk)
+			patch_file="${board}-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -712,20 +692,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6ullevk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-mx6ull_14x14_evk-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'mx6ull_14x14_evk fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6sabresd)
+			patch_file="${board}-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -738,20 +713,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6sabre_common.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-mx6sabresd-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'mx6sabresd fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-mx6sabresd-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap3_beagle)
+			patch_file="omap3_beagle-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -771,20 +741,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'omap3_beagle: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap4_panda)
+			patch_file="omap4_common-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -801,20 +766,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'omap4_common: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap5_uevm)
+			patch_file="omap5_common-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -832,20 +792,15 @@ build_u_boot () {
 					cp include/environment/ti/boot.h ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'omap5_common: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-omap5_common-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
+			patch_file="sama5dX-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -869,20 +824,15 @@ build_u_boot () {
 					cp include/configs/sama5d2_xplained.h ${base}/include/configs/
 					cp include/configs/sama5d3_xplained.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'sama5dX fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-sama5dX-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		socfpga_de0_nano_soc)
+			patch_file="de0_nano-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -898,20 +848,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/socfpga_common.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-de0_nano-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'de0_nano fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-de0_nano-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		wandboard)
+			patch_file="wandboard-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -924,18 +869,12 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/wandboard.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'wandboard: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		esac
 	fi
@@ -954,6 +893,7 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
+			patch_file="am335x_evm-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -987,19 +927,14 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'am335x_evm: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
+			${git} "${p_dir}/0001-${patch_file}.patch"
 
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-
+			patch_file="U-Boot-BeagleBone-Cape-Manager"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0002"
@@ -1021,18 +956,12 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
+					echo "patch -p1 < \"${p_dir}/0002-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'U-Boot: BeagleBone Cape Manager' -s
-				git format-patch -2 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch_two
 			fi
-
-			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
+			${git} "${p_dir}/0002-${patch_file}.patch"
 			;;
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
@@ -1041,6 +970,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 
+			patch_file="NFM-Production-eeprom-assume-device-is-BeagleBone-Bl"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0003"
@@ -1062,19 +992,15 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am335x_evm.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+					echo "patch -p1 < \"${p_dir}/0003-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'NFM: Production: eeprom: assume device is BeagleBone Black' -s
-				git format-patch -3 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch_three
 			fi
-
-			${git} "${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"			;;
+			${git} "${p_dir}/0003-${patch_file}.patch"
+			;;
 		am43xx_evm)
+			patch_file="${board}-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1091,23 +1017,19 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'am43xx_evm fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"			;;
+			${git} "${p_dir}/0001-${patch_file}.patch"
+			;;
 		am57xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
 			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
 			;;
 		at91sam9x5ek_mmc)
+			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1120,24 +1042,19 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'at91sam9x5ek: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
+			patch_file="mx23_olinuxino-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1150,18 +1067,12 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
 				fi
-
-				cp -rv ${base}/* ./
-				git add --all
-				git commit -a -m 'mx23_olinuxino: uEnv.txt, bootz, n fixes' -s
-				git format-patch -1 -o ../../patches/${uboot_ref}/
-				exit 2
+				cp_git_commit_patch
 			fi
-
-			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx51evk)
 			echo "patch -p1 < \"${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch\""
@@ -2146,8 +2057,7 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-mx23_olinuxino
-exit
+#exit
 
 ###artik5
 ###artik10
