@@ -1075,9 +1075,34 @@ build_u_boot () {
 
 			${git} "${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"			;;
 		am43xx_evm)
-			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
-			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"
-			;;
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/am43xx_evm_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/am43xx_evm.h ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
+					halt_patching_uboot
+				fi
+
+				cp -rv ${base}/* ./
+				git add --all
+				git commit -a -m 'am43xx_evm fixes' -s
+				git format-patch -1 -o ../../patches/${uboot_ref}/
+				exit 2
+			fi
+
+			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"			;;
 		am57xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
 			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"

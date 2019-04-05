@@ -1,6 +1,6 @@
-From 761598a31b46c902e04e83b0b65b1cb3cc3b0b3f Mon Sep 17 00:00:00 2001
+From fbec0ec6c221bcc247888a5e4b12a84062e17ce6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 20 Dec 2018 12:41:15 -0600
+Date: Fri, 5 Apr 2019 13:27:45 -0500
 Subject: [PATCH] am43xx_evm fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -12,10 +12,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  4 files changed, 172 insertions(+), 10 deletions(-)
 
 diff --git a/configs/am43xx_evm_defconfig b/configs/am43xx_evm_defconfig
-index 9bbda434ee..165f6dab28 100644
+index e3464145eb..0ebf511be5 100644
 --- a/configs/am43xx_evm_defconfig
 +++ b/configs/am43xx_evm_defconfig
-@@ -78,3 +78,10 @@ CONFIG_USB_GADGET_VENDOR_NUM=0x0403
+@@ -76,3 +76,10 @@ CONFIG_USB_GADGET_VENDOR_NUM=0x0403
  CONFIG_USB_GADGET_PRODUCT_NUM=0xbd00
  CONFIG_USB_GADGET_DOWNLOAD=y
  CONFIG_USB_ETHER=y
@@ -248,5 +248,5 @@ index 785fc15345..d8fe15abc3 100644
  			"if run loadbootscript; then " \
  				"run bootscript;" \
 -- 
-2.19.2
+2.20.1
 
