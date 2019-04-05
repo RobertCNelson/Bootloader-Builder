@@ -1108,7 +1108,29 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
 			;;
 		at91sam9x5ek_mmc)
-			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/at91sam9x5ek_mmc_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
+					halt_patching_uboot
+				fi
+
+				cp -rv ${base}/* ./
+				git add --all
+				git commit -a -m 'at91sam9x5ek: uEnv.txt, bootz, n fixes' -s
+				git format-patch -1 -o ../../patches/${uboot_ref}/
+				exit 2
+			fi
+
 			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		beagle_x15)
