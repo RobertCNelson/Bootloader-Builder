@@ -1099,8 +1099,22 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx53loco)
-			echo "patch -p1 < \"${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+			patch_file="mx53loco-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx53loco.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			fi
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6ul_14x14_evk)
 			echo "patch -p1 < \"${p_dir}/0001-mx6ul_14x14_evk-fixes.patch\""
@@ -2077,8 +2091,7 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-mx51evk
-exit
+#exit
 
 ###artik5
 ###artik10
