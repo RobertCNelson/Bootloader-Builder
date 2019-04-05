@@ -882,7 +882,33 @@ build_u_boot () {
 			${git} "${p_dir}/0001-sama5dX-fixes.patch"
 			;;
 		socfpga_de0_nano_soc)
-			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_old}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/arch/arm/
+					cp arch/arm/Kconfig ${base}/arch/arm/
+
+					mkdir -p ${base}/configs/
+					cp configs/socfpga_de0_nano_soc_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/socfpga_common.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-de0_nano-fixes.patch\""
+					halt_patching_uboot
+				fi
+
+				cp -rv ${base}/* ./
+				git add --all
+				git commit -a -m 'de0_nano fixes' -s
+				git format-patch -1 -o ../../patches/${uboot_old}/
+				exit 2
+			fi
+
+			${git} "${p_dir}/0001-de0_nano-fixes.patch"
 			;;
 		vf610twr)
 			echo "patch -p1 < \"${p_dir}/0001-vf610twr-uEnv.txt-bootz-n-fixes.patch\""
