@@ -444,7 +444,7 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
-			patch_file="am335x_evm-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -601,7 +601,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
-			patch_file="mx23_olinuxino-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -622,7 +622,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx51evk)
-			patch_file="mx51evk-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -646,7 +646,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx53loco)
-			patch_file="mx53loco-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -721,7 +721,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap3_beagle)
-			patch_file="omap3_beagle-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -856,7 +856,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		wandboard)
-			patch_file="wandboard-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -893,7 +893,7 @@ build_u_boot () {
 
 		case "${board}" in
 		am335x_evm)
-			patch_file="am335x_evm-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1054,7 +1054,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
-			patch_file="mx23_olinuxino-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1075,7 +1075,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx51evk)
-			patch_file="mx51evk-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1099,7 +1099,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx53loco)
-			patch_file="mx53loco-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1174,7 +1174,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap3_beagle)
-			patch_file="omap3_beagle-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1277,7 +1277,7 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		vf610twr)
-			patch_file="vf610twr-uEnv.txt-bootz-n-fixes"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
@@ -1298,8 +1298,25 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		wandboard)
-			echo "patch -p1 < \"${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/wandboard_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/wandboard.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			fi
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		esac
 	fi
