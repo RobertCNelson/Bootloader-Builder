@@ -2548,8 +2548,7 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-socfpga_de0_nano_soc
-exit
+#exit
 
 ###artik5
 ###artik10
