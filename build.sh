@@ -1323,6 +1323,7 @@ build_u_boot () {
 
 	#v2019.04
 	p_dir="${DIR}/patches/${uboot_testing}"
+	uboot_ref="${uboot_testing}"
 	if [ "${testing}" ] ; then
 		#r1: initial release
 		#r2: (pending)
@@ -1330,23 +1331,30 @@ build_u_boot () {
 		#halt_patching_uboot
 
 		case "${board}" in
-		am335x_evm)
-			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
-			;;
-		am335x_boneblack)
-			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
-			${git} "${p_dir}/0002-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch"
-			;;
 		am43xx_evm)
-			echo "patch -p1 < \"${p_dir}/0001-am43xx_evm-fixes.patch\""
-			${git} "${p_dir}/0001-am43xx_evm-fixes.patch"
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/am43xx_evm_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/am43xx_evm.h ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			fi
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		am57xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
