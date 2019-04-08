@@ -1174,8 +1174,32 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap3_beagle)
-			echo "patch -p1 < \"${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-omap3_beagle-uEnv.txt-bootz-n-fixes.patch"
+			patch_file="omap3_beagle-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/board/ti/beagle/
+					cp board/ti/beagle/beagle.c ${base}/board/ti/beagle/
+
+					mkdir -p ${base}/configs/
+					cp configs/omap3_beagle_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/omap3_beagle.h ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			fi
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap4_panda)
 			echo "patch -p1 < \"${p_dir}/0001-omap4_common-uEnv.txt-bootz-n-fixes.patch\""
