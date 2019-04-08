@@ -380,7 +380,6 @@ cp_git_commit_patch () {
 	git add --all
 	git commit -a -m "${patch_file}" -s
 	git format-patch -1 -o ../../patches/${uboot_ref}/
-	exit 2
 }
 
 cp_git_commit_patch_two () {
@@ -482,8 +481,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 
 			patch_file="U-Boot-BeagleBone-Cape-Manager"
 			#regenerate="enable"
@@ -572,8 +572,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		at91sam9x5ek_mmc)
 			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
@@ -593,8 +594,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -618,8 +620,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx51evk)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -642,8 +645,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx53loco)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -660,8 +664,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6ul_14x14_evk)
 			patch_file="${board}-fixes"
@@ -678,8 +683,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6ull_14x14_evk)
 			patch_file="${board}-fixes"
@@ -696,8 +702,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6sabresd)
 			patch_file="${board}-fixes"
@@ -717,8 +724,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap3_beagle)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -745,8 +753,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap4_panda)
 			patch_file="omap4_common-uEnv.txt-bootz-n-fixes"
@@ -770,8 +779,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap5_uevm)
 			patch_file="omap5_common-uEnv.txt-bootz-n-fixes"
@@ -796,8 +806,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
 			patch_file="sama5dX-fixes"
@@ -828,8 +839,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		socfpga_de0_nano_soc)
 			patch_file="de0_nano-fixes"
@@ -852,8 +864,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		wandboard)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -873,8 +886,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		esac
 	fi
@@ -931,8 +945,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 
 			patch_file="U-Boot-BeagleBone-Cape-Manager"
 			#regenerate="enable"
@@ -1021,8 +1036,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		am57xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
@@ -1046,8 +1062,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -1071,8 +1088,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx51evk)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -1095,8 +1113,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx53loco)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -1113,8 +1132,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6ul_14x14_evk)
 			patch_file="${board}-fixes"
@@ -1131,8 +1151,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6ull_14x14_evk)
 			patch_file="${board}-fixes"
@@ -1149,8 +1170,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6sabresd)
 			patch_file="${board}-fixes"
@@ -1170,8 +1192,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap3_beagle)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -1198,8 +1221,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap4_panda)
 			patch_file="omap4_common-uEnv.txt-bootz-n-fixes"
@@ -1223,8 +1247,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		omap5_uevm)
 			patch_file="omap5_common-uEnv.txt-bootz-n-fixes"
@@ -1249,8 +1274,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
 			echo "patch -p1 < \"${p_dir}/0001-ARM-at91-Convert-SPL_GENERATE_ATMEL_PMECC_HEADER-to-.patch\""
@@ -1273,8 +1299,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		vf610twr)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -1294,8 +1321,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		wandboard)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -1315,8 +1343,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		esac
 	fi
@@ -1353,8 +1382,9 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		am57xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
@@ -1378,16 +1408,35 @@ build_u_boot () {
 					halt_patching_uboot
 				fi
 				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx23_olinuxino)
-			echo "patch -p1 < \"${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-mx23_olinuxino-uEnv.txt-bootz-n-fixes.patch"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/mx23_olinuxino_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
 			;;
 		mx51evk)
 			echo "patch -p1 < \"${p_dir}/0001-mx51evk-uEnv.txt-bootz-n-fixes.patch\""
@@ -2282,7 +2331,8 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-#exit
+mx23_olinuxino
+exit
 
 ###artik5
 ###artik10
