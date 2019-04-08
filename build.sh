@@ -86,30 +86,6 @@ dl_gcc_generic () {
 }
 
 #NOTE: ignore formatting, as this is just: meld build.sh ../stable-kernel/scripts/gcc.sh
-gcc_arm_embedded_4_9 () {
-		site="https://releases.linaro.org"
-		archive_site="https://releases.linaro.org/archive"
-
-		#
-		#https://releases.linaro.org/components/toolchain/binaries/4.9-2016.02/arm-eabi/gcc-linaro-5.3-2016.02-x86_64_arm-eabi.tar.xz
-		#
-
-		gcc_version="4.9"
-		gcc_minor=".4"
-		release="17.01"
-		target="arm-eabi"
-
-		version="components/toolchain/binaries/${gcc_version}-20${release}/${target}"
-		filename="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}.tar.xz"
-		directory="gcc-linaro-${gcc_version}${gcc_minor}-20${release}-x86_64_${target}"
-
-		datestamp="${gcc_version}-20${release}-${target}"
-
-		binary="bin/arm-eabi-"
-
-	dl_gcc_generic
-}
-
 gcc_arm_embedded_6 () {
 		site="https://releases.linaro.org"
 		archive_site="https://releases.linaro.org/archive"
