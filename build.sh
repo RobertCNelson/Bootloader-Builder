@@ -351,30 +351,6 @@ file_save () {
 	echo "${board}#${MIRROR}/${filename_id}#${md5sum}" >> ${DIR}/deploy/latest-bootloader.log
 }
 
-build_at91bootstrap () {
-	project="at91bootstrap"
-	git_generic
-	RELEASE_VER="-r0"
-
-	at91bootstrap_version=$(cat Makefile | grep 'VERSION :=' | awk '{print $3}')
-	at91bootstrap_sha=$(git rev-parse --short HEAD)
-
-	make CROSS_COMPILE="${CC}" clean >/dev/null 2>&1
-	make CROSS_COMPILE="${CC}" ${at91bootstrap_config} > /dev/null
-	echo "Building ${project}: ${board}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
-	make CROSS_COMPILE="${CC}" -j${CORES} > /dev/null
-
-	mkdir -p ${DIR}/deploy/${board}/
-
-	if [ -f ${DIR}/scratch/${project}/binaries/at91bootstrap.bin ] ; then
-		filename_search="binaries/at91bootstrap.bin"
-		filename_id="deploy/${board}/${board}-${at91bootstrap_version}-${at91bootstrap_sha}${RELEASE_VER}.bin"
-		file_save
-	fi
-
-	git_cleanup
-}
-
 cp_git_commit_patch () {
 	cp -rv ${base}/* ./
 	git add --all
@@ -562,7 +538,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/am43xx_evm_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am43xx_evm.h ${base}/include/configs/
@@ -588,7 +564,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/at91sam9x5ek_mmc_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
@@ -614,7 +590,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx23_olinuxino_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
@@ -636,7 +612,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx51evk_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/drivers/mmc/
 					cp drivers/mmc/fsl_esdhc.c ${base}/drivers/mmc/
@@ -661,7 +637,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx53loco_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx53loco.h ${base}/include/configs/
@@ -721,7 +697,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx6sabresd_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6sabre_common.h ${base}/include/configs/
@@ -746,7 +722,7 @@ build_u_boot () {
 					cp board/ti/beagle/beagle.c ${base}/board/ti/beagle/
 
 					mkdir -p ${base}/configs/
-					cp configs/omap3_beagle_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/omap3_beagle.h ${base}/include/configs/
@@ -772,7 +748,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/omap4_panda_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
@@ -798,7 +774,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/omap5_uevm_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
@@ -861,7 +837,7 @@ build_u_boot () {
 					cp arch/arm/Kconfig ${base}/arch/arm/
 
 					mkdir -p ${base}/configs/
-					cp configs/socfpga_de0_nano_soc_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/socfpga_common.h ${base}/include/configs/
@@ -883,7 +859,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/wandboard_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/wandboard.h ${base}/include/configs/
@@ -1029,7 +1005,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/am43xx_evm_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am43xx_evm.h ${base}/include/configs/
@@ -1059,7 +1035,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/at91sam9x5ek_mmc_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
@@ -1085,7 +1061,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx23_olinuxino_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
@@ -1107,7 +1083,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx51evk_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/drivers/mmc/
 					cp drivers/mmc/fsl_esdhc.c ${base}/drivers/mmc/
@@ -1132,7 +1108,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx53loco_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx53loco.h ${base}/include/configs/
@@ -1192,7 +1168,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx6sabresd_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6sabre_common.h ${base}/include/configs/
@@ -1217,7 +1193,7 @@ build_u_boot () {
 					cp board/ti/beagle/beagle.c ${base}/board/ti/beagle/
 
 					mkdir -p ${base}/configs/
-					cp configs/omap3_beagle_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/omap3_beagle.h ${base}/include/configs/
@@ -1243,7 +1219,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/omap4_panda_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
@@ -1269,7 +1245,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/omap5_uevm_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
@@ -1302,7 +1278,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/socfpga_de0_nano_soc_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
 					halt_patching_uboot
@@ -1378,7 +1354,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/am43xx_evm_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am43xx_evm.h ${base}/include/configs/
@@ -1408,7 +1384,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/at91sam9x5ek_mmc_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
@@ -1456,7 +1432,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx51evk_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/drivers/mmc/
 					cp drivers/mmc/fsl_esdhc.c ${base}/drivers/mmc/
@@ -2189,16 +2165,6 @@ cleanup () {
 	build_old="false"
 	build_stable="false"
 	build_testing="false"
-}
-
-build_at91bootstrap_all () {
-	GIT_SHA="${stable_at91bootstrap_sha}"
-	build_at91bootstrap
-
-	if [ "${latest_at91bootstrap_sha}" ] ; then
-		GIT_SHA="${latest_at91bootstrap_sha}"
-		build_at91bootstrap
-	fi
 }
 
 build_uboot_old () {
