@@ -1,7 +1,7 @@
-From 1e716b89bfe0cbe4ce7e0cb81d5ea4f1dd75158e Mon Sep 17 00:00:00 2001
+From 4260828c8fa343d04c6a89708656e2d393af56c4 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 8 Jan 2019 11:43:07 -0600
-Subject: [PATCH] sama5dX fixes
+Date: Mon, 8 Apr 2019 13:12:40 -0500
+Subject: [PATCH] sama5dX-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
@@ -34,7 +34,7 @@ index 6da6d41be2..4a1f6c0f76 100644
  		if (off == 0)
  			return BOOT_DEVICE_MMC1;
 diff --git a/configs/sama5d27_som1_ek_mmc_defconfig b/configs/sama5d27_som1_ek_mmc_defconfig
-index e260554a21..28fcccf1af 100644
+index 5dcd80cfbe..48f938fc2f 100644
 --- a/configs/sama5d27_som1_ek_mmc_defconfig
 +++ b/configs/sama5d27_som1_ek_mmc_defconfig
 @@ -19,7 +19,7 @@ CONFIG_DEBUG_UART=y
@@ -57,10 +57,10 @@ index e260554a21..28fcccf1af 100644
 +CONFIG_AUTOBOOT_STOP_STR=" "
 +CONFIG_CMD_PART=y
 diff --git a/configs/sama5d2_xplained_mmc_defconfig b/configs/sama5d2_xplained_mmc_defconfig
-index fd2526158c..5a0b1fcb58 100644
+index 49e2a73560..f94b039cb7 100644
 --- a/configs/sama5d2_xplained_mmc_defconfig
 +++ b/configs/sama5d2_xplained_mmc_defconfig
-@@ -23,7 +23,6 @@ CONFIG_SYS_EXTRA_OPTIONS="SAMA5D2,SYS_USE_MMC"
+@@ -23,16 +23,20 @@ CONFIG_SYS_EXTRA_OPTIONS="SAMA5D2,SYS_USE_MMC"
  CONFIG_SD_BOOT=y
  CONFIG_BOOTDELAY=3
  CONFIG_USE_BOOTARGS=y
@@ -68,20 +68,25 @@ index fd2526158c..5a0b1fcb58 100644
  CONFIG_MISC_INIT_R=y
  # CONFIG_DISPLAY_BOARDINFO is not set
  CONFIG_SPL_SEPARATE_BSS=y
-@@ -92,3 +91,8 @@ CONFIG_W1_GPIO=y
- CONFIG_W1_EEPROM=y
- CONFIG_W1_EEPROM_DS24XXX=y
- CONFIG_OF_LIBFDT_OVERLAY=y
+ CONFIG_HUSH_PARSER=y
 +CONFIG_AUTOBOOT_KEYED=y
 +CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
 +CONFIG_AUTOBOOT_DELAY_STR="d"
 +CONFIG_AUTOBOOT_STOP_STR=" "
+ CONFIG_CMD_BOOTZ=y
+ # CONFIG_CMD_FLASH is not set
+ CONFIG_CMD_I2C=y
+ # CONFIG_CMD_LOADS is not set
+ CONFIG_CMD_MMC=y
 +CONFIG_CMD_PART=y
+ CONFIG_CMD_SF=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_DHCP=y
 diff --git a/configs/sama5d3_xplained_mmc_defconfig b/configs/sama5d3_xplained_mmc_defconfig
-index 51d5aeaf0e..13bfbd9e40 100644
+index ab5aedc208..64bbb196e6 100644
 --- a/configs/sama5d3_xplained_mmc_defconfig
 +++ b/configs/sama5d3_xplained_mmc_defconfig
-@@ -23,7 +23,6 @@ CONFIG_FIT=y
+@@ -22,7 +22,6 @@ CONFIG_FIT=y
  CONFIG_SD_BOOT=y
  CONFIG_BOOTDELAY=3
  CONFIG_USE_BOOTARGS=y
@@ -89,7 +94,7 @@ index 51d5aeaf0e..13bfbd9e40 100644
  # CONFIG_DISPLAY_BOARDINFO is not set
  CONFIG_SPL_SEPARATE_BSS=y
  CONFIG_HUSH_PARSER=y
-@@ -82,3 +81,8 @@ CONFIG_W1_GPIO=y
+@@ -83,3 +82,8 @@ CONFIG_W1_GPIO=y
  CONFIG_W1_EEPROM=y
  CONFIG_W1_EEPROM_DS24XXX=y
  CONFIG_OF_LIBFDT_OVERLAY=y
@@ -99,10 +104,10 @@ index 51d5aeaf0e..13bfbd9e40 100644
 +CONFIG_AUTOBOOT_STOP_STR=" "
 +CONFIG_CMD_PART=y
 diff --git a/configs/sama5d3xek_mmc_defconfig b/configs/sama5d3xek_mmc_defconfig
-index 49d4334213..f09f69a249 100644
+index 404af1ffad..c00ce067de 100644
 --- a/configs/sama5d3xek_mmc_defconfig
 +++ b/configs/sama5d3xek_mmc_defconfig
-@@ -23,17 +23,21 @@ CONFIG_FIT=y
+@@ -22,17 +22,21 @@ CONFIG_FIT=y
  CONFIG_SD_BOOT=y
  CONFIG_BOOTDELAY=3
  CONFIG_USE_BOOTARGS=y
@@ -126,10 +131,10 @@ index 49d4334213..f09f69a249 100644
  CONFIG_CMD_NAND_TRIMFFS=y
  CONFIG_CMD_SF=y
 diff --git a/configs/sama5d4_xplained_mmc_defconfig b/configs/sama5d4_xplained_mmc_defconfig
-index 35b8302b60..f39988e3ea 100644
+index cbfb645201..393e0b9c89 100644
 --- a/configs/sama5d4_xplained_mmc_defconfig
 +++ b/configs/sama5d4_xplained_mmc_defconfig
-@@ -23,7 +23,6 @@ CONFIG_FIT=y
+@@ -22,7 +22,6 @@ CONFIG_FIT=y
  CONFIG_SD_BOOT=y
  CONFIG_BOOTDELAY=3
  CONFIG_USE_BOOTARGS=y
@@ -148,10 +153,10 @@ index 35b8302b60..f39988e3ea 100644
 +CONFIG_CMD_PART=y
 +CONFIG_CMD_EXT4=y
 diff --git a/configs/sama5d4ek_mmc_defconfig b/configs/sama5d4ek_mmc_defconfig
-index bd238f7f14..b637fbf60e 100644
+index a121af410b..5e88f8a733 100644
 --- a/configs/sama5d4ek_mmc_defconfig
 +++ b/configs/sama5d4ek_mmc_defconfig
-@@ -23,22 +23,27 @@ CONFIG_FIT=y
+@@ -22,22 +22,27 @@ CONFIG_FIT=y
  CONFIG_SD_BOOT=y
  CONFIG_BOOTDELAY=3
  CONFIG_USE_BOOTARGS=y

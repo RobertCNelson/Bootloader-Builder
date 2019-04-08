@@ -1643,8 +1643,37 @@ build_u_boot () {
 			fi
 			;;
 		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
-			echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
-			${git} "${p_dir}/0001-sama5dX-fixes.patch"
+			patch_file="sama5dX-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/arch/arm/mach-at91/
+					cp arch/arm/mach-at91/spl.c ${base}/arch/arm/mach-at91/
+
+					mkdir -p ${base}/configs/
+					cp configs/sama5d27_som1_ek_mmc_defconfig ${base}/configs/
+					cp configs/sama5d2_xplained_mmc_defconfig ${base}/configs/
+					cp configs/sama5d3_xplained_mmc_defconfig ${base}/configs/
+					cp configs/sama5d3xek_mmc_defconfig ${base}/configs/
+					cp configs/sama5d4_xplained_mmc_defconfig ${base}/configs/
+					cp configs/sama5d4ek_mmc_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/at91-sama5_common.h ${base}/include/configs/
+					cp include/configs/sama5d27_som1_ek.h ${base}/include/configs/
+					cp include/configs/sama5d2_xplained.h ${base}/include/configs/
+					cp include/configs/sama5d3_xplained.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
 			;;
 		socfpga_de0_nano_soc)
 			pfile="0001-de0_nano-fixes.patch" ; echo "patch -p1 < \"${p_dir}/${pfile}\"" ; ${git} "${p_dir}/${pfile}"
