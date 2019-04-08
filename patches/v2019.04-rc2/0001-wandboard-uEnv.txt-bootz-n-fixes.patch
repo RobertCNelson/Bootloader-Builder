@@ -1,6 +1,6 @@
-From 96ef45686390d57ec96af848137f276f852eb006 Mon Sep 17 00:00:00 2001
+From 337318b43695dc7d06c2c8e5d86a1e46b4fedb4e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 13:22:03 -0500
+Date: Mon, 8 Apr 2019 14:16:37 -0500
 Subject: [PATCH] wandboard-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

@@ -1,6 +1,6 @@
-From edb53c2cd07555f8bdd63badb7b88d16c62b23fe Mon Sep 17 00:00:00 2001
+From a4d28f1ba57877a5f5b26b67f5b2a38776782cb7 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 13:01:25 -0500
+Date: Mon, 8 Apr 2019 14:08:52 -0500
 Subject: [PATCH] omap3_beagle-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

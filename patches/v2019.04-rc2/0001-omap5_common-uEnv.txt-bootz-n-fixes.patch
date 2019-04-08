@@ -1,6 +1,6 @@
-From 8bb11c78203503aa8569659c22d3cd30d150dcef Mon Sep 17 00:00:00 2001
+From 5741b7de2fb6c1239f0a10fd1d9f261f7b7fdb99 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 13:08:26 -0500
+Date: Mon, 8 Apr 2019 14:11:04 -0500
 Subject: [PATCH] omap5_common-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

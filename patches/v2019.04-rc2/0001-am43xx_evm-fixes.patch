@@ -1,6 +1,6 @@
-From 9f1e6875fcfcd790bd10e2e3d95cb4efc4fbcea6 Mon Sep 17 00:00:00 2001
+From f7069ad74f1f0cd9b00573cf8b100eca01a2d1b6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 11:44:24 -0500
+Date: Mon, 8 Apr 2019 13:38:35 -0500
 Subject: [PATCH] am43xx_evm-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

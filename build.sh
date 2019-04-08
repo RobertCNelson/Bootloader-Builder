@@ -335,6 +335,15 @@ cp_git_commit_patch () {
 	unset regenerate
 }
 
+refresh_patch () {
+	echo "######################################################"
+	echo "cd ./scratch/u-boot/"
+	echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+	echo "meld ./ ../../patches/${uboot_ref}/${board}/0001/"
+	echo "######################################################"
+	halt_patching_uboot
+}
+
 cp_git_commit_patch_two () {
 	cp -rv ${base}/* ./
 	git add --all
@@ -1339,8 +1348,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1365,8 +1373,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1391,8 +1398,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1416,8 +1422,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx51evk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1438,8 +1443,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/${board}.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1460,8 +1464,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6ul_14x14_evk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1482,8 +1485,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6ullevk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1504,8 +1506,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6sabre_common.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1533,8 +1534,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1559,8 +1559,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1586,15 +1585,14 @@ build_u_boot () {
 					cp include/environment/ti/boot.h ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
+		sama5d2_xplained_mmc)
 			patch_file="sama5dX-fixes"
 			#regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
@@ -1619,8 +1617,7 @@ build_u_boot () {
 					cp include/configs/sama5d2_xplained.h ${base}/include/configs/
 					cp include/configs/sama5d3_xplained.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1638,8 +1635,7 @@ build_u_boot () {
 					mkdir -p ${base}/configs/
 					cp configs/${board}_defconfig ${base}/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1660,8 +1656,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/vf610twr.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1682,8 +1677,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/wandboard.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -2308,36 +2302,12 @@ omap5_uevm () {
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
-sama5d2_xplained () {
+sama5d2_xplained_mmc () {
 	cleanup
 	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
-}
-
-sama5d3xek () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="sama5d3xek_mmc" ; build_uboot_gnueabihf
-}
-
-sama5d3_xplained () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="sama5d3_xplained_mmc" ; build_uboot_gnueabihf
-}
-
-sama5d4_xplained () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="sama5d4_xplained_mmc" ; build_uboot_gnueabihf
 }
 
 socfpga_de0_nano_soc () {
@@ -2376,8 +2346,8 @@ am65x_evm_a53 () {
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
-am57xx_evm
-am57xx_evm_ti
+##am57xx_evm
+##am57xx_evm_ti
 ###am57xx_evm_ti_flasher
 ###am57xx_beagle_revc_ti_flasher
 ###am571x_sndrblock_flasher
@@ -2391,12 +2361,7 @@ mx6sabresd
 omap3_beagle
 omap4_panda
 omap5_uevm
-sama5d2_xplained
-###(these are a shared patch...)
-###sama5d3xek
-###sama5d3_xplained
-###sama5d4_xplained
-###(these are a shared patch...)
+sama5d2_xplained_mmc
 socfpga_de0_nano_soc
 vf610twr
 wandboard
