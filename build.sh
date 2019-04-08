@@ -1343,7 +1343,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/wandboard_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/wandboard.h ${base}/include/configs/
@@ -1717,8 +1717,26 @@ build_u_boot () {
 			fi
 			;;
 		wandboard)
-			echo "patch -p1 < \"${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-wandboard-uEnv.txt-bootz-n-fixes.patch"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/wandboard.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
 			;;
 		esac
 	fi

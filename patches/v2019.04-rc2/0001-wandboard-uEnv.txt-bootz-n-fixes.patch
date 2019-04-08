@@ -1,16 +1,16 @@
-From 600ae1dd2b3f216d81429b7d187343a02226be29 Mon Sep 17 00:00:00 2001
+From 96ef45686390d57ec96af848137f276f852eb006 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 15 Feb 2019 09:52:55 -0600
-Subject: [PATCH] wandboard: uEnv.txt, bootz, n fixes
+Date: Mon, 8 Apr 2019 13:22:03 -0500
+Subject: [PATCH] wandboard-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/wandboard_defconfig |   9 ++-
+ configs/wandboard_defconfig |   7 ++-
  include/configs/wandboard.h | 121 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 126 insertions(+), 4 deletions(-)
+ 2 files changed, 124 insertions(+), 4 deletions(-)
 
 diff --git a/configs/wandboard_defconfig b/configs/wandboard_defconfig
-index 5725487446..011a810332 100644
+index 5725487446..cb2d6f0aac 100644
 --- a/configs/wandboard_defconfig
 +++ b/configs/wandboard_defconfig
 @@ -13,7 +13,7 @@ CONFIG_CMD_HDMIDETECT=y
@@ -22,7 +22,7 @@ index 5725487446..011a810332 100644
  # CONFIG_CONSOLE_MUX is not set
  CONFIG_SYS_CONSOLE_IS_IN_ENV=y
  CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
-@@ -24,10 +24,15 @@ CONFIG_BOARD_EARLY_INIT_F=y
+@@ -24,6 +24,10 @@ CONFIG_BOARD_EARLY_INIT_F=y
  CONFIG_SPL_FS_EXT4=y
  CONFIG_SPL_I2C_SUPPORT=y
  CONFIG_SPL_WATCHDOG_SUPPORT=y
@@ -33,20 +33,14 @@ index 5725487446..011a810332 100644
  # CONFIG_CMD_FLASH is not set
  CONFIG_CMD_GPIO=y
  CONFIG_CMD_I2C=y
- CONFIG_CMD_MMC=y
-+CONFIG_CMD_PART=y
+@@ -31,6 +35,7 @@ CONFIG_CMD_MMC=y
  CONFIG_CMD_SATA=y
  CONFIG_CMD_USB=y
  CONFIG_CMD_CACHE=y
-@@ -40,6 +45,8 @@ CONFIG_FSL_ESDHC=y
- CONFIG_PHYLIB=y
- CONFIG_MII=y
- CONFIG_DM_THERMAL=y
-+CONFIG_FS_BTRFS=y
 +CONFIG_CMD_BTRFS=y
- CONFIG_USB=y
- CONFIG_VIDEO=y
- # CONFIG_VIDEO_SW_CURSOR is not set
+ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_ENV_IS_IN_MMC=y
+ CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
 diff --git a/include/configs/wandboard.h b/include/configs/wandboard.h
 index b03a1c550c..7bf8c06964 100644
 --- a/include/configs/wandboard.h
