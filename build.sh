@@ -423,9 +423,9 @@ build_u_boot () {
 	echo "-----------------------------"
 
 	#v2018.09
-	p_dir="${DIR}/patches/${uboot_old}"
-	uboot_ref="${uboot_old}"
 	if [ "${old}" ] ; then
+		p_dir="${DIR}/patches/${uboot_old}"
+		uboot_ref="${uboot_old}"
 		#r1: initial release
 		#r2: am335x_evm: fix overlays...
 		#r3: rebuild with all enabled...
@@ -880,9 +880,9 @@ build_u_boot () {
 	fi
 
 	#v2019.01
-	p_dir="${DIR}/patches/${uboot_stable}"
-	uboot_ref="${uboot_stable}"
 	if [ "${stable}" ] ; then
+		p_dir="${DIR}/patches/${uboot_stable}"
+		uboot_ref="${uboot_stable}"
 		#r1: initial release
 		#r2: am335x_evm: revert i2c2_pin_mux state, broke capes...
 		#r3: am335x_evm: add BB-BONE-NH10C-01-00A0
@@ -1322,9 +1322,9 @@ build_u_boot () {
 	fi
 
 	#v2019.04
-	p_dir="${DIR}/patches/${uboot_testing}"
-	uboot_ref="${uboot_testing}"
 	if [ "${testing}" ] ; then
+		p_dir="${DIR}/patches/${uboot_testing}"
+		uboot_ref="${uboot_testing}"
 		#r1: initial release
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
@@ -1361,8 +1361,25 @@ build_u_boot () {
 			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
 			;;
 		at91sam9x5ek_mmc)
-			echo "patch -p1 < \"${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-at91sam9x5ek-uEnv.txt-bootz-n-fixes.patch"
+			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/at91sam9x5ek_mmc_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			fi
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -1423,8 +1440,8 @@ build_u_boot () {
 	fi
 
 	#v2019.07
-	p_dir="${DIR}/patches/next"
 	if [ "${next}" ] ; then
+		p_dir="${DIR}/patches/next"
 		#r1: initial release
 		#r2: (pending)
 		RELEASE_VER="-r1" #bump on every change...
@@ -1717,6 +1734,11 @@ build_u_boot () {
 		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
 		echo "Building ${project}: ${uboot_filename}:"
 		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET} > /dev/null
+		make ARCH=arm CROSS_COMPILE="${CC}" savedefconfig
+		if [ ! -d ${p_dir}/${board}/0001/configs/ ] ; then
+			mkdir -p ${p_dir}/${board}/0001/configs/ || true
+		fi
+		cp -v ./defconfig ${p_dir}/${board}/0001/configs/${uboot_config}
 		if [ "x${board}" = "xfirefly-rk3288" ] ; then
 			./tools/mkimage -n rk3288 -T rksd -d ./spl/u-boot-spl-nodtb.bin u-boot-spl.rk3288
 		fi
