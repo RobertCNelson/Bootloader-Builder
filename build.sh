@@ -1818,17 +1818,6 @@ build_u_boot () {
 		fi
 	fi
 
-	if [ "x${board}" = "xomap5_igep0050" ] ; then
-		git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2015.07
-		#r1: first pass
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
-
-		p_dir="${DIR}/patches/ti-2015.07"
-
-		${git} "${p_dir}/0001-IGEPv5-Added-IGEPv5-board-support.patch"
-	fi
-
 	if [ -f "${DIR}/stop.after.patch" ] ; then
 		echo "-----------------------------"
 		pwd
