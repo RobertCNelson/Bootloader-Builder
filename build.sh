@@ -380,6 +380,7 @@ cp_git_commit_patch () {
 	git add --all
 	git commit -a -m "${patch_file}" -s
 	git format-patch -1 -o ../../patches/${uboot_ref}/
+	unset regenerate
 }
 
 cp_git_commit_patch_two () {
@@ -387,6 +388,7 @@ cp_git_commit_patch_two () {
 	git add --all
 	git commit -a -m "${patch_file}" -s
 	git format-patch -2 -o ../../patches/${uboot_ref}/
+	unset regenerate
 	exit 2
 }
 
@@ -395,6 +397,7 @@ cp_git_commit_patch_three () {
 	git add --all
 	git commit -a -m "$patch_file" -s
 	git format-patch -3 -o ../../patches/${uboot_ref}/
+	unset regenerate
 	exit 2
 }
 
@@ -657,6 +660,9 @@ build_u_boot () {
 
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/mx53loco_defconfig ${base}/configs/
+
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx53loco.h ${base}/include/configs/
 
@@ -1125,6 +1131,9 @@ build_u_boot () {
 
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/mx53loco_defconfig ${base}/configs/
+
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx53loco.h ${base}/include/configs/
 
@@ -1464,8 +1473,26 @@ build_u_boot () {
 			fi
 			;;
 		mx53loco)
-			echo "patch -p1 < \"${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-mx53loco-uEnv.txt-bootz-n-fixes.patch"
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/mx53loco_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/${board}.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
 			;;
 		mx6ul_14x14_evk)
 			echo "patch -p1 < \"${p_dir}/0001-mx6ul_14x14_evk-fixes.patch\""

@@ -1,7 +1,7 @@
-From 4b2d37990a3621b3842e919fc8679000926c18bb Mon Sep 17 00:00:00 2001
+From be4fb7953cad23c92591593aab719d1df364ec5e Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 2 Apr 2019 16:31:36 -0500
-Subject: [PATCH] mx53loco: uEnv.txt, bootz, n fixes
+Date: Mon, 8 Apr 2019 12:42:45 -0500
+Subject: [PATCH] mx53loco-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
