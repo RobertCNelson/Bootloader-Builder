@@ -1853,7 +1853,7 @@ build_u_boot () {
 		${git} "${p_dir}/0001-IGEPv5-Added-IGEPv5-board-support.patch"
 	fi
 
-	if [ "x${board}" = "xartik5" ] || [ "x${board}" = "xartik10" ] ; then
+	if [ "x${board}" = "xartik10" ] ; then
 		git pull --no-edit https://github.com/SamsungARTIK/u-boot-artik artik-exynos/v2012.07
 		#r1: first pass
 		#r2: artik5: disable log level
@@ -1862,12 +1862,6 @@ build_u_boot () {
 		RELEASE_VER="-r3" #bump on every change...
 
 		p_dir="${DIR}/patches/artik-2012.07"
-
-		if [ "x${board}" = "xartik5" ] ; then
-			echo "patch -p1 < \"${p_dir}/0001-artik5-fixes.patch\""
-			#halt_patching_uboot
-			${git} "${p_dir}/0001-artik5-fixes.patch"
-		fi
 
 		if [ "x${board}" = "xartik10" ] ; then
 			echo "patch -p1 < \"${p_dir}/0001-artik10-fixes.patch\""
@@ -2176,14 +2170,6 @@ always_testing () {
 	build_uboot_gnueabihf
 }
 
-artik5 () {
-	board="artik5"
-	uboot_config="artik5_config"
-	gcc_linaro_gnueabihf_4_9
-	GIT_SHA="v2012.07"
-	build_u_boot
-}
-
 artik10 () {
 	board="artik10"
 	uboot_config="artik10_config"
@@ -2447,7 +2433,6 @@ am65x_evm_a53 () {
 }
 #exit
 
-###artik5
 ###artik10
 
 am335x_evm
