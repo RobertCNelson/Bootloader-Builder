@@ -1,19 +1,19 @@
-From 8844eae3f540faf688d9d380dde23cea99dc718b Mon Sep 17 00:00:00 2001
+From a836cc103640ddb368eb51256f3c5f25a976cd21 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 20 Jun 2018 15:13:40 -0500
-Subject: [PATCH] mx6sabresd fixes
+Date: Mon, 8 Apr 2019 12:57:16 -0500
+Subject: [PATCH] mx6sabresd-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/mx6sabresd_defconfig      |   4 +
+ configs/mx6sabresd_defconfig      |   6 +-
  include/configs/mx6sabre_common.h | 222 ++++++++++++++++++++----------
- 2 files changed, 154 insertions(+), 72 deletions(-)
+ 2 files changed, 155 insertions(+), 73 deletions(-)
 
 diff --git a/configs/mx6sabresd_defconfig b/configs/mx6sabresd_defconfig
-index 3e9bdb921f..d6d8a6766a 100644
+index bd2d4eeca9..98ea38dccb 100644
 --- a/configs/mx6sabresd_defconfig
 +++ b/configs/mx6sabresd_defconfig
-@@ -22,6 +22,10 @@ CONFIG_SPL_USB_GADGET_SUPPORT=y
+@@ -30,6 +30,10 @@ CONFIG_SPL_USB_GADGET=y
  CONFIG_SPL_USB_SDP_SUPPORT=y
  CONFIG_SPL_WATCHDOG_SUPPORT=y
  CONFIG_HUSH_PARSER=y
@@ -24,11 +24,21 @@ index 3e9bdb921f..d6d8a6766a 100644
  CONFIG_CMD_BOOTZ=y
  CONFIG_CMD_SPL=y
  CONFIG_CMD_SPL_WRITE_SIZE=0x20000
+@@ -52,8 +56,8 @@ CONFIG_CMD_EXT4=y
+ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_FAT=y
+ CONFIG_CMD_FS_GENERIC=y
+-CONFIG_EFI_PARTITION=y
+ # CONFIG_SPL_DOS_PARTITION is not set
++CONFIG_EFI_PARTITION=y
+ # CONFIG_SPL_EFI_PARTITION is not set
+ CONFIG_OF_CONTROL=y
+ CONFIG_SPL_OF_CONTROL=y
 diff --git a/include/configs/mx6sabre_common.h b/include/configs/mx6sabre_common.h
-index 99ecc412a6..e017172876 100644
+index 711aa82f9c..a2c0dd1a8c 100644
 --- a/include/configs/mx6sabre_common.h
 +++ b/include/configs/mx6sabre_common.h
-@@ -63,16 +63,25 @@
+@@ -62,16 +62,25 @@
  	"fdt_addr=0x18000000\0" \
  	"boot_fdt=try\0" \
  	"ip_dyn=yes\0" \
@@ -57,7 +67,7 @@ index 99ecc412a6..e017172876 100644
  	"update_sd_firmware=" \
  		"if test ${ip_dyn} = yes; then " \
  			"setenv get_cmd dhcp; " \
-@@ -87,85 +96,154 @@
+@@ -86,85 +95,154 @@
  			"fi; "	\
  		"fi\0" \
  	EMMC_ENV	  \
@@ -280,7 +290,7 @@ index 99ecc412a6..e017172876 100644
  
  #define CONFIG_ARP_TIMEOUT     200UL
  
-@@ -187,7 +265,7 @@
+@@ -185,7 +263,7 @@
  	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
  
  /* Environment organization */
@@ -290,5 +300,5 @@ index 99ecc412a6..e017172876 100644
  #if defined(CONFIG_ENV_IS_IN_MMC)
  #define CONFIG_ENV_OFFSET		(768 * 1024)
 -- 
-2.17.1
+2.20.1
 
