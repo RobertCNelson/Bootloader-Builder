@@ -1434,7 +1434,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx23_olinuxino_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
@@ -1481,7 +1481,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx53loco_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/${board}.h ${base}/include/configs/
@@ -1503,7 +1503,7 @@ build_u_boot () {
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
-					cp configs/mx6ul_14x14_evk_defconfig ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6ul_14x14_evk.h ${base}/include/configs/
@@ -1517,8 +1517,26 @@ build_u_boot () {
 			fi
 			;;
 		mx6ull_14x14_evk)
-			echo "patch -p1 < \"${p_dir}/0001-mx6ull_14x14_evk-fixes.patch\""
-			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx6ullevk.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
 			;;
 		mx6sabresd)
 			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd-fixes.patch\""
@@ -2397,7 +2415,8 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-#exit
+mx6ull_14x14_evk
+exit
 
 ###artik5
 ###artik10
