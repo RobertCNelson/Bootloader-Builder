@@ -1135,8 +1135,22 @@ build_u_boot () {
 			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6ull_14x14_evk)
-			echo "patch -p1 < \"${p_dir}/0001-mx6ull_14x14_evk-fixes.patch\""
-			${git} "${p_dir}/0001-mx6ull_14x14_evk-fixes.patch"
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx6ullevk.h ${base}/include/configs/
+
+					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
+					halt_patching_uboot
+				fi
+				cp_git_commit_patch
+			fi
+			${git} "${p_dir}/0001-${patch_file}.patch"
 			;;
 		mx6sabresd)
 			echo "patch -p1 < \"${p_dir}/0001-mx6sabresd-fixes.patch\""
