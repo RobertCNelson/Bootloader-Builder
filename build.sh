@@ -364,10 +364,18 @@ refresh_patch_two () {
 cp_git_commit_patch_three () {
 	cp -rv ${base}/* ./
 	git add --all
-	git commit -a -m "$patch_file" -s
+	git commit -a -m "$patch_file" -s --date "Tue 09 Apr 2019 09:38:02 AM CDT"
 	git format-patch -3 -o ../../patches/${uboot_ref}/
 	unset regenerate
-	exit 2
+}
+
+refresh_patch_three () {
+	echo "######################################################"
+	echo "cd ./scratch/u-boot/"
+	echo "patch -p1 < \"${p_dir}/0003-${patch_file}.patch\""
+	echo "meld ./ ../../patches/${uboot_ref}/${board}/0003/"
+	echo "######################################################"
+	halt_patching_uboot
 }
 
 build_u_boot () {
@@ -514,12 +522,12 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am335x_evm.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0003-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch_three
 				fi
 				cp_git_commit_patch_three
+			else
+				${git} "${p_dir}/0003-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0003-${patch_file}.patch"
 			;;
 		am43xx_evm)
 			patch_file="${board}-fixes"
@@ -980,12 +988,12 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am335x_evm.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0003-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch_three
 				fi
 				cp_git_commit_patch_three
+			else
+				${git} "${p_dir}/0003-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0003-${patch_file}.patch"
 			;;
 		am43xx_evm)
 			patch_file="${board}-fixes"

@@ -1,8 +1,7 @@
-From 582fa7f4c4d6c0339dec95e60fc13680c5c6edfa Mon Sep 17 00:00:00 2001
+From 6e9d18cf9c65e1db9b8762fad6ad93b8d9c7dc1a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 2 Apr 2019 15:47:00 -0500
-Subject: [PATCH 3/3] NFM: Production: eeprom: assume device is BeagleBone
- Black
+Date: Tue, 9 Apr 2019 09:38:02 -0500
+Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
@@ -122,7 +121,7 @@ index c475f106b2..43f5d2aebe 100644
  }
  
 diff --git a/configs/am335x_boneblack_defconfig b/configs/am335x_boneblack_defconfig
-index d6600021b3..d2e282c2b5 100644
+index 3bd5d9ebb9..18f07c6b94 100644
 --- a/configs/am335x_boneblack_defconfig
 +++ b/configs/am335x_boneblack_defconfig
 @@ -4,7 +4,7 @@ CONFIG_TI_COMMON_CMD_OPTIONS=y
@@ -135,7 +134,7 @@ index d6600021b3..d2e282c2b5 100644
  CONFIG_VERSION_VARIABLE=y
  CONFIG_ARCH_MISC_INIT=y
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
-index d6600021b3..d2e282c2b5 100644
+index 3bd5d9ebb9..18f07c6b94 100644
 --- a/configs/am335x_evm_defconfig
 +++ b/configs/am335x_evm_defconfig
 @@ -4,7 +4,7 @@ CONFIG_TI_COMMON_CMD_OPTIONS=y
