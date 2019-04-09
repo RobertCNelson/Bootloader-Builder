@@ -347,10 +347,18 @@ refresh_patch () {
 cp_git_commit_patch_two () {
 	cp -rv ${base}/* ./
 	git add --all
-	git commit -a -m "${patch_file}" -s
+	git commit -a -m "${patch_file}" -s --date "Tue 09 Apr 2019 09:38:02 AM CDT"
 	git format-patch -2 -o ../../patches/${uboot_ref}/
 	unset regenerate
-	exit 2
+}
+
+refresh_patch_two () {
+	echo "######################################################"
+	echo "cd ./scratch/u-boot/"
+	echo "patch -p1 < \"${p_dir}/0002-${patch_file}.patch\""
+	echo "meld ./ ../../patches/${uboot_ref}/${board}/0002/"
+	echo "######################################################"
+	halt_patching_uboot
 }
 
 cp_git_commit_patch_three () {
@@ -470,12 +478,12 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0002-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch_two
 				fi
 				cp_git_commit_patch_two
+			else
+				${git} "${p_dir}/0002-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0002-${patch_file}.patch"
 			;;
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
@@ -936,12 +944,12 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0002-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch_two
 				fi
 				cp_git_commit_patch_two
+			else
+				${git} "${p_dir}/0002-${patch_file}.patch"
 			fi
-			${git} "${p_dir}/0002-${patch_file}.patch"
 			;;
 		am335x_boneblack)
 			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""

@@ -1,7 +1,7 @@
-From cc06231e89526bf958fc3dbfff25c36f5177dce4 Mon Sep 17 00:00:00 2001
+From eede4adf83c1daabaa69e7096a6fe0e9f5c13bff Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
-Subject: [PATCH] am335x_evm-uEnv.txt-bootz-n-fixes
+Subject: [PATCH 1/2] am335x_evm-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
