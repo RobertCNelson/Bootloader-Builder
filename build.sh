@@ -441,8 +441,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -908,8 +907,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
