@@ -90,23 +90,6 @@ void do_board_detect(void)
 #define CAPE_EEPROM_ADDR2	0x56
 #define CAPE_EEPROM_ADDR3	0x57
 
-void write_hex (unsigned char i)
-{
-	char cc;
-
-	cc = i >> 4;
-	cc &= 0xf;
-	if (cc > 9)
-		serial_putc (cc + 55);
-	else
-		serial_putc (cc + 48);
-	cc = i & 0xf;
-	if (cc > 9)
-		serial_putc (cc + 55);
-	else
-		serial_putc (cc + 48);
-}
-
 #define NOT_POP		0x0
 #define PINS_TAKEN	0x0
 
@@ -269,7 +252,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 
 	for ( addr = CAPE_EEPROM_ADDR0; addr <= CAPE_EEPROM_ADDR3; addr++ ) {
 		if (i2c_probe(addr)) {
-			puts("BeagleBone: cape eeprom: i2c_probe: 0x");  write_hex(addr); puts(":\n");
+			printf("BeagleBone: cape eeprom: i2c_probe: 0x%x:\n", addr);
 		} else {
 			/* read the eeprom using i2c */
 			if (i2c_read(addr, 0, 2, (uchar *)cape_header,
@@ -304,7 +287,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 						end_part_number=i;
 						i=17;
 					} else {
-						write_hex(process_cape_part_number[i]);
+						printf("%x", process_cape_part_number[i]);
 					}
 				}
 				puts("]\n");
@@ -323,9 +306,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 
 				unsigned long cape_overlay_hash = hash_string(cape_overlay);
 
-				puts("BeagleBone: cape eeprom: i2c_probe: 0x");
-				write_hex(addr);
-				printf(": %s [0x%lx]\n", cape_overlay, cape_overlay_hash);
+				printf("BeagleBone: cape eeprom: i2c_probe: 0x%x: %s [0x%lx]\n", addr, cape_overlay, cape_overlay_hash);
 
 				strncat(cape_overlay_pass_to_kernel, process_cape_part_number, end_part_number);
 				strncat(cape_overlay_pass_to_kernel, ",", 1);
@@ -427,7 +408,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 				}
 				env_set("uboot_detected_capes", "1");
 			} else {
-				puts("BeagleBone: found invalid cape eeprom: i2c_probe: 0x");  write_hex(addr); puts(":\n");
+				printf("BeagleBone: found invalid cape eeprom: i2c_probe: 0x%x:\n", addr);
 			}
 		}
 	}//for

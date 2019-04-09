@@ -1,24 +1,86 @@
-From 1d330222f6a2f3a5a08309dc923bc75b71140e97 Mon Sep 17 00:00:00 2001
+From 4ac5ea413f1bf9bd718d06a1e0b9c69eacafb6e8 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c            |  6 ++++--
+ board/ti/am335x/board.c            | 33 ++++++++++++++++++++++++------
  board/ti/am335x/board.h            |  7 ++++++-
  board/ti/am335x/mux.c              |  7 +++++--
- board/ti/common/board_detect.c     | 12 ++++++++++++
+ board/ti/common/board_detect.c     | 12 +++++++++++
  configs/am335x_boneblack_defconfig |  2 +-
  configs/am335x_evm_defconfig       |  2 +-
  include/configs/am335x_evm.h       |  8 ++++++++
- 7 files changed, 37 insertions(+), 7 deletions(-)
+ 7 files changed, 60 insertions(+), 11 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index db05282d44..941ce662f9 100644
+index 77af483196..941ce662f9 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -729,7 +729,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -90,6 +90,23 @@ void do_board_detect(void)
+ #define CAPE_EEPROM_ADDR2	0x56
+ #define CAPE_EEPROM_ADDR3	0x57
+ 
++void write_hex (unsigned char i)
++{
++	char cc;
++
++	cc = i >> 4;
++	cc &= 0xf;
++	if (cc > 9)
++		serial_putc (cc + 55);
++	else
++		serial_putc (cc + 48);
++	cc = i & 0xf;
++	if (cc > 9)
++		serial_putc (cc + 55);
++	else
++		serial_putc (cc + 48);
++}
++
+ #define NOT_POP		0x0
+ #define PINS_TAKEN	0x0
+ 
+@@ -252,7 +269,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
+ 
+ 	for ( addr = CAPE_EEPROM_ADDR0; addr <= CAPE_EEPROM_ADDR3; addr++ ) {
+ 		if (i2c_probe(addr)) {
+-			printf("BeagleBone: cape eeprom: i2c_probe: 0x%x:\n", addr);
++			puts("BeagleBone: cape eeprom: i2c_probe: 0x");  write_hex(addr); puts(":\n");
+ 		} else {
+ 			/* read the eeprom using i2c */
+ 			if (i2c_read(addr, 0, 2, (uchar *)cape_header,
+@@ -287,7 +304,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
+ 						end_part_number=i;
+ 						i=17;
+ 					} else {
+-						printf("%x", process_cape_part_number[i]);
++						write_hex(process_cape_part_number[i]);
+ 					}
+ 				}
+ 				puts("]\n");
+@@ -306,7 +323,9 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
+ 
+ 				unsigned long cape_overlay_hash = hash_string(cape_overlay);
+ 
+-				printf("BeagleBone: cape eeprom: i2c_probe: 0x%x: %s [0x%lx]\n", addr, cape_overlay, cape_overlay_hash);
++				puts("BeagleBone: cape eeprom: i2c_probe: 0x");
++				write_hex(addr);
++				printf(": %s [0x%lx]\n", cape_overlay, cape_overlay_hash);
+ 
+ 				strncat(cape_overlay_pass_to_kernel, process_cape_part_number, end_part_number);
+ 				strncat(cape_overlay_pass_to_kernel, ",", 1);
+@@ -408,7 +427,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
+ 				}
+ 				env_set("uboot_detected_capes", "1");
+ 			} else {
+-				printf("BeagleBone: found invalid cape eeprom: i2c_probe: 0x%x:\n", addr);
++				puts("BeagleBone: found invalid cape eeprom: i2c_probe: 0x");  write_hex(addr); puts(":\n");
+ 			}
+ 		}
+ 	}//for
+@@ -710,7 +729,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -27,7 +89,7 @@ index db05282d44..941ce662f9 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -1023,7 +1023,7 @@ void sdram_init(void)
+@@ -1004,7 +1023,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -36,7 +98,7 @@ index db05282d44..941ce662f9 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1506,6 +1506,7 @@ int board_eth_init(bd_t *bis)
+@@ -1487,6 +1506,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -44,7 +106,7 @@ index db05282d44..941ce662f9 100644
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1533,6 +1534,7 @@ if (!board_is_pb()) {
+@@ -1514,6 +1534,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }
