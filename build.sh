@@ -63,7 +63,7 @@ dl_gcc_generic () {
 	if [ ! -f "${gcc_dir}/${directory}/${datestamp}" ] ; then
 		echo "Installing: ${toolchain_name}"
 		echo "-----------------------------"
-		${WGET} "${site}/${version}/${filename}" || ${WGET} "${archive_site}/${version}/${filename}"
+		${WGET} "${site}/${version}${subdir}/${filename}" || ${WGET} "${archive_site}/${version}${subdir}/${filename}"
 		if [ -d "${gcc_dir}/${directory}" ] ; then
 			rm -rf "${gcc_dir}/${directory}" || true
 		fi
@@ -87,6 +87,7 @@ dl_gcc_generic () {
 
 #NOTE: ignore formatting, as this is just: meld build.sh ../stable-kernel/scripts/gcc.sh
 gcc_arm_embedded_6 () {
+		subdir=""
 		site="https://releases.linaro.org"
 		archive_site="https://releases.linaro.org/archive"
 
@@ -115,6 +116,7 @@ gcc_arm_embedded_6 () {
 }
 
 gcc_arm_embedded_7 () {
+		subdir=""
 		site="https://releases.linaro.org"
 		archive_site="https://releases.linaro.org/archive"
 
@@ -144,6 +146,7 @@ gcc_arm_embedded_7 () {
 }
 
 gcc_linaro_gnueabihf_4_9 () {
+		subdir=""
 		site="https://releases.linaro.org"
 		archive_site="https://releases.linaro.org/archive"
 
@@ -168,6 +171,7 @@ gcc_linaro_gnueabihf_4_9 () {
 }
 
 gcc_linaro_gnueabihf_6 () {
+		subdir=""
 		site="https://releases.linaro.org"
 		archive_site="https://releases.linaro.org/archive"
 
@@ -196,6 +200,7 @@ gcc_linaro_gnueabihf_6 () {
 }
 
 gcc_linaro_gnueabihf_7 () {
+		subdir=""
 		site="https://releases.linaro.org"
 		archive_site="https://releases.linaro.org/archive"
 
@@ -229,18 +234,20 @@ gcc_arm_arm_linux_gnueabihf_8 () {
 		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2018.08/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf.tar.xz
 		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2018.11/gcc-arm-8.2-2018.11-x86_64-arm-linux-gnueabihf.tar.xz
 		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-arm-linux-gnueabihf.tar.xz
+		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz
 		#
 		site="https://developer.arm.com/-/media/Files/downloads/gnu-a"
 		archive_site="https://developer.arm.com/-/media/Files/downloads/gnu-a"
 
-		gcc_version="8.2"
+		gcc_version="8.3"
 		gcc_minor=""
-		release="19.01"
+		release="19.03"
 		target="arm-linux-gnueabihf"
 
 		version="${gcc_version}-20${release}"
 		filename="gcc-arm-${gcc_version}${gcc_minor}-20${release}-x86_64-${target}.tar.xz"
 		directory="gcc-arm-${gcc_version}${gcc_minor}-20${release}-x86_64-${target}"
+		subdir="/binrel"
 
 		datestamp="${gcc_version}-20${release}-${target}"
 
@@ -254,18 +261,20 @@ gcc_arm_aarch64_linux_gnu_8 () {
 		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2018.08/gcc-arm-8.2-2018.08-x86_64-aarch64-linux-gnu.tar.xz
 		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2018.11/gcc-arm-8.2-2018.11-x86_64-aarch64-linux-gnu.tar.xz
 		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu.tar.xz
+		#https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-aarch64-linux-gnu.tar.xz
 		#
 		site="https://developer.arm.com/-/media/Files/downloads/gnu-a"
 		archive_site="https://developer.arm.com/-/media/Files/downloads/gnu-a"
 
-		gcc_version="8.2"
+		gcc_version="8.3"
 		gcc_minor=""
-		release="19.01"
+		release="19.03"
 		target="aarch64-linux-gnu"
 
 		version="${gcc_version}-20${release}"
 		filename="gcc-arm-${gcc_version}${gcc_minor}-20${release}-x86_64-${target}.tar.xz"
 		directory="gcc-arm-${gcc_version}${gcc_minor}-20${release}-x86_64-${target}"
+		subdir="/binrel"
 
 		datestamp="${gcc_version}-20${release}-${target}"
 
