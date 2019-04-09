@@ -427,8 +427,9 @@ build_u_boot () {
 		#r11: am335x_evm: really fix BBE
 		#r12: am335x_evm: add BBORG_DISPLAY70-00A2.dtbo
 		#r13: am335x_evm: remove write_hex macro
-		#r14: (pending)
-		RELEASE_VER="-r13" #bump on every change...
+		#r14: am335x_evm: really remove write_hex macro
+		#r15: (pending)
+		RELEASE_VER="-r14" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
