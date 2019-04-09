@@ -1,6 +1,6 @@
-From ec39be078272fc3a07519a53c4b577733ead1b41 Mon Sep 17 00:00:00 2001
+From 0611d6c9e3a31b2101b0b27658a8b3b748732807 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 10:31:41 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] mx6ull_14x14_evk-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

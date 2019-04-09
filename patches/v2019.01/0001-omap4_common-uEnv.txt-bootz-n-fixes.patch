@@ -1,6 +1,6 @@
-From a3067477ddd68f94bc9369b429886f2292ca33db Mon Sep 17 00:00:00 2001
+From d7d5a89078a5d30c6b1a3661bfa14779ffc8c4bf Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 10:42:57 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] omap4_common-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

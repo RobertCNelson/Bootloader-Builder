@@ -1,6 +1,6 @@
-From f3d3b8687ebbcd6f002da3c82edc22ca1764a542 Mon Sep 17 00:00:00 2001
+From 9f7aa9dfbec6df9abbfc874dc54bd4d65108e12c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 15:22:27 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] at91sam9x5ek-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

@@ -1,6 +1,6 @@
-From d6c67bbb583d720f61e028f43dbbf2962e850a3f Mon Sep 17 00:00:00 2001
+From 73bd14269926becdacecb160a55cea67d978645a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 15:23:28 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] mx23_olinuxino-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

@@ -1,6 +1,6 @@
-From b60a6ab0734d72fffc84b56af3c618b912112ffc Mon Sep 17 00:00:00 2001
+From 31254ef24e331bf27583825e9b003084fffd04c8 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 15:23:41 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] mx51evk-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

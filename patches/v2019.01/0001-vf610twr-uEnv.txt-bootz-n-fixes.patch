@@ -1,6 +1,6 @@
-From ef55e56d69d2a3270ad6d5c20c2b0859c5f6b64e Mon Sep 17 00:00:00 2001
+From 485ae86a5e57454d9ad86f93ffcc5d77442c6a7c Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 11:13:30 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] vf610twr-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

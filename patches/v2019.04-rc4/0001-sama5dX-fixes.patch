@@ -1,6 +1,6 @@
-From 72896dbb5645e25836d356ea75f8d306181aeb6b Mon Sep 17 00:00:00 2001
+From 48776a137bba3fcbf00ec4856b75eec7deea33d1 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 15:32:31 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] sama5dX-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

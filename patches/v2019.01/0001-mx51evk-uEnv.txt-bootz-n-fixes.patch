@@ -1,6 +1,6 @@
-From 47f9b2331d2db37218d6346a7f76b5d6dc06c2b7 Mon Sep 17 00:00:00 2001
+From 08d724b76adaa7435fcf64699b48e7fb6421a608 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 5 Apr 2019 16:58:11 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] mx51evk-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -11,15 +11,16 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  3 files changed, 129 insertions(+), 26 deletions(-)
 
 diff --git a/configs/mx51evk_defconfig b/configs/mx51evk_defconfig
-index e93e81f3c3..80990155f2 100644
+index e93e81f3c3..31685dd91c 100644
 --- a/configs/mx51evk_defconfig
 +++ b/configs/mx51evk_defconfig
-@@ -20,6 +20,9 @@ CONFIG_CMD_MII=y
+@@ -19,7 +19,10 @@ CONFIG_CMD_DHCP=y
+ CONFIG_CMD_MII=y
  CONFIG_CMD_PING=y
  CONFIG_CMD_DATE=y
- CONFIG_CMD_FAT=y
 +CONFIG_CMD_EXT2=y
 +CONFIG_CMD_EXT4=y
+ CONFIG_CMD_FAT=y
 +CONFIG_CMD_FS_GENERIC=y
  CONFIG_ENV_IS_IN_MMC=y
  CONFIG_FSL_ESDHC=y

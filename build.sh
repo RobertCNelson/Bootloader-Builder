@@ -330,7 +330,7 @@ file_save () {
 cp_git_commit_patch () {
 	cp -rv ${base}/* ./
 	git add --all
-	git commit -a -m "${patch_file}" -s
+	git commit -a -m "${patch_file}" -s --date "Tue 09 Apr 2019 09:38:02 AM CDT"
 	git format-patch -1 -o ../../patches/${uboot_ref}/
 	unset regenerate
 }
@@ -999,8 +999,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1025,8 +1024,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1051,8 +1049,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1076,8 +1073,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx51evk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1098,8 +1094,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx53loco.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1117,8 +1112,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6ul_14x14_evk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1136,8 +1130,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6ullevk.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1158,8 +1151,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6sabre_common.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1187,8 +1179,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1213,8 +1204,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1240,8 +1230,7 @@ build_u_boot () {
 					cp include/environment/ti/boot.h ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1265,8 +1254,7 @@ build_u_boot () {
 					mkdir -p ${base}/configs/
 					cp configs/${board}_defconfig ${base}/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1287,8 +1275,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/vf610twr.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -1309,8 +1296,7 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/wandboard.h ${base}/include/configs/
 
-					echo "patch -p1 < \"${p_dir}/0001-${patch_file}.patch\""
-					halt_patching_uboot
+					refresh_patch
 				fi
 				cp_git_commit_patch
 			else
@@ -2346,11 +2332,6 @@ am65x_evm_a53 () {
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
-##am57xx_evm
-##am57xx_evm_ti
-###am57xx_evm_ti_flasher
-###am57xx_beagle_revc_ti_flasher
-###am571x_sndrblock_flasher
 at91sam9x5ek
 mx23_olinuxino
 mx51evk
@@ -2365,6 +2346,12 @@ sama5d2_xplained_mmc
 socfpga_de0_nano_soc
 vf610twr
 wandboard
+
+##am57xx_evm
+##am57xx_evm_ti
+###am57xx_evm_ti_flasher
+###am57xx_beagle_revc_ti_flasher
+###am571x_sndrblock_flasher
 
 #devices with no patches...
 A10_OLinuXino_Lime

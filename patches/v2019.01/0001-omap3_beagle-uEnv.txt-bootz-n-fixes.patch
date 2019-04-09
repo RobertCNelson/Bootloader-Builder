@@ -1,16 +1,15 @@
-From 534c3a512bc653d8fa2d58a80e9e240af9d340b5 Mon Sep 17 00:00:00 2001
+From 14d0468e00d9c23bdea365c32f64810f1049dc2f Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 8 Apr 2019 10:36:08 -0500
+Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] omap3_beagle-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  board/ti/beagle/beagle.c          |  38 +++++++--
- configs/omap3_beagle_defconfig    |   1 +
  include/configs/omap3_beagle.h    | 134 +++++++-----------------------
  include/configs/ti_armv7_common.h | 128 +++++++++++++++++++++++++++-
  include/environment/ti/mmc.h      |  45 +++++++---
- 5 files changed, 223 insertions(+), 123 deletions(-)
+ 4 files changed, 222 insertions(+), 123 deletions(-)
 
 diff --git a/board/ti/beagle/beagle.c b/board/ti/beagle/beagle.c
 index 826aace3fb..f8b8d43fe0 100644
@@ -113,17 +112,6 @@ index 826aace3fb..f8b8d43fe0 100644
  	if (expansion_config.content == 1)
  		env_set(expansion_config.env_var, expansion_config.env_setting);
  
-diff --git a/configs/omap3_beagle_defconfig b/configs/omap3_beagle_defconfig
-index 9581dd9537..3384c47542 100644
---- a/configs/omap3_beagle_defconfig
-+++ b/configs/omap3_beagle_defconfig
-@@ -1,5 +1,6 @@
- CONFIG_ARM=y
- CONFIG_ARCH_OMAP2PLUS=y
-+# CONFIG_SPL_EXT_SUPPORT is not set
- CONFIG_SYS_TEXT_BASE=0x80100000
- CONFIG_TARGET_OMAP3_BEAGLE=y
- CONFIG_SPL=y
 diff --git a/include/configs/omap3_beagle.h b/include/configs/omap3_beagle.h
 index 7698a90c4e..135a4f5efc 100644
 --- a/include/configs/omap3_beagle.h
