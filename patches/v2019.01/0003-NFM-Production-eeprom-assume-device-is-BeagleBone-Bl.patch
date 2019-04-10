@@ -1,4 +1,4 @@
-From 99cd79068e62dd64e91314bc9cc6d67b45c61764 Mon Sep 17 00:00:00 2001
+From 6e61283c01a853f07f45a2428eff4682533691cb Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
@@ -11,8 +11,8 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/common/board_detect.c     | 12 ++++++++++++
  configs/am335x_boneblack_defconfig |  2 +-
  configs/am335x_evm_defconfig       |  2 +-
- include/configs/am335x_evm.h       |  8 ++++++++
- 7 files changed, 37 insertions(+), 7 deletions(-)
+ include/configs/am335x_evm.h       | 10 +++++++++-
+ 7 files changed, 38 insertions(+), 8 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
 index 47a7168517..641a48780c 100644
@@ -147,7 +147,7 @@ index 7d91dc0ceb..455e386a1c 100644
  CONFIG_VERSION_VARIABLE=y
  CONFIG_ARCH_MISC_INIT=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index f7d5a8548d..10fbe533c3 100644
+index 972a7f93f8..10fbe533c3 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -199,6 +199,14 @@
@@ -165,6 +165,15 @@ index f7d5a8548d..10fbe533c3 100644
  		"if test $board_name = A335PBGL; then " \
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
+@@ -222,7 +230,7 @@
+ 		"if test $fdtfile = undefined; then " \
+ 			"setenv board_name A335BNLT; " \
+ 			"setenv board_rev EMMC; " \
+-			"setenv fdtfile am335x-bonegreen.dtb; " \
++			"setenv fdtfile am335x-boneblack-emmc-overlay.dtb; " \
+ 		"fi; \0" \
+ 	"init_console=" \
+ 		"if test $board_name = A335_ICE; then "\
 -- 
 2.20.1
 

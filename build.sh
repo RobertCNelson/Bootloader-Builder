@@ -428,8 +428,9 @@ build_u_boot () {
 		#r12: am335x_evm: add BBORG_DISPLAY70-00A2.dtbo
 		#r13: am335x_evm: remove write_hex macro
 		#r14: am335x_evm: really remove write_hex macro
-		#r15: (pending)
-		RELEASE_VER="-r14" #bump on every change...
+		#r15: am335x_evm: just use bonegreen eeprom blank (eMMC)
+		#r16: (pending)
+		RELEASE_VER="-r15" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -552,8 +553,9 @@ build_u_boot () {
 		#r3: am335x_evm: add BB-BONE-NH10C-01-00A0
 		#r4: am335x_evm: add BBORG_DISPLAY70-00A2.dtbo
 		#r5: am335x_evm: disable ftd fixup
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x_evm: just use bonegreen eeprom blank (eMMC)
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

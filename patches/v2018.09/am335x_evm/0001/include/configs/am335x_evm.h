@@ -222,7 +222,7 @@
 		"if test $fdtfile = undefined; then " \
 			"setenv board_name A335BNLT; " \
 			"setenv board_rev EMMC; " \
-			"setenv fdtfile am335x-boneblack-emmc-overlay.dtb; " \
+			"setenv fdtfile am335x-bonegreen.dtb; " \
 		"fi; \0" \
 	"init_console=" \
 		"if test $board_name = A335_ICE; then "\
