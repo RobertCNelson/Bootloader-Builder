@@ -1,4 +1,4 @@
-From 280a39ede9fed8e797d84cbd6c4578e7d3191d4f Mon Sep 17 00:00:00 2001
+From efd88f847e84563ac94400585c7220d996869d93 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
@@ -6,13 +6,13 @@ Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  arch/arm/mach-omap2/am33xx/clock_am33xx.c |   1 +
- board/ti/am335x/board.c                   | 449 ++++++++++++++++++++++
+ board/ti/am335x/board.c                   | 453 ++++++++++++++++++++++
  board/ti/am335x/board.h                   |  16 +
  board/ti/am335x/hash-string.h             |  59 +++
  include/configs/ti_armv7_common.h         | 211 ++++++++++
  include/configs/ti_armv7_omap.h           |   3 +
  include/environment/ti/mmc.h              |  15 +
- 7 files changed, 754 insertions(+)
+ 7 files changed, 758 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/arch/arm/mach-omap2/am33xx/clock_am33xx.c b/arch/arm/mach-omap2/am33xx/clock_am33xx.c
@@ -28,7 +28,7 @@ index 32cdf63e3d..fb871c29c3 100644
  		&cmper->spi0clkctrl,
  		&cmrtc->rtcclkctrl,
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 812c5ca16b..77af483196 100644
+index 3e8183059a..47a7168517 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -39,14 +39,16 @@ index 812c5ca16b..77af483196 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -77,9 +78,449 @@ void do_board_detect(void)
+@@ -77,9 +78,453 @@ void do_board_detect(void)
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
  		printf("ti_i2c_eeprom_init failed\n");
 +
 +	//hack-ish, needs to mux'ed early, in do_cape_detect was too late...
 +	enable_i2c2_pin_mux();
++#ifndef CONFIG_DM_I2C
 +	i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED2, CONFIG_SYS_OMAP24_I2C_SLAVE2);
++#endif
  }
  #endif
  
@@ -482,14 +484,16 @@ index 812c5ca16b..77af483196 100644
 +{
 +	struct am335x_cape_eeprom_id cape_header;
 +
++#ifndef CONFIG_DM_I2C
 +	i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED2, CONFIG_SYS_OMAP24_I2C_SLAVE2);
++#endif
 +	probe_cape_eeprom(&cape_header);
 +}
 +
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -946,6 +1387,14 @@ int board_late_init(void)
+@@ -950,6 +1395,14 @@ int board_late_init(void)
  			env_set("serial#", board_serial);
  	}
  

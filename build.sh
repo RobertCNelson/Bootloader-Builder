@@ -551,8 +551,9 @@ build_u_boot () {
 		#r2: am335x_evm: revert i2c2_pin_mux state, broke capes...
 		#r3: am335x_evm: add BB-BONE-NH10C-01-00A0
 		#r4: am335x_evm: add BBORG_DISPLAY70-00A2.dtbo
-		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		#r5: am335x_evm: disable ftd fixup
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

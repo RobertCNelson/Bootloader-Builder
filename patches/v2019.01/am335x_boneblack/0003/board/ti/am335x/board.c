@@ -81,7 +81,9 @@ void do_board_detect(void)
 
 	//hack-ish, needs to mux'ed early, in do_cape_detect was too late...
 	enable_i2c2_pin_mux();
+#ifndef CONFIG_DM_I2C
 	i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED2, CONFIG_SYS_OMAP24_I2C_SLAVE2);
+#endif
 }
 #endif
 
@@ -517,7 +519,9 @@ void do_cape_detect(void)
 {
 	struct am335x_cape_eeprom_id cape_header;
 
+#ifndef CONFIG_DM_I2C
 	i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED2, CONFIG_SYS_OMAP24_I2C_SLAVE2);
+#endif
 	probe_cape_eeprom(&cape_header);
 }
 
@@ -1087,6 +1091,10 @@ int ft_board_setup(void *fdt, bd_t *bd)
 
 	/* phy address fixup needed only on beagle bone family */
 	if (!board_is_beaglebonex())
+		goto done;
+
+	/* This needs more testing, (on old kernels/etc..) */
+	if (board_is_beaglebonex())
 		goto done;
 
 	for (i = 0; i < MAX_CPSW_SLAVES; i++) {

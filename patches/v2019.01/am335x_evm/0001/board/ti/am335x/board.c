@@ -648,6 +648,10 @@ int ft_board_setup(void *fdt, bd_t *bd)
 	if (!board_is_beaglebonex())
 		goto done;
 
+	/* This needs more testing, (on old kernels/etc..) */
+	if (board_is_beaglebonex())
+		goto done;
+
 	for (i = 0; i < MAX_CPSW_SLAVES; i++) {
 		sprintf(alias, "ethernet%d", i);
 
