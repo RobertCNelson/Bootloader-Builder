@@ -607,51 +607,6 @@ build_u_boot () {
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		mx51evk)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/drivers/mmc/
-					cp drivers/mmc/fsl_esdhc.c ${base}/drivers/mmc/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/mx51evk.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
-		mx53loco)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/mx53loco.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		mx6ul_14x14_evk)
 			patch_file="${board}-fixes"
 			#regenerate="enable"
@@ -2144,7 +2099,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-	build_old="true"
+#	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
@@ -2152,7 +2107,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-	build_old="true"
+#	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx53loco" ; build_uboot_gnueabihf
