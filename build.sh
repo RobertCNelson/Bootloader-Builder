@@ -607,24 +607,6 @@ build_u_boot () {
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		mx6ul_14x14_evk)
-			patch_file="${board}-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/include/configs/
-					cp include/configs/mx6ul_14x14_evk.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		mx6ull_14x14_evk)
 			patch_file="${board}-fixes"
 			#regenerate="enable"
@@ -2073,7 +2055,7 @@ mx53loco () {
 
 mx6ul_14x14_evk () {
 	cleanup
-	build_old="true"
+#	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx6ul_14x14_evk" ; build_uboot_gnueabihf
