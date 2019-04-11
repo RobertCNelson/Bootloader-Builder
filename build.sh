@@ -410,144 +410,10 @@ build_u_boot () {
 	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${BUILDTARGET}"
 	echo "-----------------------------"
 
-	#v2018.09
+	#v2019.01
 	if [ "${old}" ] ; then
 		p_dir="${DIR}/patches/${uboot_old}"
 		uboot_ref="${uboot_old}"
-		#r1: initial release
-		#r2: am335x_evm: fix overlays...
-		#r3: rebuild with all enabled...
-		#r4: am335x_evm bring back bug/feature..
-		#r5: add pocketbeagle eeprom...
-		#r6: am335x_evm: drop marsboard support...
-		#r7: am335x_evm: fix default state of i2c2_pin_mux and mmc0_sdwp...
-		#r8: am335x_evm: revert i2c2_pin_mux state, broke capes...
-		#r9: am335x_evm: add BB-BONE-NH10C-01-00A0
-		#r10: am335x_evm: fix BBE
-		#r11: am335x_evm: really fix BBE
-		#r12: am335x_evm: add BBORG_DISPLAY70-00A2.dtbo
-		#r13: am335x_evm: remove write_hex macro
-		#r14: am335x_evm: really remove write_hex macro
-		#r15: am335x_evm: just use bonegreen eeprom blank (eMMC)
-		#r16: (pending)
-		RELEASE_VER="-r15" #bump on every change...
-		#halt_patching_uboot
-
-		case "${board}" in
-		am335x_evm)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/arch/arm/include/asm/arch-am33xx/
-					cp arch/arm/include/asm/arch-am33xx/hardware_am33xx.h ${base}/arch/arm/include/asm/arch-am33xx/
-					cp arch/arm/include/asm/arch-am33xx/sys_proto.h ${base}/arch/arm/include/asm/arch-am33xx/
-
-					mkdir -p ${base}/arch/arm/mach-omap2/am33xx/
-					cp arch/arm/mach-omap2/am33xx/board.c ${base}/arch/arm/mach-omap2/am33xx/
-					cp arch/arm/mach-omap2/hwinit-common.c ${base}/arch/arm/mach-omap2/
-
-					mkdir -p ${base}/board/ti/am335x/
-					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
-					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
-					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
-
-					mkdir -p ${base}/configs/
-					cp configs/am335x_boneblack_defconfig ${base}/configs/
-					cp configs/am335x_evm_defconfig ${base}/configs/
-
-					mkdir -p ${base}/env/
-					cp env/common.c ${base}/env/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/am335x_evm.h ${base}/include/configs/
-					cp include/configs/ti_armv7_common.h ${base}/include/configs/
-
-					mkdir -p ${base}/include/environment/ti/
-					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-
-			patch_file="U-Boot-BeagleBone-Cape-Manager"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0002"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/arch/arm/mach-omap2/am33xx/
-					cp arch/arm/mach-omap2/am33xx/clock_am33xx.c ${base}/arch/arm/mach-omap2/am33xx/
-
-					mkdir -p ${base}/board/ti/am335x/
-					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
-					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
-					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/ti_armv7_common.h ${base}/include/configs/
-					cp include/configs/ti_armv7_omap.h ${base}/include/configs/
-
-					mkdir -p ${base}/include/environment/ti/
-					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
-
-					refresh_patch_two
-				fi
-				cp_git_commit_patch_two
-			else
-				${git} "${p_dir}/0002-${patch_file}.patch"
-			fi
-			;;
-		am335x_boneblack)
-			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
-			echo "patch -p1 < \"${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
-			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
-			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
-
-			patch_file="NFM-Production-eeprom-assume-device-is-BeagleBone-Bl"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0003"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/board/ti/am335x/
-					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
-					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
-					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
-
-					mkdir -p ${base}/board/ti/common/
-					cp board/ti/common/board_detect.c ${base}/board/ti/common/
-
-					mkdir -p ${base}/configs/
-					cp configs/am335x_boneblack_defconfig ${base}/configs/
-					cp configs/am335x_evm_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/am335x_evm.h ${base}/include/configs/
-
-					refresh_patch_three
-				fi
-				cp_git_commit_patch_three
-			else
-				${git} "${p_dir}/0003-${patch_file}.patch"
-			fi
-			;;
-		esac
-	fi
-
-	#v2019.01
-	if [ "${stable}" ] ; then
-		p_dir="${DIR}/patches/${uboot_stable}"
-		uboot_ref="${uboot_stable}"
 		#r1: initial release
 		#r2: am335x_evm: revert i2c2_pin_mux state, broke capes...
 		#r3: am335x_evm: add BB-BONE-NH10C-01-00A0
@@ -992,6 +858,373 @@ build_u_boot () {
 	fi
 
 	#v2019.04
+	if [ "${stable}" ] ; then
+		p_dir="${DIR}/patches/${uboot_stable}"
+		uboot_ref="${uboot_stable}"
+		#r1: initial release
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
+		#halt_patching_uboot
+
+		case "${board}" in
+		am43xx_evm)
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/am43xx_evm.h ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		am57xx_evm)
+			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
+			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
+			;;
+		at91sam9x5ek_mmc)
+			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		beagle_x15)
+			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
+			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
+			;;
+		mx23_olinuxino)
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		mx51evk)
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/drivers/mmc/
+					cp drivers/mmc/fsl_esdhc.c ${base}/drivers/mmc/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx51evk.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		mx53loco)
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/${board}.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		mx6ul_14x14_evk)
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx6ul_14x14_evk.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		mx6ull_14x14_evk)
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx6ullevk.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		mx6sabresd)
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/mx6sabre_common.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		omap3_beagle)
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/board/ti/beagle/
+					cp board/ti/beagle/beagle.c ${base}/board/ti/beagle/
+
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/omap3_beagle.h ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		omap4_panda)
+			patch_file="omap4_common-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+					cp include/configs/ti_omap4_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		omap5_uevm)
+			patch_file="omap5_common-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+					cp include/configs/ti_omap5_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/boot.h ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		sama5d2_xplained_mmc)
+			patch_file="sama5dX-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/arch/arm/mach-at91/
+					cp arch/arm/mach-at91/spl.c ${base}/arch/arm/mach-at91/
+
+					mkdir -p ${base}/configs/
+					cp configs/sama5d27_som1_ek_mmc_defconfig ${base}/configs/
+					cp configs/sama5d2_xplained_mmc_defconfig ${base}/configs/
+					cp configs/sama5d3_xplained_mmc_defconfig ${base}/configs/
+					cp configs/sama5d3xek_mmc_defconfig ${base}/configs/
+					cp configs/sama5d4_xplained_mmc_defconfig ${base}/configs/
+					cp configs/sama5d4ek_mmc_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/at91-sama5_common.h ${base}/include/configs/
+					cp include/configs/sama5d27_som1_ek.h ${base}/include/configs/
+					cp include/configs/sama5d2_xplained.h ${base}/include/configs/
+					cp include/configs/sama5d3_xplained.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		socfpga_de0_nano_soc)
+			patch_file="de0_nano-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		vf610twr)
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/vf610twr.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		wandboard)
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/wandboard.h ${base}/include/configs/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		esac
+	fi
+
+	#v2019.07
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
@@ -1810,7 +2043,7 @@ udoo () {
 am335x_evm () {
 	cleanup
 	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 #	build_testing="true"
 
 	board="am335x_evm" ; build_uboot_gnueabihf
@@ -1819,7 +2052,7 @@ am335x_evm () {
 am335x_boneblack_flasher () {
 	cleanup
 	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 #	build_testing="true"
 
 	board="am335x_boneblack"
@@ -1829,7 +2062,7 @@ am335x_boneblack_flasher () {
 
 am43xx_evm () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 
@@ -1838,7 +2071,7 @@ am43xx_evm () {
 
 am57xx_evm () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 
@@ -1887,7 +2120,7 @@ am571x_sndrblock_flasher () {
 
 at91sam9x5ek () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="at91sam9x5ek_mmc" ; build_uboot_eabi
@@ -1895,7 +2128,7 @@ at91sam9x5ek () {
 
 firefly_rk3288 () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="firefly-rk3288" ; build_uboot_gnueabihf
@@ -1903,7 +2136,7 @@ firefly_rk3288 () {
 
 mx23_olinuxino () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx23_olinuxino" ; build_uboot_eabi
@@ -1911,7 +2144,7 @@ mx23_olinuxino () {
 
 mx51evk () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx51evk" ; build_uboot_gnueabihf
@@ -1919,7 +2152,7 @@ mx51evk () {
 
 mx53loco () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx53loco" ; build_uboot_gnueabihf
@@ -1927,7 +2160,7 @@ mx53loco () {
 
 mx6ul_14x14_evk () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx6ul_14x14_evk" ; build_uboot_gnueabihf
@@ -1935,7 +2168,7 @@ mx6ul_14x14_evk () {
 
 mx6ull_14x14_evk () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx6ull_14x14_evk" ; build_uboot_gnueabihf
@@ -1943,7 +2176,7 @@ mx6ull_14x14_evk () {
 
 mx6sabresd () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="mx6sabresd" ; build_uboot_gnueabihf
@@ -1951,7 +2184,7 @@ mx6sabresd () {
 
 omap3_beagle () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
@@ -1959,7 +2192,7 @@ omap3_beagle () {
 
 omap4_panda () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap4_panda" ; build_uboot_gnueabihf
@@ -1967,7 +2200,7 @@ omap4_panda () {
 
 omap5_uevm () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap5_uevm" ; build_uboot_gnueabihf
@@ -1975,7 +2208,7 @@ omap5_uevm () {
 
 sama5d2_xplained_mmc () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
@@ -1983,7 +2216,7 @@ sama5d2_xplained_mmc () {
 
 socfpga_de0_nano_soc () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
@@ -1991,7 +2224,7 @@ socfpga_de0_nano_soc () {
 
 vf610twr () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="vf610twr" ; build_uboot_gnueabihf
@@ -1999,7 +2232,7 @@ vf610twr () {
 
 wandboard () {
 	cleanup
-#	build_old="true"
+	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="wandboard" ; build_uboot_gnueabihf
