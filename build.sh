@@ -607,34 +607,6 @@ build_u_boot () {
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		omap3_beagle)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/board/ti/beagle/
-					cp board/ti/beagle/beagle.c ${base}/board/ti/beagle/
-
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/omap3_beagle.h ${base}/include/configs/
-					cp include/configs/ti_armv7_common.h ${base}/include/configs/
-
-					mkdir -p ${base}/include/environment/ti/
-					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		omap4_panda)
 			patch_file="omap4_common-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
@@ -2061,7 +2033,7 @@ mx6sabresd () {
 
 omap3_beagle () {
 	cleanup
-	build_old="true"
+#	build_old="true"
 	build_stable="true"
 	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
