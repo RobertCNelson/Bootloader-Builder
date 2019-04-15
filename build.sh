@@ -705,6 +705,7 @@ build_u_boot () {
 					cp arch/arm/include/asm/arch-am33xx/sys_proto.h ${base}/arch/arm/include/asm/arch-am33xx/
 
 					mkdir -p ${base}/arch/arm/mach-omap2/am33xx/
+					cp arch/arm/mach-omap2/am33xx/clock_am33xx.c ${base}/arch/arm/mach-omap2/am33xx/
 					cp arch/arm/mach-omap2/am33xx/board.c ${base}/arch/arm/mach-omap2/am33xx/
 					cp arch/arm/mach-omap2/hwinit-common.c ${base}/arch/arm/mach-omap2/
 
@@ -740,9 +741,6 @@ build_u_boot () {
 
 				#reset="enable"
 				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/arch/arm/mach-omap2/am33xx/
-					cp arch/arm/mach-omap2/am33xx/clock_am33xx.c ${base}/arch/arm/mach-omap2/am33xx/
-
 					mkdir -p ${base}/board/ti/am335x/
 					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
 					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
