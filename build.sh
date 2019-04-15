@@ -1162,6 +1162,109 @@ build_u_boot () {
 		#halt_patching_uboot
 
 		case "${board}" in
+		am335x_evm)
+			patch_file="${board}-uEnv.txt-bootz-n-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/arch/arm/include/asm/arch-am33xx/
+					cp arch/arm/include/asm/arch-am33xx/hardware_am33xx.h ${base}/arch/arm/include/asm/arch-am33xx/
+					cp arch/arm/include/asm/arch-am33xx/sys_proto.h ${base}/arch/arm/include/asm/arch-am33xx/
+
+					mkdir -p ${base}/arch/arm/mach-omap2/am33xx/
+					cp arch/arm/mach-omap2/am33xx/clock_am33xx.c ${base}/arch/arm/mach-omap2/am33xx/
+					cp arch/arm/mach-omap2/am33xx/board.c ${base}/arch/arm/mach-omap2/am33xx/
+					cp arch/arm/mach-omap2/hwinit-common.c ${base}/arch/arm/mach-omap2/
+
+					mkdir -p ${base}/board/ti/am335x/
+					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
+					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
+					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
+
+					mkdir -p ${base}/configs/
+					cp configs/am335x_evm_defconfig ${base}/configs/
+
+					mkdir -p ${base}/env/
+					cp env/common.c ${base}/env/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/am335x_evm.h ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+
+			patch_file="U-Boot-BeagleBone-Cape-Manager"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0002"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/board/ti/am335x/
+					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
+					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
+					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+					cp include/configs/ti_armv7_omap.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					refresh_patch_two
+				fi
+				cp_git_commit_patch_two
+			else
+				${git} "${p_dir}/0002-${patch_file}.patch"
+			fi
+			;;
+		am335x_boneblack)
+			echo "patch -p1 < \"${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch\""
+			echo "patch -p1 < \"${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch\""
+			echo "patch -p1 < \"${p_dir}/0003-NFM-Production-eeprom-assume-device-is-BeagleBone-Bl.patch\""
+			${git} "${p_dir}/0001-am335x_evm-uEnv.txt-bootz-n-fixes.patch"
+			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
+
+			patch_file="NFM-Production-eeprom-assume-device-is-BeagleBone-Bl"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0003"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/board/ti/am335x/
+					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
+					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
+					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
+
+					mkdir -p ${base}/board/ti/common/
+					cp board/ti/common/board_detect.c ${base}/board/ti/common/
+
+					mkdir -p ${base}/configs/
+					cp configs/am335x_evm_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/am335x_evm.h ${base}/include/configs/
+
+					refresh_patch_three
+				fi
+				cp_git_commit_patch_three
+			else
+				${git} "${p_dir}/0003-${patch_file}.patch"
+			fi
+			;;
 		am43xx_evm)
 			patch_file="${board}-fixes"
 			#regenerate="enable"
@@ -1971,8 +2074,8 @@ udoo () {
 am335x_evm () {
 	cleanup
 	build_old="true"
-#	build_stable="true"
-#	build_testing="true"
+	build_stable="true"
+	build_testing="true"
 
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
@@ -1980,8 +2083,8 @@ am335x_evm () {
 am335x_boneblack_flasher () {
 	cleanup
 	build_old="true"
-#	build_stable="true"
-#	build_testing="true"
+	build_stable="true"
+	build_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
