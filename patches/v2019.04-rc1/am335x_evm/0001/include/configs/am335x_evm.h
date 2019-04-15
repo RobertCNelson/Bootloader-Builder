@@ -199,14 +199,6 @@
 				"setenv fdtfile am335x-boneblack.dtb; " \
 			"fi; " \
 		"fi; " \
-		"if test $board_name = A335BLNK; then " \
-			"if test -e mmc 0:1 /boot/.eeprom.txt; then " \
-				"load mmc 0:1 ${loadaddr} /boot/.eeprom.txt;" \
-				"env import -t ${loadaddr} ${filesize};" \
-				"echo Loaded environment from /boot/.eeprom.txt;" \
-				"run eeprom_program; " \
-			"fi;" \
-			"setenv fdtfile am335x-bonegreen.dtb; fi; " \
 		"if test $board_name = A335PBGL; then " \
 			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
 		"if test $board_name = BBBW; then " \
@@ -317,14 +309,9 @@
  */
 #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT
 #define CONFIG_AM335X_USB0
-#define CONFIG_AM335X_USB1
-#ifdef CONFIG_AM335X_USB_SWAP
-#define CONFIG_AM335X_USB0_MODE MUSB_HOST
-#define CONFIG_AM335X_USB1_MODE	MUSB_PERIPHERAL
-#else
 #define CONFIG_AM335X_USB0_MODE	MUSB_PERIPHERAL
+#define CONFIG_AM335X_USB1
 #define CONFIG_AM335X_USB1_MODE MUSB_HOST
-#endif
 
 /*
  * Disable MMC DM for SPL build and can be re-enabled after adding
@@ -375,17 +362,6 @@
 #define CONFIG_ENV_OFFSET_REDUND	(CONFIG_ENV_OFFSET + CONFIG_ENV_SIZE)
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
 #define CONFIG_SYS_MMC_MAX_DEVICE	2
-#elif defined(CONFIG_SD_BOOT)
-#define CONFIG_ENV_IS_IN_FAT
-#define FAT_ENV_INTERFACE		"mmc"
-#define FAT_ENV_DEVICE_AND_PART		"0:1"
-#define FAT_ENV_FILE			"uboot.env"
-#ifndef CONFIG_FAT_WRITE
-#define CONFIG_FAT_WRITE
-#endif
-#define FAT_ENV_DEVICE 0
-#define FAT_ENV_PART 1
-#define CONFIG_BOOT_PARTITION_ACCESS
 #elif defined(CONFIG_NOR_BOOT)
 #define CONFIG_ENV_SECT_SIZE		(128 << 10)	/* 128 KiB */
 #define CONFIG_ENV_OFFSET		(512 << 10)	/* 512 KiB */

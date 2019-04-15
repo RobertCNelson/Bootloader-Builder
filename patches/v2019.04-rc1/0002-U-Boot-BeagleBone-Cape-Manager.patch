@@ -1,4 +1,4 @@
-From 032545ede6eadba1588a15e6ca631a2699d2c872 Mon Sep 17 00:00:00 2001
+From a3a73af37d8791f825c98e846a9e2cb768402172 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
@@ -28,7 +28,7 @@ index 32cdf63e3d..fb871c29c3 100644
  		&cmper->spi0clkctrl,
  		&cmrtc->rtcclkctrl,
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 3e8183059a..47a7168517 100644
+index 4cefacf1a4..169c851116 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -493,7 +493,7 @@ index 3e8183059a..47a7168517 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -950,6 +1395,14 @@ int board_late_init(void)
+@@ -951,6 +1396,14 @@ int board_late_init(void)
  			env_set("serial#", board_serial);
  	}
  
