@@ -176,6 +176,7 @@ gcc_linaro_gnueabihf_6 () {
 		archive_site="https://releases.linaro.org/archive"
 
 		#
+		#https://releases.linaro.org/components/toolchain/binaries/6.2-2016.11/arm-linux-gnueabihf/gcc-linaro-6.2.1-2016.11-x86_64_arm-linux-gnueabihf.tar.xz
 		#https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/arm-linux-gnueabihf/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf.tar.xz
 		#https://releases.linaro.org/components/toolchain/binaries/6.4-2017.08/arm-linux-gnueabihf/gcc-linaro-6.4.1-2017.08-x86_64_arm-linux-gnueabihf.tar.xz
 		#https://releases.linaro.org/components/toolchain/binaries/6.4-2017.11/arm-linux-gnueabihf/gcc-linaro-6.4.1-2017.11-x86_64_arm-linux-gnueabihf.tar.xz
@@ -1045,7 +1046,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2019.07
+	#v2019.07-rc1
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
@@ -1681,13 +1682,21 @@ build_u_boot () {
 
 	if [ ! "${pre_built}" ] ; then
 		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
+
+		#make ARCH=arm CROSS_COMPILE="${CC}" menuconfig
+
 		echo "Building ${project}: ${uboot_filename}:"
 		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET} > /dev/null
+
+		cp -v ./.config ${p_dir}/${board}/${uboot_config}
+
 		make ARCH=arm CROSS_COMPILE="${CC}" savedefconfig
+
 		if [ ! -d ${p_dir}/${board}/0001/configs/ ] ; then
 			mkdir -p ${p_dir}/${board}/0001/configs/ || true
 		fi
 		cp -v ./defconfig ${p_dir}/${board}/0001/configs/${uboot_config}
+
 		if [ "x${board}" = "xfirefly-rk3288" ] ; then
 			./tools/mkimage -n rk3288 -T rksd -d ./spl/u-boot-spl-nodtb.bin u-boot-spl.rk3288
 		fi
