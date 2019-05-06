@@ -1688,6 +1688,9 @@ build_u_boot () {
 		echo "Building ${project}: ${uboot_filename}:"
 		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET} > /dev/null
 
+		if [ ! -d ${p_dir}/${board}/ ] ; then
+			mkdir -p ${p_dir}/${board}/ || true
+		fi
 		cp -v ./.config ${p_dir}/${board}/${uboot_config}
 
 		make ARCH=arm CROSS_COMPILE="${CC}" savedefconfig
