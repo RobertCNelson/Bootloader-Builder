@@ -581,8 +581,9 @@ build_u_boot () {
 		p_dir="${DIR}/patches/${uboot_stable}"
 		uboot_ref="${uboot_stable}"
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: omap4-panda: enable btrfs
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

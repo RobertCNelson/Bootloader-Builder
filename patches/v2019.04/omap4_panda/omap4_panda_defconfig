@@ -598,7 +598,7 @@ CONFIG_CMD_MISC=y
 #
 # Filesystem commands
 #
-# CONFIG_CMD_BTRFS is not set
+CONFIG_CMD_BTRFS=y
 CONFIG_CMD_EXT2=y
 CONFIG_CMD_EXT4=y
 # CONFIG_CMD_EXT4_WRITE is not set
@@ -1079,7 +1079,7 @@ CONFIG_USB_ETHER_SMSC95XX=y
 #
 # File systems
 #
-# CONFIG_FS_BTRFS is not set
+CONFIG_FS_BTRFS=y
 # CONFIG_FS_CBFS is not set
 CONFIG_FS_EXT4=y
 # CONFIG_EXT4_WRITE is not set
@@ -1112,6 +1112,7 @@ CONFIG_USE_TINY_PRINTF=y
 CONFIG_REGEX=y
 # CONFIG_SPL_TINY_MEMSET is not set
 # CONFIG_TPL_TINY_MEMSET is not set
+CONFIG_RBTREE=y
 # CONFIG_BITREVERSE is not set
 # CONFIG_CMD_DHRYSTONE is not set
 
@@ -1132,13 +1133,14 @@ CONFIG_SHA1=y
 CONFIG_SHA256=y
 # CONFIG_SHA_HW_ACCEL is not set
 CONFIG_MD5=y
+CONFIG_CRC32C=y
 
 #
 # Compression Support
 #
 # CONFIG_LZ4 is not set
 # CONFIG_LZMA is not set
-# CONFIG_LZO is not set
+CONFIG_LZO=y
 # CONFIG_SPL_LZ4 is not set
 # CONFIG_SPL_LZO is not set
 # CONFIG_SPL_GZIP is not set
