@@ -1047,7 +1047,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2019.07-rc2
+	#v2019.07-rc3
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
