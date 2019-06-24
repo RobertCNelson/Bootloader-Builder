@@ -1047,7 +1047,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2019.07-rc1
+	#v2019.07-rc2
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
@@ -1109,7 +1109,6 @@ build_u_boot () {
 					mkdir -p ${base}/board/ti/am335x/
 					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
 					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
-					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
@@ -1674,6 +1673,10 @@ build_u_boot () {
 	fi
 
 	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.bin ] ; then
+		pre_built=1
+	fi
+
+	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.img ] ; then
 		pre_built=1
 	fi
 
