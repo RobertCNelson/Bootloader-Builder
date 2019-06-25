@@ -582,8 +582,9 @@ build_u_boot () {
 		uboot_ref="${uboot_stable}"
 		#r1: initial release
 		#r2: omap4-panda: enable btrfs
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am335x, backport emmc pins, omap5-uevm: enable btrfs
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

@@ -1,4 +1,4 @@
-From cedf13f2828db7a0de9bf482d2ba14ede3e25614 Mon Sep 17 00:00:00 2001
+From 9abd9a5e7fad044fa244d710920fa0f419640188 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 1/3] am335x_evm-uEnv.txt-bootz-n-fixes
@@ -12,13 +12,13 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  arch/arm/mach-omap2/hwinit-common.c           |  10 +
  board/ti/am335x/board.c                       | 104 +++++-
  board/ti/am335x/board.h                       |  34 +-
- board/ti/am335x/mux.c                         |  26 +-
+ board/ti/am335x/mux.c                         |  30 +-
  configs/am335x_evm_defconfig                  |  55 +---
  env/common.c                                  |   2 +
  include/configs/am335x_evm.h                  |  77 ++++-
  include/configs/ti_armv7_common.h             | 311 ++++++++++++++++++
  include/environment/ti/mmc.h                  |  67 +++-
- 13 files changed, 634 insertions(+), 77 deletions(-)
+ 13 files changed, 638 insertions(+), 77 deletions(-)
 
 diff --git a/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h b/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h
 index 878ef3e5d2..b42c7e67e9 100644
@@ -410,7 +410,7 @@ index 48df914af9..a4e0e04f8f 100644
  void enable_board_pin_mux(void);
  #endif
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 04f4b8e693..9e5244b351 100644
+index 04f4b8e693..64dd171209 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
 @@ -65,7 +65,6 @@ static struct module_pin_mux mmc0_pin_mux[] = {
@@ -421,7 +421,18 @@ index 04f4b8e693..9e5244b351 100644
  	{OFFSET(spi0_cs1), (MODE(7) | RXACTIVE | PULLUP_EN)},	/* GPIO0_6 */
  	{-1},
  };
-@@ -120,6 +119,14 @@ static struct module_pin_mux i2c1_pin_mux[] = {
+@@ -93,6 +92,10 @@ static struct module_pin_mux mmc0_pin_mux_sk_evm[] = {
+ };
+ 
+ static struct module_pin_mux mmc1_pin_mux[] = {
++	{OFFSET(gpmc_ad7), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT7 */
++	{OFFSET(gpmc_ad6), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT6 */
++	{OFFSET(gpmc_ad5), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT5 */
++	{OFFSET(gpmc_ad4), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT4 */
+ 	{OFFSET(gpmc_ad3), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT3 */
+ 	{OFFSET(gpmc_ad2), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT2 */
+ 	{OFFSET(gpmc_ad1), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT1 */
+@@ -120,6 +123,14 @@ static struct module_pin_mux i2c1_pin_mux[] = {
  	{-1},
  };
  
@@ -436,7 +447,7 @@ index 04f4b8e693..9e5244b351 100644
  static struct module_pin_mux spi0_pin_mux[] = {
  	{OFFSET(spi0_sclk), (MODE(0) | RXACTIVE | PULLUDEN)},	/* SPI0_SCLK */
  	{OFFSET(spi0_d0), (MODE(0) | RXACTIVE |
-@@ -304,6 +311,11 @@ void enable_i2c0_pin_mux(void)
+@@ -304,6 +315,11 @@ void enable_i2c0_pin_mux(void)
  	configure_module_pin_mux(i2c0_pin_mux);
  }
  
@@ -448,7 +459,7 @@ index 04f4b8e693..9e5244b351 100644
  /*
   * The AM335x GP EVM, if daughter card(s) are connected, can have 8
   * different profiles.  These profiles determine what peripherals are
-@@ -352,7 +364,11 @@ static unsigned short detect_daughter_board_profile(void)
+@@ -352,7 +368,11 @@ static unsigned short detect_daughter_board_profile(void)
  void enable_board_pin_mux(void)
  {
  	/* Do board-specific muxes. */
@@ -461,7 +472,7 @@ index 04f4b8e693..9e5244b351 100644
  		/* Beaglebone pinmux */
  		configure_module_pin_mux(mii1_pin_mux);
  		configure_module_pin_mux(mmc0_pin_mux);
-@@ -363,6 +379,7 @@ void enable_board_pin_mux(void)
+@@ -363,6 +383,7 @@ void enable_board_pin_mux(void)
  #else
  		configure_module_pin_mux(mmc1_pin_mux);
  #endif
@@ -469,7 +480,7 @@ index 04f4b8e693..9e5244b351 100644
  	} else if (board_is_gp_evm()) {
  		/* General Purpose EVM */
  		unsigned short profile = detect_daughter_board_profile();
-@@ -391,15 +408,13 @@ void enable_board_pin_mux(void)
+@@ -391,15 +412,13 @@ void enable_board_pin_mux(void)
  		configure_module_pin_mux(rgmii1_pin_mux);
  		configure_module_pin_mux(mmc0_pin_mux_sk_evm);
  	} else if (board_is_bone_lt()) {
@@ -486,7 +497,7 @@ index 04f4b8e693..9e5244b351 100644
  		configure_module_pin_mux(mmc0_pin_mux);
  #if defined(CONFIG_NAND) && defined(CONFIG_EMMC_BOOT)
  		configure_module_pin_mux(nand_pin_mux);
-@@ -408,6 +423,7 @@ void enable_board_pin_mux(void)
+@@ -408,6 +427,7 @@ void enable_board_pin_mux(void)
  #else
  		configure_module_pin_mux(mmc1_pin_mux);
  #endif

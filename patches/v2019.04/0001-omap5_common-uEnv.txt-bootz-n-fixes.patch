@@ -1,19 +1,19 @@
-From f9be2831a5f257ab928f6cd3e41a09ece38c807f Mon Sep 17 00:00:00 2001
+From d3e446244a4d241683f550ae5abdb23aafd11c6d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] omap5_common-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/omap5_uevm_defconfig      |   5 +-
+ configs/omap5_uevm_defconfig      |   6 +-
  include/configs/ti_armv7_common.h | 126 ++++++++++++++++++++++++++++++
  include/configs/ti_omap5_common.h |   2 +
  include/environment/ti/boot.h     |  16 ++--
  include/environment/ti/mmc.h      |  31 +++++++-
- 5 files changed, 166 insertions(+), 14 deletions(-)
+ 5 files changed, 167 insertions(+), 14 deletions(-)
 
 diff --git a/configs/omap5_uevm_defconfig b/configs/omap5_uevm_defconfig
-index 84d4e2b37c..144fb46400 100644
+index 84d4e2b37c..fc4dded166 100644
 --- a/configs/omap5_uevm_defconfig
 +++ b/configs/omap5_uevm_defconfig
 @@ -11,6 +11,10 @@ CONFIG_SYS_CONSOLE_INFO_QUIET=y
@@ -27,11 +27,12 @@ index 84d4e2b37c..144fb46400 100644
  CONFIG_CMD_SPL=y
  CONFIG_CMD_ASKENV=y
  CONFIG_CMD_DFU=y
-@@ -22,7 +26,6 @@ CONFIG_CMD_MMC=y
+@@ -22,7 +26,7 @@ CONFIG_CMD_MMC=y
  CONFIG_CMD_SPI=y
  CONFIG_CMD_USB=y
  # CONFIG_CMD_SETEXPR is not set
 -CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_BTRFS=y
  CONFIG_ENV_IS_IN_MMC=y
  CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
  CONFIG_SCSI_AHCI=y

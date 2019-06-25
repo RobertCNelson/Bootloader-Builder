@@ -1,4 +1,4 @@
-From 4491550b5a569c263727c9bb16dc3d054ad0e78c Mon Sep 17 00:00:00 2001
+From 87d737df16e6211a1d18622cd1ea49a7f0d38352 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
@@ -73,10 +73,10 @@ index c90034617f..78ae74359e 100644
  
  static inline int board_is_evm_sk(void)
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 9e5244b351..26b4243f6f 100644
+index 64dd171209..42c17353a6 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
-@@ -434,7 +434,10 @@ void enable_board_pin_mux(void)
+@@ -438,7 +438,10 @@ void enable_board_pin_mux(void)
  		configure_module_pin_mux(rmii1_pin_mux);
  		configure_module_pin_mux(spi0_pin_mux);
  	} else {
