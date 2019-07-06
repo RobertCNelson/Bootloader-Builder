@@ -1186,8 +1186,30 @@ build_u_boot () {
 			fi
 			;;
 		am57xx_evm)
-			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
-			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+					cp include/configs/ti_omap5_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/boot.h ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
 			;;
 		at91sam9x5ek_mmc)
 			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
@@ -2012,8 +2034,8 @@ am43xx_evm () {
 
 am57xx_evm () {
 	cleanup
-	build_old="true"
-	build_stable="true"
+#	build_old="true"
+#	build_stable="true"
 	build_testing="true"
 
 	board="am57xx_evm" ; build_uboot_gnueabihf

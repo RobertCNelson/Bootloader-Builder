@@ -1,22 +1,22 @@
-From fc46e6c53596c9da8f984e026398e88ffdd20d77 Mon Sep 17 00:00:00 2001
+From b7c3ef0e4ab4b977423d5d54b96fbca4f9dfda4b Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 20 Dec 2018 13:06:44 -0600
-Subject: [PATCH] am57xx_evm fixes
+Date: Tue, 9 Apr 2019 09:38:02 -0500
+Subject: [PATCH] am57xx_evm-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/am57xx_evm_defconfig      |  13 +-
+ configs/am57xx_evm_defconfig      |   8 +-
  include/configs/ti_armv7_common.h | 357 ++++++++++++++++++++++++++++++
  include/configs/ti_omap5_common.h |   5 +
- include/environment/ti/boot.h     |  49 ++--
+ include/environment/ti/boot.h     |  22 +-
  include/environment/ti/mmc.h      |  45 +++-
- 5 files changed, 429 insertions(+), 40 deletions(-)
+ 5 files changed, 426 insertions(+), 11 deletions(-)
 
 diff --git a/configs/am57xx_evm_defconfig b/configs/am57xx_evm_defconfig
-index aa8283033e..70da08b3c7 100644
+index a3de7a4ec4..c24ef97379 100644
 --- a/configs/am57xx_evm_defconfig
 +++ b/configs/am57xx_evm_defconfig
-@@ -13,7 +13,6 @@ CONFIG_NR_DRAM_BANKS=2
+@@ -14,7 +14,6 @@ CONFIG_DISTRO_DEFAULTS=y
  CONFIG_SPL_LOAD_FIT=y
  CONFIG_OF_BOARD_SETUP=y
  CONFIG_USE_BOOTARGS=y
@@ -24,32 +24,28 @@ index aa8283033e..70da08b3c7 100644
  # CONFIG_USE_BOOTCOMMAND is not set
  CONFIG_SYS_CONSOLE_INFO_QUIET=y
  # CONFIG_MISC_INIT_R is not set
-@@ -31,9 +30,9 @@ CONFIG_CMD_SPL=y
+@@ -28,13 +27,18 @@ CONFIG_SPL_DMA_SUPPORT=y
+ CONFIG_SPL_OS_BOOT=y
+ CONFIG_SPL_SPI_LOAD=y
+ CONFIG_SPL_YMODEM_SUPPORT=y
++CONFIG_AUTOBOOT_KEYED=y
++CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
++CONFIG_AUTOBOOT_DELAY_STR="d"
++CONFIG_AUTOBOOT_STOP_STR=" "
+ CONFIG_CMD_SPL=y
+ # CONFIG_CMD_FLASH is not set
+ # CONFIG_CMD_SETEXPR is not set
  # CONFIG_CMD_PMIC is not set
++CONFIG_CMD_BTRFS=y
  CONFIG_OF_CONTROL=y
  CONFIG_SPL_OF_CONTROL=y
 -CONFIG_DEFAULT_DEVICE_TREE="am572x-idk"
 +CONFIG_DEFAULT_DEVICE_TREE="am57xx-beagle-x15-revc"
  CONFIG_OF_LIST="am57xx-beagle-x15 am57xx-beagle-x15-revb1 am57xx-beagle-x15-revc am572x-idk am571x-idk am574x-idk"
--CONFIG_ENV_IS_IN_MMC=y
-+CONFIG_ENV_IS_NOWHERE=y
+ CONFIG_ENV_IS_IN_MMC=y
  CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
- CONFIG_DM=y
- CONFIG_SPL_DM=y
-@@ -89,3 +88,11 @@ CONFIG_USB_GADGET=y
- CONFIG_USB_GADGET_MANUFACTURER="Texas Instruments"
- CONFIG_USB_GADGET_VENDOR_NUM=0x0451
- CONFIG_USB_GADGET_PRODUCT_NUM=0xd022
-+CONFIG_AUTOBOOT_KEYED=y
-+CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
-+CONFIG_AUTOBOOT_DELAY_STR="d"
-+CONFIG_AUTOBOOT_STOP_STR=" "
-+CONFIG_CMD_BTRFS=y
-+CONFIG_FS_BTRFS=y
-+CONFIG_OF_LIBFDT=y
-+CONFIG_OF_LIBFDT_OVERLAY=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 1e2a62dd6f..d40731eff7 100644
+index 828fb1b2a5..1534d72441 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -80,6 +80,363 @@
@@ -417,10 +413,10 @@ index 1e2a62dd6f..d40731eff7 100644
   * The following are general good-enough settings for U-Boot.  We set a
   * large malloc pool as we generally have a lot of DDR, and we opt for
 diff --git a/include/configs/ti_omap5_common.h b/include/configs/ti_omap5_common.h
-index 8bf4a6b7e9..ac00ecf758 100644
+index de0a6af2fd..0cd2ccea03 100644
 --- a/include/configs/ti_omap5_common.h
 +++ b/include/configs/ti_omap5_common.h
-@@ -63,6 +63,11 @@
+@@ -64,6 +64,11 @@
  	DEFAULT_FIT_TI_ARGS \
  	DEFAULT_COMMON_BOOT_TI_ARGS \
  	DEFAULT_FDT_TI_ARGS \
@@ -431,12 +427,12 @@ index 8bf4a6b7e9..ac00ecf758 100644
 +	EEPROM_PROGRAMMING \
  	DFUARGS \
  	NETARGS \
- 
+ 	NANDARGS \
 diff --git a/include/environment/ti/boot.h b/include/environment/ti/boot.h
-index 86ff6d3ea7..cc5a4ad060 100644
+index 05bdbbc23e..051fee563f 100644
 --- a/include/environment/ti/boot.h
 +++ b/include/environment/ti/boot.h
-@@ -69,32 +69,18 @@
+@@ -64,6 +64,7 @@
  	"bootpart=0:2\0" \
  	"bootdir=/boot\0" \
  	"bootfile=zImage\0" \
@@ -444,30 +440,13 @@ index 86ff6d3ea7..cc5a4ad060 100644
  	"usbtty=cdc_acm\0" \
  	"vram=16M\0" \
  	AVB_VERIFY_CMD \
- 	"partitions=" PARTS_DEFAULT "\0" \
- 	"optargs=\0" \
- 	"dofastboot=0\0" \
--	"emmc_linux_boot=" \
--		"echo Trying to boot Linux from eMMC ...; " \
--		"setenv mmcdev 1; " \
--		"setenv bootpart 1:2; " \
--		"setenv mmcroot /dev/mmcblk0p2 rw; " \
--		"run mmcboot;\0" \
--	"emmc_android_boot=" \
--		"echo Trying to boot Android from eMMC ...; " \
--		"run update_to_fit; " \
--		"setenv eval_bootargs setenv bootargs $bootargs; " \
--		"run eval_bootargs; " \
--		"setenv mmcdev 1; " \
--		"setenv machid fe6; " \
--		"mmc dev $mmcdev; " \
--		"mmc rescan; " \
--		AVB_VERIFY_CHECK \
--		"part start mmc ${mmcdev} boot boot_start; " \
--		"part size mmc ${mmcdev} boot boot_size; " \
--		"mmc read ${loadaddr} ${boot_start} ${boot_size}; " \
+@@ -89,7 +90,12 @@
+ 		"part start mmc ${mmcdev} boot boot_start; " \
+ 		"part size mmc ${mmcdev} boot boot_size; " \
+ 		"mmc read ${loadaddr} ${boot_start} ${boot_size}; " \
 -		"bootm ${loadaddr}#${fdtfile};\0 "
-+	"read_board_eeprom="\
++		"bootm ${loadaddr}#${fdtfile};\0 " \
++	"read_board_eeprom=" \
 +		"if test $board_eeprom_header = beagle_x15_revb1_blank; then " \
 +			"run eeprom_dump; run eeprom_x15_b1; reset; fi; " \
 +		"if test $board_eeprom_header = beagle_x15_revc_blank; then " \
@@ -475,19 +454,10 @@ index 86ff6d3ea7..cc5a4ad060 100644
  
  #ifdef CONFIG_OMAP54XX
  
-@@ -132,20 +118,17 @@
- 			"echo WARNING: Could not determine device tree to use; fi; \0"
- 
- #define CONFIG_BOOTCOMMAND \
--	"if test ${dofastboot} -eq 1; then " \
--		"echo Boot fastboot requested, resetting dofastboot ...;" \
--		"setenv dofastboot 0; saveenv;" \
--		"echo Booting into fastboot ...; " \
--		"fastboot " __stringify(CONFIG_FASTBOOT_USB_DEV) "; " \
--	"fi;" \
--	"if test ${boot_fit} -eq 1; then "	\
--		"run update_to_fit;"	\
--	"fi;"	\
+@@ -136,11 +142,17 @@
+ 	"if test ${boot_fit} -eq 1; then "	\
+ 		"run update_to_fit;"	\
+ 	"fi;"	\
 +	"run read_board_eeprom; " \
  	"run findfdt; " \
 -	"run envboot; " \
@@ -572,5 +542,5 @@ index 785fc15345..6481682fc7 100644
  		"if mmc rescan; then " \
  			"echo SD/MMC found on device ${mmcdev};" \
 -- 
-2.19.2
+2.20.1
 
