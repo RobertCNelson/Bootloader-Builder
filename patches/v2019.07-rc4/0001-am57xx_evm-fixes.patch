@@ -1,19 +1,41 @@
-From b7c3ef0e4ab4b977423d5d54b96fbca4f9dfda4b Mon Sep 17 00:00:00 2001
+From b71c05ac6c9c40d42b7ba66786c082bf3b5ae99b Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH] am57xx_evm-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- configs/am57xx_evm_defconfig      |   8 +-
+ board/ti/am57xx/board.c           |  10 +-
+ configs/am57xx_evm_defconfig      |  10 +-
  include/configs/ti_armv7_common.h | 357 ++++++++++++++++++++++++++++++
  include/configs/ti_omap5_common.h |   5 +
- include/environment/ti/boot.h     |  22 +-
- include/environment/ti/mmc.h      |  45 +++-
- 5 files changed, 426 insertions(+), 11 deletions(-)
+ include/environment/ti/boot.h     |  24 +-
+ include/environment/ti/mmc.h      |  43 +++-
+ 6 files changed, 433 insertions(+), 16 deletions(-)
 
+diff --git a/board/ti/am57xx/board.c b/board/ti/am57xx/board.c
+index 1a903f13a6..2ae4eb2e0b 100644
+--- a/board/ti/am57xx/board.c
++++ b/board/ti/am57xx/board.c
+@@ -1081,9 +1081,13 @@ int board_fit_config_name_match(const char *name)
+ 		} else if (!strcmp(name, "am57xx-beagle-x15")) {
+ 			return 0;
+ 		}
+-	} else if (board_is_am572x_evm() &&
+-		   !strcmp(name, "am57xx-beagle-x15")) {
+-		return 0;
++	} else if (board_is_am572x_evm()) {
++		if (board_is_am572x_evm_reva3()) {
++			if (!strcmp(name, "am57xx-evm-reva3"))
++			 return 0;
++		} else if (!strcmp(name, "am57xx-beagle-x15")) {
++			return 0;
++		}
+ 	} else if (board_is_am572x_idk() && !strcmp(name, "am572x-idk")) {
+ 		return 0;
+ 	} else if (board_is_am574x_idk() && !strcmp(name, "am574x-idk")) {
 diff --git a/configs/am57xx_evm_defconfig b/configs/am57xx_evm_defconfig
-index a3de7a4ec4..c24ef97379 100644
+index a3de7a4ec4..584578973b 100644
 --- a/configs/am57xx_evm_defconfig
 +++ b/configs/am57xx_evm_defconfig
 @@ -14,7 +14,6 @@ CONFIG_DISTRO_DEFAULTS=y
@@ -24,7 +46,7 @@ index a3de7a4ec4..c24ef97379 100644
  # CONFIG_USE_BOOTCOMMAND is not set
  CONFIG_SYS_CONSOLE_INFO_QUIET=y
  # CONFIG_MISC_INIT_R is not set
-@@ -28,13 +27,18 @@ CONFIG_SPL_DMA_SUPPORT=y
+@@ -28,14 +27,19 @@ CONFIG_SPL_DMA_SUPPORT=y
  CONFIG_SPL_OS_BOOT=y
  CONFIG_SPL_SPI_LOAD=y
  CONFIG_SPL_YMODEM_SUPPORT=y
@@ -40,10 +62,12 @@ index a3de7a4ec4..c24ef97379 100644
  CONFIG_OF_CONTROL=y
  CONFIG_SPL_OF_CONTROL=y
 -CONFIG_DEFAULT_DEVICE_TREE="am572x-idk"
+-CONFIG_OF_LIST="am57xx-beagle-x15 am57xx-beagle-x15-revb1 am57xx-beagle-x15-revc am572x-idk am571x-idk am574x-idk"
 +CONFIG_DEFAULT_DEVICE_TREE="am57xx-beagle-x15-revc"
- CONFIG_OF_LIST="am57xx-beagle-x15 am57xx-beagle-x15-revb1 am57xx-beagle-x15-revc am572x-idk am571x-idk am574x-idk"
++CONFIG_OF_LIST="am57xx-beagle-x15 am57xx-beagle-x15-revb1 am57xx-beagle-x15-revc"
  CONFIG_ENV_IS_IN_MMC=y
  CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
+ CONFIG_DM=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
 index 828fb1b2a5..1534d72441 100644
 --- a/include/configs/ti_armv7_common.h
@@ -429,7 +453,7 @@ index de0a6af2fd..0cd2ccea03 100644
  	NETARGS \
  	NANDARGS \
 diff --git a/include/environment/ti/boot.h b/include/environment/ti/boot.h
-index 05bdbbc23e..051fee563f 100644
+index 05bdbbc23e..ad575b2191 100644
 --- a/include/environment/ti/boot.h
 +++ b/include/environment/ti/boot.h
 @@ -64,6 +64,7 @@
@@ -454,6 +478,15 @@ index 05bdbbc23e..051fee563f 100644
  
  #ifdef CONFIG_OMAP54XX
  
+@@ -120,7 +126,7 @@
+ 		"if test $board_name = am57xx_evm; then " \
+ 			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
+ 		"if test $board_name = am57xx_evm_reva3; then " \
+-			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
++			"setenv fdtfile am57xx-evm-reva3.dtb; fi;" \
+ 		"if test $board_name = am571x_idk; then " \
+ 			"setenv fdtfile am571x-idk.dtb; fi;" \
+ 		"if test $fdtfile = undefined; then " \
 @@ -136,11 +142,17 @@
  	"if test ${boot_fit} -eq 1; then "	\
  		"run update_to_fit;"	\
@@ -477,10 +510,10 @@ index 05bdbbc23e..051fee563f 100644
  
  #endif /* CONFIG_OMAP54XX */
 diff --git a/include/environment/ti/mmc.h b/include/environment/ti/mmc.h
-index 785fc15345..6481682fc7 100644
+index 785fc15345..11a796d577 100644
 --- a/include/environment/ti/mmc.h
 +++ b/include/environment/ti/mmc.h
-@@ -11,11 +11,33 @@
+@@ -11,11 +11,31 @@
  #define DEFAULT_MMC_TI_ARGS \
  	"mmcdev=0\0" \
  	"mmcrootfstype=ext4 rootwait\0" \
@@ -510,14 +543,12 @@ index 785fc15345..6481682fc7 100644
 +		"${musb} ${cmdline}\0" \
 +	"args_netinstall=setenv bootargs ${netinstall_bootargs} " \
 +		"${optargs} " \
-+		"${cape_disable} " \
-+		"${cape_enable} " \
 +		"root=/dev/ram rw " \
 +		"${cmdline}\0" \
  	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
  	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
  		"source ${loadaddr}\0" \
-@@ -24,7 +46,22 @@
+@@ -24,7 +44,22 @@
  		"env import -t ${loadaddr} ${filesize}\0" \
  	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
  	"loadimage=load ${devtype} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \

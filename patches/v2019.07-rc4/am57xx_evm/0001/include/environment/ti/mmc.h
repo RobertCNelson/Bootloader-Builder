@@ -34,8 +34,6 @@
 		"${musb} ${cmdline}\0" \
 	"args_netinstall=setenv bootargs ${netinstall_bootargs} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"root=/dev/ram rw " \
 		"${cmdline}\0" \
 	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \

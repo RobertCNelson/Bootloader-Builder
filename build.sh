@@ -1053,8 +1053,9 @@ build_u_boot () {
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
 		#r1: initial release
-		#r2: (pending)
-		RELEASE_VER="-r1" #bump on every change...
+		#r2: am57xx_evm fixes...
+		#r3: (pending)
+		RELEASE_VER="-r2" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1203,6 +1204,10 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/boot.h ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					mkdir -p ${base}/board/ti/am57xx/
+					cp board/ti/am57xx/mux_data.h ${base}/board/ti/am57xx/
+					cp board/ti/am57xx/board.c ${base}/board/ti/am57xx/
 
 					refresh_patch
 				fi

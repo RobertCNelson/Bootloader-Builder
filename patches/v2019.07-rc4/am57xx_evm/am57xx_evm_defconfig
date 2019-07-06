@@ -718,7 +718,7 @@ CONFIG_OF_SEPARATE=y
 # CONFIG_OF_BOARD is not set
 # CONFIG_OF_PRIOR_STAGE is not set
 CONFIG_DEFAULT_DEVICE_TREE="am57xx-beagle-x15-revc"
-CONFIG_OF_LIST="am57xx-beagle-x15 am57xx-beagle-x15-revb1 am57xx-beagle-x15-revc am572x-idk am571x-idk am574x-idk"
+CONFIG_OF_LIST="am57xx-beagle-x15 am57xx-beagle-x15-revb1 am57xx-beagle-x15-revc"
 # CONFIG_MULTI_DTB_FIT is not set
 # CONFIG_SPL_MULTI_DTB_FIT is not set
 CONFIG_OF_SPL_REMOVE_PROPS="pinctrl-0 pinctrl-names clocks clock-names interrupt-parent interrupts"

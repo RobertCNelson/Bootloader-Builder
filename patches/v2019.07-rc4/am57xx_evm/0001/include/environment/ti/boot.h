@@ -126,7 +126,7 @@
 		"if test $board_name = am57xx_evm; then " \
 			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
 		"if test $board_name = am57xx_evm_reva3; then " \
-			"setenv fdtfile am57xx-beagle-x15.dtb; fi;" \
+			"setenv fdtfile am57xx-evm-reva3.dtb; fi;" \
 		"if test $board_name = am571x_idk; then " \
 			"setenv fdtfile am571x-idk.dtb; fi;" \
 		"if test $fdtfile = undefined; then " \
