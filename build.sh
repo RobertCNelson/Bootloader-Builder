@@ -2213,6 +2213,7 @@ am65x_evm_a53 () {
 am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
+am57xx_evm
 at91sam9x5ek
 mx23_olinuxino
 mx51evk
@@ -2228,7 +2229,6 @@ socfpga_de0_nano_soc
 vf610twr
 wandboard
 
-##am57xx_evm
 ##am57xx_evm_ti
 ###am57xx_evm_ti_flasher
 ###am57xx_beagle_revc_ti_flasher
