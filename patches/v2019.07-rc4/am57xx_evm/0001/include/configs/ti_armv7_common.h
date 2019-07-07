@@ -191,7 +191,7 @@
 		"\0" \
 
 #define EEWIKI_MMC_BOOT \
-	"mmc_boot=${devtype} dev ${mmcdev}; " \
+	"mmc_boot=${devtype} dev ${mmcdev}; ${devtype} part; " \
 		"if ${devtype} rescan; then " \
 			"echo Scanning ${devtype} device ${mmcdev};" \
 			"setenv bootpart ${mmcdev}:1; " \

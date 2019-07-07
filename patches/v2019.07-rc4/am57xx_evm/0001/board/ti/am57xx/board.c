@@ -30,6 +30,8 @@
 #include <dwc3-omap-uboot.h>
 #include <ti-usb-phy-uboot.h>
 #include <mmc.h>
+#include <dm/uclass.h>
+#include <i2c.h>
 
 #include "../common/board_detect.h"
 #include "mux_data.h"
@@ -46,6 +48,7 @@
 #define board_is_am574x_idk()	board_ti_is("AM574IDK")
 #define board_is_am572x_idk()	board_ti_is("AM572IDK")
 #define board_is_am571x_idk()	board_ti_is("AM571IDK")
+#define board_is_bbai()		board_ti_is("BBBBAI__") //no EEPROM...
 
 #ifdef CONFIG_DRIVER_TI_CPSW
 #include <cpsw.h>
@@ -75,12 +78,24 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TPS65903X_PRIMARY_SECONDARY_PAD2	0xFB
 #define TPS65903X_PAD2_POWERHOLD_MASK		0x20
 
+#define CAPE_EEPROM_BUS_NUM 3
+#define CAPE_EEPROM_ADDR0 0x54
+#define CAPE_EEPROM_ADDR3 0x57
+
+#define CAPE_EEPROM_ADDR_LEN 0x10
+
 const struct omap_sysinfo sysinfo = {
 	"Board: UNKNOWN(BeagleBoard X15?) REV UNKNOWN\n"
 };
 
 static const struct dmm_lisa_map_regs beagle_x15_lisa_regs = {
 	.dmm_lisa_map_3 = 0x80740300,
+	.is_ma_present  = 0x1
+};
+
+static const struct dmm_lisa_map_regs bbai_lisa_regs = {
+	///FIXME: Document, where this magic number come from?
+	.dmm_lisa_map_3 = 0x80640100,
 	.is_ma_present  = 0x1
 };
 
@@ -101,6 +116,8 @@ void emif_get_dmm_regs(const struct dmm_lisa_map_regs **dmm_lisa_regs)
 		*dmm_lisa_regs = &am571x_idk_lisa_regs;
 	else if (board_is_am574x_idk())
 		*dmm_lisa_regs = &am574x_idk_lisa_regs;
+	else if (board_is_bbai())
+		*dmm_lisa_regs = &bbai_lisa_regs;
 	else
 		*dmm_lisa_regs = &beagle_x15_lisa_regs;
 }
@@ -502,8 +519,13 @@ void do_board_detect(void)
 
 	rc = ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
 				  CONFIG_EEPROM_CHIP_ADDRESS);
-	if (rc)
+	if (rc)	{
 		printf("ti_i2c_eeprom_init failed %d\n", rc);
+		ti_i2c_eeprom_am_set("BBBBAI__", "A");
+	};
+
+	puts("in do_board_detect\n");
+	printf("do_board_detect\n");
 }
 
 #else	/* CONFIG_SPL_BUILD */
@@ -521,6 +543,8 @@ void do_board_detect(void)
 
 	if (board_is_x15())
 		bname = "BeagleBoard X15";
+	else if (board_is_bbai())
+		bname = "BeagleBone AI";
 	else if (board_is_am572x_evm())
 		bname = "AM572x EVM";
 	else if (board_is_am574x_idk())
@@ -557,6 +581,8 @@ static void setup_board_eeprom_env(void)
 			name = "am57xx_evm_reva3";
 		else
 			name = "am57xx_evm";
+	} else if (board_is_bbai()) {
+		name = "am5729_beagleboneai";
 	} else if (board_is_am574x_idk()) {
 		name = "am574x_idk";
 	} else if (board_is_am572x_idk()) {
@@ -626,7 +652,7 @@ void am57x_idk_lcd_detect(void)
 	struct udevice *dev;
 
 	/* Only valid for IDKs */
-	if (board_is_x15() || board_is_am572x_evm())
+	if (board_is_x15() || board_is_am572x_evm() || board_is_bbai())
 		return;
 
 	/* Only AM571x IDK has gpio control detect.. so check that */
@@ -720,6 +746,66 @@ int board_late_init(void)
 
 	am57x_idk_lcd_detect();
 
+	if (board_is_bbai()) {
+		///FIXME, too late!! But useful for testing function...
+		printf("CTRL_CORE_PAD_I2C1_SDA:    0x%08x\n", readl(0x4A003800));
+		printf("CTRL_CORE_PAD_I2C1_SCL:    0x%08x\n", readl(0x4A003804));
+		printf("CTRL_CORE_PAD_GPMC_A0:     0x%08x\n", readl(0x4A003440));
+		printf("CTRL_CORE_PAD_GPMC_A1:     0x%08x\n", readl(0x4A003444));
+		printf("CTRL_CORE_PAD_VIN2A_D4:    0x%08x\n", readl(0x4A003578));
+		printf("CTRL_CORE_PAD_VIN2A_D5:    0x%08x\n", readl(0x4A00357C));
+		//printf("CM_L4PER_GPIO2_CLKCTRL:    0x%08x\n", readl(0x4A009760));
+		//printf("CM_L4PER_GPIO3_CLKCTRL:    0x%08x\n", readl(0x4A009768));
+		//printf("CM_L4PER_GPIO4_CLKCTRL:    0x%08x\n", readl(0x4A009770));
+		//printf("CM_L4PER_GPIO5_CLKCTRL:    0x%08x\n", readl(0x4A009778));
+		//printf("CM_L4PER_GPIO6_CLKCTRL:    0x%08x\n", readl(0x4A009780));
+		printf("CM_L4PER_GPIO7_CLKCTRL:    0x%08x\n", readl(0x4A009810));
+
+		printf("CM_L4PER_I2C1_CLKCTRL:     0x%08x\n", readl(0x4A0097A0));
+		//printf("CM_L4PER_I2C2_CLKCTRL:     0x%08x\n", readl(0x4A0097A8));
+		//printf("CM_L4PER_I2C3_CLKCTRL:     0x%08x\n", readl(0x4A0097B0));
+		printf("CM_L4PER_I2C4_CLKCTRL:     0x%08x\n", readl(0x4A0097B8));
+		printf("CM_L4PER_L4_PER1_CLKCTRL   0x%08x\n", readl(0x4A0097C0));
+		printf("PM_L4PER_I2C1_WKDEP        0x%08x\n", readl(0x4AE074A0));
+		printf("RM_L4PER_I2C1_CONTEXT      0x%08x\n", readl(0x4AE074A4));
+		//printf("PM_L4PER_I2C2_WKDEP        0x%08x\n", readl(0x4AE074A8));
+		//printf("RM_L4PER_I2C2_CONTEXT      0x%08x\n", readl(0x4AE074AC));
+		//printf("PM_L4PER_I2C3_WKDEP        0x%08x\n", readl(0x4AE074B0));
+		//printf("RM_L4PER_I2C3_CONTEXT      0x%08x\n", readl(0x4AE074B4));
+		printf("PM_L4PER_I2C4_WKDEP        0x%08x\n", readl(0x4AE074B8));
+		printf("RM_L4PER_I2C4_CONTEXT      0x%08x\n", readl(0x4AE074BC));
+
+		//printf("CTRL_CORE_DMA_SYSTEM_DREQ_122_123      0x%08x\n", readl(0x4A002C6C));
+		//printf("CTRL_CORE_DMA_SYSTEM_DREQ_124_125      0x%08x\n", readl(0x4A002C70));
+		//printf("CTRL_CORE_MPU_IRQ_62_63    0x%08x\n", readl(0x4A002AB8));
+
+		unsigned char addr;
+		struct udevice *dev;
+		int rc;
+
+		for ( addr = CAPE_EEPROM_ADDR0; addr <= CAPE_EEPROM_ADDR3; addr++ ) {
+			printf("BeagleBone: cape eeprom: i2c_probe: 0x%x\n", addr);
+
+			rc = i2c_get_chip_for_busnum(0, addr, 1, &dev);
+			if (rc) {
+				pr_err("Checking (ret 1 bus works) I2C1 bus. ret %d\n", rc);
+			} else {
+				pr_err("Found device at address 0x%x\n", addr);
+			}
+			rc = i2c_get_chip_for_busnum(3, addr, 1, &dev);
+			if (rc) {
+				pr_err("Checking (ret 1 bus works) I2C4 bus. ret %d\n", rc);
+			} else {
+				pr_err("Found device at address 0x%x\n", addr);
+			}
+
+	//		out:
+		}
+		env_set("console", "ttyS0,115200n8");
+	} else {
+		env_set("console", "ttyO2,115200n8");
+	}
+
 #if !defined(CONFIG_SPL_BUILD)
 	board_ti_set_ethaddr(2);
 #endif
@@ -762,6 +848,13 @@ void recalibrate_iodelay(void)
 		pconf_sz = ARRAY_SIZE(core_padconf_array_essential_am571x_idk);
 		iod = iodelay_cfg_array_am571x_idk;
 		iod_sz = ARRAY_SIZE(iodelay_cfg_array_am571x_idk);
+	} else if (board_is_bbai()) {
+		/* Common for X15/GPEVM */
+		pconf = core_padconf_array_essential_bbai;
+		pconf_sz = ARRAY_SIZE(core_padconf_array_essential_bbai);
+		/* Since full production should switch to SR2.0  */
+		iod = iodelay_cfg_array_bbai;
+		iod_sz = ARRAY_SIZE(iodelay_cfg_array_bbai);
 	} else {
 		/* Common for X15/GPEVM */
 		pconf = core_padconf_array_essential_x15;
@@ -818,6 +911,8 @@ void recalibrate_iodelay(void)
 		ret = do_set_iodelay((*ctrl)->iodelay_config_base, delta_iod,
 				     delta_iod_sz);
 
+	puts("recalibrate_iodelay\n");
+
 err:
 	/* Closeup.. remove isolation */
 	__recalibrate_iodelay_end(ret);
@@ -863,11 +958,96 @@ const struct mmc_platform_fixups *platform_fixups_mmc(uint32_t addr)
 #endif
 
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_OS_BOOT)
+
+//static int eeprom_has_been_read;
+//static struct id_eeprom eeprom;
+
+struct am335x_cape_eeprom_id {
+	unsigned int header;
+	char eeprom_rev[2];
+	char board_name[32];
+	char version[4];
+	char manufacture[16];
+	char part_number[16];
+	char number_of_pins[2];
+	char serial_number[12];
+	char pin_usage[140];
+	char vdd_3v3exp[ 2];
+	char vdd_5v[ 2];
+	char sys_5v[2];
+	char dc_supplied[2];
+};
+
 int spl_start_uboot(void)
 {
 	/* break into full u-boot on 'c' */
 	if (serial_tstc() && serial_getc() == 'c')
 		return 1;
+
+	if (board_is_bbai()) {
+		//FIXME, i2c doesn't see to be up..
+		puts("spl_start_uboot\n");
+		unsigned char addr;
+		struct udevice *dev;
+		int rc;
+
+		printf("CTRL_CORE_PAD_I2C1_SDA:    0x%08x\n", readl(0x4A003800));
+		printf("CTRL_CORE_PAD_I2C1_SCL:    0x%08x\n", readl(0x4A003804));
+		printf("CTRL_CORE_PAD_GPMC_A0:     0x%08x\n", readl(0x4A003440));
+		printf("CTRL_CORE_PAD_GPMC_A1:     0x%08x\n", readl(0x4A003444));
+		printf("CTRL_CORE_PAD_VIN2A_D4:    0x%08x\n", readl(0x4A003578));
+		printf("CTRL_CORE_PAD_VIN2A_D5:    0x%08x\n", readl(0x4A00357C));
+		//printf("CM_L4PER_GPIO2_CLKCTRL:    0x%08x\n", readl(0x4A009760));
+		//printf("CM_L4PER_GPIO3_CLKCTRL:    0x%08x\n", readl(0x4A009768));
+		//printf("CM_L4PER_GPIO4_CLKCTRL:    0x%08x\n", readl(0x4A009770));
+		//printf("CM_L4PER_GPIO5_CLKCTRL:    0x%08x\n", readl(0x4A009778));
+		//printf("CM_L4PER_GPIO6_CLKCTRL:    0x%08x\n", readl(0x4A009780));
+		printf("CM_L4PER_GPIO7_CLKCTRL:    0x%08x\n", readl(0x4A009810));
+		printf("CM_L4PER_I2C1_CLKCTRL:     0x%08x\n", readl(0x4A0097A0));
+		//printf("CM_L4PER_I2C2_CLKCTRL:     0x%08x\n", readl(0x4A0097A8));
+		//printf("CM_L4PER_I2C3_CLKCTRL:     0x%08x\n", readl(0x4A0097B0));
+		printf("CM_L4PER_I2C4_CLKCTRL:     0x%08x\n", readl(0x4A0097B8));
+		printf("CM_L4PER_L4_PER1_CLKCTRL   0x%08x\n", readl(0x4A0097C0));
+		printf("PM_L4PER_I2C1_WKDEP        0x%08x\n", readl(0x4AE074A0));
+		printf("RM_L4PER_I2C1_CONTEXT      0x%08x\n", readl(0x4AE074A4));
+		//printf("PM_L4PER_I2C2_WKDEP        0x%08x\n", readl(0x4AE074A8));
+		//printf("RM_L4PER_I2C2_CONTEXT      0x%08x\n", readl(0x4AE074AC));
+		//printf("PM_L4PER_I2C3_WKDEP        0x%08x\n", readl(0x4AE074B0));
+		//printf("RM_L4PER_I2C3_CONTEXT      0x%08x\n", readl(0x4AE074B4));
+		printf("PM_L4PER_I2C4_WKDEP        0x%08x\n", readl(0x4AE074B8));
+		printf("RM_L4PER_I2C4_CONTEXT      0x%08x\n", readl(0x4AE074BC));
+
+		//printf("CTRL_CORE_DMA_SYSTEM_DREQ_122_123      0x%08x\n", readl(0x4A002C6C));
+		//printf("CTRL_CORE_DMA_SYSTEM_DREQ_124_125      0x%08x\n", readl(0x4A002C70));
+		//printf("CTRL_CORE_MPU_IRQ_62_63    0x%08x\n", readl(0x4A002AB8));
+
+		for ( addr = CAPE_EEPROM_ADDR0; addr <= CAPE_EEPROM_ADDR3; addr++ ) {
+			printf("BeagleBone: cape eeprom: i2c_probe: 0x%x\n", addr);
+
+			rc = i2c_get_chip_for_busnum(0, addr, 1, &dev);
+			if (rc) {
+				pr_err("Checking (ret 1 bus works) I2C1 bus. ret %d\n", rc);
+			} else {
+				pr_err("Found device at address 0x%x\n", addr);
+			}
+			rc = i2c_get_chip_for_busnum(3, addr, 1, &dev);
+			if (rc) {
+				pr_err("Checking (ret 1 bus works) I2C4 bus. ret %d\n", rc);
+			} else {
+				pr_err("Found device at address 0x%x\n", addr);
+			}
+
+	//		printf("BeagleBone: cape eeprom: i2c_probe: 0x%x\n", addr));
+	//		rc = i2c_get_chip_for_busnum(CAPE_EEPROM_BUS_NUM, addr, 1, &dev);
+	//		if (rc) {
+	//			printf("failed to get device for EEPROM at address 0x%x\n",
+	//			       addr);
+	//			goto out;
+	//		}
+	//		out:
+		}
+	}
+
 
 #ifdef CONFIG_SPL_ENV_SUPPORT
 	env_init();
@@ -1081,6 +1261,9 @@ int board_fit_config_name_match(const char *name)
 		} else if (!strcmp(name, "am57xx-beagle-x15")) {
 			return 0;
 		}
+	} else if (board_is_bbai() &&
+		   !strcmp(name, "am5729-beagleboneai")) {
+		return 0;
 	} else if (board_is_am572x_evm()) {
 		if (board_is_am572x_evm_reva3()) {
 			if (!strcmp(name, "am57xx-evm-reva3"))

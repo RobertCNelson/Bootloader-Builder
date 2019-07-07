@@ -77,11 +77,11 @@ dl_gcc_generic () {
 		#using native gcc
 		CC=
 	else
-		if [ -f /usr/bin/ccache ] ; then
-			CC="ccache ${gcc_dir}/${directory}/${binary}"
-		else
+#		if [ -f /usr/bin/ccache ] ; then
+#			CC="ccache ${gcc_dir}/${directory}/${binary}"
+#		else
 			CC="${gcc_dir}/${directory}/${binary}"
-		fi
+#		fi
 	fi
 }
 
@@ -1054,8 +1054,9 @@ build_u_boot () {
 		uboot_ref="${uboot_testing}"
 		#r1: initial release
 		#r2: am57xx_evm fixes...
-		#r3: (pending)
-		RELEASE_VER="-r2" #bump on every change...
+		#r3: am57xx_evm/bbai fixes...
+		#r4: (pending)
+		RELEASE_VER="-r3" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1197,7 +1198,14 @@ build_u_boot () {
 					mkdir -p ${base}/configs/
 					cp configs/${board}_defconfig ${base}/configs/
 
+					mkdir -p ${base}/arch/arm/dts/
+					cp arch/arm/dts/Makefile ${base}/arch/arm/dts/
+
+					mkdir -p ${base}/arch/arm/mach-omap2/omap5/
+					cp arch/arm/mach-omap2/omap5/hw_data.c ${base}/arch/arm/mach-omap2/omap5/
+
 					mkdir -p ${base}/include/configs/
+					cp include/configs/am57xx_evm.h ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
 					cp include/configs/ti_omap5_common.h ${base}/include/configs/
 
@@ -1206,8 +1214,8 @@ build_u_boot () {
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
 					mkdir -p ${base}/board/ti/am57xx/
-					cp board/ti/am57xx/mux_data.h ${base}/board/ti/am57xx/
 					cp board/ti/am57xx/board.c ${base}/board/ti/am57xx/
+					cp board/ti/am57xx/mux_data.h ${base}/board/ti/am57xx/
 
 					refresh_patch
 				fi
