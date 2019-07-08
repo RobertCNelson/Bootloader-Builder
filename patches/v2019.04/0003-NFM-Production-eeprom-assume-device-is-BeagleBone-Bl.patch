@@ -1,4 +1,4 @@
-From 87d737df16e6211a1d18622cd1ea49a7f0d38352 Mon Sep 17 00:00:00 2001
+From 8216c711167254fdff66d1c4e961c0697132ce9a Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
@@ -14,15 +14,15 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  6 files changed, 36 insertions(+), 6 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 169c851116..96f7cfbab7 100644
+index b0c4076066..91476baf76 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -714,7 +714,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
--	else if (board_is_pb() || board_is_bone_lt() || board_is_icev2() || board_is_beaglelogic())
-+	else if (board_is_pb() || board_is_bone_lt() || board_is_icev2() || board_is_beaglelogic() || board_is_blank_bone_lt())
+-	else if (board_is_pb() || board_is_revolve() || board_is_bone_lt() || board_is_icev2() || board_is_beaglelogic())
++	else if (board_is_pb() || board_is_revolve() || board_is_bone_lt() || board_is_icev2() || board_is_beaglelogic() || board_is_blank_bone_lt())
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
@@ -30,20 +30,20 @@ index 169c851116..96f7cfbab7 100644
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
--	else if (board_is_pb() || board_is_bone_lt() || board_is_beaglelogic())
-+	else if (board_is_pb() || board_is_bone_lt() || board_is_beaglelogic() || board_is_blank_bone_lt())
+-	else if (board_is_pb() || board_is_revolve() || board_is_bone_lt() || board_is_beaglelogic())
++	else if (board_is_pb() || board_is_revolve() || board_is_bone_lt() || board_is_beaglelogic() || board_is_blank_bone_lt())
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1496,6 +1496,7 @@ int board_eth_init(bd_t *bis)
+@@ -1500,6 +1500,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
 +if (!board_is_blank_bone_lt()) {
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a() && !board_is_bben()) ||
- 	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1523,6 +1524,7 @@ if (!board_is_pb()) {
+ 	    board_is_idk() || board_is_beaglelogic() || board_is_revolve()) {
+@@ -1527,6 +1528,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }
@@ -52,10 +52,10 @@ index 169c851116..96f7cfbab7 100644
  
  	/*
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index c90034617f..78ae74359e 100644
+index 6a8d20cfb0..35b94c2dad 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -95,10 +95,15 @@ static inline int board_is_os00(void)
+@@ -100,10 +100,15 @@ static inline int board_is_os00(void)
  	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS00", 4);
  }
  
@@ -66,7 +66,7 @@ index c90034617f..78ae74359e 100644
 +
  static inline int board_is_beaglebonex(void)
  {
- 	return board_is_pb() || board_is_bone() || board_is_bone_lt() ||
+ 	return board_is_revolve() || board_is_pb() || board_is_bone() || board_is_bone_lt() ||
 -	       board_is_bbg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00();
 +	       board_is_bbg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00() || board_is_blank_bone_lt();
  }
@@ -133,10 +133,10 @@ index 7d91dc0ceb..455e386a1c 100644
  CONFIG_VERSION_VARIABLE=y
  CONFIG_ARCH_MISC_INIT=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 59c5439326..47110307ac 100644
+index 004305169c..a2be982a8c 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -199,6 +199,14 @@
+@@ -239,6 +239,14 @@
  				"setenv fdtfile am335x-boneblack.dtb; " \
  			"fi; " \
  		"fi; " \

@@ -70,6 +70,43 @@
 #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
 	#devtypel #instance " "
 
+#define BOOTENV_DEV_LEGACY_USB(devtypeu, devtypel, instance) \
+	"bootcmd_" #devtypel #instance "=" \
+	"gpio clear 56; " \
+	"gpio clear 55; " \
+	"gpio clear 54; " \
+	"gpio set 53; " \
+	"setenv devtype usb; " \
+	"setenv usbdev " #instance"; "\
+	"usb start; "\
+	"gpio set 54;" \
+	"echo Checking for: /boot/uEnv.txt ...;" \
+	"for i in 1 2 3 4 5 6 7 ; do " \
+		"setenv usbpart ${i};" \
+		"setenv bootpart ${usbdev}:${usbpart};" \
+		"if test -e ${devtype} ${bootpart} /boot/uEnv.txt; then " \
+			"gpio set 55;" \
+			"load ${devtype} ${bootpart} ${loadaddr} /boot/uEnv.txt;" \
+			"env import -t ${loadaddr} ${filesize};" \
+			"echo Loaded environment from /boot/uEnv.txt;" \
+			"if test -n ${dtb}; then " \
+				"echo debug: [dtb=${dtb}] ... ;" \
+				"setenv fdtfile ${dtb};" \
+				"echo Using: dtb=${fdtfile} ...;" \
+			"fi;" \
+			"echo Checking if uname_r is set in /boot/uEnv.txt...;" \
+			"if test -n ${uname_r}; then " \
+				"gpio set 56; " \
+				"setenv oldroot /dev/sda1;" \
+				"echo Running uname_boot ...;" \
+				"run uname_boot;" \
+			"fi;" \
+		"fi;" \
+	"done;\0"
+
+#define BOOTENV_DEV_NAME_LEGACY_USB(devtypeu, devtypel, instance) \
+	#devtypel #instance " "
+
 #define BOOTENV_DEV_NAND(devtypeu, devtypel, instance) \
 	"bootcmd_" #devtypel "=" \
 	"run nandboot\0"
@@ -90,6 +127,7 @@
 #endif
 
 #define BOOT_TARGET_DEVICES(func) \
+	func(LEGACY_USB, legacy_usb, 0) \
 	func(MMC, mmc, 0) \
 	func(LEGACY_MMC, legacy_mmc, 0) \
 	func(MMC, mmc, 1) \
@@ -171,6 +209,8 @@
 		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
 	"findfdt="\
 		"echo board_name=[$board_name] ...; " \
+		"if test $board_name = A335RVLV; then " \
+			"setenv fdtfile am335x-revolve.dtb; fi; " \
 		"if test $board_name = A335BLGC; then " \
 			"setenv fdtfile am335x-beaglelogic.dtb; fi; " \
 		"if test $board_name = A335BONE; then " \

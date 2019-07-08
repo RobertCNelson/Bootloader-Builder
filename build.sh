@@ -583,8 +583,9 @@ build_u_boot () {
 		#r1: initial release
 		#r2: omap4-panda: enable btrfs
 		#r3: am335x, backport emmc pins, omap5-uevm: enable btrfs
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: am335x add Revolve
+		#r5: (pending)
+		RELEASE_VER="-r4" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -643,6 +644,7 @@ build_u_boot () {
 					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
 
 					mkdir -p ${base}/include/configs/
+					cp include/configs/am335x_evm.h ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
 					cp include/configs/ti_armv7_omap.h ${base}/include/configs/
 
@@ -2020,7 +2022,7 @@ am335x_evm () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
@@ -2029,7 +2031,7 @@ am335x_boneblack_flasher () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"

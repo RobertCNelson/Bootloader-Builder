@@ -39,6 +39,11 @@ struct am335x_cape_eeprom_id {
 #define EMIF_OCP_CONFIG_BEAGLEBONE_BLACK       0x00141414
 #define EMIF_OCP_CONFIG_AM335X_EVM             0x003d3d3d
 
+static inline int board_is_revolve(void)
+{
+	return board_ti_is("A335RVLV");
+}
+
 static inline int board_is_beaglelogic(void)
 {
 	return board_ti_is("A335BLGC");
@@ -97,7 +102,7 @@ static inline int board_is_os00(void)
 
 static inline int board_is_beaglebonex(void)
 {
-	return board_is_pb() || board_is_bone() || board_is_bone_lt() ||
+	return board_is_revolve() || board_is_pb() || board_is_bone() || board_is_bone_lt() ||
 	       board_is_bbg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00();
 }
 
