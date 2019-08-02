@@ -1050,7 +1050,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2019.07-rc4
+	#v2019.07
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
@@ -2163,7 +2163,7 @@ mx6sabresd () {
 omap3_beagle () {
 	cleanup
 #	build_old="true"
-	build_stable="true"
+#	build_stable="true"
 	build_testing="true"
 	board="omap3_beagle" ; build_uboot_gnueabihf
 }
@@ -2223,7 +2223,8 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-#exit
+omap3_beagle
+exit
 
 am335x_evm
 am335x_boneblack_flasher
