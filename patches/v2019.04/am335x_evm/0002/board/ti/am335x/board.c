@@ -714,7 +714,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
 
 	if (board_is_evm_sk())
 		return &dpll_ddr3_303MHz[ind];
-	else if (board_is_pb() || board_is_revolve() || board_is_bone_lt() || board_is_icev2() || board_is_beaglelogic())
+	else if (board_is_pb() || board_is_bone_lt() || board_is_icev2() || board_is_beaglelogic())
 		return &dpll_ddr3_400MHz[ind];
 	else if (board_is_evm_15_or_later())
 		return &dpll_ddr3_303MHz[ind];
@@ -745,7 +745,7 @@ const struct dpll_params *get_dpll_mpu_params(void)
 	if (bone_not_connected_to_ac_power())
 		freq = MPUPLL_M_600;
 
-	if (board_is_pb() || board_is_revolve() || board_is_bone_lt() || board_is_beaglelogic())
+	if (board_is_pb() || board_is_bone_lt() || board_is_beaglelogic())
 		freq = MPUPLL_M_1000;
 
 	switch (freq) {
@@ -797,7 +797,7 @@ static void scale_vcores_bone(int freq)
 	 * Override what we have detected since we know if we have
 	 * a Beaglebone Black it supports 1GHz.
 	 */
-	if (board_is_pb() || board_is_revolve() || board_is_bone_lt() || board_is_beaglelogic())
+	if (board_is_pb() || board_is_bone_lt() || board_is_beaglelogic())
 		freq = MPUPLL_M_1000;
 
 	switch (freq) {
@@ -1008,7 +1008,7 @@ void sdram_init(void)
 	if (board_is_evm_sk())
 		config_ddr(303, &ioregs_evmsk, &ddr3_data,
 			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
-	else if (board_is_pb() || board_is_revolve() || board_is_bone_lt() || board_is_beaglelogic())
+	else if (board_is_pb() || board_is_bone_lt() || board_is_beaglelogic())
 		config_ddr(400, &ioregs_bonelt,
 			   &ddr3_beagleblack_data,
 			   &ddr3_beagleblack_cmd_ctrl_data,
@@ -1335,10 +1335,6 @@ int board_late_init(void)
 		//Was: name = "SBBE";
 	}
 
-	if (board_is_revolve()) {
-		puts("Model: BeagleBoard.org Revolve\n");
-	}
-
 	if (board_is_pb()) {
 		puts("Model: BeagleBoard.org PocketBeagle\n");
 	}
@@ -1402,7 +1398,7 @@ int board_late_init(void)
 
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 #ifdef CONFIG_TI_I2C_BOARD_DETECT
-	if (!board_is_pb() && !board_is_beaglelogic() && !board_is_revolve()) {
+	if (!board_is_pb() && !board_is_beaglelogic()) {
 		do_cape_detect();
 	}
 #endif
@@ -1502,7 +1498,7 @@ int board_eth_init(bd_t *bis)
 #ifdef CONFIG_DRIVER_TI_CPSW
 if (!board_is_pb()) {
 	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a() && !board_is_bben()) ||
-	    board_is_idk() || board_is_beaglelogic() || board_is_revolve()) {
+	    board_is_idk() || board_is_beaglelogic()) {
 		puts("eth0: MII MODE\n");
 		writel(MII_MODE_ENABLE, &cdev->miisel);
 		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =

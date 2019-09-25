@@ -1,4 +1,4 @@
-From 747ad62e75b243b13ea29d3a35cf086783c68b45 Mon Sep 17 00:00:00 2001
+From feb99914d158347c0e25072849a34dbc55f588a6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
@@ -15,7 +15,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 13558fb62d..b0c4076066 100644
+index 4cefacf1a4..169c851116 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -480,13 +480,13 @@ index 13558fb62d..b0c4076066 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -955,6 +1400,14 @@ int board_late_init(void)
+@@ -951,6 +1396,14 @@ int board_late_init(void)
  			env_set("serial#", board_serial);
  	}
  
 +#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 +#ifdef CONFIG_TI_I2C_BOARD_DETECT
-+	if (!board_is_pb() && !board_is_beaglelogic() && !board_is_revolve()) {
++	if (!board_is_pb() && !board_is_beaglelogic()) {
 +		do_cape_detect();
 +	}
 +#endif
@@ -496,7 +496,7 @@ index 13558fb62d..b0c4076066 100644
  }
  #endif
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index cf8b9b7620..6a8d20cfb0 100644
+index a4e0e04f8f..c90034617f 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
 @@ -10,6 +10,22 @@
