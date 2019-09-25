@@ -1,4 +1,4 @@
-From 87d737df16e6211a1d18622cd1ea49a7f0d38352 Mon Sep 17 00:00:00 2001
+From 654c7f4d3cf09d844865afc9a9d06edc762c3468 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
@@ -10,14 +10,14 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/mux.c          |  7 +++++--
  board/ti/common/board_detect.c | 12 ++++++++++++
  configs/am335x_evm_defconfig   |  2 +-
- include/configs/am335x_evm.h   |  8 ++++++++
- 6 files changed, 36 insertions(+), 6 deletions(-)
+ include/configs/am335x_evm.h   | 16 ++++++++++------
+ 6 files changed, 38 insertions(+), 12 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 169c851116..96f7cfbab7 100644
+index 1c6fd0b652..4c669e26bf 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -714,7 +714,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -731,7 +731,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -26,7 +26,7 @@ index 169c851116..96f7cfbab7 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -1008,7 +1008,7 @@ void sdram_init(void)
+@@ -1025,7 +1025,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -35,15 +35,15 @@ index 169c851116..96f7cfbab7 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1496,6 +1496,7 @@ int board_eth_init(bd_t *bis)
+@@ -1517,6 +1517,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
 +if (!board_is_blank_bone_lt()) {
  if (!board_is_pb()) {
- 	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a() && !board_is_bben()) ||
+ 	if (board_is_bone() || (board_is_bone_lt() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1523,6 +1524,7 @@ if (!board_is_pb()) {
+@@ -1544,6 +1545,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }
@@ -52,10 +52,10 @@ index 169c851116..96f7cfbab7 100644
  
  	/*
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index c90034617f..78ae74359e 100644
+index 61cfc44f57..68fc7de298 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -95,10 +95,15 @@ static inline int board_is_os00(void)
+@@ -96,10 +96,15 @@ static inline int board_is_os00(void)
  	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS00", 4);
  }
  
@@ -67,13 +67,13 @@ index c90034617f..78ae74359e 100644
  static inline int board_is_beaglebonex(void)
  {
  	return board_is_pb() || board_is_bone() || board_is_bone_lt() ||
--	       board_is_bbg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00();
-+	       board_is_bbg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00() || board_is_blank_bone_lt();
+-	       board_is_bbg1() || board_is_bbgg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00();
++	       board_is_bbg1() || board_is_bbgg1() || board_is_bben() || board_is_e14bbbi() || board_is_beaglelogic() || board_is_os00() || board_is_blank_bone_lt();
  }
  
  static inline int board_is_evm_sk(void)
 diff --git a/board/ti/am335x/mux.c b/board/ti/am335x/mux.c
-index 64dd171209..42c17353a6 100644
+index f8fbd9fb88..95a6b9e7bc 100644
 --- a/board/ti/am335x/mux.c
 +++ b/board/ti/am335x/mux.c
 @@ -438,7 +438,10 @@ void enable_board_pin_mux(void)
@@ -133,10 +133,35 @@ index 7d91dc0ceb..455e386a1c 100644
  CONFIG_VERSION_VARIABLE=y
  CONFIG_ARCH_MISC_INIT=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 59c5439326..47110307ac 100644
+index 71d12dd1d3..47110307ac 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -199,6 +199,14 @@
+@@ -164,8 +164,6 @@
+ 			"run eeprom_dump; run eeprom_blank; run eeprom_bbb_header; run eeprom_bbbw_footer; run eeprom_dump; reset; fi; " \
+ 		"if test $board_eeprom_header = pocketbeagle_blank; then " \
+ 			"run eeprom_dump; run eeprom_blank; run eeprom_pocketbeagle; run eeprom_dump; reset; fi; " \
+-		"if test $board_eeprom_header = bbgg_blank; then " \
+-			"run eeprom_dump; run eeprom_blank; run eeprom_bbb_header; run eeprom_bbgg_footer; run eeprom_dump; reset; fi; " \
+ 		"if test $board_eeprom_header = beaglelogic_blank; then " \
+ 			"run eeprom_dump; run eeprom_blank; run eeprom_beaglelogic; run eeprom_dump; reset; fi;  \0" \
+ 	"ramboot=echo Booting from ramdisk ...; " \
+@@ -187,20 +185,28 @@
+ 				"setenv fdtfile am335x-pocketbone.dtb; " \
+ 			"elif test $board_rev = GW1A; then " \
+ 				"setenv fdtfile am335x-bonegreen-wireless.dtb; " \
+-			"elif test $board_rev = GG1A; then " \
+-				"setenv fdtfile am335x-bonegreen-gateway.dtb; " \
+ 			"elif test $board_rev = AIA0; then " \
+ 				"setenv fdtfile am335x-abbbi.dtb; " \
+ 			"elif test $board_rev = EIA0; then " \
+ 				"setenv fdtfile am335x-boneblack.dtb; " \
+ 			"elif test $board_rev = ME06; then " \
+ 				"setenv fdtfile am335x-bonegreen.dtb; " \
++			"elif test $board_rev = M10A; then " \
++				"setenv fdtfile am335x-vsc8531bbb.dtb; " \
+ 			"elif test $board_rev = OS00; then " \
+ 				"setenv fdtfile am335x-osd3358-sm-red.dtb; " \
+ 			"else " \
  				"setenv fdtfile am335x-boneblack.dtb; " \
  			"fi; " \
  		"fi; " \
@@ -151,6 +176,15 @@ index 59c5439326..47110307ac 100644
  		"if test $board_name = A335PBGL; then " \
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
+@@ -209,8 +215,6 @@
+ 			"setenv fdtfile am335x-bonegreen.dtb; fi; " \
+ 		"if test $board_name = BBGW; then " \
+ 			"setenv fdtfile am335x-bonegreen-wireless.dtb; fi; " \
+-		"if test $board_name = BBGG; then " \
+-			"setenv fdtfile am335x-bonegreen-gateway.dtb; fi; " \
+ 		"if test $board_name = BBBL; then " \
+ 			"setenv fdtfile am335x-boneblue.dtb; fi; " \
+ 		"if test $board_name = BBEN; then " \
 -- 
-2.20.1
+2.23.0
 

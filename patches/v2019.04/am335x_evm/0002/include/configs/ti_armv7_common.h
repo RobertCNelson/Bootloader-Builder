@@ -166,6 +166,12 @@
 		"i2c mw 0x50 0x0e.2 41; " \
 		"i2c mw 0x50 0x0f.2 35; " \
 		"\0" \
+	"eeprom_bbgg_footer= " \
+		"i2c mw 0x50 0x0c.2 47; " \
+		"i2c mw 0x50 0x0d.2 47; " \
+		"i2c mw 0x50 0x0e.2 31; " \
+		"i2c mw 0x50 0x0f.2 41; " \
+		"\0" \
 	"eeprom_pocketbeagle= " \
 		"i2c mw 0x50 0x00.2 aa; " \
 		"i2c mw 0x50 0x01.2 55; " \
@@ -512,6 +518,10 @@
 				"fi;" \
 				"if test -n ${uboot_overlay_pru}; then " \
 					"setenv uboot_overlay ${uboot_overlay_pru}; " \
+					"run virtualloadoverlay;" \
+				"fi;" \
+				"if test -n ${uboot_overlay_pru_add}; then " \
+					"setenv uboot_overlay ${uboot_overlay_pru_add}; " \
 					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${dtb_overlay}; then " \

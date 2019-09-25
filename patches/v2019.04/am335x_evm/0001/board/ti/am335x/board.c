@@ -870,6 +870,10 @@ int board_late_init(void)
 		if (!strncmp(board_ti_get_rev(), "GW1", 3)) {
 			name = "BBGW";
 		}
+		/* SeeedStudio BeagleBone Green Gateway */
+		if (!strncmp(board_ti_get_rev(), "GG1", 3)) {
+			name = "BBGG";
+		}
 		/* BeagleBoard.org BeagleBone Blue */
 		if (!strncmp(board_ti_get_rev(), "BLA", 3)) {
 			name = "BBBL";
@@ -1044,7 +1048,7 @@ int board_eth_init(bd_t *bis)
 
 #ifdef CONFIG_DRIVER_TI_CPSW
 if (!board_is_pb()) {
-	if (board_is_bone() || (board_is_bone_lt() && !board_is_m10a() && !board_is_bben()) ||
+	if (board_is_bone() || (board_is_bone_lt() && !board_is_bben()) ||
 	    board_is_idk() || board_is_beaglelogic()) {
 		puts("eth0: MII MODE\n");
 		writel(MII_MODE_ENABLE, &cdev->miisel);
@@ -1084,7 +1088,7 @@ if (!board_is_pb()) {
 #define AR8051_DEBUG_RGMII_CLK_DLY_REG	0x5
 #define AR8051_RGMII_TX_CLK_DLY		0x100
 
-	if (board_is_evm_sk() || board_is_gp_evm() || board_is_bben() || board_is_m10a()) {
+	if (board_is_evm_sk() || board_is_gp_evm() || board_is_bben()) {
 		const char *devname;
 		devname = miiphy_get_current_dev();
 

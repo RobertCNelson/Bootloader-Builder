@@ -583,8 +583,10 @@ build_u_boot () {
 		#r1: initial release
 		#r2: omap4-panda: enable btrfs
 		#r3: am335x, backport emmc pins, omap5-uevm: enable btrfs
-		#r4: (pending)
-		RELEASE_VER="-r3" #bump on every change...
+		#r4: am335x add Revolve
+		#r5: remove Revolve
+		#r6: (pending)
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -2020,7 +2022,7 @@ am335x_evm () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 
 	board="am335x_evm" ; build_uboot_gnueabihf
 }
@@ -2029,7 +2031,7 @@ am335x_boneblack_flasher () {
 	cleanup
 #	build_old="true"
 	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
 
 	board="am335x_boneblack"
 	uboot_config="am335x_evm_defconfig"
@@ -2221,7 +2223,8 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-omap3_beagle
+am335x_evm
+am335x_boneblack_flasher
 exit
 
 am335x_evm
