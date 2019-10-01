@@ -1,4 +1,4 @@
-From 654c7f4d3cf09d844865afc9a9d06edc762c3468 Mon Sep 17 00:00:00 2001
+From 3bb1bbbce5bd74889d2322ff77b126368c066820 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
@@ -14,10 +14,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  6 files changed, 38 insertions(+), 12 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 1c6fd0b652..4c669e26bf 100644
+index e99b020fcc..2ef6ac64dc 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -731,7 +731,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -735,7 +735,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -26,7 +26,7 @@ index 1c6fd0b652..4c669e26bf 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -1025,7 +1025,7 @@ void sdram_init(void)
+@@ -1029,7 +1029,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -35,7 +35,7 @@ index 1c6fd0b652..4c669e26bf 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1517,6 +1517,7 @@ int board_eth_init(bd_t *bis)
+@@ -1521,6 +1521,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -43,7 +43,7 @@ index 1c6fd0b652..4c669e26bf 100644
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1544,6 +1545,7 @@ if (!board_is_pb()) {
+@@ -1548,6 +1549,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }

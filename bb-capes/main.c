@@ -130,5 +130,10 @@ int main (void)
 	cape_overlay_hash = hash_string(cape_overlay);
 	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
 
+	strlcpy(cape_overlay, "/lib/firmware/BB-BONE-LCD5-01-00A1.dtbo", 40 + 1);
+	strlcpy(original_hash, "0xfe93c2f", 9 + 1);
+	cape_overlay_hash = hash_string(cape_overlay);
+	printf("[0x%lx]=[%s],[%s]\n", cape_overlay_hash, original_hash, cape_overlay);
+
 	return 0;
 }

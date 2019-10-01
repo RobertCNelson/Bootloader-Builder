@@ -1,21 +1,21 @@
-From b6c8342b726c7fb66f0d7d49c5fd81af253d510e Mon Sep 17 00:00:00 2001
+From 81582d4b831d8d9bdc189727cfb22770cabb0dd3 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c           | 470 ++++++++++++++++++++++++++++++
+ board/ti/am335x/board.c           | 474 ++++++++++++++++++++++++++++++
  board/ti/am335x/board.h           |  16 +
  board/ti/am335x/hash-string.h     |  59 ++++
  include/configs/ti_armv7_common.h | 215 ++++++++++++++
  include/configs/ti_armv7_omap.h   |   3 +
  include/environment/ti/mmc.h      |  15 +
- 6 files changed, 778 insertions(+)
+ 6 files changed, 782 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index dbe864c3ff..1c6fd0b652 100644
+index dbe864c3ff..e99b020fcc 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -26,7 +26,7 @@ index dbe864c3ff..1c6fd0b652 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -77,9 +78,470 @@ void do_board_detect(void)
+@@ -77,9 +78,474 @@ void do_board_detect(void)
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
  		printf("ti_i2c_eeprom_init failed\n");
@@ -350,6 +350,10 @@ index dbe864c3ff..1c6fd0b652 100644
 +						virtual_video=PINS_TAKEN;
 +						virtual_adc=PINS_TAKEN;
 +						break;
++					case 0xfe93c2f: /* /lib/firmware/BB-BONE-LCD5-01-00A1.dtbo */
++						virtual_video=PINS_TAKEN;
++						virtual_adc=PINS_TAKEN;
++						break;
 +				}
 +
 +				switch(addr) {
@@ -497,7 +501,7 @@ index dbe864c3ff..1c6fd0b652 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -955,6 +1417,14 @@ int board_late_init(void)
+@@ -955,6 +1421,14 @@ int board_late_init(void)
  			env_set("serial#", board_serial);
  	}
  

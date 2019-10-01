@@ -398,6 +398,10 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 						virtual_video=PINS_TAKEN;
 						virtual_adc=PINS_TAKEN;
 						break;
+					case 0xfe93c2f: /* /lib/firmware/BB-BONE-LCD5-01-00A1.dtbo */
+						virtual_video=PINS_TAKEN;
+						virtual_adc=PINS_TAKEN;
+						break;
 				}
 
 				switch(addr) {

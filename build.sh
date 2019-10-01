@@ -585,8 +585,9 @@ build_u_boot () {
 		#r3: am335x, backport emmc pins, omap5-uevm: enable btrfs
 		#r4: am335x add Revolve
 		#r5: remove Revolve
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: am335x add BB-BONE-LCD5-01-00A1.dtbo
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
