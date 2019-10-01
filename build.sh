@@ -586,8 +586,9 @@ build_u_boot () {
 		#r4: am335x add Revolve
 		#r5: remove Revolve
 		#r6: am335x add BB-BONE-LCD5-01-00A1.dtbo
-		#r7: (pending)
-		RELEASE_VER="-r6" #bump on every change...
+		#r7: am335x: bbgg might be wl1835 or wl1837...
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

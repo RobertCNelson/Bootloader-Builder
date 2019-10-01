@@ -1,4 +1,4 @@
-From 3bb1bbbce5bd74889d2322ff77b126368c066820 Mon Sep 17 00:00:00 2001
+From 3d888a7fac2cfc82a5b48ca5f366180ea758ccca Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
@@ -14,7 +14,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  6 files changed, 38 insertions(+), 12 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index e99b020fcc..2ef6ac64dc 100644
+index 5c5c2885cf..bd5023e477 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -735,7 +735,7 @@ const struct dpll_params *get_dpll_ddr_params(void)

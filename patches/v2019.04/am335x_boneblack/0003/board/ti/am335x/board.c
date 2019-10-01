@@ -114,7 +114,7 @@ void do_board_detect(void)
 
 #define BBBW_WL1835	0x1
 #define BBGW_WL1835	0x2
-#define BBGG_WL1837	0x3
+#define BBGG_WL183X	0x3
 
 #define CAPE_UNIVERSAL	0x0
 #define CAPE_UNIVERSAL_BBB	0x01
@@ -196,7 +196,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			base_dtb=BBGG_BASE_DTB;
 			virtual_video=NOT_POP;
 			virtual_audio=NOT_POP;
-			virtual_wireless=BBGG_WL1837;
+			virtual_wireless=BBGG_WL183X;
 			cape_universal=NOT_POP;
 		}
 		if (!strncmp(board_ti_get_rev(), "AIA", 3)) {
@@ -500,8 +500,8 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		case BBGW_WL1835:
 			env_set("uboot_wireless", "/lib/firmware/BB-BBGW-WL1835-00A0.dtbo");
 			break;
-		case BBGG_WL1837:
-			env_set("uboot_wireless", "/lib/firmware/BB-BBGG-WL1837-00A0.dtbo");
+		case BBGG_WL183X:
+			env_set("uboot_wireless", "/lib/firmware/BB-BBGG-WL183X-00A0.dtbo");
 			break;
 	}
 
