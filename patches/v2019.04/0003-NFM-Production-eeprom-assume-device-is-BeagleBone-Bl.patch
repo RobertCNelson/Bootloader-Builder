@@ -1,4 +1,4 @@
-From 3d888a7fac2cfc82a5b48ca5f366180ea758ccca Mon Sep 17 00:00:00 2001
+From 6df974af38ce6db090e78074229cf2787ad9d2d1 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
@@ -14,7 +14,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  6 files changed, 38 insertions(+), 12 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 5c5c2885cf..bd5023e477 100644
+index 654f74fd02..f105de34e8 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -735,7 +735,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
@@ -35,7 +35,7 @@ index 5c5c2885cf..bd5023e477 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1521,6 +1521,7 @@ int board_eth_init(bd_t *bis)
+@@ -1517,6 +1517,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -43,7 +43,7 @@ index 5c5c2885cf..bd5023e477 100644
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1548,6 +1549,7 @@ if (!board_is_pb()) {
+@@ -1544,6 +1545,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }

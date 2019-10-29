@@ -587,14 +587,15 @@ build_u_boot () {
 		#r5: remove Revolve
 		#r6: am335x add BB-BONE-LCD5-01-00A1.dtbo
 		#r7: am335x: bbgg might be wl1835 or wl1837...
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r8: am335x: test u-boot phy fix
+		#r9: (pending)
+		RELEASE_VER="-r8" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
 		am335x_evm)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
+			regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0001"
 
@@ -635,7 +636,7 @@ build_u_boot () {
 			fi
 
 			patch_file="U-Boot-BeagleBone-Cape-Manager"
-			#regenerate="enable"
+			regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0002"
 
@@ -668,7 +669,7 @@ build_u_boot () {
 			${git} "${p_dir}/0002-U-Boot-BeagleBone-Cape-Manager.patch"
 
 			patch_file="NFM-Production-eeprom-assume-device-is-BeagleBone-Bl"
-			#regenerate="enable"
+			regenerate="enable"
 			if [ "x${regenerate}" = "xenable" ] ; then
 				base="../../patches/${uboot_ref}/${board}/0003"
 

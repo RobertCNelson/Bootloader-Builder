@@ -1,4 +1,4 @@
-From 11f327c8fc1e34ed9b99c6c1554dbe3514339640 Mon Sep 17 00:00:00 2001
+From d89811102f959f62042418d6199d27a896510d64 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
@@ -15,7 +15,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index dbe864c3ff..5c5c2885cf 100644
+index e7cd8faeed..654f74fd02 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -501,7 +501,7 @@ index dbe864c3ff..5c5c2885cf 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -955,6 +1421,14 @@ int board_late_init(void)
+@@ -951,6 +1417,14 @@ int board_late_init(void)
  			env_set("serial#", board_serial);
  	}
  
