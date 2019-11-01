@@ -101,7 +101,6 @@ void do_board_detect(void)
 #define BBGW_BASE_DTB	0x3
 #define BBBL_BASE_DTB	0x4
 #define BBE_BASE_DTB	0x5
-#define BBGG_BASE_DTB	0x6
 
 #define BBB_EMMC	0x1
 
@@ -114,7 +113,7 @@ void do_board_detect(void)
 
 #define BBBW_WL1835	0x1
 #define BBGW_WL1835	0x2
-#define BBGG_WL183X	0x3
+#define BBGG_WL1835	0x3
 
 #define CAPE_UNIVERSAL	0x0
 #define CAPE_UNIVERSAL_BBB	0x01
@@ -123,6 +122,7 @@ void do_board_detect(void)
 
 #define M_BBG1	0x01
 #define M_OS00	0x02
+#define M_BBGG	0x03
 
 static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 {
@@ -193,11 +193,10 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		}
 		if (!strncmp(board_ti_get_rev(), "GG1", 3)) {
 			puts("Model: SeeedStudio BeagleBone Green Gateway:\n");
-			base_dtb=BBGG_BASE_DTB;
 			virtual_video=NOT_POP;
 			virtual_audio=NOT_POP;
-			virtual_wireless=BBGG_WL183X;
-			cape_universal=NOT_POP;
+			virtual_wireless=BBGG_WL1835;
+			model=M_BBGG;
 		}
 		if (!strncmp(board_ti_get_rev(), "AIA", 3)) {
 			puts("Model: Arrow BeagleBone Black Industrial:\n");
@@ -454,10 +453,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		case BBBL_BASE_DTB:
 			env_set("uboot_base_dtb_univ", "am335x-boneblue.dtb");
 			break;
-		case BBGG_BASE_DTB:
-			env_set("uboot_base_dtb_univ", "am335x-bonegreen-gateway-uboot-univ.dtb");
-			env_set("uboot_base_dtb", "am335x-bonegreen-gateway-uboot.dtb");
-			break;
 	}
 
 	if (virtual_emmc == BBB_EMMC) {
@@ -500,8 +495,8 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		case BBGW_WL1835:
 			env_set("uboot_wireless", "/lib/firmware/BB-BBGW-WL1835-00A0.dtbo");
 			break;
-		case BBGG_WL183X:
-			env_set("uboot_wireless", "/lib/firmware/BB-BBGG-WL183X-00A0.dtbo");
+		case BBGG_WL1835:
+			env_set("uboot_wireless", "/lib/firmware/BB-BBGG-WL1835-00A0.dtbo");
 			break;
 	}
 
@@ -517,6 +512,9 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			break;
 		case M_OS00:
 			env_set("uboot_model", "/lib/firmware/M-BB-OSD3358-SM-RED-00A0.dtbo");
+			break;
+		case M_BBGG:
+			env_set("uboot_model", "/lib/firmware/M-BB-BBGG-00A0.dtbo");
 			break;
 	}
 

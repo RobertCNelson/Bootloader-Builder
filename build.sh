@@ -588,8 +588,9 @@ build_u_boot () {
 		#r6: am335x add BB-BONE-LCD5-01-00A1.dtbo
 		#r7: am335x: bbgg might be wl1835 or wl1837...
 		#r8: am335x: test u-boot phy fix
-		#r9: (pending)
-		RELEASE_VER="-r8" #bump on every change...
+		#r9: am335x: bbgg cleanup
+		#r10: (pending)
+		RELEASE_VER="-r9" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

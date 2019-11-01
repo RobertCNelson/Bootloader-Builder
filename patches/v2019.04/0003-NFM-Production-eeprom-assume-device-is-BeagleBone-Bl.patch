@@ -1,4 +1,4 @@
-From 6df974af38ce6db090e78074229cf2787ad9d2d1 Mon Sep 17 00:00:00 2001
+From f7141acc43ef51381b79d6767338789b3ed01411 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 9 Apr 2019 09:38:02 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
@@ -9,15 +9,15 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/board.h        |  7 ++++++-
  board/ti/am335x/mux.c          |  7 +++++--
  board/ti/common/board_detect.c | 12 ++++++++++++
- configs/am335x_evm_defconfig   |  2 +-
+ configs/am335x_evm_defconfig   |  3 +--
  include/configs/am335x_evm.h   | 16 ++++++++++------
- 6 files changed, 38 insertions(+), 12 deletions(-)
+ 6 files changed, 38 insertions(+), 13 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 654f74fd02..f105de34e8 100644
+index ae9089a755..6655d95afb 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -735,7 +735,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -733,7 +733,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -26,7 +26,7 @@ index 654f74fd02..f105de34e8 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -1029,7 +1029,7 @@ void sdram_init(void)
+@@ -1027,7 +1027,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -35,7 +35,7 @@ index 654f74fd02..f105de34e8 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1517,6 +1517,7 @@ int board_eth_init(bd_t *bis)
+@@ -1515,6 +1515,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -43,7 +43,7 @@ index 654f74fd02..f105de34e8 100644
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1544,6 +1545,7 @@ if (!board_is_pb()) {
+@@ -1542,6 +1543,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }
@@ -120,13 +120,14 @@ index e258e22f37..b287c474f6 100644
  }
  
 diff --git a/configs/am335x_evm_defconfig b/configs/am335x_evm_defconfig
-index 7d91dc0ceb..455e386a1c 100644
+index 41aa4f2b19..455e386a1c 100644
 --- a/configs/am335x_evm_defconfig
 +++ b/configs/am335x_evm_defconfig
-@@ -4,7 +4,7 @@ CONFIG_TI_COMMON_CMD_OPTIONS=y
+@@ -4,8 +4,7 @@ CONFIG_TI_COMMON_CMD_OPTIONS=y
  CONFIG_AM33XX=y
  CONFIG_SPL=y
  CONFIG_DISTRO_DEFAULTS=y
+-CONFIG_BOOTDELAY=0
 -CONFIG_BOOTCOMMAND="if test ${boot_fit} -eq 1; then run update_to_fit; fi; run findfdt; run init_console; run envboot; run distro_bootcmd"
 +CONFIG_BOOTCOMMAND="if test ${boot_fit} -eq 1; then run update_to_fit; fi; run eeprom_program; run findfdt; run init_console; run envboot; run distro_bootcmd"
  CONFIG_SYS_CONSOLE_INFO_QUIET=y
@@ -186,5 +187,5 @@ index 71d12dd1d3..47110307ac 100644
  			"setenv fdtfile am335x-boneblue.dtb; fi; " \
  		"if test $board_name = BBEN; then " \
 -- 
-2.23.0
+2.24.0.rc1
 
