@@ -109,8 +109,6 @@ void do_board_detect(void)
 #define BBB_ADV7511_AUDIO	0x3
 #define BBB_ADV7511_NAUDIO	0x4
 
-#define BBB_ADC		0x1
-
 #define BBBW_WL1835	0x1
 #define BBGW_WL1835	0x2
 #define BBGG_WL1835	0x3
@@ -141,7 +139,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 	char virtual_audio=NOT_POP;
 	char virtual_wireless=NOT_POP;
 	char cape_universal=CAPE_UNIVERSAL;
-	char virtual_adc=NOT_POP;
 	char model=NOT_POP;
 
 	char *name = NULL;
@@ -153,7 +150,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		virtual_video=BBB_TDA998X_AUDIO;
 		virtual_audio=BBB_TDA998X_AUDIO;
 		virtual_wireless=NOT_POP;
-		virtual_adc=BBB_ADC;
 		cape_universal=CAPE_UNIVERSAL_BBB;
 		name = "A335BNLT";
 
@@ -165,7 +161,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			virtual_video=NOT_POP;
 			virtual_audio=NOT_POP;
 			virtual_wireless=NOT_POP;
-			virtual_adc=BBB_ADC;
 			cape_universal=CAPE_UNIVERSAL;
 			name = "BBBL";
 		}
@@ -238,7 +233,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		virtual_video=NOT_POP;
 		virtual_audio=NOT_POP;
 		virtual_wireless=NOT_POP;
-		virtual_adc=BBB_ADC;
 		cape_universal=CAPE_UNIVERSAL_BBB;
 		name = "A335BONE";
 	}
@@ -250,7 +244,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		virtual_video=NOT_POP;
 		virtual_audio=NOT_POP;
 		virtual_wireless=NOT_POP;
-		virtual_adc=BBB_ADC;
 		cape_universal=CAPE_UNIVERSAL_BBG;
 		name = "BBG1";
 		model=M_BBG1;
@@ -359,7 +352,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 						break;
 					case 0xfc93c8f: /* /lib/firmware/BB-BONE-LCD7-01-00A3.dtbo */
 						virtual_video=PINS_TAKEN;
-						virtual_adc=PINS_TAKEN;
 						break;
 					//fe131
 					case 0xfe1313f: /* /lib/firmware/BB-BONE-4D5R-01-00A1.dtbo */
@@ -395,11 +387,9 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 						break;
 					case 0xfe93c1f: /* /lib/firmware/BB-BONE-LCD4-01-00A1.dtbo */
 						virtual_video=PINS_TAKEN;
-						virtual_adc=PINS_TAKEN;
 						break;
 					case 0xfe93c2f: /* /lib/firmware/BB-BONE-LCD5-01-00A1.dtbo */
 						virtual_video=PINS_TAKEN;
-						virtual_adc=PINS_TAKEN;
 						break;
 				}
 
@@ -497,12 +487,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			break;
 		case BBGG_WL1835:
 			env_set("uboot_wireless", "/lib/firmware/BB-BBGG-WL1835-00A0.dtbo");
-			break;
-	}
-
-	switch(virtual_adc) {
-		case BBB_ADC:
-			env_set("uboot_adc", "/lib/firmware/BB-ADC-00A0.dtbo");
 			break;
 	}
 

@@ -361,7 +361,7 @@ file_save () {
 cp_git_commit_patch () {
 	cp -rv ${base}/* ./
 	git add --all
-	git commit -a -m "${patch_file}" -s --date "Tue 09 Apr 2019 09:38:02 AM CDT"
+	git commit -a -m "${patch_file}" -s
 	git format-patch -1 -o ../../patches/${uboot_ref}/
 	unset regenerate
 }
@@ -378,7 +378,7 @@ refresh_patch () {
 cp_git_commit_patch_two () {
 	cp -rv ${base}/* ./
 	git add --all
-	git commit -a -m "${patch_file}" -s --date "Tue 09 Apr 2019 09:38:02 AM CDT"
+	git commit -a -m "${patch_file}" -s
 	git format-patch -2 -o ../../patches/${uboot_ref}/
 	unset regenerate
 }
@@ -395,7 +395,7 @@ refresh_patch_two () {
 cp_git_commit_patch_three () {
 	cp -rv ${base}/* ./
 	git add --all
-	git commit -a -m "$patch_file" -s --date "Tue 09 Apr 2019 09:38:02 AM CDT"
+	git commit -a -m "$patch_file" -s
 	git format-patch -3 -o ../../patches/${uboot_ref}/
 	unset regenerate
 }
@@ -610,8 +610,9 @@ build_u_boot () {
 		#r7: am335x: bbgg might be wl1835 or wl1837...
 		#r8: am335x: test u-boot phy fix
 		#r9: am335x: bbgg cleanup
-		#r10: (pending)
-		RELEASE_VER="-r9" #bump on every change...
+		#r10: am335x: move the adc earlier
+		#r11: (pending)
+		RELEASE_VER="-r10" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

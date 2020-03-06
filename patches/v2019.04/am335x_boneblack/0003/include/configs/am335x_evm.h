@@ -164,6 +164,8 @@
 			"run eeprom_dump; run eeprom_blank; run eeprom_bbb_header; run eeprom_bbbw_footer; run eeprom_dump; reset; fi; " \
 		"if test $board_eeprom_header = pocketbeagle_blank; then " \
 			"run eeprom_dump; run eeprom_blank; run eeprom_pocketbeagle; run eeprom_dump; reset; fi; " \
+		"if test $board_eeprom_header = bbgg_blank; then " \
+			"run eeprom_dump; run eeprom_blank; run eeprom_bbb_header; run eeprom_bbgg_footer; run eeprom_dump; reset; fi; " \
 		"if test $board_eeprom_header = beaglelogic_blank; then " \
 			"run eeprom_dump; run eeprom_blank; run eeprom_beaglelogic; run eeprom_dump; reset; fi;  \0" \
 	"ramboot=echo Booting from ramdisk ...; " \
@@ -185,6 +187,8 @@
 				"setenv fdtfile am335x-pocketbone.dtb; " \
 			"elif test $board_rev = GW1A; then " \
 				"setenv fdtfile am335x-bonegreen-wireless.dtb; " \
+			"elif test $board_rev = GG1A; then " \
+				"setenv fdtfile am335x-bonegreen-gateway.dtb; " \
 			"elif test $board_rev = AIA0; then " \
 				"setenv fdtfile am335x-abbbi.dtb; " \
 			"elif test $board_rev = EIA0; then " \
@@ -215,6 +219,8 @@
 			"setenv fdtfile am335x-bonegreen.dtb; fi; " \
 		"if test $board_name = BBGW; then " \
 			"setenv fdtfile am335x-bonegreen-wireless.dtb; fi; " \
+		"if test $board_name = BBGG; then " \
+			"setenv fdtfile am335x-bonegreen-gateway.dtb; fi; " \
 		"if test $board_name = BBBL; then " \
 			"setenv fdtfile am335x-boneblue.dtb; fi; " \
 		"if test $board_name = BBEN; then " \

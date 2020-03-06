@@ -430,6 +430,12 @@
 					"setenv uboot_overlay ${uboot_model}; " \
 					"run virtualloadoverlay;" \
 				"fi;" \
+				"if test -n ${disable_uboot_overlay_adc}; then " \
+					"echo uboot_overlays: uboot loading of [${uboot_adc}] disabled by /boot/uEnv.txt [disable_uboot_overlay_adc=1]...;" \
+				"else " \
+					"setenv uboot_overlay ${uboot_adc}; " \
+					"run virtualloadoverlay;" \
+				"fi;" \
 				"if test -n ${uboot_overlay_addr0}; then " \
 					"if test -n ${disable_uboot_overlay_addr0}; then " \
 						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr0}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr0=1]...;" \
@@ -505,14 +511,6 @@
 						"echo uboot_overlays: uboot loading of [${uboot_wireless}] disabled by /boot/uEnv.txt [disable_uboot_overlay_wireless=1]...;" \
 					"else " \
 						"setenv uboot_overlay ${uboot_wireless}; " \
-						"run virtualloadoverlay;" \
-					"fi;" \
-				"fi;" \
-				"if test -n ${uboot_adc}; then " \
-					"if test -n ${disable_uboot_overlay_adc}; then " \
-						"echo uboot_overlays: uboot loading of [${uboot_adc}] disabled by /boot/uEnv.txt [disable_uboot_overlay_adc=1]...;" \
-					"else " \
-						"setenv uboot_overlay ${uboot_adc}; " \
 						"run virtualloadoverlay;" \
 					"fi;" \
 				"fi;" \
