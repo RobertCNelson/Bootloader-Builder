@@ -1,6 +1,6 @@
-From 4271ffdd5ae580575d5603cc6b48edd0dd630086 Mon Sep 17 00:00:00 2001
+From 375fca86c15b28ec857016cc5ab828c7fdc47c89 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 6 Mar 2020 10:10:58 -0600
+Date: Fri, 6 Mar 2020 11:06:38 -0600
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

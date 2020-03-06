@@ -611,8 +611,9 @@ build_u_boot () {
 		#r8: am335x: test u-boot phy fix
 		#r9: am335x: bbgg cleanup
 		#r10: am335x: move the adc earlier
-		#r11: (pending)
-		RELEASE_VER="-r10" #bump on every change...
+		#r11: am335x: fix moved the adc earlier
+		#r12: (pending)
+		RELEASE_VER="-r11" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

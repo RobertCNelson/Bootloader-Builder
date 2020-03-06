@@ -431,9 +431,9 @@
 					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${disable_uboot_overlay_adc}; then " \
-					"echo uboot_overlays: uboot loading of [${uboot_adc}] disabled by /boot/uEnv.txt [disable_uboot_overlay_adc=1]...;" \
+					"echo uboot_overlays: uboot loading of [/lib/firmware/BB-ADC-00A0.dtbo] disabled by /boot/uEnv.txt [disable_uboot_overlay_adc=1]...;" \
 				"else " \
-					"setenv uboot_overlay ${uboot_adc}; " \
+					"setenv uboot_overlay /lib/firmware/BB-ADC-00A0.dtbo; " \
 					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr0}; then " \

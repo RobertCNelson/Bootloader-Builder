@@ -1,6 +1,6 @@
-From 0808586eee60e41e88d53b40a23746ffa85f5d8b Mon Sep 17 00:00:00 2001
+From bba1a51ef92210928a29c5aee522b4923706fdb4 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 6 Mar 2020 10:08:48 -0600
+Date: Fri, 6 Mar 2020 10:46:34 -0600
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -590,7 +590,7 @@ index 0000000000..b267a87788
 +  return hval;
 +}
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 6e7553332e..33384ad3cc 100644
+index 6e7553332e..f5eb91e8ab 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
 @@ -339,6 +339,43 @@
@@ -656,9 +656,9 @@ index 6e7553332e..33384ad3cc 100644
 +					"run virtualloadoverlay;" \
 +				"fi;" \
 +				"if test -n ${disable_uboot_overlay_adc}; then " \
-+					"echo uboot_overlays: uboot loading of [${uboot_adc}] disabled by /boot/uEnv.txt [disable_uboot_overlay_adc=1]...;" \
++					"echo uboot_overlays: uboot loading of [/lib/firmware/BB-ADC-00A0.dtbo] disabled by /boot/uEnv.txt [disable_uboot_overlay_adc=1]...;" \
 +				"else " \
-+					"setenv uboot_overlay ${uboot_adc}; " \
++					"setenv uboot_overlay /lib/firmware/BB-ADC-00A0.dtbo; " \
 +					"run virtualloadoverlay;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr0}; then " \
