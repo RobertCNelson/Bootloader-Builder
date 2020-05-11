@@ -349,9 +349,6 @@
 						"if test -e ${devtype} ${bootpart} ${fdtdir}/${uboot_base_dtb_univ}; then " \
 							"setenv fdtfile ${uboot_base_dtb_univ};" \
 							"echo uboot_overlays: Switching too: dtb=${fdtfile} ...;" \
-							"if test -n ${uboot_try_cape_universal}; then " \
-								"env delete -f uboot_try_cape_universal; " \
-							"fi;" \
 							"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
 						"else " \
 							"echo debug: unable to find [${uboot_base_dtb_univ}] using [${uboot_base_dtb}] instead ... ;" \
@@ -530,64 +527,6 @@
 				"if test -n ${uboot_detected_capes}; then " \
 					"echo uboot_overlays: [uboot_detected_capes=${uboot_detected_capes_addr0}${uboot_detected_capes_addr1}${uboot_detected_capes_addr2}${uboot_detected_capes_addr3}] ... ;" \
 					"setenv uboot_detected_capes uboot_detected_capes=${uboot_detected_capes_addr0}${uboot_detected_capes_addr1}${uboot_detected_capes_addr2}${uboot_detected_capes_addr3}; " \
-				"fi;" \
-				"if test -n ${uboot_try_cape_universal}; then " \
-					"if test -n ${enable_uboot_cape_universal}; then " \
-						"if test -n ${cape_uboot}; then " \
-							"echo uboot_overlays: cape universal disabled, external cape enabled or detected...;" \
-						"else " \
-							"if test -n ${uboot_cape_universal_bbb}; then " \
-								"if test -n ${disable_uboot_overlay_emmc}; then " \
-									"if test -n ${disable_uboot_overlay_video}; then " \
-										"setenv uboot_overlay /lib/firmware/univ-bbb-xxx-00A0.dtbo; " \
-									"else " \
-										"if test -n ${disable_uboot_overlay_audio}; then " \
-											"setenv uboot_overlay /lib/firmware/univ-bbb-xVx-00A0.dtbo; " \
-										"else " \
-											"setenv uboot_overlay /lib/firmware/univ-bbb-xVA-00A0.dtbo; " \
-										"fi;" \
-									"fi;" \
-								"else " \
-									"if test -n ${disable_uboot_overlay_video}; then " \
-										"setenv uboot_overlay /lib/firmware/univ-bbb-Exx-00A0.dtbo; " \
-									"else " \
-										"if test -n ${disable_uboot_overlay_audio}; then " \
-											"setenv uboot_overlay /lib/firmware/univ-bbb-EVx-00A0.dtbo; " \
-										"else " \
-											"setenv uboot_overlay /lib/firmware/univ-bbb-EVA-00A0.dtbo; " \
-										"fi;" \
-									"fi;" \
-								"fi;" \
-								"run capeloadoverlay;" \
-							"fi;" \
-							"if test -n ${uboot_cape_universal_bbg}; then " \
-								"if test -n ${disable_uboot_overlay_emmc}; then " \
-									"setenv uboot_overlay /lib/firmware/univ-bbb-xxx-00A0.dtbo; " \
-								"else " \
-									"setenv uboot_overlay /lib/firmware/univ-bbb-Exx-00A0.dtbo; " \
-								"fi;" \
-								"run capeloadoverlay;" \
-							"fi;" \
-							"if test -n ${uboot_cape_universal_bbgw}; then " \
-								"if test -n ${disable_uboot_overlay_emmc}; then " \
-									"if test -n ${disable_uboot_overlay_wireless}; then " \
-										"setenv uboot_overlay /lib/firmware/univ-bbgw-xx-00A0.dtbo; " \
-									"else " \
-										"setenv uboot_overlay /lib/firmware/univ-bbgw-xW-00A0.dtbo; " \
-									"fi;" \
-								"else " \
-									"if test -n ${disable_uboot_overlay_wireless}; then " \
-										"setenv uboot_overlay /lib/firmware/univ-bbgw-Ex-00A0.dtbo; " \
-									"else " \
-										"setenv uboot_overlay /lib/firmware/univ-bbgw-EW-00A0.dtbo; " \
-									"fi;" \
-								"fi;" \
-								"run capeloadoverlay;" \
-							"fi;" \
-						"fi;" \
-					"else " \
-						"echo uboot_overlays: add [enable_uboot_cape_universal=1] to /boot/uEnv.txt to enable...;" \
-					"fi;" \
 				"fi;" \
 			"else " \
 				"echo uboot_overlays: add [enable_uboot_overlays=1] to /boot/uEnv.txt to enable...;" \

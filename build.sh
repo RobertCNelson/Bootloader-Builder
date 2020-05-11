@@ -612,8 +612,9 @@ build_u_boot () {
 		#r9: am335x: bbgg cleanup
 		#r10: am335x: move the adc earlier
 		#r11: am335x: fix moved the adc earlier
-		#r12: (pending)
-		RELEASE_VER="-r11" #bump on every change...
+		#r12: am335x: remove old cape universal
+		#r13: (pending)
+		RELEASE_VER="-r12" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

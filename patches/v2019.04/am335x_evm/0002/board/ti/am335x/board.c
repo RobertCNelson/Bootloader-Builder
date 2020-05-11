@@ -113,11 +113,6 @@ void do_board_detect(void)
 #define BBGW_WL1835	0x2
 #define BBGG_WL1835	0x3
 
-#define CAPE_UNIVERSAL	0x0
-#define CAPE_UNIVERSAL_BBB	0x01
-#define CAPE_UNIVERSAL_BBG	0x02
-#define CAPE_UNIVERSAL_BBGW	0x03
-
 #define M_BBG1	0x01
 #define M_OS00	0x02
 #define M_BBGG	0x03
@@ -138,7 +133,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 	char virtual_video=NOT_POP;
 	char virtual_audio=NOT_POP;
 	char virtual_wireless=NOT_POP;
-	char cape_universal=CAPE_UNIVERSAL;
 	char model=NOT_POP;
 
 	char *name = NULL;
@@ -150,7 +144,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		virtual_video=BBB_TDA998X_AUDIO;
 		virtual_audio=BBB_TDA998X_AUDIO;
 		virtual_wireless=NOT_POP;
-		cape_universal=CAPE_UNIVERSAL_BBB;
 		name = "A335BNLT";
 
 		if (!strncmp(board_ti_get_rev(), "BLA", 3)) {
@@ -161,7 +154,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			virtual_video=NOT_POP;
 			virtual_audio=NOT_POP;
 			virtual_wireless=NOT_POP;
-			cape_universal=CAPE_UNIVERSAL;
 			name = "BBBL";
 		}
 		if (!strncmp(board_ti_get_rev(), "BW", 2)) {
@@ -174,7 +166,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			//puts("Model: SeeedStudio BeagleBone Green:\n");
 			virtual_video=NOT_POP;
 			virtual_audio=NOT_POP;
-			cape_universal=CAPE_UNIVERSAL_BBG;
 			name = "BBG1";
 			model=M_BBG1;
 		}
@@ -184,7 +175,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			virtual_video=NOT_POP;
 			virtual_audio=NOT_POP;
 			virtual_wireless=BBGW_WL1835;
-			cape_universal=CAPE_UNIVERSAL_BBGW;
 		}
 		if (!strncmp(board_ti_get_rev(), "GG1", 3)) {
 			puts("Model: SeeedStudio BeagleBone Green Gateway:\n");
@@ -197,7 +187,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			puts("Model: Arrow BeagleBone Black Industrial:\n");
 			virtual_video=BBB_ADV7511_AUDIO;
 			virtual_audio=BBB_ADV7511_AUDIO;
-			cape_universal=CAPE_UNIVERSAL;
 		}
 		if (!strncmp(board_ti_get_rev(), "EIA", 3)) {
 			puts("Model: Element14 BeagleBone Black Industrial:\n");
@@ -205,23 +194,19 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		if (!strncmp(board_ti_get_rev(), "SE", 2)) {
 			puts("Model: SanCloud BeagleBone Enhanced:\n");
 			base_dtb=BBE_BASE_DTB;
-			cape_universal=CAPE_UNIVERSAL_BBB;
 			name = "BBEN";
 		}
 		if (!strncmp(board_ti_get_rev(), "ME0", 3)) {
 			puts("Model: MENTOREL BeagleBone uSomIQ:\n");
 			virtual_video=NOT_POP;
 			virtual_audio=NOT_POP;
-			cape_universal=CAPE_UNIVERSAL_BBG;
 		}
 		if (!strncmp(board_ti_get_rev(), "NAD", 3)) {
 			puts("Model: Neuromeka BeagleBone Air:\n");
-			cape_universal=CAPE_UNIVERSAL;
 		}
 		if (!strncmp(board_ti_get_rev(), "OS0", 3)) {
 			puts("Model: Octavo Systems OSD3358-SM-RED:\n");
 			name = "OS00";
-			cape_universal=NOT_POP;
 			model=M_OS00;
 		}
 	}
@@ -233,7 +218,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		virtual_video=NOT_POP;
 		virtual_audio=NOT_POP;
 		virtual_wireless=NOT_POP;
-		cape_universal=CAPE_UNIVERSAL_BBB;
 		name = "A335BONE";
 	}
 
@@ -244,7 +228,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		virtual_video=NOT_POP;
 		virtual_audio=NOT_POP;
 		virtual_wireless=NOT_POP;
-		cape_universal=CAPE_UNIVERSAL_BBG;
 		name = "BBG1";
 		model=M_BBG1;
 	}
@@ -422,23 +405,19 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		case BB_BASE_DTB:
 			env_set("uboot_base_dtb_univ", "am335x-bone-uboot-univ.dtb");
 			env_set("uboot_base_dtb", "am335x-bone.dtb");
-			env_set("uboot_try_cape_universal", "1");
 			break;
 		case BBB_BASE_DTB:
 			env_set("uboot_base_dtb_univ", "am335x-boneblack-uboot-univ.dtb");
 			env_set("uboot_base_dtb", "am335x-boneblack-uboot.dtb");
-			env_set("uboot_try_cape_universal", "1");
 			break;
 		case BBGW_BASE_DTB:
 			//gpio-hogs and cape-universal dont mesh very well on bootup...
 			env_set("uboot_base_dtb_univ", "am335x-bonegreen-wireless-uboot-univ.dtb");
 			env_set("uboot_base_dtb", "am335x-boneblack-uboot.dtb");
-			env_set("uboot_try_cape_universal", "1");
 			break;
 		case BBE_BASE_DTB:
 			env_set("uboot_base_dtb_univ", "am335x-sancloud-bbe-uboot-univ.dtb");
 			env_set("uboot_base_dtb", "am335x-sancloud-bbe-uboot.dtb");
-			env_set("uboot_try_cape_universal", "1");
 			break;
 		case BBBL_BASE_DTB:
 			env_set("uboot_base_dtb_univ", "am335x-boneblue.dtb");
@@ -499,18 +478,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			break;
 		case M_BBGG:
 			env_set("uboot_model", "/lib/firmware/M-BB-BBGG-00A0.dtbo");
-			break;
-	}
-
-	switch(cape_universal) {
-		case CAPE_UNIVERSAL_BBB:
-			env_set("uboot_cape_universal_bbb", "1");
-			break;
-		case CAPE_UNIVERSAL_BBG:
-			env_set("uboot_cape_universal_bbg", "1");
-			break;
-		case CAPE_UNIVERSAL_BBGW:
-			env_set("uboot_cape_universal_bbgw", "1");
 			break;
 	}
 
