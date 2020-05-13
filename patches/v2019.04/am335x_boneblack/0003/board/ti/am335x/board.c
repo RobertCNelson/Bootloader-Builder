@@ -189,7 +189,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			virtual_audio=BBB_ADV7511_AUDIO;
 		}
 		if (!strncmp(board_ti_get_rev(), "EIA", 3)) {
-			puts("Model: Element14 BeagleBone Black Industrial:\n");
+			puts("Model: BeagleBone Black Industrial:\n");
 		}
 		if (!strncmp(board_ti_get_rev(), "SE", 2)) {
 			puts("Model: SanCloud BeagleBone Enhanced:\n");

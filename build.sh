@@ -613,8 +613,9 @@ build_u_boot () {
 		#r10: am335x: move the adc earlier
 		#r11: am335x: fix moved the adc earlier
 		#r12: am335x: remove old cape universal
+		#r13: am335x: rename BeagleBone Black Industrial
 		#r13: (pending)
-		RELEASE_VER="-r12" #bump on every change...
+		RELEASE_VER="-r13" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
