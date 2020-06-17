@@ -1735,10 +1735,6 @@ build_u_boot () {
 		pre_built=1
 	fi
 
-	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.sunxi ] ; then
-		pre_built=1
-	fi
-
 	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.bin ] ; then
 		pre_built=1
 	fi
@@ -1835,14 +1831,6 @@ build_u_boot () {
 
 			filename_search="u-boot.img"
 			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#SPL: sunxi
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-sunxi-with-spl.bin ] ; then
-			filename_search="u-boot-sunxi-with-spl.bin"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.sunxi"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -2021,22 +2009,6 @@ always_testing () {
 		build_testing="true"
 	fi
 	build_uboot_gnueabihf
-}
-
-A10_OLinuXino_Lime () {
-	board="A10-OLinuXino-Lime" ; always_stable_n_testing
-}
-
-A20_OLinuXino_Lime () {
-	board="A20-OLinuXino-Lime" ; always_stable_n_testing
-}
-
-A20_OLinuXino_Lime2 () {
-	board="A20-OLinuXino-Lime2" ; always_stable_n_testing
-}
-
-A20_OLinuXino_MICRO () {
-	board="A20-OLinuXino_MICRO" ; always_stable_n_testing
 }
 
 ls1021atwr () {
@@ -2281,10 +2253,6 @@ wandboard
 ###am571x_sndrblock_flasher
 
 #devices with no patches...
-A10_OLinuXino_Lime
-A20_OLinuXino_Lime
-A20_OLinuXino_Lime2
-A20_OLinuXino_MICRO
 #firefly_rk3288
 ls1021atwr
 udoo
