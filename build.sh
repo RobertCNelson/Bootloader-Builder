@@ -1767,10 +1767,6 @@ build_u_boot () {
 		fi
 		cp -v ./defconfig ${p_dir}/${board}/0001/configs/${uboot_config}
 
-		if [ "x${board}" = "xfirefly-rk3288" ] ; then
-			./tools/mkimage -n rk3288 -T rksd -d ./spl/u-boot-spl-nodtb.bin u-boot-spl.rk3288
-		fi
-
 		unset UBOOT_DONE
 		#Freescale targets just need u-boot.imx from u-boot
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.imx ] ; then
@@ -1843,21 +1839,6 @@ build_u_boot () {
 
 			filename_search="u-boot.img"
 			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#SPL: RockChip rk3288
-		#./tools/mkimage -n rk3288 -T rksd -d ./spl/u-boot-spl-dtb.bin u-boot-spl.rk3288
-		#sudo dd if=u-boot-spl.rk3288 of=/dev/sdc seek=64
-		#sudo dd if=u-boot-dtb.img of=/dev/sdc seek=256
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-spl.rk3288 ] ; then
-			filename_search="u-boot-spl.rk3288"
-			filename_id="deploy/${board}/SPL-${uboot_filename}.rk3288"
-			file_save
-
-			filename_search="u-boot-dtb.img"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.rk3288"
 			file_save
 			UBOOT_DONE=1
 		fi
@@ -2105,14 +2086,6 @@ at91sam9x5ek () {
 	board="at91sam9x5ek_mmc" ; build_uboot_eabi
 }
 
-firefly_rk3288 () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="firefly-rk3288" ; build_uboot_gnueabihf
-}
-
 mx23_olinuxino () {
 	cleanup
 	build_old="true"
@@ -2253,7 +2226,6 @@ wandboard
 ###am571x_sndrblock_flasher
 
 #devices with no patches...
-#firefly_rk3288
 ls1021atwr
 udoo
 
