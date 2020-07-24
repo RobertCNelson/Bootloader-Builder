@@ -711,27 +711,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
-		mx53loco)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/${board}.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		mx6ul_14x14_evk)
 			patch_file="${board}-fixes"
 			#regenerate="enable"
@@ -1148,27 +1127,6 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		mx53loco)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/${board}.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
 			;;
 		mx6ul_14x14_evk)
 			patch_file="${board}-fixes"
@@ -1894,14 +1852,6 @@ am571x_sndrblock_flasher () {
 	build_u_boot
 }
 
-mx53loco () {
-	cleanup
-#	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="mx53loco" ; build_uboot_gnueabihf
-}
-
 mx6ul_14x14_evk () {
 	cleanup
 #	build_old="true"
@@ -1998,7 +1948,6 @@ am335x_boneblack_flasher
 am43xx_evm
 am57xx_evm
 
-mx53loco
 mx6ul_14x14_evk
 mx6ull_14x14_evk
 mx6sabresd
