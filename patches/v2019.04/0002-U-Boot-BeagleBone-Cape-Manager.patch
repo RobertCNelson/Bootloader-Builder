@@ -1,21 +1,21 @@
-From faf24619bd03c9574161b49227f97360cd415c2c Mon Sep 17 00:00:00 2001
+From 7f0624a58e70f708c1bbaed28277700b5eb60821 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 24 Jul 2020 15:05:07 -0500
+Date: Fri, 24 Jul 2020 16:32:28 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c           | 423 ++++++++++++++++++++++++++++++
+ board/ti/am335x/board.c           | 429 ++++++++++++++++++++++++++++++
  board/ti/am335x/board.h           |  16 ++
- board/ti/am335x/hash-string.h     |  59 +++++
+ board/ti/am335x/hash-string.h     |  59 ++++
  include/configs/ti_armv7_common.h | 152 +++++++++++
  include/configs/ti_armv7_omap.h   |   3 +
  include/environment/ti/mmc.h      |  20 ++
- 6 files changed, 673 insertions(+)
+ 6 files changed, 679 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index e7cd8faeed..3ec2d1b6fe 100644
+index e7cd8faeed..a36753e8cc 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -26,7 +26,7 @@ index e7cd8faeed..3ec2d1b6fe 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -77,9 +78,423 @@ void do_board_detect(void)
+@@ -77,9 +78,429 @@ void do_board_detect(void)
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
  		printf("ti_i2c_eeprom_init failed\n");
@@ -74,7 +74,8 @@ index e7cd8faeed..3ec2d1b6fe 100644
 +	unsigned char addr;
 +	/* /lib/firmware/BB-CAPE-DISP-CT4-00A0.dtbo */
 +	/* 14 + 16 + 1 + 4 + 5 = 40 */
-+	char cape_overlay[40];
++	char hash_cape_overlay[40];
++	char cape_overlay[26];
 +	char process_cape_part_number[16];
 +	char end_part_number;
 +	char cape_overlay_pass_to_kernel[18];
@@ -202,7 +203,8 @@ index e7cd8faeed..3ec2d1b6fe 100644
 +			}
 +
 +			if (cape_header->header == 0xEE3355AA) {
-+				strlcpy(cape_overlay, "/lib/firmware/", 14 + 1);
++				strlcpy(hash_cape_overlay, "/lib/firmware/", 14 + 1);
++				strlcpy(cape_overlay, "", 2);
 +				strlcpy(cape_overlay_pass_to_kernel, "", 2);
 +				strlcpy(process_cape_part_number, "...............", 16 + 1);
 +
@@ -231,19 +233,23 @@ index e7cd8faeed..3ec2d1b6fe 100644
 +				}
 +				puts("]\n");
 +
++				strncat(hash_cape_overlay, process_cape_part_number, end_part_number);
 +				strncat(cape_overlay, process_cape_part_number, end_part_number);
-+				printf("debug: %s\n", cape_overlay);
++				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 +
++				strncat(hash_cape_overlay, "-", 1);
 +				strncat(cape_overlay, "-", 1);
-+				printf("debug: %s\n", cape_overlay);
++				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 +
++				strncat(hash_cape_overlay, cape_header->version, 4);
 +				strncat(cape_overlay, cape_header->version, 4);
-+				printf("debug: %s\n", cape_overlay);
++				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 +
++				strncat(hash_cape_overlay, ".dtbo", 5);
 +				strncat(cape_overlay, ".dtbo", 5);
-+				printf("debug: %s\n", cape_overlay);
++				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 +
-+				unsigned long cape_overlay_hash = hash_string(cape_overlay);
++				unsigned long cape_overlay_hash = hash_string(hash_cape_overlay);
 +
 +				printf("BeagleBone: cape eeprom: i2c_probe: 0x%x: %s [0x%lx]\n", addr, cape_overlay, cape_overlay_hash);
 +
@@ -450,7 +456,7 @@ index e7cd8faeed..3ec2d1b6fe 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -951,6 +1366,14 @@ int board_late_init(void)
+@@ -951,6 +1372,14 @@ int board_late_init(void)
  			env_set("serial#", board_serial);
  	}
  

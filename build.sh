@@ -615,8 +615,9 @@ build_u_boot () {
 		#r12: am335x: remove old cape universal
 		#r13: am335x: rename BeagleBone Black Industrial
 		#r14: am335x: new overlay locations
-		#r15: (pending)
-		RELEASE_VER="-r14" #bump on every change...
+		#r15: am335x: drop /lib/firmware on external reads..
+		#r16: (pending)
+		RELEASE_VER="-r15" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in

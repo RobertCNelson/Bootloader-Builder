@@ -122,7 +122,8 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 	unsigned char addr;
 	/* /lib/firmware/BB-CAPE-DISP-CT4-00A0.dtbo */
 	/* 14 + 16 + 1 + 4 + 5 = 40 */
-	char cape_overlay[40];
+	char hash_cape_overlay[40];
+	char cape_overlay[26];
 	char process_cape_part_number[16];
 	char end_part_number;
 	char cape_overlay_pass_to_kernel[18];
@@ -250,7 +251,8 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			}
 
 			if (cape_header->header == 0xEE3355AA) {
-				strlcpy(cape_overlay, "/lib/firmware/", 14 + 1);
+				strlcpy(hash_cape_overlay, "/lib/firmware/", 14 + 1);
+				strlcpy(cape_overlay, "", 2);
 				strlcpy(cape_overlay_pass_to_kernel, "", 2);
 				strlcpy(process_cape_part_number, "...............", 16 + 1);
 
@@ -279,19 +281,23 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 				}
 				puts("]\n");
 
+				strncat(hash_cape_overlay, process_cape_part_number, end_part_number);
 				strncat(cape_overlay, process_cape_part_number, end_part_number);
-				printf("debug: %s\n", cape_overlay);
+				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 
+				strncat(hash_cape_overlay, "-", 1);
 				strncat(cape_overlay, "-", 1);
-				printf("debug: %s\n", cape_overlay);
+				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 
+				strncat(hash_cape_overlay, cape_header->version, 4);
 				strncat(cape_overlay, cape_header->version, 4);
-				printf("debug: %s\n", cape_overlay);
+				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 
+				strncat(hash_cape_overlay, ".dtbo", 5);
 				strncat(cape_overlay, ".dtbo", 5);
-				printf("debug: %s\n", cape_overlay);
+				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 
-				unsigned long cape_overlay_hash = hash_string(cape_overlay);
+				unsigned long cape_overlay_hash = hash_string(hash_cape_overlay);
 
 				printf("BeagleBone: cape eeprom: i2c_probe: 0x%x: %s [0x%lx]\n", addr, cape_overlay, cape_overlay_hash);
 
