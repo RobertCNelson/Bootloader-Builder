@@ -418,10 +418,6 @@ build_u_boot () {
 	UGIT_VERSION=$(git describe)
 
 	unset BUILDTARGET
-	if [ "x${board}" = "xmx23_olinuxino" ] ; then
-		BUILDTARGET="u-boot.sb"
-	fi
-
 	if [ "x${board}" = "xsocfpga_de0_nano_soc" ] ; then
 		BUILDTARGET="u-boot-with-spl.sfp"
 	fi
@@ -480,27 +476,6 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		mx23_olinuxino)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
 			;;
 		omap5_uevm)
 			patch_file="omap5_common-uEnv.txt-bootz-n-fixes"
@@ -735,27 +710,6 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		mx23_olinuxino)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
 			;;
 		mx51evk)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -1218,27 +1172,6 @@ build_u_boot () {
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
-		mx23_olinuxino)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/mx23_olinuxino.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
 			;;
 		mx51evk)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
@@ -1723,14 +1656,6 @@ build_u_boot () {
 			UBOOT_DONE=1
 		fi
 
-		#Freescale mx23 targets just need u-boot.sb from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.sb ] ; then
-			filename_search="u-boot.sb"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.sb"
-			file_save
-			UBOOT_DONE=1
-		fi
-
 		#Altera Cyclone V SE
 		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-with-spl.sfp ] ; then
 			filename_search="u-boot-with-spl.sfp"
@@ -2017,14 +1942,6 @@ am571x_sndrblock_flasher () {
 	build_u_boot
 }
 
-mx23_olinuxino () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="mx23_olinuxino" ; build_uboot_eabi
-}
-
 mx51evk () {
 	cleanup
 #	build_old="true"
@@ -2137,7 +2054,6 @@ am335x_boneblack_flasher
 am43xx_evm
 am57xx_evm
 
-mx23_olinuxino
 mx51evk
 mx53loco
 mx6ul_14x14_evk
