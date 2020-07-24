@@ -448,10 +448,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
 			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
 			;;
-		beagle_x15)
-			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			;;
 		omap5_uevm)
 			patch_file="omap5_common-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
@@ -629,10 +625,6 @@ build_u_boot () {
 		am57xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
 			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
-			;;
-		beagle_x15)
-			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx6ul_14x14_evk)
 			patch_file="${board}-fixes"
@@ -968,10 +960,6 @@ build_u_boot () {
 			else
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
-			;;
-		beagle_x15)
-			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
-			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
 			;;
 		mx6ul_14x14_evk)
 			patch_file="${board}-fixes"
@@ -1539,6 +1527,7 @@ am65x_evm_a53 () {
 }
 am335x_evm
 am335x_boneblack_flasher
+am57xx_evm
 exit
 
 am335x_evm
