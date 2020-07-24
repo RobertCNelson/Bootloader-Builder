@@ -1301,34 +1301,6 @@ build_u_boot () {
 		fi
 	fi
 
-	if [ "x${board}" = "xam57xx_beagle_revc_ti_flasher" ] ; then
-		if [ "x${GIT_SHA}" = "xv2017.01" ] ; then
-			git pull --no-edit https://github.com/rcn-ee/ti-uboot ti-u-boot-2017.01
-			#r1: initial build
-			#r2: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=acfdcab5ce406c8cfb607bd0731b7a6d41757679
-			#r3: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=438d0991e5a913323f6e38293a3d103d82284d9d
-			#r4: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=3ca4ec25c8a6a3586601e8926bac4f5861ccaa2d
-			#r5: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=8369eec4f36f4eb8c30e769b3b0ad35d5148f636
-			#r6: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=2127a54b2aca99cc0290ff79cba0fe9e2adfd794
-			#r7: blank eeprom
-			#r8: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=9fd60700db4562ffac00317a9a44761b8c3255f1
-			#r9: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=40e76546f34e77cf12454137a3f16322b9610d4c
-			#r10: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=5861b3bd349184df97ea26a93fc9b06c65e0ff5e
-			#r11: fix new board
-			#r12: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=b79c87e6f7e2d24f262754845c6fc5f45b71bf15
-			#r13: http://git.ti.com/gitweb/?p=ti-u-boot/ti-u-boot.git;a=commit;h=590c7d7fe15d06a4d708403d3234bcd01cd039e1
-			#r14: (pending)
-			RELEASE_VER="-r13" #bump on every change...
-
-			p_dir="${DIR}/patches/ti-2017.01"
-			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
-			echo "patch -p1 < \"${p_dir}/0002-NFM-board_is_x15_revc_blank.patch\""
-			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
-			#halt_patching_uboot
-			${git} "${p_dir}/0002-NFM-board_is_x15_revc_blank.patch"
-		fi
-	fi
-
 	if [ -f "${DIR}/stop.after.patch" ] ; then
 		echo "-----------------------------"
 		pwd
@@ -1671,16 +1643,6 @@ am57xx_evm_ti_flasher () {
 	build_u_boot
 }
 
-am57xx_beagle_revc_ti_flasher () {
-	cleanup
-
-	board="am57xx_beagle_revc_ti_flasher"
-	uboot_config="am57xx_evm_defconfig"
-	gcc_linaro_gnueabihf_6
-	GIT_SHA="v2017.01"
-	build_u_boot
-}
-
 mx6ul_14x14_evk () {
 	cleanup
 #	build_old="true"
@@ -1772,7 +1734,6 @@ wandboard
 
 ##am57xx_evm_ti
 ###am57xx_evm_ti_flasher
-###am57xx_beagle_revc_ti_flasher
 
 #devices with no patches...
 ls1021atwr
