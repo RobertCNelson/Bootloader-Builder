@@ -477,27 +477,6 @@ build_u_boot () {
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
 			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
 			;;
-		at91sam9x5ek_mmc)
-			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
 			${git} "${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch"
@@ -752,27 +731,6 @@ build_u_boot () {
 		am57xx_evm)
 			echo "patch -p1 < \"${p_dir}/0001-am57xx_evm-fixes.patch\""
 			${git} "${p_dir}/0001-am57xx_evm-fixes.patch"
-			;;
-		at91sam9x5ek_mmc)
-			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
 			;;
 		beagle_x15)
 			echo "patch -p1 < \"${p_dir}/0001-beagle_x15-uEnv.txt-bootz-n-fixes.patch\""
@@ -1249,27 +1207,6 @@ build_u_boot () {
 					mkdir -p ${base}/board/ti/am57xx/
 					cp board/ti/am57xx/board.c ${base}/board/ti/am57xx/
 					cp board/ti/am57xx/mux_data.h ${base}/board/ti/am57xx/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
-		at91sam9x5ek_mmc)
-			patch_file="at91sam9x5ek-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/at91sam9x5ek.h ${base}/include/configs/
 
 					refresh_patch
 				fi
@@ -2080,14 +2017,6 @@ am571x_sndrblock_flasher () {
 	build_u_boot
 }
 
-at91sam9x5ek () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="at91sam9x5ek_mmc" ; build_uboot_eabi
-}
-
 mx23_olinuxino () {
 	cleanup
 	build_old="true"
@@ -2207,7 +2136,7 @@ am335x_evm
 am335x_boneblack_flasher
 am43xx_evm
 am57xx_evm
-at91sam9x5ek
+
 mx23_olinuxino
 mx51evk
 mx53loco
