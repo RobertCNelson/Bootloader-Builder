@@ -223,8 +223,6 @@
 	"nfsrootfstype=ext4 rootwait fixrtc\0" \
 	"nfsargs=setenv bootargs console=${console} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=/dev/nfs rw " \
 		"rootfstype=${nfsrootfstype} " \
@@ -428,9 +426,9 @@
 					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${disable_uboot_overlay_adc}; then " \
-					"echo uboot_overlays: uboot loading of [/lib/firmware/BB-ADC-00A0.dtbo] disabled by /boot/uEnv.txt [disable_uboot_overlay_adc=1]...;" \
+					"echo uboot_overlays: uboot loading of [BB-ADC-00A0.dtbo] disabled by /boot/uEnv.txt [disable_uboot_overlay_adc=1]...;" \
 				"else " \
-					"setenv uboot_overlay /lib/firmware/BB-ADC-00A0.dtbo; " \
+					"setenv uboot_overlay BB-ADC-00A0.dtbo; " \
 					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr0}; then " \
@@ -438,7 +436,7 @@
 						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr0}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr0=1]...;" \
 					"else " \
 						"setenv uboot_overlay ${uboot_overlay_addr0}; " \
-						"run capeloadoverlay;" \
+						"run virtualloadoverlay;" \
 					"fi;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr1}; then " \
@@ -446,7 +444,7 @@
 						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr1}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr1=1]...;" \
 					"else " \
 						"setenv uboot_overlay ${uboot_overlay_addr1}; " \
-						"run capeloadoverlay;" \
+						"run virtualloadoverlay;" \
 					"fi;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr2}; then " \
@@ -454,7 +452,7 @@
 						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr2}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr2=1]...;" \
 					"else " \
 						"setenv uboot_overlay ${uboot_overlay_addr2}; " \
-						"run capeloadoverlay;" \
+						"run virtualloadoverlay;" \
 					"fi;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr3}; then " \
@@ -462,24 +460,24 @@
 						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr3}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr3=1]...;" \
 					"else " \
 						"setenv uboot_overlay ${uboot_overlay_addr3}; " \
-						"run capeloadoverlay;" \
+						"run virtualloadoverlay;" \
 					"fi;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr4}; then " \
 					"setenv uboot_overlay ${uboot_overlay_addr4}; " \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr5}; then " \
 					"setenv uboot_overlay ${uboot_overlay_addr5}; " \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr6}; then " \
 					"setenv uboot_overlay ${uboot_overlay_addr6}; " \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr7}; then " \
 					"setenv uboot_overlay ${uboot_overlay_addr7}; " \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_emmc}; then " \
 					"if test -n ${disable_uboot_overlay_emmc}; then " \
@@ -522,7 +520,7 @@
 				"if test -n ${dtb_overlay}; then " \
 					"setenv uboot_overlay ${dtb_overlay}; " \
 					"echo uboot_overlays: [dtb_overlay=${uboot_overlay}] ... ;" \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_detected_capes}; then " \
 					"echo uboot_overlays: [uboot_detected_capes=${uboot_detected_capes_addr0}${uboot_detected_capes_addr1}${uboot_detected_capes_addr2}${uboot_detected_capes_addr3}] ... ;" \

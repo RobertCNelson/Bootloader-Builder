@@ -13,8 +13,6 @@
 	"mmcrootfstype=ext4 rootwait\0" \
 	"finduuid=part uuid ${devtype} ${bootpart} uuid\0" \
 	"args_mmc=run finduuid;setenv bootargs console=${console} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=PARTUUID=${uuid} ro " \
 		"rootfstype=${mmcrootfstype} " \
@@ -22,8 +20,6 @@
 		"${cmdline}\0" \
 	"args_mmc_old=setenv bootargs console=${console} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=${oldroot} ro " \
 		"rootfstype=${mmcrootfstype} " \
@@ -31,8 +27,6 @@
 		"${cmdline}\0" \
 	"args_mmc_uuid=setenv bootargs console=${console} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=UUID=${uuid} ro " \
 		"rootfstype=${mmcrootfstype} " \
@@ -40,8 +34,6 @@
 		"${cmdline}\0" \
 	"args_uenv_root=setenv bootargs console=${console} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=${uenv_root} ro " \
 		"rootfstype=${mmcrootfstype} " \
@@ -49,8 +41,6 @@
 		"${cmdline}\0" \
 	"args_netinstall=setenv bootargs ${netinstall_bootargs} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=/dev/ram rw " \
 		"${uboot_detected_capes} " \

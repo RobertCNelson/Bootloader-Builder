@@ -13,8 +13,6 @@
 	"mmcrootfstype=ext4 rootwait\0" \
 	"finduuid=part uuid ${devtype} ${bootpart} uuid\0" \
 	"args_mmc=run finduuid;setenv bootargs console=${console} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=PARTUUID=${uuid} ro " \
 		"rootfstype=${mmcrootfstype} " \
@@ -22,8 +20,6 @@
 		"${cmdline}\0" \
 	"args_mmc_old=setenv bootargs console=${console} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=${oldroot} ro " \
 		"rootfstype=${mmcrootfstype} " \
@@ -31,8 +27,6 @@
 		"${cmdline}\0" \
 	"args_mmc_uuid=setenv bootargs console=${console} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=UUID=${uuid} ro " \
 		"rootfstype=${mmcrootfstype} " \
@@ -40,8 +34,6 @@
 		"${cmdline}\0" \
 	"args_uenv_root=setenv bootargs console=${console} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=${uenv_root} ro " \
 		"rootfstype=${mmcrootfstype} " \
@@ -49,8 +41,6 @@
 		"${cmdline}\0" \
 	"args_netinstall=setenv bootargs ${netinstall_bootargs} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=/dev/ram rw " \
 		"${uboot_detected_capes} " \
@@ -68,20 +58,25 @@
 	"loadimage=load ${devtype} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 	"loadrd=load ${devtype} ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
 	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load ${devtype} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
-	"loadoverlay=echo uboot_overlays: loading ${uboot_overlay} ...; " \
-		"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay}; " \
+	"loadoverlay=echo uboot_overlays: loading ${actual_uboot_overlay} ...; " \
+		"load ${devtype} ${bootpart} ${rdaddr} ${actual_uboot_overlay}; " \
 		"fdt addr ${fdtaddr}; fdt resize ${fdt_buffer}; " \
 		"fdt apply ${rdaddr}; fdt resize ${fdt_buffer};\0" \
-	"virtualloadoverlay=if test -e ${devtype} ${bootpart} ${uboot_overlay}; then " \
+	"virtualloadoverlay=if test -e ${devtype} ${bootpart} ${fdtdir}/overlays/${uboot_overlay}; then " \
+				"setenv actual_uboot_overlay ${fdtdir}/overlays/${uboot_overlay}; " \
 				"run loadoverlay;" \
 			"else " \
-				"echo uboot_overlays: unable to find [${devtype} ${bootpart} ${uboot_overlay}]...;" \
-			"fi;\0" \
-	"capeloadoverlay=if test -e ${devtype} ${bootpart} ${uboot_overlay}; then " \
-				"run loadoverlay;" \
-				"setenv cape_uboot bone_capemgr.uboot_capemgr_enabled=1; " \
-			"else " \
-				"echo uboot_overlays: unable to find [${devtype} ${bootpart} ${uboot_overlay}]...;" \
+				"if test -e ${devtype} ${bootpart} /lib/firmware/${uboot_overlay}; then " \
+					"setenv actual_uboot_overlay /lib/firmware/${uboot_overlay}; " \
+					"run loadoverlay;" \
+				"else " \
+					"if test -e ${devtype} ${bootpart} ${uboot_overlay}; then " \
+						"setenv actual_uboot_overlay ${uboot_overlay}; " \
+						"run loadoverlay;" \
+					"else " \
+						"echo uboot_overlays: unable to find [${devtype} ${bootpart} ${uboot_overlay}]...;" \
+					"fi;" \
+				"fi;" \
 			"fi;\0" \
 	"failumsboot=echo; echo FAILSAFE: U-Boot UMS (USB Mass Storage) enabled, media now available over the usb slave port ...; " \
 		"ums 0 ${devtype} 1;\0" \

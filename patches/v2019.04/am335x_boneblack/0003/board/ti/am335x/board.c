@@ -280,16 +280,16 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 				puts("]\n");
 
 				strncat(cape_overlay, process_cape_part_number, end_part_number);
-				//printf("debug: %s\n", cape_overlay);
+				printf("debug: %s\n", cape_overlay);
 
 				strncat(cape_overlay, "-", 1);
-				//printf("debug: %s\n", cape_overlay);
+				printf("debug: %s\n", cape_overlay);
 
 				strncat(cape_overlay, cape_header->version, 4);
-				//printf("debug: %s\n", cape_overlay);
+				printf("debug: %s\n", cape_overlay);
 
 				strncat(cape_overlay, ".dtbo", 5);
-				//printf("debug: %s\n", cape_overlay);
+				printf("debug: %s\n", cape_overlay);
 
 				unsigned long cape_overlay_hash = hash_string(cape_overlay);
 
@@ -425,59 +425,59 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 	}
 
 	if (virtual_emmc == BBB_EMMC) {
-		env_set("uboot_emmc", "/lib/firmware/BB-BONE-eMMC1-01-00A0.dtbo");
+		env_set("uboot_emmc", "BB-BONE-eMMC1-01-00A0.dtbo");
 	}
 
 	switch(virtual_video) {
 		case BBB_TDA998X_AUDIO:
 			if (virtual_audio == PINS_TAKEN) {
-				env_set("uboot_video", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
-				env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
+				env_set("uboot_video", "BB-NHDMI-TDA998x-00A0.dtbo");
+				env_set("uboot_video_naudio", "BB-NHDMI-TDA998x-00A0.dtbo");
 			} else {
-				env_set("uboot_video", "/lib/firmware/BB-HDMI-TDA998x-00A0.dtbo");
-				env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
+				env_set("uboot_video", "BB-HDMI-TDA998x-00A0.dtbo");
+				env_set("uboot_video_naudio", "BB-NHDMI-TDA998x-00A0.dtbo");
 			}
 			break;
 		case BBB_TDA998X_NAUDIO:
-			env_set("uboot_video", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
-			env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-TDA998x-00A0.dtbo");
+			env_set("uboot_video", "BB-NHDMI-TDA998x-00A0.dtbo");
+			env_set("uboot_video_naudio", "BB-NHDMI-TDA998x-00A0.dtbo");
 			break;
 		case BBB_ADV7511_AUDIO:
 			if (virtual_audio == PINS_TAKEN) {
-				env_set("uboot_video", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
-				env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
+				env_set("uboot_video", "BB-NHDMI-ADV7511-00A0.dtbo");
+				env_set("uboot_video_naudio", "BB-NHDMI-ADV7511-00A0.dtbo");
 			} else {
-				env_set("uboot_video", "/lib/firmware/BB-HDMI-ADV7511-00A0.dtbo");
-				env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
+				env_set("uboot_video", "BB-HDMI-ADV7511-00A0.dtbo");
+				env_set("uboot_video_naudio", "BB-NHDMI-ADV7511-00A0.dtbo");
 			}
 			break;
 		case BBB_ADV7511_NAUDIO:
-			env_set("uboot_video", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
-			env_set("uboot_video_naudio", "/lib/firmware/BB-NHDMI-ADV7511-00A0.dtbo");
+			env_set("uboot_video", "BB-NHDMI-ADV7511-00A0.dtbo");
+			env_set("uboot_video_naudio", "BB-NHDMI-ADV7511-00A0.dtbo");
 			break;
 	}
 
 	switch(virtual_wireless) {
 		case BBBW_WL1835:
-			env_set("uboot_wireless", "/lib/firmware/BB-BBBW-WL1835-00A0.dtbo");
+			env_set("uboot_wireless", "BB-BBBW-WL1835-00A0.dtbo");
 			break;
 		case BBGW_WL1835:
-			env_set("uboot_wireless", "/lib/firmware/BB-BBGW-WL1835-00A0.dtbo");
+			env_set("uboot_wireless", "BB-BBGW-WL1835-00A0.dtbo");
 			break;
 		case BBGG_WL1835:
-			env_set("uboot_wireless", "/lib/firmware/BB-BBGG-WL1835-00A0.dtbo");
+			env_set("uboot_wireless", "BB-BBGG-WL1835-00A0.dtbo");
 			break;
 	}
 
 	switch(model) {
 		case M_BBG1:
-			env_set("uboot_model", "/lib/firmware/M-BB-BBG-00A0.dtbo");
+			env_set("uboot_model", "M-BB-BBG-00A0.dtbo");
 			break;
 		case M_OS00:
-			env_set("uboot_model", "/lib/firmware/M-BB-OSD3358-SM-RED-00A0.dtbo");
+			env_set("uboot_model", "M-BB-OSD3358-SM-RED-00A0.dtbo");
 			break;
 		case M_BBGG:
-			env_set("uboot_model", "/lib/firmware/M-BB-BBGG-00A0.dtbo");
+			env_set("uboot_model", "M-BB-BBGG-00A0.dtbo");
 			break;
 	}
 

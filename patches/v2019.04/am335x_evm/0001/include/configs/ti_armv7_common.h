@@ -223,8 +223,6 @@
 	"nfsrootfstype=ext4 rootwait fixrtc\0" \
 	"nfsargs=setenv bootargs console=${console} " \
 		"${optargs} " \
-		"${cape_disable} " \
-		"${cape_enable} " \
 		"${cape_uboot} " \
 		"root=/dev/nfs rw " \
 		"rootfstype=${nfsrootfstype} " \

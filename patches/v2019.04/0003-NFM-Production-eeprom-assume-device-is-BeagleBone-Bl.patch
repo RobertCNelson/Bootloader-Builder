@@ -1,6 +1,6 @@
-From fa1d5ace1a42ea5ee41ef1647f08ced65c52636a Mon Sep 17 00:00:00 2001
+From 002cbf28f98178c5bd2ca01f407c8b41fb35b673 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 13 May 2020 09:22:37 -0500
+Date: Fri, 24 Jul 2020 15:05:16 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -14,7 +14,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  6 files changed, 38 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index ada54671c8..5e8e54ae6b 100644
+index 3ec2d1b6fe..40fdb40dd2 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -684,7 +684,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
@@ -161,5 +161,5 @@ index 71d12dd1d3..53c7199343 100644
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
 -- 
-2.26.2
+2.27.0
 
