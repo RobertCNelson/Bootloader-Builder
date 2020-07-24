@@ -503,12 +503,6 @@ build_u_boot () {
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		sama5d2_xplained_mmc|sama5d3xek_mmc|sama5d3_xplained_mmc|sama5d4_xplained_mmc)
-			echo "patch -p1 < \"${p_dir}/0001-ARM-at91-Convert-SPL_GENERATE_ATMEL_PMECC_HEADER-to-.patch\""
-			echo "patch -p1 < \"${p_dir}/0001-sama5dX-fixes.patch\""
-			${git} "${p_dir}/0001-ARM-at91-Convert-SPL_GENERATE_ATMEL_PMECC_HEADER-to-.patch"
-			${git} "${p_dir}/0001-sama5dX-fixes.patch"
-			;;
 		socfpga_de0_nano_soc)
 			patch_file="de0_nano-fixes"
 			#regenerate="enable"
@@ -845,38 +839,6 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/boot.h ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
-		sama5d2_xplained_mmc)
-			patch_file="sama5dX-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/arch/arm/mach-at91/
-					cp arch/arm/mach-at91/spl.c ${base}/arch/arm/mach-at91/
-
-					mkdir -p ${base}/configs/
-					cp configs/sama5d27_som1_ek_mmc_defconfig ${base}/configs/
-					cp configs/sama5d2_xplained_mmc_defconfig ${base}/configs/
-					cp configs/sama5d3_xplained_mmc_defconfig ${base}/configs/
-					cp configs/sama5d3xek_mmc_defconfig ${base}/configs/
-					cp configs/sama5d4_xplained_mmc_defconfig ${base}/configs/
-					cp configs/sama5d4ek_mmc_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/at91-sama5_common.h ${base}/include/configs/
-					cp include/configs/sama5d27_som1_ek.h ${base}/include/configs/
-					cp include/configs/sama5d2_xplained.h ${base}/include/configs/
-					cp include/configs/sama5d3_xplained.h ${base}/include/configs/
 
 					refresh_patch
 				fi
@@ -1262,38 +1224,6 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/boot.h ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
-		sama5d2_xplained_mmc)
-			patch_file="sama5dX-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/arch/arm/mach-at91/
-					cp arch/arm/mach-at91/spl.c ${base}/arch/arm/mach-at91/
-
-					mkdir -p ${base}/configs/
-					cp configs/sama5d27_som1_ek_mmc_defconfig ${base}/configs/
-					cp configs/sama5d2_xplained_mmc_defconfig ${base}/configs/
-					cp configs/sama5d3_xplained_mmc_defconfig ${base}/configs/
-					cp configs/sama5d3xek_mmc_defconfig ${base}/configs/
-					cp configs/sama5d4_xplained_mmc_defconfig ${base}/configs/
-					cp configs/sama5d4ek_mmc_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/at91-sama5_common.h ${base}/include/configs/
-					cp include/configs/sama5d27_som1_ek.h ${base}/include/configs/
-					cp include/configs/sama5d2_xplained.h ${base}/include/configs/
-					cp include/configs/sama5d3_xplained.h ${base}/include/configs/
 
 					refresh_patch
 				fi
@@ -1900,14 +1830,6 @@ omap5_uevm () {
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
-sama5d2_xplained_mmc () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="sama5d2_xplained_mmc" ; build_uboot_gnueabihf
-}
-
 socfpga_de0_nano_soc () {
 	cleanup
 	build_old="true"
@@ -1954,7 +1876,6 @@ mx6sabresd
 omap3_beagle
 omap4_panda
 omap5_uevm
-sama5d2_xplained_mmc
 socfpga_de0_nano_soc
 vf610twr
 wandboard
