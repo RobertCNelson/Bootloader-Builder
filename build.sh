@@ -776,7 +776,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2020.04
+	#v2020.07
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
@@ -801,7 +801,6 @@ build_u_boot () {
 					cp configs/${board}_defconfig ${base}/configs/
 
 					mkdir -p ${base}/arch/arm/dts/
-					cp arch/arm/dts/Makefile ${base}/arch/arm/dts/
 					cp arch/arm/dts/am5729-beagleboneai.dts ${base}/arch/arm/dts/
 
 					mkdir -p ${base}/arch/arm/mach-omap2/omap5/
