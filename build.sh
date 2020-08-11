@@ -776,7 +776,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2020.07
+	#v2020.10-rc2
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
@@ -784,7 +784,8 @@ build_u_boot () {
 		#r2: am57xx_evm fixes...
 		#r3: am57xx_evm/bbai fixes...
 		#r4: bbai: cape stuff...
-		#r5: (pending)
+		#r5: bbai: v2020.10-rc2
+		#r6: (pending)
 		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
