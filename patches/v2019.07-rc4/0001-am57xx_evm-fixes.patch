@@ -1,22 +1,22 @@
-From 415430e55199a9f73386c23412f8d53d3ef48d28 Mon Sep 17 00:00:00 2001
+From e40f684e54c499f0ab32724cccb77da450fe7f2d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 9 Apr 2019 09:38:02 -0500
+Date: Tue, 11 Aug 2020 15:37:49 -0500
 Subject: [PATCH] am57xx_evm-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  arch/arm/dts/Makefile                |   1 +
- arch/arm/dts/am5729-beagleboneai.dts | 494 +++++++++++++++++++++++++++
- arch/arm/mach-omap2/omap5/hw_data.c  |   4 +
- board/ti/am57xx/board.c              | 195 ++++++++++-
+ arch/arm/dts/am5729-beagleboneai.dts | 495 +++++++++++++++++++++++++++
+ arch/arm/mach-omap2/omap5/hw_data.c  |   2 +
+ board/ti/am57xx/board.c              | 187 +++++++++-
  board/ti/am57xx/mux_data.h           | 395 +++++++++++++++++++++
  configs/am57xx_evm_defconfig         |  14 +-
  include/configs/am57xx_evm.h         |   2 +-
- include/configs/ti_armv7_common.h    | 357 +++++++++++++++++++
+ include/configs/ti_armv7_common.h    | 373 ++++++++++++++++++++
  include/configs/ti_omap5_common.h    |   5 +
  include/environment/ti/boot.h        |  26 +-
- include/environment/ti/mmc.h         |  43 ++-
- 11 files changed, 1517 insertions(+), 19 deletions(-)
+ include/environment/ti/mmc.h         |  49 ++-
+ 11 files changed, 1530 insertions(+), 19 deletions(-)
  create mode 100644 arch/arm/dts/am5729-beagleboneai.dts
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
@@ -33,10 +33,10 @@ index e0c54bfa76..6a42873cc7 100644
  	am571x-idk.dtb
 diff --git a/arch/arm/dts/am5729-beagleboneai.dts b/arch/arm/dts/am5729-beagleboneai.dts
 new file mode 100644
-index 0000000000..d1afe55751
+index 0000000000..5e00599d63
 --- /dev/null
 +++ b/arch/arm/dts/am5729-beagleboneai.dts
-@@ -0,0 +1,494 @@
+@@ -0,0 +1,495 @@
 +/*
 + * Copyright (C) 2014-2018 Texas Instruments Incorporated - http://www.ti.com/
 + *
@@ -369,6 +369,7 @@ index 0000000000..d1afe55751
 +};
 +
 +&i2c4 {
++	u-boot,dm-spl;
 +	status = "okay";
 +	clock-frequency = <100000>;
 +};
@@ -532,24 +533,22 @@ index 0000000000..d1afe55751
 +	};
 +};
 diff --git a/arch/arm/mach-omap2/omap5/hw_data.c b/arch/arm/mach-omap2/omap5/hw_data.c
-index c4a41db92a..98f44fa262 100644
+index c4a41db92a..d5192b1671 100644
 --- a/arch/arm/mach-omap2/omap5/hw_data.c
 +++ b/arch/arm/mach-omap2/omap5/hw_data.c
-@@ -418,8 +418,12 @@ void enable_basic_clocks(void)
+@@ -418,8 +418,10 @@ void enable_basic_clocks(void)
  		(*prcm)->cm_l3init_hsmmc2_clkctrl,
  		(*prcm)->cm_l4per_gptimer2_clkctrl,
  		(*prcm)->cm_wkup_wdtimer2_clkctrl,
 +		(*prcm)->cm_l4per_uart1_clkctrl,
  		(*prcm)->cm_l4per_uart3_clkctrl,
  		(*prcm)->cm_l4per_i2c1_clkctrl,
-+		(*prcm)->cm_l4per_i2c2_clkctrl,
-+		(*prcm)->cm_l4per_i2c3_clkctrl,
 +		(*prcm)->cm_l4per_i2c4_clkctrl,
  #ifdef CONFIG_DRIVER_TI_CPSW
  		(*prcm)->cm_gmac_gmac_clkctrl,
  #endif
 diff --git a/board/ti/am57xx/board.c b/board/ti/am57xx/board.c
-index 1a903f13a6..29324ea0f5 100644
+index 1a903f13a6..f0b9ed4617 100644
 --- a/board/ti/am57xx/board.c
 +++ b/board/ti/am57xx/board.c
 @@ -30,6 +30,8 @@
@@ -569,20 +568,7 @@ index 1a903f13a6..29324ea0f5 100644
  
  #ifdef CONFIG_DRIVER_TI_CPSW
  #include <cpsw.h>
-@@ -75,6 +78,12 @@ DECLARE_GLOBAL_DATA_PTR;
- #define TPS65903X_PRIMARY_SECONDARY_PAD2	0xFB
- #define TPS65903X_PAD2_POWERHOLD_MASK		0x20
- 
-+#define CAPE_EEPROM_BUS_NUM 3
-+#define CAPE_EEPROM_ADDR0 0x54
-+#define CAPE_EEPROM_ADDR3 0x57
-+
-+#define CAPE_EEPROM_ADDR_LEN 0x10
-+
- const struct omap_sysinfo sysinfo = {
- 	"Board: UNKNOWN(BeagleBoard X15?) REV UNKNOWN\n"
- };
-@@ -84,6 +93,12 @@ static const struct dmm_lisa_map_regs beagle_x15_lisa_regs = {
+@@ -84,6 +87,12 @@ static const struct dmm_lisa_map_regs beagle_x15_lisa_regs = {
  	.is_ma_present  = 0x1
  };
  
@@ -595,7 +581,7 @@ index 1a903f13a6..29324ea0f5 100644
  static const struct dmm_lisa_map_regs am571x_idk_lisa_regs = {
  	.dmm_lisa_map_3 = 0x80640100,
  	.is_ma_present  = 0x1
-@@ -101,6 +116,8 @@ void emif_get_dmm_regs(const struct dmm_lisa_map_regs **dmm_lisa_regs)
+@@ -101,6 +110,8 @@ void emif_get_dmm_regs(const struct dmm_lisa_map_regs **dmm_lisa_regs)
  		*dmm_lisa_regs = &am571x_idk_lisa_regs;
  	else if (board_is_am574x_idk())
  		*dmm_lisa_regs = &am574x_idk_lisa_regs;
@@ -604,22 +590,19 @@ index 1a903f13a6..29324ea0f5 100644
  	else
  		*dmm_lisa_regs = &beagle_x15_lisa_regs;
  }
-@@ -502,8 +519,13 @@ void do_board_detect(void)
+@@ -502,8 +513,10 @@ void do_board_detect(void)
  
  	rc = ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				  CONFIG_EEPROM_CHIP_ADDRESS);
 -	if (rc)
-+	if (rc)	{
++	if (rc) {
  		printf("ti_i2c_eeprom_init failed %d\n", rc);
 +		ti_i2c_eeprom_am_set("BBBBAI__", "A");
 +	};
-+
-+	puts("in do_board_detect\n");
-+	printf("do_board_detect\n");
  }
  
  #else	/* CONFIG_SPL_BUILD */
-@@ -521,6 +543,8 @@ void do_board_detect(void)
+@@ -521,6 +534,8 @@ void do_board_detect(void)
  
  	if (board_is_x15())
  		bname = "BeagleBoard X15";
@@ -628,122 +611,10 @@ index 1a903f13a6..29324ea0f5 100644
  	else if (board_is_am572x_evm())
  		bname = "AM572x EVM";
  	else if (board_is_am574x_idk())
-@@ -557,6 +581,8 @@ static void setup_board_eeprom_env(void)
- 			name = "am57xx_evm_reva3";
- 		else
- 			name = "am57xx_evm";
-+	} else if (board_is_bbai()) {
-+		name = "am5729_beagleboneai";
- 	} else if (board_is_am574x_idk()) {
- 		name = "am574x_idk";
- 	} else if (board_is_am572x_idk()) {
-@@ -626,7 +652,7 @@ void am57x_idk_lcd_detect(void)
- 	struct udevice *dev;
+@@ -535,6 +550,142 @@ void do_board_detect(void)
+ 			 "Board: %s REV %s\n", bname, board_ti_get_rev());
+ }
  
- 	/* Only valid for IDKs */
--	if (board_is_x15() || board_is_am572x_evm())
-+	if (board_is_x15() || board_is_am572x_evm() || board_is_bbai())
- 		return;
- 
- 	/* Only AM571x IDK has gpio control detect.. so check that */
-@@ -720,6 +746,66 @@ int board_late_init(void)
- 
- 	am57x_idk_lcd_detect();
- 
-+	if (board_is_bbai()) {
-+		///FIXME, too late!! But useful for testing function...
-+		printf("CTRL_CORE_PAD_I2C1_SDA:    0x%08x\n", readl(0x4A003800));
-+		printf("CTRL_CORE_PAD_I2C1_SCL:    0x%08x\n", readl(0x4A003804));
-+		printf("CTRL_CORE_PAD_GPMC_A0:     0x%08x\n", readl(0x4A003440));
-+		printf("CTRL_CORE_PAD_GPMC_A1:     0x%08x\n", readl(0x4A003444));
-+		printf("CTRL_CORE_PAD_VIN2A_D4:    0x%08x\n", readl(0x4A003578));
-+		printf("CTRL_CORE_PAD_VIN2A_D5:    0x%08x\n", readl(0x4A00357C));
-+		//printf("CM_L4PER_GPIO2_CLKCTRL:    0x%08x\n", readl(0x4A009760));
-+		//printf("CM_L4PER_GPIO3_CLKCTRL:    0x%08x\n", readl(0x4A009768));
-+		//printf("CM_L4PER_GPIO4_CLKCTRL:    0x%08x\n", readl(0x4A009770));
-+		//printf("CM_L4PER_GPIO5_CLKCTRL:    0x%08x\n", readl(0x4A009778));
-+		//printf("CM_L4PER_GPIO6_CLKCTRL:    0x%08x\n", readl(0x4A009780));
-+		printf("CM_L4PER_GPIO7_CLKCTRL:    0x%08x\n", readl(0x4A009810));
-+
-+		printf("CM_L4PER_I2C1_CLKCTRL:     0x%08x\n", readl(0x4A0097A0));
-+		//printf("CM_L4PER_I2C2_CLKCTRL:     0x%08x\n", readl(0x4A0097A8));
-+		//printf("CM_L4PER_I2C3_CLKCTRL:     0x%08x\n", readl(0x4A0097B0));
-+		printf("CM_L4PER_I2C4_CLKCTRL:     0x%08x\n", readl(0x4A0097B8));
-+		printf("CM_L4PER_L4_PER1_CLKCTRL   0x%08x\n", readl(0x4A0097C0));
-+		printf("PM_L4PER_I2C1_WKDEP        0x%08x\n", readl(0x4AE074A0));
-+		printf("RM_L4PER_I2C1_CONTEXT      0x%08x\n", readl(0x4AE074A4));
-+		//printf("PM_L4PER_I2C2_WKDEP        0x%08x\n", readl(0x4AE074A8));
-+		//printf("RM_L4PER_I2C2_CONTEXT      0x%08x\n", readl(0x4AE074AC));
-+		//printf("PM_L4PER_I2C3_WKDEP        0x%08x\n", readl(0x4AE074B0));
-+		//printf("RM_L4PER_I2C3_CONTEXT      0x%08x\n", readl(0x4AE074B4));
-+		printf("PM_L4PER_I2C4_WKDEP        0x%08x\n", readl(0x4AE074B8));
-+		printf("RM_L4PER_I2C4_CONTEXT      0x%08x\n", readl(0x4AE074BC));
-+
-+		//printf("CTRL_CORE_DMA_SYSTEM_DREQ_122_123      0x%08x\n", readl(0x4A002C6C));
-+		//printf("CTRL_CORE_DMA_SYSTEM_DREQ_124_125      0x%08x\n", readl(0x4A002C70));
-+		//printf("CTRL_CORE_MPU_IRQ_62_63    0x%08x\n", readl(0x4A002AB8));
-+
-+		unsigned char addr;
-+		struct udevice *dev;
-+		int rc;
-+
-+		for ( addr = CAPE_EEPROM_ADDR0; addr <= CAPE_EEPROM_ADDR3; addr++ ) {
-+			printf("BeagleBone: cape eeprom: i2c_probe: 0x%x\n", addr);
-+
-+			rc = i2c_get_chip_for_busnum(0, addr, 1, &dev);
-+			if (rc) {
-+				pr_err("Checking (ret 1 bus works) I2C1 bus. ret %d\n", rc);
-+			} else {
-+				pr_err("Found device at address 0x%x\n", addr);
-+			}
-+			rc = i2c_get_chip_for_busnum(3, addr, 1, &dev);
-+			if (rc) {
-+				pr_err("Checking (ret 1 bus works) I2C4 bus. ret %d\n", rc);
-+			} else {
-+				pr_err("Found device at address 0x%x\n", addr);
-+			}
-+
-+	//		out:
-+		}
-+		env_set("console", "ttyS0,115200n8");
-+	} else {
-+		env_set("console", "ttyO2,115200n8");
-+	}
-+
- #if !defined(CONFIG_SPL_BUILD)
- 	board_ti_set_ethaddr(2);
- #endif
-@@ -762,6 +848,13 @@ void recalibrate_iodelay(void)
- 		pconf_sz = ARRAY_SIZE(core_padconf_array_essential_am571x_idk);
- 		iod = iodelay_cfg_array_am571x_idk;
- 		iod_sz = ARRAY_SIZE(iodelay_cfg_array_am571x_idk);
-+	} else if (board_is_bbai()) {
-+		/* Common for X15/GPEVM */
-+		pconf = core_padconf_array_essential_bbai;
-+		pconf_sz = ARRAY_SIZE(core_padconf_array_essential_bbai);
-+		/* Since full production should switch to SR2.0  */
-+		iod = iodelay_cfg_array_bbai;
-+		iod_sz = ARRAY_SIZE(iodelay_cfg_array_bbai);
- 	} else {
- 		/* Common for X15/GPEVM */
- 		pconf = core_padconf_array_essential_x15;
-@@ -818,6 +911,8 @@ void recalibrate_iodelay(void)
- 		ret = do_set_iodelay((*ctrl)->iodelay_config_base, delta_iod,
- 				     delta_iod_sz);
- 
-+	puts("recalibrate_iodelay\n");
-+
- err:
- 	/* Closeup.. remove isolation */
- 	__recalibrate_iodelay_end(ret);
-@@ -863,12 +958,97 @@ const struct mmc_platform_fixups *platform_fixups_mmc(uint32_t addr)
- #endif
- 
- #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_OS_BOOT)
-+
-+//static int eeprom_has_been_read;
-+//static struct id_eeprom eeprom;
-+
 +struct am335x_cape_eeprom_id {
 +	unsigned int header;
 +	char eeprom_rev[2];
@@ -760,81 +631,181 @@ index 1a903f13a6..29324ea0f5 100644
 +	char dc_supplied[2];
 +};
 +
- int spl_start_uboot(void)
- {
- 	/* break into full u-boot on 'c' */
- 	if (serial_tstc() && serial_getc() == 'c')
- 		return 1;
- 
-+	if (board_is_bbai()) {
-+		//FIXME, i2c doesn't see to be up..
-+		puts("spl_start_uboot\n");
-+		unsigned char addr;
-+		struct udevice *dev;
-+		int rc;
++#define CAPE_EEPROM_BUS_NUM 3
++#define CAPE_EEPROM_ADDR0	0x54
++#define CAPE_EEPROM_ADDR1	0x55
++#define CAPE_EEPROM_ADDR2	0x56
++#define CAPE_EEPROM_ADDR3	0x57
 +
-+		printf("CTRL_CORE_PAD_I2C1_SDA:    0x%08x\n", readl(0x4A003800));
-+		printf("CTRL_CORE_PAD_I2C1_SCL:    0x%08x\n", readl(0x4A003804));
-+		printf("CTRL_CORE_PAD_GPMC_A0:     0x%08x\n", readl(0x4A003440));
-+		printf("CTRL_CORE_PAD_GPMC_A1:     0x%08x\n", readl(0x4A003444));
-+		printf("CTRL_CORE_PAD_VIN2A_D4:    0x%08x\n", readl(0x4A003578));
-+		printf("CTRL_CORE_PAD_VIN2A_D5:    0x%08x\n", readl(0x4A00357C));
-+		//printf("CM_L4PER_GPIO2_CLKCTRL:    0x%08x\n", readl(0x4A009760));
-+		//printf("CM_L4PER_GPIO3_CLKCTRL:    0x%08x\n", readl(0x4A009768));
-+		//printf("CM_L4PER_GPIO4_CLKCTRL:    0x%08x\n", readl(0x4A009770));
-+		//printf("CM_L4PER_GPIO5_CLKCTRL:    0x%08x\n", readl(0x4A009778));
-+		//printf("CM_L4PER_GPIO6_CLKCTRL:    0x%08x\n", readl(0x4A009780));
-+		printf("CM_L4PER_GPIO7_CLKCTRL:    0x%08x\n", readl(0x4A009810));
-+		printf("CM_L4PER_I2C1_CLKCTRL:     0x%08x\n", readl(0x4A0097A0));
-+		//printf("CM_L4PER_I2C2_CLKCTRL:     0x%08x\n", readl(0x4A0097A8));
-+		//printf("CM_L4PER_I2C3_CLKCTRL:     0x%08x\n", readl(0x4A0097B0));
-+		printf("CM_L4PER_I2C4_CLKCTRL:     0x%08x\n", readl(0x4A0097B8));
-+		printf("CM_L4PER_L4_PER1_CLKCTRL   0x%08x\n", readl(0x4A0097C0));
-+		printf("PM_L4PER_I2C1_WKDEP        0x%08x\n", readl(0x4AE074A0));
-+		printf("RM_L4PER_I2C1_CONTEXT      0x%08x\n", readl(0x4AE074A4));
-+		//printf("PM_L4PER_I2C2_WKDEP        0x%08x\n", readl(0x4AE074A8));
-+		//printf("RM_L4PER_I2C2_CONTEXT      0x%08x\n", readl(0x4AE074AC));
-+		//printf("PM_L4PER_I2C3_WKDEP        0x%08x\n", readl(0x4AE074B0));
-+		//printf("RM_L4PER_I2C3_CONTEXT      0x%08x\n", readl(0x4AE074B4));
-+		printf("PM_L4PER_I2C4_WKDEP        0x%08x\n", readl(0x4AE074B8));
-+		printf("RM_L4PER_I2C4_CONTEXT      0x%08x\n", readl(0x4AE074BC));
++#define CAPE_EEPROM_ADDR_LEN 0x10
 +
-+		//printf("CTRL_CORE_DMA_SYSTEM_DREQ_122_123      0x%08x\n", readl(0x4A002C6C));
-+		//printf("CTRL_CORE_DMA_SYSTEM_DREQ_124_125      0x%08x\n", readl(0x4A002C70));
-+		//printf("CTRL_CORE_MPU_IRQ_62_63    0x%08x\n", readl(0x4A002AB8));
++static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
++{
++	int ret;
++	struct udevice *dev;
++	unsigned char addr;
++	/* /lib/firmware/BB-CAPE-DISP-CT4-00A0.dtbo */
++	/* 14 + 16 + 1 + 4 + 5 = 40 */
++	char hash_cape_overlay[40];
++	char cape_overlay[26];
++	char process_cape_part_number[16];
++	char end_part_number;
++	char cape_overlay_pass_to_kernel[18];
 +
-+		for ( addr = CAPE_EEPROM_ADDR0; addr <= CAPE_EEPROM_ADDR3; addr++ ) {
-+			printf("BeagleBone: cape eeprom: i2c_probe: 0x%x\n", addr);
++	strlcpy(cape_overlay_pass_to_kernel, "", 1);
 +
-+			rc = i2c_get_chip_for_busnum(0, addr, 1, &dev);
-+			if (rc) {
-+				pr_err("Checking (ret 1 bus works) I2C1 bus. ret %d\n", rc);
-+			} else {
-+				pr_err("Found device at address 0x%x\n", addr);
-+			}
-+			rc = i2c_get_chip_for_busnum(3, addr, 1, &dev);
-+			if (rc) {
-+				pr_err("Checking (ret 1 bus works) I2C4 bus. ret %d\n", rc);
-+			} else {
-+				pr_err("Found device at address 0x%x\n", addr);
++	for ( addr = CAPE_EEPROM_ADDR0; addr <= CAPE_EEPROM_ADDR3; addr++ ) {
++		ret = i2c_get_chip_for_busnum(CAPE_EEPROM_BUS_NUM, addr, 1, &dev);
++		if (ret) {
++			printf("BeagleBone Cape EEPROM: no EEPROM at address: 0x%x\n", addr);
++		} else {
++			printf("BeagleBone Cape EEPROM: found EEPROM at address: 0x%x\n", addr);
++			ret = dm_i2c_read(dev, 0, (uchar *)cape_header, sizeof(struct am335x_cape_eeprom_id));
++			if (ret) {
++				printf("BeagleBone Cape EEPROM: Cannot read eeprom params\n");
 +			}
 +
-+	//		printf("BeagleBone: cape eeprom: i2c_probe: 0x%x\n", addr));
-+	//		rc = i2c_get_chip_for_busnum(CAPE_EEPROM_BUS_NUM, addr, 1, &dev);
-+	//		if (rc) {
-+	//			printf("failed to get device for EEPROM at address 0x%x\n",
-+	//			       addr);
-+	//			goto out;
-+	//		}
-+	//		out:
++			if (cape_header->header == 0xEE3355AA) {
++				strlcpy(hash_cape_overlay, "/lib/firmware/", 14 + 1);
++				strlcpy(cape_overlay, "", 2);
++				strlcpy(cape_overlay_pass_to_kernel, "", 2);
++				strlcpy(process_cape_part_number, "...............", 16 + 1);
++
++				strlcpy(process_cape_part_number, cape_header->part_number, 16 + 1);
++				printf("BeagleBone Cape EEPROM: debug process_cape_part_number:[%s]\n", process_cape_part_number);
++
++				//FIXME: some capes end with '.'
++				if ( process_cape_part_number[15] == 0x2E ) {
++					puts("debug: fixup, extra . in eeprom field\n");
++					process_cape_part_number[15] = 0x00;
++					if ( process_cape_part_number[14] == 0x2E ) {
++						process_cape_part_number[14] = 0x00;
++					}
++				}
++
++				//Find ending 0x00
++				puts("BeagleBone Cape EEPROM: debug process_cape_part_number:[");
++				end_part_number=16;
++				for ( int i=0; i <= 16; i++ ) {
++					if ( process_cape_part_number[i] == 0x00 ) {
++						end_part_number=i;
++						i=17;
++					} else {
++						printf("%x", process_cape_part_number[i]);
++					}
++				}
++				puts("]\n");
++
++				strncat(hash_cape_overlay, process_cape_part_number, end_part_number);
++				strncat(cape_overlay, process_cape_part_number, end_part_number);
++				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
++
++				strncat(hash_cape_overlay, "-", 1);
++				strncat(cape_overlay, "-", 1);
++				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
++
++				strncat(hash_cape_overlay, cape_header->version, 4);
++				strncat(cape_overlay, cape_header->version, 4);
++				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
++
++				strncat(hash_cape_overlay, ".dtbo", 5);
++				strncat(cape_overlay, ".dtbo", 5);
++				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
++
++				printf("BeagleBone Cape EEPROM: 0x%x %s\n", addr, cape_overlay);
++
++				strncat(cape_overlay_pass_to_kernel, process_cape_part_number, end_part_number);
++				strncat(cape_overlay_pass_to_kernel, ",", 1);
++
++				switch(addr) {
++					case CAPE_EEPROM_ADDR0:
++						env_set("uboot_overlay_addr0", cape_overlay);
++						env_set("uboot_detected_capes_addr0", cape_overlay_pass_to_kernel);
++						break;
++					case CAPE_EEPROM_ADDR1:
++						env_set("uboot_overlay_addr1", cape_overlay);
++						env_set("uboot_detected_capes_addr1", cape_overlay_pass_to_kernel);
++						break;
++					case CAPE_EEPROM_ADDR2:
++						env_set("uboot_overlay_addr2", cape_overlay);
++						env_set("uboot_detected_capes_addr2", cape_overlay_pass_to_kernel);
++						break;
++					case CAPE_EEPROM_ADDR3:
++						env_set("uboot_overlay_addr3", cape_overlay);
++						env_set("uboot_detected_capes_addr3", cape_overlay_pass_to_kernel);
++						break;
++				}
++				env_set("uboot_detected_capes", "1");
++			} else {
++				printf("BeagleBone Cape EEPROM: EEPROM contents not valid (or blank) on address: 0x%x\n", addr);
++			}
 +		}
 +	}
++	return 0;
++}
 +
++void do_cape_detect(void)
++{
++	struct am335x_cape_eeprom_id cape_header;
 +
- #ifdef CONFIG_SPL_ENV_SUPPORT
- 	env_init();
- 	env_load();
-@@ -1081,9 +1261,16 @@ int board_fit_config_name_match(const char *name)
++	probe_cape_eeprom(&cape_header);
++}
++
+ static void setup_board_eeprom_env(void)
+ {
+ 	char *name = "beagle_x15";
+@@ -557,6 +708,8 @@ static void setup_board_eeprom_env(void)
+ 			name = "am57xx_evm_reva3";
+ 		else
+ 			name = "am57xx_evm";
++	} else if (board_is_bbai()) {
++		name = "am5729_beagleboneai";
+ 	} else if (board_is_am574x_idk()) {
+ 		name = "am574x_idk";
+ 	} else if (board_is_am572x_idk()) {
+@@ -626,7 +779,7 @@ void am57x_idk_lcd_detect(void)
+ 	struct udevice *dev;
+ 
+ 	/* Only valid for IDKs */
+-	if (board_is_x15() || board_is_am572x_evm())
++	if (board_is_x15() || board_is_am572x_evm() || board_is_bbai())
+ 		return;
+ 
+ 	/* Only AM571x IDK has gpio control detect.. so check that */
+@@ -720,6 +873,18 @@ int board_late_init(void)
+ 
+ 	am57x_idk_lcd_detect();
+ 
++	if (board_is_bbai()) {
++		printf("I2C: CTRL_CORE_PAD_GPMC_A0:     0x%08x\n", readl(0x4A003440));
++		printf("I2C: CTRL_CORE_PAD_GPMC_A1:     0x%08x\n", readl(0x4A003444));
++		printf("Shared: CTRL_CORE_PAD_VIN2A_D4:    0x%08x\n", readl(0x4A003578));
++		printf("Shared: CTRL_CORE_PAD_VIN2A_D5:    0x%08x\n", readl(0x4A00357C));
++
++		do_cape_detect();
++		env_set("console", "ttyS0,115200n8");
++	} else {
++		env_set("console", "ttyO2,115200n8");
++	}
++
+ #if !defined(CONFIG_SPL_BUILD)
+ 	board_ti_set_ethaddr(2);
+ #endif
+@@ -762,6 +927,13 @@ void recalibrate_iodelay(void)
+ 		pconf_sz = ARRAY_SIZE(core_padconf_array_essential_am571x_idk);
+ 		iod = iodelay_cfg_array_am571x_idk;
+ 		iod_sz = ARRAY_SIZE(iodelay_cfg_array_am571x_idk);
++	} else if (board_is_bbai()) {
++		/* Common for X15/GPEVM */
++		pconf = core_padconf_array_essential_bbai;
++		pconf_sz = ARRAY_SIZE(core_padconf_array_essential_bbai);
++		/* Since full production should switch to SR2.0  */
++		iod = iodelay_cfg_array_bbai;
++		iod_sz = ARRAY_SIZE(iodelay_cfg_array_bbai);
+ 	} else {
+ 		/* Common for X15/GPEVM */
+ 		pconf = core_padconf_array_essential_x15;
+@@ -1081,9 +1253,16 @@ int board_fit_config_name_match(const char *name)
  		} else if (!strcmp(name, "am57xx-beagle-x15")) {
  			return 0;
  		}
@@ -1327,10 +1298,10 @@ index 2c651aab17..4f55000451 100644
  #define CONFIG_SYS_NS16550_COM2		UART2_BASE	/* UART2 */
  #define CONFIG_SYS_NS16550_COM3		UART3_BASE	/* UART3 */
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 828fb1b2a5..d673d5e714 100644
+index 828fb1b2a5..cb05f707fd 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -80,6 +80,363 @@
+@@ -80,6 +80,379 @@
  #define CONFIG_SYS_I2C
  #endif
  
@@ -1612,36 +1583,52 @@ index 828fb1b2a5..d673d5e714 100644
 +				"fi;" \
 +				"echo uboot_overlays: [fdt_buffer=${fdt_buffer}] ... ;" \
 +				"if test -n ${uboot_overlay_addr0}; then " \
-+					"setenv uboot_overlay ${uboot_overlay_addr0}; " \
-+					"run capeloadoverlay;" \
++					"if test -n ${disable_uboot_overlay_addr0}; then " \
++						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr0}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr0=1]...;" \
++					"else " \
++						"setenv uboot_overlay ${uboot_overlay_addr0}; " \
++						"run virtualloadoverlay;" \
++					"fi;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr1}; then " \
-+					"setenv uboot_overlay ${uboot_overlay_addr1}; " \
-+					"run capeloadoverlay;" \
++					"if test -n ${disable_uboot_overlay_addr1}; then " \
++						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr1}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr1=1]...;" \
++					"else " \
++						"setenv uboot_overlay ${uboot_overlay_addr1}; " \
++						"run virtualloadoverlay;" \
++					"fi;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr2}; then " \
-+					"setenv uboot_overlay ${uboot_overlay_addr2}; " \
-+					"run capeloadoverlay;" \
++					"if test -n ${disable_uboot_overlay_addr2}; then " \
++						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr2}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr2=1]...;" \
++					"else " \
++						"setenv uboot_overlay ${uboot_overlay_addr2}; " \
++						"run virtualloadoverlay;" \
++					"fi;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr3}; then " \
-+					"setenv uboot_overlay ${uboot_overlay_addr3}; " \
-+					"run capeloadoverlay;" \
++					"if test -n ${disable_uboot_overlay_addr3}; then " \
++						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr3}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr3=1]...;" \
++					"else " \
++						"setenv uboot_overlay ${uboot_overlay_addr3}; " \
++						"run virtualloadoverlay;" \
++					"fi;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr4}; then " \
 +					"setenv uboot_overlay ${uboot_overlay_addr4}; " \
-+					"run capeloadoverlay;" \
++					"run virtualloadoverlay;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr5}; then " \
 +					"setenv uboot_overlay ${uboot_overlay_addr5}; " \
-+					"run capeloadoverlay;" \
++					"run virtualloadoverlay;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr6}; then " \
 +					"setenv uboot_overlay ${uboot_overlay_addr6}; " \
-+					"run capeloadoverlay;" \
++					"run virtualloadoverlay;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_addr7}; then " \
 +					"setenv uboot_overlay ${uboot_overlay_addr7}; " \
-+					"run capeloadoverlay;" \
++					"run virtualloadoverlay;" \
 +				"fi;" \
 +				"if test -n ${uboot_overlay_pru}; then " \
 +					"setenv uboot_overlay ${uboot_overlay_pru}; " \
@@ -1772,7 +1759,7 @@ index 05bdbbc23e..605b772281 100644
  
  #endif /* CONFIG_OMAP54XX */
 diff --git a/include/environment/ti/mmc.h b/include/environment/ti/mmc.h
-index 785fc15345..11a796d577 100644
+index 785fc15345..4f563e6699 100644
 --- a/include/environment/ti/mmc.h
 +++ b/include/environment/ti/mmc.h
 @@ -11,11 +11,31 @@
@@ -1810,30 +1797,36 @@ index 785fc15345..11a796d577 100644
  	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
  	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
  		"source ${loadaddr}\0" \
-@@ -24,7 +44,22 @@
+@@ -24,7 +44,28 @@
  		"env import -t ${loadaddr} ${filesize}\0" \
  	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
  	"loadimage=load ${devtype} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 -	"loadfdt=load ${devtype} ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
 +	"loadrd=load ${devtype} ${bootpart} ${rdaddr} ${bootdir}/${rdfile}; setenv rdsize ${filesize}\0" \
 +	"loadfdt=echo loading ${fdtdir}/${fdtfile} ...; load ${devtype} ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
-+	"loadoverlay=echo uboot_overlays: loading ${uboot_overlay} ...; " \
-+		"load ${devtype} ${bootpart} ${rdaddr} ${uboot_overlay}; " \
++	"loadoverlay=echo uboot_overlays: loading ${actual_uboot_overlay} ...; " \
++		"load ${devtype} ${bootpart} ${rdaddr} ${actual_uboot_overlay}; " \
 +		"fdt addr ${fdtaddr}; fdt resize ${fdt_buffer}; " \
 +		"fdt apply ${rdaddr}; fdt resize ${fdt_buffer};\0" \
-+	"virtualloadoverlay=if test -e ${devtype} ${bootpart} ${uboot_overlay}; then " \
++	"virtualloadoverlay=if test -e ${devtype} ${bootpart} ${fdtdir}/overlays/${uboot_overlay}; then " \
++				"setenv actual_uboot_overlay ${fdtdir}/overlays/${uboot_overlay}; " \
 +				"run loadoverlay;" \
 +			"else " \
-+				"echo uboot_overlays: unable to find [${devtype} ${bootpart} ${uboot_overlay}]...;" \
-+			"fi;\0" \
-+	"capeloadoverlay=if test -e ${devtype} ${bootpart} ${uboot_overlay}; then " \
-+				"run loadoverlay;" \
-+			"else " \
-+				"echo uboot_overlays: unable to find [${devtype} ${bootpart} ${uboot_overlay}]...;" \
++				"if test -e ${devtype} ${bootpart} /lib/firmware/${uboot_overlay}; then " \
++					"setenv actual_uboot_overlay /lib/firmware/${uboot_overlay}; " \
++					"run loadoverlay;" \
++				"else " \
++					"if test -e ${devtype} ${bootpart} ${uboot_overlay}; then " \
++						"setenv actual_uboot_overlay ${uboot_overlay}; " \
++						"run loadoverlay;" \
++					"else " \
++						"echo uboot_overlays: unable to find [${devtype} ${bootpart} ${uboot_overlay}]...;" \
++					"fi;" \
++				"fi;" \
 +			"fi;\0" \
  	"envboot=mmc dev ${mmcdev}; " \
  		"if mmc rescan; then " \
  			"echo SD/MMC found on device ${mmcdev};" \
 -- 
-2.20.1
+2.28.0
 

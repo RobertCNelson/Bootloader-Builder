@@ -358,36 +358,52 @@
 				"fi;" \
 				"echo uboot_overlays: [fdt_buffer=${fdt_buffer}] ... ;" \
 				"if test -n ${uboot_overlay_addr0}; then " \
-					"setenv uboot_overlay ${uboot_overlay_addr0}; " \
-					"run capeloadoverlay;" \
+					"if test -n ${disable_uboot_overlay_addr0}; then " \
+						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr0}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr0=1]...;" \
+					"else " \
+						"setenv uboot_overlay ${uboot_overlay_addr0}; " \
+						"run virtualloadoverlay;" \
+					"fi;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr1}; then " \
-					"setenv uboot_overlay ${uboot_overlay_addr1}; " \
-					"run capeloadoverlay;" \
+					"if test -n ${disable_uboot_overlay_addr1}; then " \
+						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr1}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr1=1]...;" \
+					"else " \
+						"setenv uboot_overlay ${uboot_overlay_addr1}; " \
+						"run virtualloadoverlay;" \
+					"fi;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr2}; then " \
-					"setenv uboot_overlay ${uboot_overlay_addr2}; " \
-					"run capeloadoverlay;" \
+					"if test -n ${disable_uboot_overlay_addr2}; then " \
+						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr2}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr2=1]...;" \
+					"else " \
+						"setenv uboot_overlay ${uboot_overlay_addr2}; " \
+						"run virtualloadoverlay;" \
+					"fi;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr3}; then " \
-					"setenv uboot_overlay ${uboot_overlay_addr3}; " \
-					"run capeloadoverlay;" \
+					"if test -n ${disable_uboot_overlay_addr3}; then " \
+						"echo uboot_overlays: uboot loading of [${uboot_overlay_addr3}] disabled by /boot/uEnv.txt [disable_uboot_overlay_addr3=1]...;" \
+					"else " \
+						"setenv uboot_overlay ${uboot_overlay_addr3}; " \
+						"run virtualloadoverlay;" \
+					"fi;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr4}; then " \
 					"setenv uboot_overlay ${uboot_overlay_addr4}; " \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr5}; then " \
 					"setenv uboot_overlay ${uboot_overlay_addr5}; " \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr6}; then " \
 					"setenv uboot_overlay ${uboot_overlay_addr6}; " \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_addr7}; then " \
 					"setenv uboot_overlay ${uboot_overlay_addr7}; " \
-					"run capeloadoverlay;" \
+					"run virtualloadoverlay;" \
 				"fi;" \
 				"if test -n ${uboot_overlay_pru}; then " \
 					"setenv uboot_overlay ${uboot_overlay_pru}; " \

@@ -330,6 +330,7 @@
 };
 
 &i2c4 {
+	u-boot,dm-spl;
 	status = "okay";
 	clock-frequency = <100000>;
 };
