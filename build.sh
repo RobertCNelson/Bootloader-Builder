@@ -776,7 +776,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2019.10
+	#v2020.01
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
@@ -1390,8 +1390,8 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-am335x_evm
-am335x_boneblack_flasher
+#am335x_evm
+#am335x_boneblack_flasher
 am57xx_evm
 exit
 
