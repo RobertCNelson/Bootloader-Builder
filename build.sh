@@ -776,7 +776,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2019.07
+	#v2019.10
 	if [ "${testing}" ] ; then
 		p_dir="${DIR}/patches/${uboot_testing}"
 		uboot_ref="${uboot_testing}"
@@ -785,7 +785,7 @@ build_u_boot () {
 		#r3: am57xx_evm/bbai fixes...
 		#r4: bbai: cape stuff...
 		#r5: (pending)
-		RELEASE_VER="-r4" #bump on every change...
+		RELEASE_VER="-r5" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
