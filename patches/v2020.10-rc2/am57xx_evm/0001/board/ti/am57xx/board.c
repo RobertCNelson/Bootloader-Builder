@@ -627,6 +627,12 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			printf("BeagleBone Cape EEPROM: no EEPROM at address: 0x%x\n", addr);
 		} else {
 			printf("BeagleBone Cape EEPROM: found EEPROM at address: 0x%x\n", addr);
+
+			ret = i2c_set_chip_offset_len(dev, 2);
+			if (ret) {
+				printf("BeagleBone Cape EEPROM: i2c_set_chip_offset_len failure\n");
+			}
+
 			ret = dm_i2c_read(dev, 0, (uchar *)cape_header, sizeof(struct am335x_cape_eeprom_id));
 			if (ret) {
 				printf("BeagleBone Cape EEPROM: Cannot read eeprom params\n");
@@ -938,10 +944,6 @@ int board_late_init(void)
 
 	if (board_is_bbai()) {
 		env_set("console", "ttyS0,115200n8");
-		printf("I2C: CTRL_CORE_PAD_GPMC_A0:     0x%08x\n", readl(0x4A003440));
-		printf("I2C: CTRL_CORE_PAD_GPMC_A1:     0x%08x\n", readl(0x4A003444));
-		printf("Shared: CTRL_CORE_PAD_VIN2A_D4:    0x%08x\n", readl(0x4A003578));
-		printf("Shared: CTRL_CORE_PAD_VIN2A_D5:    0x%08x\n", readl(0x4A00357C));
 		do_cape_detect();
 	}
 

@@ -786,8 +786,9 @@ build_u_boot () {
 		#r3: am57xx_evm/bbai fixes...
 		#r4: bbai: cape stuff...
 		#r5: bbai: v2020.10-rc2
-		#r6: (pending)
-		RELEASE_VER="-r5" #bump on every change...
+		#r6: bbai: working eeprom reads..
+		#r7: (pending)
+		RELEASE_VER="-r6" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
@@ -1392,14 +1393,11 @@ am65x_evm_a53 () {
 	build_testing="true"
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
-am335x_evm
-am335x_boneblack_flasher
-am57xx_evm
-exit
 
 am335x_evm
 am335x_boneblack_flasher
 am57xx_evm
+exit
 
 mx6ul_14x14_evk
 mx6ull_14x14_evk

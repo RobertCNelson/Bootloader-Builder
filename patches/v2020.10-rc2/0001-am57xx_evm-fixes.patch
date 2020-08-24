@@ -1,18 +1,18 @@
-From 272bfa9380f4b6a2d48824f3c2fd42d41fada1c9 Mon Sep 17 00:00:00 2001
+From e86974b8bca81f3f3b21746f955518bce9375ab2 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 24 Aug 2020 13:06:39 -0500
+Date: Mon, 24 Aug 2020 16:37:36 -0500
 Subject: [PATCH] am57xx_evm-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  arch/arm/mach-omap2/omap5/hw_data.c |   1 +
- board/ti/am57xx/board.c             | 166 ++++++++++++-
+ board/ti/am57xx/board.c             | 168 ++++++++++++-
  configs/am57xx_evm_defconfig        |  15 +-
  include/configs/ti_armv7_common.h   | 373 ++++++++++++++++++++++++++++
  include/configs/ti_omap5_common.h   |   5 +
  include/environment/ti/boot.h       |  22 +-
  include/environment/ti/mmc.h        |  49 +++-
- 7 files changed, 614 insertions(+), 17 deletions(-)
+ 7 files changed, 616 insertions(+), 17 deletions(-)
 
 diff --git a/arch/arm/mach-omap2/omap5/hw_data.c b/arch/arm/mach-omap2/omap5/hw_data.c
 index fa4e27063c..d5192b1671 100644
@@ -27,7 +27,7 @@ index fa4e27063c..d5192b1671 100644
  		(*prcm)->cm_gmac_gmac_clkctrl,
  #endif
 diff --git a/board/ti/am57xx/board.c b/board/ti/am57xx/board.c
-index 69dce70a60..1887405f45 100644
+index 69dce70a60..5b93b8b603 100644
 --- a/board/ti/am57xx/board.c
 +++ b/board/ti/am57xx/board.c
 @@ -39,6 +39,7 @@
@@ -51,7 +51,7 @@ index 69dce70a60..1887405f45 100644
  
  #ifdef CONFIG_SUPPORT_EMMC_BOOT
  	rc = board_bootmode_has_emmc();
-@@ -577,6 +581,158 @@ void do_board_detect(void)
+@@ -577,6 +581,164 @@ void do_board_detect(void)
  			 "Board: %s REV %s\n", bname, board_ti_get_rev());
  }
  
@@ -101,6 +101,12 @@ index 69dce70a60..1887405f45 100644
 +			printf("BeagleBone Cape EEPROM: no EEPROM at address: 0x%x\n", addr);
 +		} else {
 +			printf("BeagleBone Cape EEPROM: found EEPROM at address: 0x%x\n", addr);
++
++			ret = i2c_set_chip_offset_len(dev, 2);
++			if (ret) {
++				printf("BeagleBone Cape EEPROM: i2c_set_chip_offset_len failure\n");
++			}
++
 +			ret = dm_i2c_read(dev, 0, (uchar *)cape_header, sizeof(struct am335x_cape_eeprom_id));
 +			if (ret) {
 +				printf("BeagleBone Cape EEPROM: Cannot read eeprom params\n");
@@ -210,17 +216,13 @@ index 69dce70a60..1887405f45 100644
  static void setup_board_eeprom_env(void)
  {
  	char *name = "beagle_x15";
-@@ -780,8 +936,14 @@ int board_late_init(void)
+@@ -780,8 +942,10 @@ int board_late_init(void)
  	/* Just probe the potentially supported cdce913 device */
  	uclass_get_device(UCLASS_CLK, 0, &dev);
  
 -	if (board_is_bbai())
 +	if (board_is_bbai()) {
  		env_set("console", "ttyS0,115200n8");
-+		printf("I2C: CTRL_CORE_PAD_GPMC_A0:     0x%08x\n", readl(0x4A003440));
-+		printf("I2C: CTRL_CORE_PAD_GPMC_A1:     0x%08x\n", readl(0x4A003444));
-+		printf("Shared: CTRL_CORE_PAD_VIN2A_D4:    0x%08x\n", readl(0x4A003578));
-+		printf("Shared: CTRL_CORE_PAD_VIN2A_D5:    0x%08x\n", readl(0x4A00357C));
 +		do_cape_detect();
 +	}
  
