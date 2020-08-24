@@ -615,6 +615,7 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 	char hash_cape_overlay[40];
 	char cape_overlay[26];
 	char process_cape_part_number[16];
+	char process_cape_version[4];
 	char end_part_number;
 	char cape_overlay_pass_to_kernel[18];
 
@@ -636,9 +637,10 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 				strlcpy(cape_overlay, "", 2);
 				strlcpy(cape_overlay_pass_to_kernel, "", 2);
 				strlcpy(process_cape_part_number, "...............", 16 + 1);
+				strlcpy(process_cape_version, "...", 4 + 1);
 
 				strlcpy(process_cape_part_number, cape_header->part_number, 16 + 1);
-				printf("BeagleBone Cape EEPROM: debug process_cape_part_number:[%s]\n", process_cape_part_number);
+				printf("BeagleBone Cape EEPROM: debug part_number field:[%s]\n", process_cape_part_number);
 
 				//FIXME: some capes end with '.'
 				if ( process_cape_part_number[15] == 0x2E ) {
@@ -649,11 +651,11 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 					}
 				}
 
-				//Find ending 0x00
-				puts("BeagleBone Cape EEPROM: debug process_cape_part_number:[");
+				//Find ending 0x00 or 0xFF
+				puts("BeagleBone Cape EEPROM: debug part_number field HEX:[");
 				end_part_number=16;
 				for ( int i=0; i <= 16; i++ ) {
-					if ( process_cape_part_number[i] == 0x00 ) {
+					if (( process_cape_part_number[i] == 0x00 ) || ( process_cape_part_number[i] == 0xFF )) {
 						end_part_number=i;
 						i=17;
 					} else {
@@ -661,6 +663,10 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 					}
 				}
 				puts("]\n");
+
+				strncat(cape_overlay_pass_to_kernel, process_cape_part_number, end_part_number);
+				strncat(cape_overlay_pass_to_kernel, ",", 1);
+				//printf("debug: %s\n", cape_overlay_pass_to_kernel);
 
 				strncat(hash_cape_overlay, process_cape_part_number, end_part_number);
 				strncat(cape_overlay, process_cape_part_number, end_part_number);
@@ -670,8 +676,21 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 				strncat(cape_overlay, "-", 1);
 				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 
-				strncat(hash_cape_overlay, cape_header->version, 4);
-				strncat(cape_overlay, cape_header->version, 4);
+				strlcpy(process_cape_version, cape_header->version, 4 + 1);
+				//printf("debug: version field:[%s]\n", process_cape_version);
+
+				//Find invalid 0xFF -> 0x30 BBAI FAN Cape...
+				puts("BeagleBone Cape EEPROM: debug version field HEX:[");
+				for ( int i=0; i <= 3; i++ ) {
+					printf("%x", process_cape_version[i]);
+					if ( process_cape_version[i] == 0xFF ) {
+						process_cape_version[i] = 0x30;
+					}
+				}
+				puts("]\n");
+
+				strncat(hash_cape_overlay, process_cape_version, 4);
+				strncat(cape_overlay, process_cape_version, 4);
 				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 
 				strncat(hash_cape_overlay, ".dtbo", 5);
@@ -679,9 +698,6 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 				//printf("debug: %s %s\n", hash_cape_overlay, cape_overlay);
 
 				printf("BeagleBone Cape EEPROM: 0x%x %s\n", addr, cape_overlay);
-
-				strncat(cape_overlay_pass_to_kernel, process_cape_part_number, end_part_number);
-				strncat(cape_overlay_pass_to_kernel, ",", 1);
 
 				switch(addr) {
 					case CAPE_EEPROM_ADDR0:

@@ -1,6 +1,6 @@
-From 76e80f49ecfdac25ae4390ea0e7367976f96c14c Mon Sep 17 00:00:00 2001
+From 7b3b131999bb13e06fa619da580ff4575901639d Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 24 Jul 2020 16:32:37 -0500
+Date: Mon, 24 Aug 2020 13:02:53 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -14,10 +14,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  6 files changed, 38 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index a36753e8cc..1ce76afcfe 100644
+index 876fc57434..d8bb9c1861 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -690,7 +690,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -707,7 +707,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -26,7 +26,7 @@ index a36753e8cc..1ce76afcfe 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -984,7 +984,7 @@ void sdram_init(void)
+@@ -1001,7 +1001,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -35,7 +35,7 @@ index a36753e8cc..1ce76afcfe 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1472,6 +1472,7 @@ int board_eth_init(bd_t *bis)
+@@ -1489,6 +1489,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -43,7 +43,7 @@ index a36753e8cc..1ce76afcfe 100644
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1499,6 +1500,7 @@ if (!board_is_pb()) {
+@@ -1516,6 +1517,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }
@@ -161,5 +161,5 @@ index 71d12dd1d3..53c7199343 100644
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
 -- 
-2.27.0
+2.28.0
 
