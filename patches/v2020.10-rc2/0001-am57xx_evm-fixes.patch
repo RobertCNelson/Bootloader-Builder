@@ -1,18 +1,18 @@
-From e86974b8bca81f3f3b21746f955518bce9375ab2 Mon Sep 17 00:00:00 2001
+From ea069f03561e10be72cd49f5404f4c2a4f54a2f9 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 24 Aug 2020 16:37:36 -0500
+Date: Tue, 22 Sep 2020 10:44:40 -0500
 Subject: [PATCH] am57xx_evm-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  arch/arm/mach-omap2/omap5/hw_data.c |   1 +
- board/ti/am57xx/board.c             | 168 ++++++++++++-
+ board/ti/am57xx/board.c             | 168 +++++++++++-
  configs/am57xx_evm_defconfig        |  15 +-
- include/configs/ti_armv7_common.h   | 373 ++++++++++++++++++++++++++++
+ include/configs/ti_armv7_common.h   | 407 ++++++++++++++++++++++++++++
  include/configs/ti_omap5_common.h   |   5 +
- include/environment/ti/boot.h       |  22 +-
+ include/environment/ti/boot.h       |  24 +-
  include/environment/ti/mmc.h        |  49 +++-
- 7 files changed, 616 insertions(+), 17 deletions(-)
+ 7 files changed, 652 insertions(+), 17 deletions(-)
 
 diff --git a/arch/arm/mach-omap2/omap5/hw_data.c b/arch/arm/mach-omap2/omap5/hw_data.c
 index fa4e27063c..d5192b1671 100644
@@ -280,10 +280,10 @@ index 2e6787a906..5f8e3232d3 100644
  CONFIG_DM=y
  CONFIG_SPL_DM=y
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 0c9856a11a..80c1de151c 100644
+index 0c9856a11a..41bb3454fe 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -92,6 +92,379 @@
+@@ -92,6 +92,413 @@
  #define CONFIG_SYS_I2C
  #endif
  
@@ -392,6 +392,40 @@ index 0c9856a11a..80c1de151c 100644
 +		"i2c mw 0x50 0x1b.2 6e; " \
 +		"i2c mw 0x50 0x1c.2 ff; " \
 +		"i2c mw 0x50 0x1d.2 ff; " \
++		"i2c mw 0x50 0x1e.2 ff; " \
++		"i2c mw 0x50 0x1f.2 ff; " \
++		"i2c md 0x50 0x00.2 20; " \
++	"eeprom_bbai_a2=i2c dev 0; " \
++		"i2c mw 0x50 0x00.2 aa; " \
++		"i2c mw 0x50 0x01.2 55; " \
++		"i2c mw 0x50 0x02.2 33; " \
++		"i2c mw 0x50 0x03.2 ee; " \
++		"i2c mw 0x50 0x04.2 42; " \
++		"i2c mw 0x50 0x05.2 42; " \
++		"i2c mw 0x50 0x06.2 4F; " \
++		"i2c mw 0x50 0x07.2 4E; " \
++		"i2c mw 0x50 0x08.2 45; " \
++		"i2c mw 0x50 0x09.2 2D; " \
++		"i2c mw 0x50 0x0a.2 41; " \
++		"i2c mw 0x50 0x0b.2 49; " \
++		"i2c mw 0x50 0x0c.2 30; " \
++		"i2c mw 0x50 0x0d.2 30; " \
++		"i2c mw 0x50 0x0e.2 41; " \
++		"i2c mw 0x50 0x0f.2 32; " \
++		"i2c mw 0x50 0x10.2 57; " \
++		"i2c mw 0x50 0x11.2 57; " \
++		"i2c mw 0x50 0x12.2 59; " \
++		"i2c mw 0x50 0x13.2 59; " \
++		"i2c mw 0x50 0x14.2 53; " \
++		"i2c mw 0x50 0x15.2 42; " \
++		"i2c mw 0x50 0x16.2 41; " \
++		"i2c mw 0x50 0x17.2 49; " \
++		"i2c mw 0x50 0x18.2 30; " \
++		"i2c mw 0x50 0x19.2 30; " \
++		"i2c mw 0x50 0x1a.2 30; " \
++		"i2c mw 0x50 0x1b.2 30; " \
++		"i2c mw 0x50 0x1c.2 30; " \
++		"i2c mw 0x50 0x1d.2 30; " \
 +		"i2c mw 0x50 0x1e.2 ff; " \
 +		"i2c mw 0x50 0x1f.2 ff; " \
 +		"i2c md 0x50 0x00.2 20; " \
@@ -680,7 +714,7 @@ index de0a6af2fd..0cd2ccea03 100644
  	NETARGS \
  	NANDARGS \
 diff --git a/include/environment/ti/boot.h b/include/environment/ti/boot.h
-index a9d8f28d46..8e4670935e 100644
+index a9d8f28d46..2e9bb05ca9 100644
 --- a/include/environment/ti/boot.h
 +++ b/include/environment/ti/boot.h
 @@ -132,6 +132,7 @@
@@ -691,7 +725,7 @@ index a9d8f28d46..8e4670935e 100644
  	"usbtty=cdc_acm\0" \
  	"vram=16M\0" \
  	AVB_VERIFY_CMD \
-@@ -183,7 +184,12 @@
+@@ -183,7 +184,14 @@
  		"else " \
  			"echo $apart partition not found; " \
  			"exit; " \
@@ -701,11 +735,13 @@ index a9d8f28d46..8e4670935e 100644
 +		"if test $board_eeprom_header = beagle_x15_revb1_blank; then " \
 +			"run eeprom_dump; run eeprom_x15_b1; reset; fi; " \
 +		"if test $board_eeprom_header = beagle_x15_revc_blank; then " \
-+			"run eeprom_dump; run eeprom_x15_c; reset; fi;  \0 "
++			"run eeprom_dump; run eeprom_x15_c; reset; fi; " \
++		"if test $board_eeprom_header = bbai_a2_blank; then " \
++			"run eeprom_dump; run eeprom_bbai_a2; reset; fi;  \0 "
  
  #ifdef CONFIG_OMAP54XX
  
-@@ -231,11 +237,17 @@
+@@ -231,11 +239,17 @@
  	"if test ${boot_fit} -eq 1; then "	\
  		"run update_to_fit;"	\
  	"fi;"	\

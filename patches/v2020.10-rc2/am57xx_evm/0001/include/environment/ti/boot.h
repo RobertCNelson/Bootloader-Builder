@@ -189,7 +189,9 @@
 		"if test $board_eeprom_header = beagle_x15_revb1_blank; then " \
 			"run eeprom_dump; run eeprom_x15_b1; reset; fi; " \
 		"if test $board_eeprom_header = beagle_x15_revc_blank; then " \
-			"run eeprom_dump; run eeprom_x15_c; reset; fi;  \0 "
+			"run eeprom_dump; run eeprom_x15_c; reset; fi; " \
+		"if test $board_eeprom_header = bbai_a2_blank; then " \
+			"run eeprom_dump; run eeprom_bbai_a2; reset; fi;  \0 "
 
 #ifdef CONFIG_OMAP54XX
 
