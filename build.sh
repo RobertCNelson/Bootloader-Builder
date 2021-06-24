@@ -942,19 +942,13 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2020.10-rc2
+	#v2020.10-rc3
 	if [ "${wip}" ] ; then
 		p_dir="${DIR}/patches/${uboot_wip}"
 		uboot_ref="${uboot_wip}"
 		#r1: initial release
-		#r2: am57xx_evm fixes...
-		#r3: am57xx_evm/bbai fixes...
-		#r4: bbai: cape stuff...
-		#r5: bbai: v2020.10-rc2
-		#r6: bbai: working eeprom reads..
-		#r7: bbai: add a2 eeprom write...
-		#r8: (pending)
-		RELEASE_VER="-r7" #bump on every change...
+		#r2: (pending)
+		RELEASE_VER="-r1" #bump on every change...
 		#halt_patching_uboot
 
 		case "${board}" in
