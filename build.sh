@@ -942,6 +942,62 @@ build_u_boot () {
 		esac
 	fi
 
+	#v2020.10-rc2
+	if [ "${wip}" ] ; then
+		p_dir="${DIR}/patches/${uboot_wip}"
+		uboot_ref="${uboot_wip}"
+		#r1: initial release
+		#r2: am57xx_evm fixes...
+		#r3: am57xx_evm/bbai fixes...
+		#r4: bbai: cape stuff...
+		#r5: bbai: v2020.10-rc2
+		#r6: bbai: working eeprom reads..
+		#r7: bbai: add a2 eeprom write...
+		#r8: (pending)
+		RELEASE_VER="-r7" #bump on every change...
+		#halt_patching_uboot
+
+		case "${board}" in
+		am57xx_evm)
+			patch_file="${board}-fixes"
+			#regenerate="enable"
+			if [ "x${regenerate}" = "xenable" ] ; then
+				base="../../patches/${uboot_ref}/${board}/0001"
+
+				#reset="enable"
+				if [ "x${reset}" = "xenable" ] ; then
+					mkdir -p ${base}/configs/
+					cp configs/${board}_defconfig ${base}/configs/
+
+					mkdir -p ${base}/arch/arm/dts/
+					cp arch/arm/dts/am5729-beagleboneai.dts ${base}/arch/arm/dts/
+
+					mkdir -p ${base}/arch/arm/mach-omap2/omap5/
+					cp arch/arm/mach-omap2/omap5/hw_data.c ${base}/arch/arm/mach-omap2/omap5/
+
+					mkdir -p ${base}/include/configs/
+					cp include/configs/am57xx_evm.h ${base}/include/configs/
+					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+					cp include/configs/ti_omap5_common.h ${base}/include/configs/
+
+					mkdir -p ${base}/include/environment/ti/
+					cp include/environment/ti/boot.h ${base}/include/environment/ti/
+					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					mkdir -p ${base}/board/ti/am57xx/
+					cp board/ti/am57xx/board.c ${base}/board/ti/am57xx/
+					cp board/ti/am57xx/mux_data.h ${base}/board/ti/am57xx/
+
+					refresh_patch
+				fi
+				cp_git_commit_patch
+			else
+				${git} "${p_dir}/0001-${patch_file}.patch"
+			fi
+			;;
+		esac
+	fi
+
 	if [ -f "${DIR}/stop.after.patch" ] ; then
 		echo "-----------------------------"
 		pwd
@@ -1125,6 +1181,7 @@ cleanup () {
 	build_old="false"
 	build_stable="false"
 	build_testing="false"
+	build_wip="false"
 }
 
 build_uboot_old () {
@@ -1161,7 +1218,18 @@ build_uboot_testing () {
 		unset testing
 		build_testing="false"
 	fi
+}
 
+build_uboot_wip () {
+	if [ "x${build_wip}" = "xtrue" ] ; then
+		wip=1
+		if [ "${uboot_wip}" ] ; then
+			GIT_SHA=${uboot_wip}
+			build_u_boot
+		fi
+		unset wip
+		build_wip="false"
+	fi
 }
 
 build_uboot_eabi () {
@@ -1182,6 +1250,7 @@ build_uboot_gnueabihf () {
 	build_uboot_old
 	build_uboot_stable
 	build_uboot_testing
+	build_uboot_wip
 }
 
 build_uboot_aarch64 () {
@@ -1261,7 +1330,8 @@ am57xx_evm () {
 	cleanup
 #	build_old="true"
 #	build_stable="true"
-	build_testing="true"
+#	build_testing="true"
+	build_wip="true"
 
 	board="am57xx_evm" ; build_uboot_gnueabihf
 }
