@@ -942,7 +942,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2021.04-rc1
+	#v2021.04-rc2
 	if [ "${wip}" ] ; then
 		p_dir="${DIR}/patches/${uboot_wip}"
 		uboot_ref="${uboot_wip}"
