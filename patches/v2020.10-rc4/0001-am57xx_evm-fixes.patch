@@ -1,6 +1,6 @@
-From b990420c1a49f1d9a6e56d3cc3a800262cd99ed0 Mon Sep 17 00:00:00 2001
+From eeb31bac24823e1a1d96fd713548726fd8a0f301 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 24 Jun 2021 17:11:09 -0500
+Date: Fri, 25 Jun 2021 10:23:50 -0500
 Subject: [PATCH] am57xx_evm-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>

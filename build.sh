@@ -982,6 +982,9 @@ build_u_boot () {
 					cp board/ti/am57xx/board.c ${base}/board/ti/am57xx/
 					cp board/ti/am57xx/mux_data.h ${base}/board/ti/am57xx/
 
+					mkdir -p ${base}/common/spl/
+					cp common/spl/spl_fit.c ${base}/common/spl/spl_fit.c
+
 					refresh_patch
 				fi
 				cp_git_commit_patch
