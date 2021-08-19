@@ -393,7 +393,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2019.07
+	#v2019.10
 	if [ "${stable}" ] ; then
 		p_dir="${DIR}/patches/${uboot_stable}"
 		uboot_ref="${uboot_stable}"
