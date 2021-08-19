@@ -1,6 +1,6 @@
-From 9f68ef94b4dbac3aeb9edd925ffa8279b092c8ba Mon Sep 17 00:00:00 2001
+From b68431b5766559b78830b4b2eabc12a3cb319f05 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 18 Aug 2021 19:35:37 -0500
+Date: Wed, 18 Aug 2021 19:42:41 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -15,7 +15,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index e7cd8faeed..876fc57434 100644
+index 5b8e5d31f8..36f284535d 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -39,6 +39,7 @@
@@ -26,7 +26,7 @@ index e7cd8faeed..876fc57434 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -77,9 +78,446 @@ void do_board_detect(void)
+@@ -77,8 +78,445 @@ void do_board_detect(void)
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
  		printf("ti_i2c_eeprom_init failed\n");
@@ -36,9 +36,9 @@ index e7cd8faeed..876fc57434 100644
 +#ifndef CONFIG_DM_I2C
 +	i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED2, CONFIG_SYS_OMAP24_I2C_SLAVE2);
 +#endif
- }
- #endif
- 
++}
++#endif
++
 +#define CAPE_EEPROM_ADDR0	0x54
 +#define CAPE_EEPROM_ADDR1	0x55
 +#define CAPE_EEPROM_ADDR2	0x56
@@ -458,7 +458,7 @@ index e7cd8faeed..876fc57434 100644
 +
 +	i2c_set_bus_num(0);
 +	return 0;
-+}
+ }
 +
 +void do_cape_detect(void)
 +{
@@ -466,14 +466,13 @@ index e7cd8faeed..876fc57434 100644
 +
 +#ifndef CONFIG_DM_I2C
 +	i2c_init(CONFIG_SYS_OMAP24_I2C_SPEED2, CONFIG_SYS_OMAP24_I2C_SLAVE2);
-+#endif
+ #endif
 +	probe_cape_eeprom(&cape_header);
 +}
-+
+ 
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
- {
-@@ -951,6 +1389,14 @@ int board_late_init(void)
+@@ -959,6 +1397,14 @@ int board_late_init(void)
  			env_set("serial#", board_serial);
  	}
  
@@ -581,10 +580,10 @@ index 0000000000..b267a87788
 +  return hval;
 +}
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 877420ae59..7de6619e8e 100644
+index b6ac8afa21..67160e4570 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -337,6 +337,40 @@
+@@ -282,6 +282,40 @@
  			"echo loading ${bootdir}/${bootfile} ...; "\
  			"run loadimage;" \
  			"setenv fdtdir /boot/dtbs/${uname_r}; " \
@@ -625,7 +624,7 @@ index 877420ae59..7de6619e8e 100644
  			"if test -e ${devtype} ${bootpart} ${fdtdir}/${fdtfile}; then " \
  				"run loadfdt;" \
  			"else " \
-@@ -377,6 +411,124 @@
+@@ -322,6 +356,124 @@
  					"fi;" \
  				"fi;" \
  			"fi; " \
@@ -740,12 +739,12 @@ index 877420ae59..7de6619e8e 100644
 +					"echo uboot_overlays: [dtb_overlay=${uboot_overlay}] ... ;" \
 +					"run virtualloadoverlay;" \
 +				"fi;" \
-+				"if test -n ${uboot_detected_capes}; then " \
-+					"echo uboot_overlays: [uboot_detected_capes=${uboot_detected_capes_addr0}${uboot_detected_capes_addr1}${uboot_detected_capes_addr2}${uboot_detected_capes_addr3}] ... ;" \
-+					"setenv uboot_detected_capes uboot_detected_capes=${uboot_detected_capes_addr0}${uboot_detected_capes_addr1}${uboot_detected_capes_addr2}${uboot_detected_capes_addr3}; " \
-+				"fi;" \
 +			"else " \
 +				"echo uboot_overlays: add [enable_uboot_overlays=1] to /boot/uEnv.txt to enable...;" \
++			"fi;" \
++			"if test -n ${uboot_detected_capes}; then " \
++				"echo uboot_overlays: [uboot_detected_capes=${uboot_detected_capes_addr0}${uboot_detected_capes_addr1}${uboot_detected_capes_addr2}${uboot_detected_capes_addr3}] ... ;" \
++				"setenv uboot_detected_capes uboot_detected_capes=${uboot_detected_capes_addr0}${uboot_detected_capes_addr1}${uboot_detected_capes_addr2}${uboot_detected_capes_addr3}; " \
 +			"fi;" \
  			"setenv rdfile initrd.img-${uname_r}; " \
  			"if test -e ${devtype} ${bootpart} ${bootdir}/${rdfile}; then " \

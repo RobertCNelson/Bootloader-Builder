@@ -209,47 +209,6 @@
 		"i2c mw 0x50 0x0f.2 41; " \
 		"\0" \
 
-
-#define EEWIKI_NFS \
-	"server_ip=192.168.1.100\0" \
-	"gw_ip=192.168.1.1\0" \
-	"netmask=255.255.255.0\0" \
-	"hostname=\0" \
-	"device=eth0\0" \
-	"autoconf=off\0" \
-	"root_dir=/home/userid/targetNFS\0" \
-	"tftp_dir=\0" \
-	"nfs_options=,vers=3\0" \
-	"nfsrootfstype=ext4 rootwait fixrtc\0" \
-	"nfsargs=setenv bootargs console=${console} " \
-		"${optargs} " \
-		"${cape_uboot} " \
-		"root=/dev/nfs rw " \
-		"rootfstype=${nfsrootfstype} " \
-		"nfsroot=${nfsroot} " \
-		"ip=${ip} " \
-		"${cmdline}\0" \
-	"nfsboot=echo Booting from ${server_ip} ...; " \
-		"setenv nfsroot ${server_ip}:${root_dir}${nfs_options}; " \
-		"setenv ip ${client_ip}:${server_ip}:${gw_ip}:${netmask}:${hostname}:${device}:${autoconf}; " \
-		"setenv autoload no; " \
-		"setenv serverip ${server_ip}; " \
-		"setenv ipaddr ${client_ip}; " \
-		"tftp ${loadaddr} ${tftp_dir}${bootfile}; " \
-		"tftp ${fdtaddr} ${tftp_dir}dtbs/${fdtfile}; " \
-		"run nfsargs; " \
-		"bootz ${loadaddr} - ${fdtaddr}\0" \
-	"nfsboot_uname_r=echo Booting from ${server_ip} ...; " \
-		"setenv nfsroot ${server_ip}:${root_dir}${nfs_options}; " \
-		"setenv ip ${client_ip}:${server_ip}:${gw_ip}:${netmask}:${hostname}:${device}:${autoconf}; " \
-		"setenv autoload no; " \
-		"setenv serverip ${server_ip}; " \
-		"setenv ipaddr ${client_ip}; " \
-		"tftp ${loadaddr} ${tftp_dir}vmlinuz-${uname_r}; " \
-		"tftp ${fdtaddr} ${tftp_dir}dtbs/${uname_r}/${fdtfile}; " \
-		"run nfsargs; " \
-		"bootz ${loadaddr} - ${fdtaddr}\0" \
-
 #define EEWIKI_BOOT \
 	"boot=${devtype} dev ${mmcdev}; " \
 		"if ${devtype} rescan; then " \
@@ -270,20 +229,6 @@
 					"gpio set 56; " \
 					"echo Running uenvcmd ...;" \
 					"run uenvcmd;" \
-				"fi;" \
-				"echo Checking if client_ip is set ...;" \
-				"if test -n ${client_ip}; then " \
-					"if test -n ${dtb}; then " \
-						"setenv fdtfile ${dtb};" \
-						"echo using ${fdtfile} ...;" \
-					"fi;" \
-					"gpio set 56; " \
-					"if test -n ${uname_r}; then " \
-						"echo Running nfsboot_uname_r ...;" \
-						"run nfsboot_uname_r;" \
-					"fi;" \
-					"echo Running nfsboot ...;" \
-					"run nfsboot;" \
 				"fi;" \
 			"fi; " \
 			"echo Checking for: /${script} ...;" \

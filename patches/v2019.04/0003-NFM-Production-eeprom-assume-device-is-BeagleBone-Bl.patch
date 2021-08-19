@@ -1,6 +1,6 @@
-From 5a478633a103682cee8a157ccba4de7a16cdce59 Mon Sep 17 00:00:00 2001
+From 00edc8252cb510cd891656647249f5fa618090c1 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 18 Aug 2021 19:37:36 -0500
+Date: Wed, 18 Aug 2021 19:50:00 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,11 +10,11 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  board/ti/am335x/mux.c          |  7 +++++--
  board/ti/common/board_detect.c | 12 ++++++++++++
  configs/am335x_evm_defconfig   |  3 +--
- include/configs/am335x_evm.h   | 10 ++++++++++
- 6 files changed, 38 insertions(+), 7 deletions(-)
+ include/configs/am335x_evm.h   |  8 ++++++++
+ 6 files changed, 36 insertions(+), 7 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 876fc57434..d8bb9c1861 100644
+index 36f284535d..5c221dcfe6 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -707,7 +707,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
@@ -35,7 +35,7 @@ index 876fc57434..d8bb9c1861 100644
  		config_ddr(400, &ioregs_bonelt,
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
-@@ -1489,6 +1489,7 @@ int board_eth_init(bd_t *bis)
+@@ -1497,6 +1497,7 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -43,7 +43,7 @@ index 876fc57434..d8bb9c1861 100644
  if (!board_is_pb()) {
  	if (board_is_bone() || (board_is_bone_lt() && !board_is_bben()) ||
  	    board_is_idk() || board_is_beaglelogic()) {
-@@ -1516,6 +1517,7 @@ if (!board_is_pb()) {
+@@ -1524,6 +1525,7 @@ if (!board_is_pb()) {
  	else
  		n += rv;
  }
@@ -134,18 +134,10 @@ index 41aa4f2b19..455e386a1c 100644
  CONFIG_VERSION_VARIABLE=y
  CONFIG_ARCH_MISC_INIT=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 71d12dd1d3..53c7199343 100644
+index 875503207b..df6ce7845f 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -195,12 +195,22 @@
- 				"setenv fdtfile am335x-boneblack.dtb; " \
- 			"elif test $board_rev = ME06; then " \
- 				"setenv fdtfile am335x-bonegreen.dtb; " \
-+			"elif test $board_rev = M10A; then " \
-+				"setenv fdtfile am335x-vsc8531bbb.dtb; " \
- 			"elif test $board_rev = OS00; then " \
- 				"setenv fdtfile am335x-osd3358-sm-red.dtb; " \
- 			"else " \
+@@ -201,6 +201,14 @@
  				"setenv fdtfile am335x-boneblack.dtb; " \
  			"fi; " \
  		"fi; " \

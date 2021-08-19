@@ -1,6 +1,6 @@
-From 7c3b4ca9aba0934fea6344c2ab25e76702b75a94 Mon Sep 17 00:00:00 2001
+From 01aa2217313ccf18517faf5f9ae55a653b1ee5b3 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 18 Aug 2021 19:35:37 -0500
+Date: Wed, 18 Aug 2021 19:42:41 -0500
 Subject: [PATCH 1/3] am335x_evm-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,15 +10,16 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  arch/arm/mach-omap2/am33xx/board.c            |  22 +-
  arch/arm/mach-omap2/am33xx/clock_am33xx.c     |   1 +
  arch/arm/mach-omap2/hwinit-common.c           |  10 +
- board/ti/am335x/board.c                       | 102 +++++-
- board/ti/am335x/board.h                       |  35 +-
+ board/ti/am335x/board.c                       | 112 +++++++-
+ board/ti/am335x/board.h                       |  35 ++-
  board/ti/am335x/mux.c                         |  28 +-
  configs/am335x_evm_defconfig                  |  56 ++--
  env/common.c                                  |   2 +
- include/configs/am335x_evm.h                  |  81 ++++-
- include/configs/ti_armv7_common.h             | 315 ++++++++++++++++++
+ include/configs/am335x_evm.h                  |  88 +++++-
+ include/configs/ti_armv7_common.h             | 260 ++++++++++++++++++
  include/environment/ti/mmc.h                  |  57 +++-
- 13 files changed, 636 insertions(+), 75 deletions(-)
+ scripts/dtc/dtc-lexer.l                       |   1 -
+ 14 files changed, 594 insertions(+), 80 deletions(-)
 
 diff --git a/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h b/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h
 index 878ef3e5d2..b42c7e67e9 100644
@@ -109,7 +110,7 @@ index 772b4c4db5..4e5ec79e96 100644
   * vcores_init() - Assign omap_vcores based on board
   *
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index d67f94ad47..e7cd8faeed 100644
+index d67f94ad47..5b8e5d31f8 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -28,6 +28,7 @@
@@ -248,7 +249,7 @@ index d67f94ad47..e7cd8faeed 100644
  		/* BeagleBoard.org BeagleBone Black Wireless: */
  		if (!strncmp(board_ti_get_rev(), "BWA", 3)) {
  			name = "BBBW";
-@@ -808,16 +866,38 @@ int board_late_init(void)
+@@ -808,16 +866,46 @@ int board_late_init(void)
  		if (!strncmp(board_ti_get_rev(), "GW1", 3)) {
  			name = "BBGW";
  		}
@@ -270,11 +271,20 @@ index d67f94ad47..e7cd8faeed 100644
  	if (board_is_bbg1())
  		name = "BBG1";
 -	if (board_is_bben())
+-		name = "BBEN";
 +
 +	if (board_is_bben()) {
 +		puts("Model: SanCloud BeagleBone Enhanced\n");
- 		name = "BBEN";
-+		//Was: name = "SBBE";
++		if (board_is_bben()) {
++			char subtype_id = board_ti_get_config()[1];
++			if (subtype_id == 'L') {
++				puts("Model: Sancloud BeagleBone Enhanced Lite (BBE Lite)\n");
++				name = "BBELITE";
++			} else {
++				puts("Model: SanCloud BeagleBone Enhanced\n");
++				name = "BBEN";
++			}
++		}
 +	}
 +
 +	if (board_is_pb()) {
@@ -288,7 +298,7 @@ index d67f94ad47..e7cd8faeed 100644
  	set_board_info_env(name);
  
  	/*
-@@ -963,18 +1043,22 @@ int board_eth_init(bd_t *bis)
+@@ -963,18 +1051,22 @@ int board_eth_init(bd_t *bis)
  	(defined(CONFIG_SPL_ETH_SUPPORT) && defined(CONFIG_SPL_BUILD))
  
  #ifdef CONFIG_DRIVER_TI_CPSW
@@ -313,7 +323,7 @@ index d67f94ad47..e7cd8faeed 100644
  		writel((RGMII_MODE_ENABLE | RGMII_INT_DELAY), &cdev->miisel);
  		cpsw_slaves[0].phy_if = cpsw_slaves[1].phy_if =
  				PHY_INTERFACE_MODE_RGMII;
-@@ -985,6 +1069,7 @@ int board_eth_init(bd_t *bis)
+@@ -985,6 +1077,7 @@ int board_eth_init(bd_t *bis)
  		printf("Error %d registering CPSW switch\n", rv);
  	else
  		n += rv;
@@ -321,7 +331,7 @@ index d67f94ad47..e7cd8faeed 100644
  #endif
  
  	/*
-@@ -1029,6 +1114,7 @@ int board_eth_init(bd_t *bis)
+@@ -1029,6 +1122,7 @@ int board_eth_init(bd_t *bis)
  #ifdef CONFIG_SPL_LOAD_FIT
  int board_fit_config_name_match(const char *name)
  {
@@ -603,7 +613,7 @@ index 324502ed82..22e5a01cf6 100644
  
  	return 0;
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 0834ff5021..71d12dd1d3 100644
+index 0834ff5021..875503207b 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -58,9 +58,14 @@
@@ -631,14 +641,17 @@ index 0834ff5021..71d12dd1d3 100644
  	BOOT_TARGET_PXE(func) \
  	BOOT_TARGET_DHCP(func)
  
-@@ -106,6 +110,7 @@
+@@ -106,8 +110,9 @@
  	"bootpart=0:2\0" \
  	"bootdir=/boot\0" \
  	"bootfile=zImage\0" \
 +	"board_eeprom_header=undefined\0" \
  	"fdtfile=undefined\0" \
- 	"console=ttyO0,115200n8\0" \
+-	"console=ttyO0,115200n8\0" \
++	"console=ttyS0,115200n8\0" \
  	"partitions=" \
+ 		"uuid_disk=${uuid_gpt_disk};" \
+ 		"name=bootloader,start=384K,size=1792K," \
 @@ -135,14 +140,67 @@
  		"sf probe ${spibusno}:0; " \
  		"sf read ${loadaddr} ${spisrcaddr} ${spiimgsize}; " \
@@ -708,7 +721,7 @@ index 0834ff5021..71d12dd1d3 100644
  		"if test $board_name = A335PBGL; then " \
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
-@@ -151,10 +209,14 @@
+@@ -151,10 +209,16 @@
  			"setenv fdtfile am335x-bonegreen.dtb; fi; " \
  		"if test $board_name = BBGW; then " \
  			"setenv fdtfile am335x-bonegreen-wireless.dtb; fi; " \
@@ -718,12 +731,14 @@ index 0834ff5021..71d12dd1d3 100644
  			"setenv fdtfile am335x-boneblue.dtb; fi; " \
  		"if test $board_name = BBEN; then " \
  			"setenv fdtfile am335x-sancloud-bbe.dtb; fi; " \
++		"if test $board_name = BBELITE; then " \
++			"setenv fdtfile am335x-sancloud-bbe-lite.dtb; fi; " \
 +		"if test $board_name = OS00; then " \
 +			"setenv fdtfile am335x-osd3358-sm-red.dtb; fi; " \
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -162,13 +224,22 @@
+@@ -162,13 +226,21 @@
  		"if test $board_name = A335_ICE; then " \
  			"setenv fdtfile am335x-icev2.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
@@ -734,13 +749,14 @@ index 0834ff5021..71d12dd1d3 100644
 +		"fi; \0" \
  	"init_console=" \
  		"if test $board_name = A335_ICE; then "\
- 			"setenv console ttyO3,115200n8;" \
+-			"setenv console ttyO3,115200n8;" \
++			"setenv console ttyS3,115200n8;" \
 +		"elif test $board_name = A335BLGC; then " \
-+			"setenv console ttyO4,115200n8;" \
++			"setenv console ttyS4,115200n8;" \
  		"else " \
- 			"setenv console ttyO0,115200n8;" \
+-			"setenv console ttyO0,115200n8;" \
++			"setenv console ttyS0,115200n8;" \
  		"fi;\0" \
-+	EEWIKI_NFS \
 +	EEWIKI_BOOT \
 +	EEWIKI_UNAME_BOOT \
 +	EEPROM_PROGRAMMING \
@@ -748,10 +764,10 @@ index 0834ff5021..71d12dd1d3 100644
  	NETARGS \
  	DFUARGS \
 diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
-index 828fb1b2a5..877420ae59 100644
+index 828fb1b2a5..b6ac8afa21 100644
 --- a/include/configs/ti_armv7_common.h
 +++ b/include/configs/ti_armv7_common.h
-@@ -102,6 +102,321 @@
+@@ -102,6 +102,266 @@
  /* Boot Argument Buffer Size */
  #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
  
@@ -862,47 +878,6 @@ index 828fb1b2a5..877420ae59 100644
 +		"i2c mw 0x50 0x0f.2 41; " \
 +		"\0" \
 +
-+
-+#define EEWIKI_NFS \
-+	"server_ip=192.168.1.100\0" \
-+	"gw_ip=192.168.1.1\0" \
-+	"netmask=255.255.255.0\0" \
-+	"hostname=\0" \
-+	"device=eth0\0" \
-+	"autoconf=off\0" \
-+	"root_dir=/home/userid/targetNFS\0" \
-+	"tftp_dir=\0" \
-+	"nfs_options=,vers=3\0" \
-+	"nfsrootfstype=ext4 rootwait fixrtc\0" \
-+	"nfsargs=setenv bootargs console=${console} " \
-+		"${optargs} " \
-+		"${cape_uboot} " \
-+		"root=/dev/nfs rw " \
-+		"rootfstype=${nfsrootfstype} " \
-+		"nfsroot=${nfsroot} " \
-+		"ip=${ip} " \
-+		"${cmdline}\0" \
-+	"nfsboot=echo Booting from ${server_ip} ...; " \
-+		"setenv nfsroot ${server_ip}:${root_dir}${nfs_options}; " \
-+		"setenv ip ${client_ip}:${server_ip}:${gw_ip}:${netmask}:${hostname}:${device}:${autoconf}; " \
-+		"setenv autoload no; " \
-+		"setenv serverip ${server_ip}; " \
-+		"setenv ipaddr ${client_ip}; " \
-+		"tftp ${loadaddr} ${tftp_dir}${bootfile}; " \
-+		"tftp ${fdtaddr} ${tftp_dir}dtbs/${fdtfile}; " \
-+		"run nfsargs; " \
-+		"bootz ${loadaddr} - ${fdtaddr}\0" \
-+	"nfsboot_uname_r=echo Booting from ${server_ip} ...; " \
-+		"setenv nfsroot ${server_ip}:${root_dir}${nfs_options}; " \
-+		"setenv ip ${client_ip}:${server_ip}:${gw_ip}:${netmask}:${hostname}:${device}:${autoconf}; " \
-+		"setenv autoload no; " \
-+		"setenv serverip ${server_ip}; " \
-+		"setenv ipaddr ${client_ip}; " \
-+		"tftp ${loadaddr} ${tftp_dir}vmlinuz-${uname_r}; " \
-+		"tftp ${fdtaddr} ${tftp_dir}dtbs/${uname_r}/${fdtfile}; " \
-+		"run nfsargs; " \
-+		"bootz ${loadaddr} - ${fdtaddr}\0" \
-+
 +#define EEWIKI_BOOT \
 +	"boot=${devtype} dev ${mmcdev}; " \
 +		"if ${devtype} rescan; then " \
@@ -923,20 +898,6 @@ index 828fb1b2a5..877420ae59 100644
 +					"gpio set 56; " \
 +					"echo Running uenvcmd ...;" \
 +					"run uenvcmd;" \
-+				"fi;" \
-+				"echo Checking if client_ip is set ...;" \
-+				"if test -n ${client_ip}; then " \
-+					"if test -n ${dtb}; then " \
-+						"setenv fdtfile ${dtb};" \
-+						"echo using ${fdtfile} ...;" \
-+					"fi;" \
-+					"gpio set 56; " \
-+					"if test -n ${uname_r}; then " \
-+						"echo Running nfsboot_uname_r ...;" \
-+						"run nfsboot_uname_r;" \
-+					"fi;" \
-+					"echo Running nfsboot ...;" \
-+					"run nfsboot;" \
 +				"fi;" \
 +			"fi; " \
 +			"echo Checking for: /${script} ...;" \
@@ -1154,6 +1115,18 @@ index 785fc15345..2d9c7a3435 100644
  			"else " \
  				"if test ${boot_fdt} = try; then " \
  					"bootz; " \
+diff --git a/scripts/dtc/dtc-lexer.l b/scripts/dtc/dtc-lexer.l
+index fd825ebba6..24af549977 100644
+--- a/scripts/dtc/dtc-lexer.l
++++ b/scripts/dtc/dtc-lexer.l
+@@ -38,7 +38,6 @@ LINECOMMENT	"//".*\n
+ #include "srcpos.h"
+ #include "dtc-parser.tab.h"
+ 
+-YYLTYPE yylloc;
+ extern bool treesource_error;
+ 
+ /* CAUTION: this will stop working if we ever use yyless() or yyunput() */
 -- 
 2.30.2
 

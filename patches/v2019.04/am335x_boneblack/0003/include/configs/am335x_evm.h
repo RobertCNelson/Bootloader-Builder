@@ -112,7 +112,7 @@
 	"bootfile=zImage\0" \
 	"board_eeprom_header=undefined\0" \
 	"fdtfile=undefined\0" \
-	"console=ttyO0,115200n8\0" \
+	"console=ttyS0,115200n8\0" \
 	"partitions=" \
 		"uuid_disk=${uuid_gpt_disk};" \
 		"name=bootloader,start=384K,size=1792K," \
@@ -195,8 +195,6 @@
 				"setenv fdtfile am335x-boneblack.dtb; " \
 			"elif test $board_rev = ME06; then " \
 				"setenv fdtfile am335x-bonegreen.dtb; " \
-			"elif test $board_rev = M10A; then " \
-				"setenv fdtfile am335x-vsc8531bbb.dtb; " \
 			"elif test $board_rev = OS00; then " \
 				"setenv fdtfile am335x-osd3358-sm-red.dtb; " \
 			"else " \
@@ -225,6 +223,8 @@
 			"setenv fdtfile am335x-boneblue.dtb; fi; " \
 		"if test $board_name = BBEN; then " \
 			"setenv fdtfile am335x-sancloud-bbe.dtb; fi; " \
+		"if test $board_name = BBELITE; then " \
+			"setenv fdtfile am335x-sancloud-bbe-lite.dtb; fi; " \
 		"if test $board_name = OS00; then " \
 			"setenv fdtfile am335x-osd3358-sm-red.dtb; fi; " \
 		"if test $board_name = A33515BB; then " \
@@ -240,13 +240,12 @@
 		"fi; \0" \
 	"init_console=" \
 		"if test $board_name = A335_ICE; then "\
-			"setenv console ttyO3,115200n8;" \
+			"setenv console ttyS3,115200n8;" \
 		"elif test $board_name = A335BLGC; then " \
-			"setenv console ttyO4,115200n8;" \
+			"setenv console ttyS4,115200n8;" \
 		"else " \
-			"setenv console ttyO0,115200n8;" \
+			"setenv console ttyS0,115200n8;" \
 		"fi;\0" \
-	EEWIKI_NFS \
 	EEWIKI_BOOT \
 	EEWIKI_UNAME_BOOT \
 	EEPROM_PROGRAMMING \
