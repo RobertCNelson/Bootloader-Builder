@@ -431,8 +431,8 @@ build_u_boot () {
 					cp arch/arm/include/asm/arch-am33xx/sys_proto.h ${base}/arch/arm/include/asm/arch-am33xx/
 
 					mkdir -p ${base}/arch/arm/mach-omap2/am33xx/
-					cp arch/arm/mach-omap2/am33xx/clock_am33xx.c ${base}/arch/arm/mach-omap2/am33xx/
 					cp arch/arm/mach-omap2/am33xx/board.c ${base}/arch/arm/mach-omap2/am33xx/
+					cp arch/arm/mach-omap2/am33xx/clock_am33xx.c ${base}/arch/arm/mach-omap2/am33xx/
 					cp arch/arm/mach-omap2/hwinit-common.c ${base}/arch/arm/mach-omap2/
 
 					mkdir -p ${base}/board/ti/am335x/
@@ -449,7 +449,6 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am335x_evm.h ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
-					cp include/configs/ti_armv7_omap.h ${base}/include/configs/
 
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
@@ -473,12 +472,9 @@ build_u_boot () {
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/board/ti/am335x/
 					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
-					cp board/ti/am335x/board.h ${base}/board/ti/am335x/
-					cp board/ti/am335x/mux.c ${base}/board/ti/am335x/
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
-					cp include/configs/ti_armv7_omap.h ${base}/include/configs/
 
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
