@@ -449,9 +449,13 @@ build_u_boot () {
 					mkdir -p ${base}/include/configs/
 					cp include/configs/am335x_evm.h ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
+					cp include/configs/ti_armv7_omap.h ${base}/include/configs/
 
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+
+					mkdir -p ${base}/scripts/dtc/
+					cp scripts/dtc/dtc-lexer.l ${base}/scripts/dtc/
 
 					refresh_patch
 				fi
@@ -1405,9 +1409,9 @@ am65x_evm_a53 () {
 	board="am65x_evm_a53" ; build_uboot_aarch64
 }
 
-#am335x_evm
-#am335x_boneblack_flasher
-am57xx_evm
+am335x_evm
+am335x_boneblack_flasher
+#am57xx_evm
 exit
 
 mx6ul_14x14_evk

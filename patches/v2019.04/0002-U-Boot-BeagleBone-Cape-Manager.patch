@@ -1,6 +1,6 @@
-From d9f99a5cd9481dbfd4d452aaf64cab4d37509c85 Mon Sep 17 00:00:00 2001
+From 9f68ef94b4dbac3aeb9edd925ffa8279b092c8ba Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 24 Aug 2020 13:02:44 -0500
+Date: Wed, 18 Aug 2021 19:35:37 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -796,5 +796,5 @@ index 2d9c7a3435..4f06f5bf2b 100644
  		"ums 0 ${devtype} 1;\0" \
  	"envboot=mmc dev ${mmcdev}; " \
 -- 
-2.28.0
+2.30.2
 

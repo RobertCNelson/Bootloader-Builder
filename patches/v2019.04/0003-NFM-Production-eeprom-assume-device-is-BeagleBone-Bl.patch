@@ -1,6 +1,6 @@
-From 7b3b131999bb13e06fa619da580ff4575901639d Mon Sep 17 00:00:00 2001
+From 5a478633a103682cee8a157ccba4de7a16cdce59 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 24 Aug 2020 13:02:53 -0500
+Date: Wed, 18 Aug 2021 19:37:36 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -161,5 +161,5 @@ index 71d12dd1d3..53c7199343 100644
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
 -- 
-2.28.0
+2.30.2
 
