@@ -453,9 +453,6 @@ build_u_boot () {
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
-					mkdir -p ${base}/scripts/dtc/
-					cp scripts/dtc/dtc-lexer.l ${base}/scripts/dtc/
-
 					refresh_patch
 				fi
 				cp_git_commit_patch
