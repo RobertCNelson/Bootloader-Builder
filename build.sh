@@ -393,7 +393,7 @@ build_u_boot () {
 		esac
 	fi
 
-	#v2020.04
+	#v2020.07
 	if [ "${stable}" ] ; then
 		p_dir="${DIR}/patches/${uboot_stable}"
 		uboot_ref="${uboot_stable}"
@@ -1143,7 +1143,7 @@ build_u_boot () {
 			UBOOT_DONE=1
 		fi
 
-		if [ "x${board}" = "xam57xx_evm" ] ; then
+		#if [ "x${board}" = "xam57xx_evm" ] ; then
 
 			echo "#!/bin/bash" > ${DIR}/deploy/${board}/install.sh
 			echo "" >> ${DIR}/deploy/${board}/install.sh
@@ -1155,7 +1155,7 @@ build_u_boot () {
 			echo "dd if=./MLO of=/dev/sdd count=2 seek=1 bs=128k" >> ${DIR}/deploy/${board}/install.sh
 			echo "dd if=./u-boot-dtb.img of=/dev/sdd count=4 seek=1 bs=384k" >> ${DIR}/deploy/${board}/install.sh
 			chmod +x ${DIR}/deploy/${board}/install.sh
-		fi
+		#fi
 
 		echo "-----------------------------"
 	else
@@ -1403,7 +1403,7 @@ am65x_evm_a53 () {
 }
 
 am335x_evm
-am335x_boneblack_flasher
+#am335x_boneblack_flasher
 #am57xx_evm
 exit
 
