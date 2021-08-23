@@ -539,27 +539,6 @@ build_u_boot () {
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		mx6sabresd)
-			patch_file="${board}-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/mx6sabre_common.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		omap3_beagle)
 			patch_file="${board}-uEnv.txt-bootz-n-fixes"
 			#regenerate="enable"
@@ -729,27 +708,6 @@ build_u_boot () {
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/mx6ullevk.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
-		mx6sabresd)
-			patch_file="${board}-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/mx6sabre_common.h ${base}/include/configs/
 
 					refresh_patch
 				fi
@@ -1239,14 +1197,6 @@ mx6ull_14x14_evk () {
 	board="mx6ull_14x14_evk" ; build_uboot_gnueabihf
 }
 
-mx6sabresd () {
-	cleanup
-#	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="mx6sabresd" ; build_uboot_gnueabihf
-}
-
 omap3_beagle () {
 	cleanup
 #	build_old="true"
@@ -1286,7 +1236,6 @@ exit
 
 mx6ul_14x14_evk
 mx6ull_14x14_evk
-mx6sabresd
 omap3_beagle
 omap4_panda
 omap5_uevm
