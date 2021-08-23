@@ -1292,10 +1292,6 @@ always_testing () {
 	build_uboot_gnueabihf
 }
 
-ls1021atwr () {
-	board="ls1021atwr_sdcard_qspi" ; always_stable_n_testing
-}
-
 am335x_evm () {
 	cleanup
 #	build_old="true"
@@ -1411,9 +1407,6 @@ omap4_panda
 omap5_uevm
 socfpga_de0_nano_soc
 wandboard
-
-#devices with no patches...
-ls1021atwr
 
 #development...
 #am65x_evm_a53
