@@ -945,16 +945,6 @@ build_uboot_gnueabihf () {
 	build_uboot_wip
 }
 
-build_uboot_aarch64 () {
-	if [ "x${uboot_config}" = "x" ] ; then
-		uboot_config="${board}_defconfig"
-	fi
-	gcc_arm_aarch64_linux_gnu_8
-	build_uboot_old
-	build_uboot_stable
-	build_uboot_testing
-}
-
 build_uboot_gnueabihf_only_old () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
@@ -1044,14 +1034,6 @@ omap5_uevm () {
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
-am65x_evm_a53 () {
-	cleanup
-#	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="am65x_evm_a53" ; build_uboot_aarch64
-}
-
 am335x_evm
 am335x_boneblack_flasher
 #am57xx_evm
@@ -1060,8 +1042,5 @@ exit
 omap3_beagle
 omap4_panda
 omap5_uevm
-
-#development...
-#am65x_evm_a53
 
 #
