@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+ARCH=$(uname -m)
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
 
-ARCH=$(uname -m)
 SYST=$(uname -n)
 
 if [ "x${ARCH}" = "xi686" ] ; then
@@ -59,17 +59,28 @@ fi
 wget_dl="wget -c --directory-prefix=${gcc_dir}/"
 
 dl_gcc_generic () {
+	gcc_html_path="https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/${gcc_selected}/"
+	gcc_filename_prefix="x86_64-gcc-${gcc_selected}-nolibc-${gcc_prefix}"
+	extracted_dir="gcc-${gcc_selected}-nolibc/${gcc_prefix}"
+	binary="bin/${gcc_prefix}-"
+
 	WGET="wget -c --directory-prefix=${gcc_dir}/"
-	if [ ! -f "${gcc_dir}/${gcc_filename_prefix}/${datestamp}" ] ; then
+	if [ "x${extracted_dir}" = "x" ] ; then
+		filename_prefix=${gcc_filename_prefix}
+	else
+		filename_prefix=${extracted_dir}
+	fi
+
+	if [ ! -f "${gcc_dir}/${filename_prefix}/${datestamp}" ] ; then
 		echo "Installing Toolchain: ${toolchain}"
 		echo "-----------------------------"
 		${WGET} "${gcc_html_path}${gcc_filename_prefix}.tar.xz"
-		if [ -d "${gcc_dir}/${gcc_filename_prefix}" ] ; then
-			rm -rf "${gcc_dir}/${gcc_filename_prefix}" || true
+		if [ -d "${gcc_dir}/${filename_prefix}" ] ; then
+			rm -rf "${gcc_dir}/${filename_prefix}" || true
 		fi
 		tar -xf "${gcc_dir}/${gcc_filename_prefix}.tar.xz" -C "${gcc_dir}/"
-		if [ -f "${gcc_dir}/${gcc_filename_prefix}/${binary}gcc" ] ; then
-			touch "${gcc_dir}/${gcc_filename_prefix}/${datestamp}"
+		if [ -f "${gcc_dir}/${filename_prefix}/${binary}gcc" ] ; then
+			touch "${gcc_dir}/${filename_prefix}/${datestamp}"
 		fi
 	else
 		echo "Using Existing Toolchain: ${toolchain}"
@@ -79,156 +90,68 @@ dl_gcc_generic () {
 		#using native gcc
 		CC=
 	else
-		CC="${gcc_dir}/${gcc_filename_prefix}/${binary}"
+		CC="${gcc_dir}/${filename_prefix}/${binary}"
 	fi
 }
 
+gcc_versions () {
+	unset extracted_dir
+
+	#https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/
+	gcc6="6.5.0"
+	gcc7="7.5.0"
+	gcc8="8.5.0"
+	gcc9="9.4.0"
+	gcc10="10.3.0"
+	gcc11="11.1.0"
+}
+
 #NOTE: ignore formatting, as this is just: meld build.sh ../stable-kernel/scripts/gcc.sh
-gcc_arm_embedded_6 () {
-		gcc_html_path="https://releases.linaro.org/components/toolchain/binaries/6.5-2018.12/arm-eabi/"
-		gcc_filename_prefix="gcc-linaro-6.5.0-2018.12-x86_64_arm-eabi"
-		gcc_banner="arm-eabi-gcc (Linaro GCC 6.5-2018.12) 6.5.0"
-		gcc_copyright="2017"
-		datestamp="2018.12-gcc-arm-none-eabi"
-
-		binary="bin/arm-eabi-"
-
+gcc_6_arm () {
+	gcc_versions
+		gcc_selected=${gcc6}
+		gcc_prefix="arm-linux-gnueabi"
+		datestamp="2017.${gcc_selected}-${gcc_prefix}"
 	dl_gcc_generic
 }
 
-gcc_arm_embedded_7 () {
-		subdir=""
-		site="https://releases.linaro.org"
-		archive_site="https://releases.linaro.org/archive"
-
-		gcc_html_path="https://releases.linaro.org/components/toolchain/binaries/7.5-2019.12/arm-eabi/"
-		gcc_filename_prefix="gcc-linaro-7.5.0-2019.12-x86_64_arm-eabi"
-		gcc_banner="arm-eabi-gcc (Linaro GCC 7.5-2019.12) 7.5.0"
-		gcc_copyright="2017"
-		datestamp="2019.12-gcc-arm-none-eabi"
-
-		binary="bin/arm-eabi-"
-
+gcc_7_arm () {
+	gcc_versions
+		gcc_selected=${gcc7}
+		gcc_prefix="arm-linux-gnueabi"
+		datestamp="2017.${gcc_selected}-${gcc_prefix}"
 	dl_gcc_generic
 }
 
-gcc_arm_embedded_8 () {
-		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/"
-		gcc_filename_prefix="gcc-arm-8.3-2019.03-x86_64-arm-eabi"
-		gcc_banner="arm-eabi-gcc (GNU Toolchain for the A-profile Architecture 8.3-2019.03 (arm-rel-8.36)) 8.3.0"
-		gcc_copyright="2018"
-		datestamp="2019.03-gcc-arm-none-eabi"
-
-		binary="bin/arm-eabi-"
-
+gcc_8_arm () {
+	gcc_versions
+		gcc_selected=${gcc8}
+		gcc_prefix="arm-linux-gnueabi"
+		datestamp="2018.${gcc_selected}-${gcc_prefix}"
 	dl_gcc_generic
 }
 
-gcc_arm_embedded_9 () {
-		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/"
-		gcc_filename_prefix="gcc-arm-9.2-2019.12-x86_64-arm-none-eabi"
-		gcc_banner="arm-none-eabi-gcc (GNU Toolchain for the A-profile Architecture 9.2-2019.12 (arm-9.10)) 9.2.1 20191025"
-		gcc_copyright="2019"
-		datestamp="2019.12-gcc-arm-none-eabi"
-
-		binary="bin/arm-none-eabi-"
-
+gcc_9_arm () {
+	gcc_versions
+		gcc_selected=${gcc9}
+		gcc_prefix="arm-linux-gnueabi"
+		datestamp="2019.${gcc_selected}-${gcc_prefix}"
 	dl_gcc_generic
 }
 
-gcc_linaro_gnueabihf_4_9 () {
-		gcc_html_path="https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-linux-gnueabihf/"
-		gcc_filename_prefix="gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf"
-		gcc_banner="arm-linux-gnueabihf-gcc (Linaro GCC 4.9-2017.01) 4.9.4"
-		gcc_copyright="2015"
-		datestamp="2017.01-gcc-arm-linux-gnueabihf"
-
-		binary="bin/arm-linux-gnueabihf-"
-
+gcc_10_arm () {
+	gcc_versions
+		gcc_selected=${gcc10}
+		gcc_prefix="arm-linux-gnueabi"
+		datestamp="2020.${gcc_selected}-${gcc_prefix}"
 	dl_gcc_generic
 }
 
-gcc_linaro_gnueabihf_5 () {
-		gcc_html_path="https://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/arm-linux-gnueabihf/"
-		gcc_filename_prefix="gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf"
-		gcc_banner="arm-linux-gnueabihf-gcc (Linaro GCC 5.5-2017.10) 5.5.0"
-		gcc_copyright="2015"
-		datestamp="2017.10-gcc-arm-linux-gnueabihf"
-
-		binary="bin/arm-linux-gnueabihf-"
-
-	dl_gcc_generic
-}
-
-gcc_linaro_gnueabihf_6 () {
-		gcc_html_path="https://releases.linaro.org/components/toolchain/binaries/6.5-2018.12/arm-linux-gnueabihf/"
-		gcc_filename_prefix="gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf"
-		gcc_banner="arm-linux-gnueabihf-gcc (Linaro GCC 6.5-2018.12) 6.5.0"
-		gcc_copyright="2017"
-		datestamp="2018.12-gcc-arm-linux-gnueabihf"
-
-		binary="bin/arm-linux-gnueabihf-"
-
-	dl_gcc_generic
-}
-
-gcc_linaro_gnueabihf_7 () {
-		gcc_html_path="https://releases.linaro.org/components/toolchain/binaries/7.5-2019.12/arm-linux-gnueabihf/"
-		gcc_filename_prefix="gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf"
-		gcc_banner="arm-linux-gnueabihf-gcc (Linaro GCC 7.5-2019.12) 7.5.0"
-		gcc_copyright="2017"
-		datestamp="2019.12-gcc-arm-linux-gnueabihf"
-
-		binary="bin/arm-linux-gnueabihf-"
-
-	dl_gcc_generic
-}
-
-gcc_arm_arm_linux_gnueabihf_8 () {
-		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/"
-		gcc_filename_prefix="gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf"
-		gcc_banner="arm-linux-gnueabihf-gcc (GNU Toolchain for the A-profile Architecture 8.3-2019.03 (arm-rel-8.36)) 8.3.0"
-		gcc_copyright="2018"
-		datestamp="2019.03-gcc-arm-linux-gnueabihf"
-
-		binary="bin/arm-linux-gnueabihf-"
-
-	dl_gcc_generic
-}
-
-gcc_arm_arm_linux_gnueabihf_9 () {
-		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/"
-		gcc_filename_prefix="gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf"
-		gcc_banner="arm-none-linux-gnueabihf-gcc (GNU Toolchain for the A-profile Architecture 9.2-2019.12 (arm-9.10)) 9.2.1 20191025"
-		gcc_copyright="2019"
-		datestamp="2019.12-gcc-arm-linux-gnueabihf"
-
-		binary="bin/arm-none-linux-gnueabihf-"
-
-	dl_gcc_generic
-}
-
-gcc_arm_aarch64_linux_gnu_8 () {
-		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/"
-		gcc_filename_prefix="gcc-arm-8.3-2019.03-x86_64-aarch64-linux-gnu"
-		gcc_banner="aarch64-linux-gnu-gcc (GNU Toolchain for the A-profile Architecture 8.3-2019.03 (arm-rel-8.36)) 8.3.0"
-		gcc_copyright="2018"
-		datestamp="2019.03-gcc-aarch64-linux-gnu"
-
-		binary="bin/aarch64-linux-gnu-"
-
-	dl_gcc_generic
-}
-
-gcc_arm_aarch64_linux_gnu_9 () {
-		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/"
-		gcc_filename_prefix="gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu"
-		gcc_banner="aarch64-none-linux-gnu-gcc (GNU Toolchain for the A-profile Architecture 9.2-2019.12 (arm-9.10)) 9.2.1 20191025"
-		gcc_copyright="2019"
-		datestamp="2019.12-gcc-aarch64-linux-gnu"
-
-		binary="bin/aarch64-none-linux-gnu-"
-
+gcc_11_arm () {
+	gcc_versions
+		gcc_selected=${gcc11}
+		gcc_prefix="arm-linux-gnueabi"
+		datestamp="2021.${gcc_selected}-${gcc_prefix}"
 	dl_gcc_generic
 }
 
@@ -1005,7 +928,7 @@ build_uboot_eabi () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
 	fi
-	gcc_arm_embedded_6
+	gcc_6_arm
 	build_uboot_old
 	build_uboot_stable
 	build_uboot_testing
@@ -1015,7 +938,7 @@ build_uboot_gnueabihf () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
 	fi
-	gcc_linaro_gnueabihf_6
+	gcc_6_arm
 	build_uboot_old
 	build_uboot_stable
 	build_uboot_testing
@@ -1036,7 +959,7 @@ build_uboot_gnueabihf_only_old () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
 	fi
-	gcc_linaro_gnueabihf_6
+	gcc_6_arm
 	build_uboot_old
 }
 
@@ -1044,7 +967,7 @@ build_uboot_gnueabihf_only_stable () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
 	fi
-	gcc_linaro_gnueabihf_6
+	gcc_6_arm
 	build_uboot_stable
 }
 
