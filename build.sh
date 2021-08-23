@@ -345,15 +345,10 @@ build_u_boot () {
 	make ARCH=arm CROSS_COMPILE="${CC}" distclean
 	UGIT_VERSION=$(git describe)
 
-	unset BUILDTARGET
-	if [ "x${board}" = "xsocfpga_de0_nano_soc" ] ; then
-		BUILDTARGET="u-boot-with-spl.sfp"
-	fi
-
 	echo "-----------------------------"
 	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" distclean"
 	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${uboot_config}"
-	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${BUILDTARGET}"
+	echo "make ARCH=arm CROSS_COMPILE=\"${CC}\""
 	echo "-----------------------------"
 
 	#v2019.01
@@ -371,26 +366,10 @@ build_u_boot () {
 		RELEASE_VER="-r7" #bump on every change...
 		#halt_patching_uboot
 
-		case "${board}" in
-		socfpga_de0_nano_soc)
-			patch_file="de0_nano-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
-		esac
+		#case "${board}" in
+		#socfpga_de0_nano_soc)
+		#	;;
+		#esac
 	fi
 
 	#v2021.01-rc1
@@ -660,24 +639,6 @@ build_u_boot () {
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		socfpga_de0_nano_soc)
-			patch_file="de0_nano-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		esac
 	fi
 
@@ -876,24 +837,6 @@ build_u_boot () {
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		socfpga_de0_nano_soc)
-			patch_file="de0_nano-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		esac
 	fi
 
@@ -955,7 +898,7 @@ build_u_boot () {
 		pwd
 		echo "-----------------------------"
 		echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${uboot_config}"
-		echo "make ARCH=arm CROSS_COMPILE=\"${CC}\" ${BUILDTARGET}"
+		echo "make ARCH=arm CROSS_COMPILE=\"${CC}\""
 		echo "-----------------------------"
 		exit
 	fi
@@ -991,7 +934,7 @@ build_u_boot () {
 		#make ARCH=arm CROSS_COMPILE="${CC}" menuconfig
 
 		echo "Building ${project}: ${uboot_filename}:"
-		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} ${BUILDTARGET} > /dev/null
+		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} > /dev/null
 
 		if [ ! -d ${p_dir}/${board}/ ] ; then
 			mkdir -p ${p_dir}/${board}/ || true
@@ -1328,14 +1271,6 @@ omap5_uevm () {
 	board="omap5_uevm" ; build_uboot_gnueabihf
 }
 
-socfpga_de0_nano_soc () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
-}
-
 am65x_evm_a53 () {
 	cleanup
 #	build_old="true"
@@ -1355,7 +1290,6 @@ mx6sabresd
 omap3_beagle
 omap4_panda
 omap5_uevm
-socfpga_de0_nano_soc
 
 #development...
 #am65x_evm_a53
