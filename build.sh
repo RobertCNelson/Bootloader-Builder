@@ -678,27 +678,6 @@ build_u_boot () {
 				${git} "${p_dir}/0001-${patch_file}.patch"
 			fi
 			;;
-		wandboard)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/wandboard.h ${base}/include/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		esac
 	fi
 
@@ -907,27 +886,6 @@ build_u_boot () {
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/configs/
 					cp configs/${board}_defconfig ${base}/configs/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
-		wandboard)
-			patch_file="${board}-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/wandboard.h ${base}/include/configs/
 
 					refresh_patch
 				fi
@@ -1378,14 +1336,6 @@ socfpga_de0_nano_soc () {
 	board="socfpga_de0_nano_soc" ; build_uboot_gnueabihf
 }
 
-wandboard () {
-	cleanup
-#	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="wandboard" ; build_uboot_gnueabihf
-}
-
 am65x_evm_a53 () {
 	cleanup
 #	build_old="true"
@@ -1406,7 +1356,6 @@ omap3_beagle
 omap4_panda
 omap5_uevm
 socfpga_de0_nano_soc
-wandboard
 
 #development...
 #am65x_evm_a53
