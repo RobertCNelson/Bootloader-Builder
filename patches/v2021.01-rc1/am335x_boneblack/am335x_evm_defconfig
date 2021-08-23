@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: arm-linux-gnueabihf-gcc (Linaro GCC 6.5-2018.12) 6.5.0
+# Compiler: arm-linux-gnueabi-gcc (GCC) 6.5.0
 #
 CONFIG_CREATE_ARCH_SYMLINK=y
 # CONFIG_ARC is not set
