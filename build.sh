@@ -704,164 +704,60 @@ build_u_boot () {
 
 	mkdir -p ${DIR}/deploy/${board}
 
-	unset pre_built
-	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.imx ] ; then
-		pre_built=1
-	fi
-
-	if [ -f ${DIR}/deploy/${board}/MLO-${uboot_filename} ] ; then
-		pre_built=1
-	fi
-
-	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.bin ] ; then
-		pre_built=1
-	fi
-
-	if [ -f ${DIR}/deploy/${board}/u-boot-${uboot_filename}.img ] ; then
-		pre_built=1
-	fi
-
-	if [ -f ${DIR}/force_rebuild ] ; then
-		unset pre_built
-	fi
-
-	if [ ! "${pre_built}" ] ; then
-		make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
+	make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
 
 		#make ARCH=arm CROSS_COMPILE="${CC}" menuconfig
 
-		echo "Building ${project}: ${uboot_filename}:"
-		make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} > /dev/null
+	echo "Building ${project}: ${uboot_filename}:"
+	make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} > /dev/null
 
-		if [ ! -d ${p_dir}/${board}/ ] ; then
-			mkdir -p ${p_dir}/${board}/ || true
-		fi
-		cp -v ./.config ${p_dir}/${board}/${uboot_config}
-
-		make ARCH=arm CROSS_COMPILE="${CC}" savedefconfig
-
-		if [ ! -d ${p_dir}/${board}/0001/configs/ ] ; then
-			mkdir -p ${p_dir}/${board}/0001/configs/ || true
-		fi
-		cp -v ./defconfig ${p_dir}/${board}/0001/configs/${uboot_config}
-
-		unset UBOOT_DONE
-		#Freescale targets just need u-boot.imx from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.imx ] ; then
-			filename_search="u-boot.imx"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.imx"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#Freescale targets just need u-boot-dtb.imx from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-dtb.imx ] ; then
-			filename_search="u-boot-dtb.imx"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.imx"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#Altera Cyclone V SE
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-with-spl.sfp ] ; then
-			filename_search="u-boot-with-spl.sfp"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.sfp"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#SPL based targets, need MLO and u-boot.img from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] ; then
-			filename_search="MLO"
-			filename_id="deploy/${board}/MLO-${uboot_filename}"
-			file_save
-
-			if [ -f ${DIR}/scratch/${project}/u-boot-dtb.img ] ; then
-				filename_search="u-boot-dtb.img"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-				file_save
-				UBOOT_DONE=1
-			elif [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
-				filename_search="u-boot.img"
-				filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-				file_save
-				UBOOT_DONE=1
-			fi
-		fi
-
-		#SPL (i.mx6) targets, need SPL and u-boot.img from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/SPL ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
-			filename_search="SPL"
-			filename_id="deploy/${board}/SPL-${uboot_filename}"
-			file_save
-
-			filename_search="u-boot.img"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#SPL: Atmel
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/boot.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
-			filename_search="boot.bin"
-			filename_id="deploy/${board}/boot-${uboot_filename}.bin"
-			file_save
-
-			filename_search="u-boot.img"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#ls1021a targets just need u-boot.imx from u-boot
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot-with-spl-pbl.bin ] ; then
-			filename_search="u-boot-with-spl-pbl.bin"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.ls1021a"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#SPL: Samsung (old Atmel)
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/spl/u-boot-spl.bin ] && [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
-			filename_search="spl/u-boot-spl.bin"
-			filename_id="deploy/${board}/u-boot-spl-${uboot_filename}.bin"
-			file_save
-
-			filename_search="u-boot.img"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		#Just u-boot.bin
-		if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/u-boot.bin ] ; then
-			filename_search="u-boot.bin"
-			filename_id="deploy/${board}/u-boot-${uboot_filename}.bin"
-			file_save
-			UBOOT_DONE=1
-		fi
-
-		if [ "x${board}" = "xam57xx_evm" ] ; then
-
-			echo "#!/bin/bash" > ${DIR}/deploy/${board}/install.sh
-			echo "" >> ${DIR}/deploy/${board}/install.sh
-			echo "if ! id | grep -q root; then" >> ${DIR}/deploy/${board}/install.sh
-			echo "        echo \"must be run as root\"" >> ${DIR}/deploy/${board}/install.sh
-			echo "        exit" >> ${DIR}/deploy/${board}/install.sh
-			echo "fi" >> ${DIR}/deploy/${board}/install.sh
-			echo "" >> ${DIR}/deploy/${board}/install.sh
-			echo "dd if=./MLO of=/dev/sdd count=2 seek=1 bs=128k" >> ${DIR}/deploy/${board}/install.sh
-			echo "dd if=./u-boot-dtb.img of=/dev/sdd count=4 seek=1 bs=384k" >> ${DIR}/deploy/${board}/install.sh
-			chmod +x ${DIR}/deploy/${board}/install.sh
-		fi
-
-		echo "-----------------------------"
-	else
-		echo "-----------------------------"
-		echo "Skipping Binary Build: as [${uboot_filename}] was previously built."
-		echo "To override skipping(and force rebuild): [touch force_rebuild]"
-		echo "-----------------------------"
+	if [ ! -d ${p_dir}/${board}/ ] ; then
+		mkdir -p ${p_dir}/${board}/ || true
 	fi
+	cp -v ./.config ${p_dir}/${board}/${uboot_config}
+
+	make ARCH=arm CROSS_COMPILE="${CC}" savedefconfig
+
+	if [ ! -d ${p_dir}/${board}/0001/configs/ ] ; then
+		mkdir -p ${p_dir}/${board}/0001/configs/ || true
+	fi
+	cp -v ./defconfig ${p_dir}/${board}/0001/configs/${uboot_config}
+
+	unset UBOOT_DONE
+	#SPL based targets, need MLO and u-boot.img from u-boot
+	if [ ! "${UBOOT_DONE}" ] && [ -f ${DIR}/scratch/${project}/MLO ] ; then
+		filename_search="MLO"
+		filename_id="deploy/${board}/MLO-${uboot_filename}"
+		file_save
+
+		if [ -f ${DIR}/scratch/${project}/u-boot-dtb.img ] ; then
+			filename_search="u-boot-dtb.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		elif [ -f ${DIR}/scratch/${project}/u-boot.img ] ; then
+			filename_search="u-boot.img"
+			filename_id="deploy/${board}/u-boot-${uboot_filename}.img"
+			file_save
+			UBOOT_DONE=1
+		fi
+	fi
+
+	if [ "x${board}" = "xam57xx_evm" ] ; then
+
+		echo "#!/bin/bash" > ${DIR}/deploy/${board}/install.sh
+		echo "" >> ${DIR}/deploy/${board}/install.sh
+		echo "if ! id | grep -q root; then" >> ${DIR}/deploy/${board}/install.sh
+		echo "        echo \"must be run as root\"" >> ${DIR}/deploy/${board}/install.sh
+		echo "        exit" >> ${DIR}/deploy/${board}/install.sh
+		echo "fi" >> ${DIR}/deploy/${board}/install.sh
+		echo "" >> ${DIR}/deploy/${board}/install.sh
+		echo "dd if=./MLO of=/dev/sdd count=2 seek=1 bs=128k" >> ${DIR}/deploy/${board}/install.sh
+		echo "dd if=./u-boot-dtb.img of=/dev/sdd count=4 seek=1 bs=384k" >> ${DIR}/deploy/${board}/install.sh
+		chmod +x ${DIR}/deploy/${board}/install.sh
+	fi
+
+	echo "-----------------------------"
 
 	git_cleanup
 }
