@@ -1,6 +1,6 @@
-From e480caebc31c0693299ee0ff5a59bad714d16cd4 Mon Sep 17 00:00:00 2001
+From c89831e7e766871a2009a0bf5cd85aaa06f24952 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 23 Aug 2021 10:42:38 -0500
+Date: Mon, 23 Aug 2021 12:01:45 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -14,10 +14,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  6 files changed, 33 insertions(+), 6 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index de9045735b..989d7708c7 100644
+index c9b6ebe937..26a2b3ea60 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -728,7 +728,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -737,7 +737,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -26,7 +26,7 @@ index de9045735b..989d7708c7 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -1022,7 +1022,7 @@ void sdram_init(void)
+@@ -1031,7 +1031,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
@@ -36,11 +36,11 @@ index de9045735b..989d7708c7 100644
  			   &ddr3_beagleblack_data,
  			   &ddr3_beagleblack_cmd_ctrl_data,
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 8774fa9b40..071e0b085d 100644
+index d0d4e5a9c6..7a6cb372c1 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -80,10 +80,15 @@ static inline int board_is_os00(void)
- 	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS00", 4);
+@@ -85,12 +85,17 @@ static inline int board_is_os01(void)
+ 	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS01", 4);
  }
  
 +static inline int board_is_blank_bone_lt(void)
@@ -51,8 +51,10 @@ index 8774fa9b40..071e0b085d 100644
  static inline int board_is_beaglebonex(void)
  {
  	return board_is_pb() || board_is_bone() || board_is_bone_lt() ||
--	       board_is_bbg1() || board_is_bbgg1() || board_is_bben() || board_is_bbbi() || board_is_beaglelogic() || board_is_os00();
-+	       board_is_bbg1() || board_is_bbgg1() || board_is_bben() || board_is_bbbi() || board_is_beaglelogic() || board_is_os00() || board_is_blank_bone_lt();
+ 	       board_is_bbg1() || board_is_bbgg1() || board_is_bben() ||
+ 	       board_is_bbbi() || board_is_beaglelogic() || board_is_os00() || 
+-	       board_is_os01();
++	       board_is_os01() || board_is_blank_bone_lt();
  }
  
  static inline int board_is_evm_sk(void)
@@ -116,10 +118,10 @@ index 5effcf72a7..284cfb96eb 100644
  CONFIG_ARCH_MISC_INIT=y
  CONFIG_SPL_FIT_IMAGE_TINY=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index ee73578c83..db3e1504b7 100644
+index e31ddb984a..8ae3557b02 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
-@@ -188,6 +188,14 @@
+@@ -189,6 +189,14 @@
  				"setenv fdtfile am335x-boneblack.dtb; " \
  			"fi; " \
  		"fi; " \

@@ -1,6 +1,6 @@
-From 8fd43f2bbba5d48f88315bfe2c1f05f04032600e Mon Sep 17 00:00:00 2001
+From c9915ee2c4be54fc5650727de3209db28dcebce2 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 23 Aug 2021 10:42:29 -0500
+Date: Mon, 23 Aug 2021 12:01:36 -0500
 Subject: [PATCH 1/3] am335x_evm-uEnv.txt-bootz-n-fixes
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -10,14 +10,14 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  arch/arm/mach-omap2/am33xx/board.c            |  22 +-
  arch/arm/mach-omap2/am33xx/clock_am33xx.c     |   1 +
  arch/arm/mach-omap2/hwinit-common.c           |  10 +
- board/ti/am335x/board.c                       | 102 ++++++-
- board/ti/am335x/board.h                       |  35 ++-
+ board/ti/am335x/board.c                       | 107 ++++++-
+ board/ti/am335x/board.h                       |  42 ++-
  board/ti/am335x/mux.c                         |  22 +-
  configs/am335x_evm_defconfig                  |  35 +--
- include/configs/am335x_evm.h                  |  82 +++++-
+ include/configs/am335x_evm.h                  |  83 +++++-
  include/configs/ti_armv7_common.h             | 260 ++++++++++++++++++
- include/environment/ti/mmc.h                  |  59 +++-
- 12 files changed, 570 insertions(+), 60 deletions(-)
+ include/environment/ti/mmc.h                  |  57 +++-
+ 12 files changed, 583 insertions(+), 58 deletions(-)
 
 diff --git a/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h b/arch/arm/include/asm/arch-am33xx/hardware_am33xx.h
 index 878ef3e5d2..b42c7e67e9 100644
@@ -108,7 +108,7 @@ index 7a7086776e..432bac2269 100644
   * vcores_init() - Assign omap_vcores based on board
   *
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 984cc5e3ba..15146a99ca 100644
+index 984cc5e3ba..3999321abf 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -33,6 +33,7 @@
@@ -247,7 +247,7 @@ index 984cc5e3ba..15146a99ca 100644
  		/* BeagleBoard.org BeagleBone Black Wireless: */
  		if (!strncmp(board_ti_get_rev(), "BWA", 3)) {
  			name = "BBBW";
-@@ -815,16 +873,46 @@ int board_late_init(void)
+@@ -815,16 +873,51 @@ int board_late_init(void)
  		if (!strncmp(board_ti_get_rev(), "GW1", 3)) {
  			name = "BBGW";
  		}
@@ -263,6 +263,11 @@ index 984cc5e3ba..15146a99ca 100644
 +		if (!strncmp(board_ti_get_rev(), "OS00", 4)) {
 +			puts("Model: Octavo Systems OSD3358-SM-RED\n");
 +			name = "OS00";
++		}
++		/* Octavo Systems OSD3358-SM-RED 01*/
++		if (!strncmp(board_ti_get_rev(), "OS01", 4)) {
++			puts("Model: Octavo Systems OSD3358-SM-RED 01\n");
++			name = "OS01";
 +		}
  	}
  
@@ -297,7 +302,7 @@ index 984cc5e3ba..15146a99ca 100644
  
  	/*
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 48df914af9..8774fa9b40 100644
+index 48df914af9..d0d4e5a9c6 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
 @@ -23,6 +23,11 @@
@@ -312,7 +317,7 @@ index 48df914af9..8774fa9b40 100644
  static inline int board_is_bone(void)
  {
  	return board_ti_is("A335BONE");
-@@ -38,20 +43,47 @@ static inline int board_is_pb(void)
+@@ -38,20 +43,54 @@ static inline int board_is_pb(void)
  	return board_ti_is("A335PBGL");
  }
  
@@ -353,15 +358,22 @@ index 48df914af9..8774fa9b40 100644
 +	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS00", 4);
 +}
 +
++static inline int board_is_os01(void)
++{
++	return board_is_bone_lt() && !strncmp(board_ti_get_rev(), "OS01", 4);
++}
++
  static inline int board_is_beaglebonex(void)
  {
  	return board_is_pb() || board_is_bone() || board_is_bone_lt() ||
 -	       board_is_bbg1() || board_is_bben();
-+	       board_is_bbg1() || board_is_bbgg1() || board_is_bben() || board_is_bbbi() || board_is_beaglelogic() || board_is_os00();
++	       board_is_bbg1() || board_is_bbgg1() || board_is_bben() ||
++	       board_is_bbbi() || board_is_beaglelogic() || board_is_os00() || 
++	       board_is_os01();
  }
  
  static inline int board_is_evm_sk(void)
-@@ -93,5 +125,6 @@ void enable_uart3_pin_mux(void);
+@@ -93,5 +132,6 @@ void enable_uart3_pin_mux(void);
  void enable_uart4_pin_mux(void);
  void enable_uart5_pin_mux(void);
  void enable_i2c0_pin_mux(void);
@@ -519,7 +531,7 @@ index eb5a299bbc..5effcf72a7 100644
  CONFIG_RSA=y
 -CONFIG_LZO=y
 diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
-index 5af90d932d..ee73578c83 100644
+index 5af90d932d..e31ddb984a 100644
 --- a/include/configs/am335x_evm.h
 +++ b/include/configs/am335x_evm.h
 @@ -52,9 +52,14 @@
@@ -539,20 +551,19 @@ index 5af90d932d..ee73578c83 100644
  
  #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
  	#devtypel #instance " "
-@@ -88,11 +93,7 @@
- 	func(MMC, mmc, 0) \
+@@ -89,10 +94,7 @@
  	func(LEGACY_MMC, legacy_mmc, 0) \
  	func(MMC, mmc, 1) \
--	func(LEGACY_MMC, legacy_mmc, 1) \
+ 	func(LEGACY_MMC, legacy_mmc, 1) \
 -	func(NAND, nand, 0) \
 -	BOOT_TARGET_USB(func) \
 -	BOOT_TARGET_PXE(func) \
 -	BOOT_TARGET_DHCP(func)
-+	func(LEGACY_MMC, legacy_mmc, 1)
++	BOOT_TARGET_USB(func)
  
  #include <config_distro_bootcmd.h>
  
-@@ -107,8 +108,9 @@
+@@ -107,8 +109,9 @@
  	"bootpart=0:2\0" \
  	"bootdir=/boot\0" \
  	"bootfile=zImage\0" \
@@ -563,7 +574,7 @@ index 5af90d932d..ee73578c83 100644
  	"partitions=" \
  		"uuid_disk=${uuid_gpt_disk};" \
  		"name=bootloader,start=384K,size=1792K," \
-@@ -136,14 +138,56 @@
+@@ -136,14 +139,56 @@
  		"sf probe ${spibusno}:0; " \
  		"sf read ${loadaddr} ${spisrcaddr} ${spiimgsize}; " \
  		"bootz ${loadaddr}\0" \
@@ -621,7 +632,7 @@ index 5af90d932d..ee73578c83 100644
  		"if test $board_name = A335PBGL; then " \
  			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
  		"if test $board_name = BBBW; then " \
-@@ -152,10 +196,16 @@
+@@ -152,10 +197,18 @@
  			"setenv fdtfile am335x-bonegreen.dtb; fi; " \
  		"if test $board_name = BBGW; then " \
  			"setenv fdtfile am335x-bonegreen-wireless.dtb; fi; " \
@@ -635,10 +646,12 @@ index 5af90d932d..ee73578c83 100644
 +			"setenv fdtfile am335x-sancloud-bbe-lite.dtb; fi; " \
 +		"if test $board_name = OS00; then " \
 +			"setenv fdtfile am335x-osd3358-sm-red.dtb; fi; " \
++		"if test $board_name = OS01; then " \
++			"setenv fdtfile am335x-osd3358-sm-red-01.dtb; fi; " \
  		"if test $board_name = A33515BB; then " \
  			"setenv fdtfile am335x-evm.dtb; fi; " \
  		"if test $board_name = A335X_SK; then " \
-@@ -163,13 +213,21 @@
+@@ -163,13 +216,21 @@
  		"if test $board_name = A335_ICE; then " \
  			"setenv fdtfile am335x-icev2.dtb; fi; " \
  		"if test $fdtfile = undefined; then " \
@@ -935,7 +948,7 @@ index 0c9856a11a..ae1f9f16f6 100644
   * When we have SPI, NOR or NAND flash we expect to be making use of
   * mtdparts, both for ease of use in U-Boot and for passing information
 diff --git a/include/environment/ti/mmc.h b/include/environment/ti/mmc.h
-index b86c8dc7a4..42f0835101 100644
+index b86c8dc7a4..b671c04805 100644
 --- a/include/environment/ti/mmc.h
 +++ b/include/environment/ti/mmc.h
 @@ -11,20 +11,55 @@
@@ -1015,15 +1028,6 @@ index b86c8dc7a4..42f0835101 100644
  			"else " \
  				"if test ${boot_fdt} = try; then " \
  					"bootz; " \
-@@ -57,7 +96,7 @@
- 		"fi;\0" \
- 	"mmcboot=mmc dev ${mmcdev}; " \
- 		"devnum=${mmcdev}; " \
--		"devtype=mmc; " \
-+		"setenv devtype mmc; " \
- 		"if mmc rescan; then " \
- 			"echo SD/MMC found on device ${mmcdev};" \
- 			"if run loadimage; then " \
 -- 
 2.30.2
 

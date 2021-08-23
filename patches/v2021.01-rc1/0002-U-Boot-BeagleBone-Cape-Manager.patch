@@ -1,19 +1,19 @@
-From a31b4cc52f87c45973e41d972b265b7c148297ee Mon Sep 17 00:00:00 2001
+From ba84bdc931e9d7596247ce8f9db68fbff9796198 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 23 Aug 2021 10:42:29 -0500
+Date: Mon, 23 Aug 2021 12:01:36 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c           | 461 ++++++++++++++++++++++++++++++
+ board/ti/am335x/board.c           | 470 ++++++++++++++++++++++++++++++
  board/ti/am335x/hash-string.h     |  59 ++++
  include/configs/ti_armv7_common.h | 152 ++++++++++
  include/environment/ti/mmc.h      |  20 ++
- 4 files changed, 692 insertions(+)
+ 4 files changed, 701 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 15146a99ca..de9045735b 100644
+index 3999321abf..c9b6ebe937 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -45,6 +45,7 @@
@@ -35,7 +35,7 @@ index 15146a99ca..de9045735b 100644
  #endif
  	if (ti_i2c_eeprom_am_get(CONFIG_EEPROM_BUS_ADDRESS,
  				 CONFIG_EEPROM_CHIP_ADDRESS))
-@@ -86,6 +89,456 @@ void do_board_detect(void)
+@@ -86,6 +89,465 @@ void do_board_detect(void)
  }
  #endif
  
@@ -86,7 +86,8 @@ index 15146a99ca..de9045735b 100644
 +
 +#define M_BBG1	0x01
 +#define M_OS00	0x02
-+#define M_BBGG	0x03
++#define M_OS01	0x03
++#define M_BBGG	0x04
 +
 +static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 +{
@@ -179,10 +180,15 @@ index 15146a99ca..de9045735b 100644
 +		if (!strncmp(board_ti_get_rev(), "NAD", 3)) {
 +			puts("Model: Neuromeka BeagleBone Air:\n");
 +		}
-+		if (!strncmp(board_ti_get_rev(), "OS0", 3)) {
++		if (!strncmp(board_ti_get_rev(), "OS00", 4)) {
 +			puts("Model: Octavo Systems OSD3358-SM-RED:\n");
 +			name = "OS00";
 +			model=M_OS00;
++		}
++		if (!strncmp(board_ti_get_rev(), "OS01", 4)) {
++			puts("Model: Octavo Systems OSD3358-SM-RED 01:\n");
++			name = "OS01";
++			model=M_OS01;
 +		}
 +	}
 +
@@ -475,6 +481,9 @@ index 15146a99ca..de9045735b 100644
 +		case M_OS00:
 +			env_set("uboot_model", "M-BB-OSD3358-SM-RED-00A0.dtbo");
 +			break;
++		case M_OS01:
++			env_set("uboot_model", "M-BB-OSD3358-SM-RED-00A1.dtbo");
++			break;
 +		case M_BBGG:
 +			env_set("uboot_model", "M-BB-BBGG-00A0.dtbo");
 +			break;
@@ -492,7 +501,7 @@ index 15146a99ca..de9045735b 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -969,6 +1422,14 @@ int board_late_init(void)
+@@ -974,6 +1436,14 @@ int board_late_init(void)
  	/* Just probe the potentially supported cdce913 device */
  	uclass_get_device(UCLASS_CLK, 0, &dev);
  
@@ -743,7 +752,7 @@ index ae1f9f16f6..e8d2d30245 100644
  			"if test -e ${devtype} ${bootpart} ${bootdir}/${rdfile}; then " \
  				"echo loading ${bootdir}/${rdfile} ...; "\
 diff --git a/include/environment/ti/mmc.h b/include/environment/ti/mmc.h
-index 42f0835101..2d96d7848e 100644
+index b671c04805..030f53fbc7 100644
 --- a/include/environment/ti/mmc.h
 +++ b/include/environment/ti/mmc.h
 @@ -58,6 +58,26 @@

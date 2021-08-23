@@ -886,6 +886,11 @@ int board_late_init(void)
 			puts("Model: Octavo Systems OSD3358-SM-RED\n");
 			name = "OS00";
 		}
+		/* Octavo Systems OSD3358-SM-RED 01*/
+		if (!strncmp(board_ti_get_rev(), "OS01", 4)) {
+			puts("Model: Octavo Systems OSD3358-SM-RED 01\n");
+			name = "OS01";
+		}
 	}
 
 	if (board_is_bbg1())

@@ -136,7 +136,8 @@ struct am335x_cape_eeprom_id {
 
 #define M_BBG1	0x01
 #define M_OS00	0x02
-#define M_BBGG	0x03
+#define M_OS01	0x03
+#define M_BBGG	0x04
 
 static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 {
@@ -229,10 +230,15 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		if (!strncmp(board_ti_get_rev(), "NAD", 3)) {
 			puts("Model: Neuromeka BeagleBone Air:\n");
 		}
-		if (!strncmp(board_ti_get_rev(), "OS0", 3)) {
+		if (!strncmp(board_ti_get_rev(), "OS00", 4)) {
 			puts("Model: Octavo Systems OSD3358-SM-RED:\n");
 			name = "OS00";
 			model=M_OS00;
+		}
+		if (!strncmp(board_ti_get_rev(), "OS01", 4)) {
+			puts("Model: Octavo Systems OSD3358-SM-RED 01:\n");
+			name = "OS01";
+			model=M_OS01;
 		}
 	}
 
@@ -524,6 +530,9 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			break;
 		case M_OS00:
 			env_set("uboot_model", "M-BB-OSD3358-SM-RED-00A0.dtbo");
+			break;
+		case M_OS01:
+			env_set("uboot_model", "M-BB-OSD3358-SM-RED-00A1.dtbo");
 			break;
 		case M_BBGG:
 			env_set("uboot_model", "M-BB-BBGG-00A0.dtbo");
@@ -1338,6 +1347,11 @@ int board_late_init(void)
 		if (!strncmp(board_ti_get_rev(), "OS00", 4)) {
 			puts("Model: Octavo Systems OSD3358-SM-RED\n");
 			name = "OS00";
+		}
+		/* Octavo Systems OSD3358-SM-RED 01*/
+		if (!strncmp(board_ti_get_rev(), "OS01", 4)) {
+			puts("Model: Octavo Systems OSD3358-SM-RED 01\n");
+			name = "OS01";
 		}
 	}
 
