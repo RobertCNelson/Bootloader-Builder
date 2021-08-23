@@ -1296,10 +1296,6 @@ ls1021atwr () {
 	board="ls1021atwr_sdcard_qspi" ; always_stable_n_testing
 }
 
-udoo () {
-	board="udoo" ; always_stable_n_testing
-}
-
 am335x_evm () {
 	cleanup
 #	build_old="true"
@@ -1418,7 +1414,6 @@ wandboard
 
 #devices with no patches...
 ls1021atwr
-udoo
 
 #development...
 #am65x_evm_a53
