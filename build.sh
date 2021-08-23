@@ -295,7 +295,7 @@ build_u_boot () {
 		#esac
 	fi
 
-	#v2021.01-rc1
+	#v2021.10-rc2
 	if [ "${stable}" ] ; then
 		p_dir="${DIR}/patches/${uboot_stable}"
 		uboot_ref="${uboot_stable}"
@@ -354,6 +354,7 @@ build_u_boot () {
 
 					mkdir -p ${base}/include/environment/ti/
 					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
+					cp ../../patches/artfacts/boot.h  ${base}/include/environment/ti/ || true
 
 					refresh_patch
 				fi
@@ -371,6 +372,7 @@ build_u_boot () {
 				if [ "x${reset}" = "xenable" ] ; then
 					mkdir -p ${base}/board/ti/am335x/
 					cp board/ti/am335x/board.c ${base}/board/ti/am335x/
+					cp ../../patches/artfacts/hash-string.h ${base}/board/ti/am335x/ || true
 
 					mkdir -p ${base}/include/configs/
 					cp include/configs/ti_armv7_common.h ${base}/include/configs/
@@ -706,7 +708,7 @@ build_u_boot () {
 
 	make ARCH=arm CROSS_COMPILE="${CC}" ${uboot_config} > /dev/null
 
-		#make ARCH=arm CROSS_COMPILE="${CC}" menuconfig
+	#make ARCH=arm CROSS_COMPILE="${CC}" menuconfig
 
 	echo "Building ${project}: ${uboot_filename}:"
 	make ARCH=arm CROSS_COMPILE="${CC}" -j${CORES} > /dev/null
