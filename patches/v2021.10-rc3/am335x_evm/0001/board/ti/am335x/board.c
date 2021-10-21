@@ -901,16 +901,13 @@ int board_late_init(void)
 		name = "BBG1";
 
 	if (board_is_bben()) {
-		puts("Model: SanCloud BeagleBone Enhanced\n");
-		if (board_is_bben()) {
-			char subtype_id = board_ti_get_config()[1];
-			if (subtype_id == 'L') {
-				puts("Model: Sancloud BeagleBone Enhanced Lite (BBE Lite)\n");
-				name = "BBELITE";
-			} else {
-				puts("Model: SanCloud BeagleBone Enhanced\n");
-				name = "BBEN";
-			}
+		char subtype_id = board_ti_get_config()[1];
+		if (subtype_id == 'L') {
+			puts("Model: Sancloud BeagleBone Enhanced Lite (BBE Lite)\n");
+			name = "BBELITE";
+		} else {
+			puts("Model: SanCloud BeagleBone Enhanced\n");
+			name = "BBEN";
 		}
 	}
 

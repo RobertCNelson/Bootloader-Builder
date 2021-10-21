@@ -746,7 +746,6 @@ build_u_boot () {
 	fi
 
 	if [ "x${board}" = "xam57xx_evm" ] ; then
-
 		echo "#!/bin/bash" > ${DIR}/deploy/${board}/install.sh
 		echo "" >> ${DIR}/deploy/${board}/install.sh
 		echo "if ! id | grep -q root; then" >> ${DIR}/deploy/${board}/install.sh

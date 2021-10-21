@@ -1,19 +1,19 @@
-From e0fb3598aedfc6ae859c7174cb9970b474680c9b Mon Sep 17 00:00:00 2001
+From 68ca0aa4ef231eefb818a3499a9e67a29b3c5f30 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 30 Aug 2021 17:25:26 -0500
+Date: Thu, 21 Oct 2021 14:45:17 -0500
 Subject: [PATCH 2/3] U-Boot-BeagleBone-Cape-Manager
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- board/ti/am335x/board.c           | 456 ++++++++++++++++++++++++++++++
+ board/ti/am335x/board.c           | 466 ++++++++++++++++++++++++++++++
  board/ti/am335x/hash-string.h     |  59 ++++
  include/configs/ti_armv7_common.h | 152 ++++++++++
  include/environment/ti/mmc.h      |  20 ++
- 4 files changed, 687 insertions(+)
+ 4 files changed, 697 insertions(+)
  create mode 100644 board/ti/am335x/hash-string.h
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index d6e325c989..3ec719b617 100644
+index 45b95354fc..3e8e87f4f4 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -47,6 +47,7 @@
@@ -24,7 +24,7 @@ index d6e325c989..3ec719b617 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -90,6 +91,453 @@ void do_board_detect(void)
+@@ -90,6 +91,463 @@ void do_board_detect(void)
  }
  #endif
  
@@ -45,6 +45,7 @@ index d6e325c989..3ec719b617 100644
 +#define BBGW_BASE_DTB	0x3
 +#define BBBL_BASE_DTB	0x4
 +#define BBE_BASE_DTB	0x5
++#define BBEL_BASE_DTB	0x6
 +
 +#define BBB_EMMC	0x1
 +
@@ -141,9 +142,14 @@ index d6e325c989..3ec719b617 100644
 +			puts("Model: BeagleBone Black Industrial:\n");
 +		}
 +		if (!strncmp(board_ti_get_rev(), "SE", 2)) {
-+			puts("Model: SanCloud BeagleBone Enhanced:\n");
-+			base_dtb=BBE_BASE_DTB;
-+			name = "BBEN";
++			char subtype_id = board_ti_get_config()[1];
++			if (subtype_id == 'L') {
++				name = "BBELITE";
++				base_dtb=BBEL_BASE_DTB;
++			} else {
++				name = "BBEN";
++				base_dtb=BBE_BASE_DTB;
++			}
 +		}
 +		if (!strncmp(board_ti_get_rev(), "ME0", 3)) {
 +			puts("Model: MENTOREL BeagleBone uSomIQ:\n");
@@ -401,6 +407,10 @@ index d6e325c989..3ec719b617 100644
 +			env_set("uboot_base_dtb_univ", "am335x-sancloud-bbe-uboot-univ.dtb");
 +			env_set("uboot_base_dtb", "am335x-sancloud-bbe-uboot.dtb");
 +			break;
++		case BBEL_BASE_DTB:
++			env_set("uboot_base_dtb_univ", "am335x-sancloud-bbe-lite-uboot-univ.dtb");
++			env_set("uboot_base_dtb", "am335x-sancloud-bbe-lite-uboot.dtb");
++			break;
 +		case BBBL_BASE_DTB:
 +			env_set("uboot_base_dtb_univ", "am335x-boneblue.dtb");
 +			break;
@@ -478,7 +488,7 @@ index d6e325c989..3ec719b617 100644
  #ifndef CONFIG_DM_SERIAL
  struct serial_device *default_serial_console(void)
  {
-@@ -978,6 +1426,14 @@ int board_late_init(void)
+@@ -975,6 +1433,14 @@ int board_late_init(void)
  	/* Just probe the potentially supported cdce913 device */
  	uclass_get_device_by_name(UCLASS_CLK, "cdce913@65", &dev);
  

@@ -1,6 +1,6 @@
-From 4efa61d12904c120d2f247fdc59d825fdaa9ddbb Mon Sep 17 00:00:00 2001
+From 500f6942eb3000207c7d643edf810a58a6e06ff3 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Mon, 30 Aug 2021 17:25:38 -0500
+Date: Thu, 21 Oct 2021 14:45:29 -0500
 Subject: [PATCH 3/3] NFM-Production-eeprom-assume-device-is-BeagleBone-Bl
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -14,10 +14,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  6 files changed, 33 insertions(+), 6 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 3ec719b617..9a73ddf8ff 100644
+index 3e8e87f4f4..3d2d6dbcd9 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -727,7 +727,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
+@@ -737,7 +737,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
  
  	if (board_is_evm_sk())
  		return &dpll_ddr3_303MHz[ind];
@@ -26,7 +26,7 @@ index 3ec719b617..9a73ddf8ff 100644
  		return &dpll_ddr3_400MHz[ind];
  	else if (board_is_evm_15_or_later())
  		return &dpll_ddr3_303MHz[ind];
-@@ -1021,7 +1021,7 @@ void sdram_init(void)
+@@ -1031,7 +1031,7 @@ void sdram_init(void)
  	if (board_is_evm_sk())
  		config_ddr(303, &ioregs_evmsk, &ddr3_data,
  			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);

@@ -108,6 +108,7 @@ void do_board_detect(void)
 #define BBGW_BASE_DTB	0x3
 #define BBBL_BASE_DTB	0x4
 #define BBE_BASE_DTB	0x5
+#define BBEL_BASE_DTB	0x6
 
 #define BBB_EMMC	0x1
 
@@ -204,9 +205,14 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 			puts("Model: BeagleBone Black Industrial:\n");
 		}
 		if (!strncmp(board_ti_get_rev(), "SE", 2)) {
-			puts("Model: SanCloud BeagleBone Enhanced:\n");
-			base_dtb=BBE_BASE_DTB;
-			name = "BBEN";
+			char subtype_id = board_ti_get_config()[1];
+			if (subtype_id == 'L') {
+				name = "BBELITE";
+				base_dtb=BBEL_BASE_DTB;
+			} else {
+				name = "BBEN";
+				base_dtb=BBE_BASE_DTB;
+			}
 		}
 		if (!strncmp(board_ti_get_rev(), "ME0", 3)) {
 			puts("Model: MENTOREL BeagleBone uSomIQ:\n");
@@ -463,6 +469,10 @@ static int probe_cape_eeprom(struct am335x_cape_eeprom_id *cape_header)
 		case BBE_BASE_DTB:
 			env_set("uboot_base_dtb_univ", "am335x-sancloud-bbe-uboot-univ.dtb");
 			env_set("uboot_base_dtb", "am335x-sancloud-bbe-uboot.dtb");
+			break;
+		case BBEL_BASE_DTB:
+			env_set("uboot_base_dtb_univ", "am335x-sancloud-bbe-lite-uboot-univ.dtb");
+			env_set("uboot_base_dtb", "am335x-sancloud-bbe-lite-uboot.dtb");
 			break;
 		case BBBL_BASE_DTB:
 			env_set("uboot_base_dtb_univ", "am335x-boneblue.dtb");
@@ -1349,16 +1359,13 @@ int board_late_init(void)
 		name = "BBG1";
 
 	if (board_is_bben()) {
-		puts("Model: SanCloud BeagleBone Enhanced\n");
-		if (board_is_bben()) {
-			char subtype_id = board_ti_get_config()[1];
-			if (subtype_id == 'L') {
-				puts("Model: Sancloud BeagleBone Enhanced Lite (BBE Lite)\n");
-				name = "BBELITE";
-			} else {
-				puts("Model: SanCloud BeagleBone Enhanced\n");
-				name = "BBEN";
-			}
+		char subtype_id = board_ti_get_config()[1];
+		if (subtype_id == 'L') {
+			puts("Model: Sancloud BeagleBone Enhanced Lite (BBE Lite)\n");
+			name = "BBELITE";
+		} else {
+			puts("Model: SanCloud BeagleBone Enhanced\n");
+			name = "BBEN";
 		}
 	}
 
