@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# Copyright (c) 2010-2020 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2010-2022 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -664,16 +664,6 @@ build_uboot_wip () {
 	fi
 }
 
-build_uboot_eabi () {
-	if [ "x${uboot_config}" = "x" ] ; then
-		uboot_config="${board}_defconfig"
-	fi
-	gcc_6_arm
-	build_uboot_old
-	build_uboot_stable
-	build_uboot_testing
-}
-
 build_uboot_gnueabihf () {
 	if [ "x${uboot_config}" = "x" ] ; then
 		uboot_config="${board}_defconfig"
@@ -683,41 +673,6 @@ build_uboot_gnueabihf () {
 	build_uboot_stable
 	build_uboot_testing
 	build_uboot_wip
-}
-
-build_uboot_gnueabihf_only_old () {
-	if [ "x${uboot_config}" = "x" ] ; then
-		uboot_config="${board}_defconfig"
-	fi
-	gcc_6_arm
-	build_uboot_old
-}
-
-build_uboot_gnueabihf_only_stable () {
-	if [ "x${uboot_config}" = "x" ] ; then
-		uboot_config="${board}_defconfig"
-	fi
-	gcc_6_arm
-	build_uboot_stable
-}
-
-always_stable_n_testing () {
-	cleanup
-	if [ ! "x${build_stable}" = "x" ] ; then
-		build_stable="true"
-	fi
-	if [ ! "x${uboot_testing}" = "x" ] ; then
-		build_testing="true"
-	fi
-	build_uboot_gnueabihf
-}
-
-always_testing () {
-	cleanup
-	if [ ! "x${uboot_testing}" = "x" ] ; then
-		build_testing="true"
-	fi
-	build_uboot_gnueabihf
 }
 
 am335x_evm () {
