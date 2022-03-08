@@ -422,32 +422,6 @@ build_u_boot () {
 				${git} "${p_dir}/0003-${patch_file}.patch"
 			fi
 			;;
-		omap5_uevm)
-			patch_file="omap5_common-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/ti_armv7_common.h ${base}/include/configs/
-					cp include/configs/ti_omap5_common.h ${base}/include/configs/
-
-					mkdir -p ${base}/include/environment/ti/
-					cp include/environment/ti/boot.h ${base}/include/environment/ti/
-					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
 		esac
 	fi
 
@@ -496,32 +470,6 @@ build_u_boot () {
 					mkdir -p ${base}/board/ti/am57xx/
 					cp board/ti/am57xx/board.c ${base}/board/ti/am57xx/
 					cp board/ti/am57xx/mux_data.h ${base}/board/ti/am57xx/
-
-					refresh_patch
-				fi
-				cp_git_commit_patch
-			else
-				${git} "${p_dir}/0001-${patch_file}.patch"
-			fi
-			;;
-		omap5_uevm)
-			patch_file="omap5_common-uEnv.txt-bootz-n-fixes"
-			#regenerate="enable"
-			if [ "x${regenerate}" = "xenable" ] ; then
-				base="../../patches/${uboot_ref}/${board}/0001"
-
-				#reset="enable"
-				if [ "x${reset}" = "xenable" ] ; then
-					mkdir -p ${base}/configs/
-					cp configs/${board}_defconfig ${base}/configs/
-
-					mkdir -p ${base}/include/configs/
-					cp include/configs/ti_armv7_common.h ${base}/include/configs/
-					cp include/configs/ti_omap5_common.h ${base}/include/configs/
-
-					mkdir -p ${base}/include/environment/ti/
-					cp include/environment/ti/boot.h ${base}/include/environment/ti/
-					cp include/environment/ti/mmc.h ${base}/include/environment/ti/
 
 					refresh_patch
 				fi
@@ -802,19 +750,9 @@ am57xx_evm () {
 	board="am57xx_evm" ; build_uboot_gnueabihf
 }
 
-omap5_uevm () {
-	cleanup
-	build_old="true"
-	build_stable="true"
-	build_testing="true"
-	board="omap5_uevm" ; build_uboot_gnueabihf
-}
-
 am335x_evm
 am335x_boneblack_flasher
 #am57xx_evm
 exit
-
-omap5_uevm
 
 #
